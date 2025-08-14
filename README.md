@@ -1,7 +1,3 @@
 # proyecto_programacion-
-Proyecto de Programación 2025
-Integrantes:
-- Hans Reicher
-- Matías Gómez
-- Diego Pezoa
-- Bastián Reyes
+Acá va en qué consiste el proyecto (nombre del proyecto + descripción)
+Texto de ejemplo
