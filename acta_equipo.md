@@ -16,6 +16,6 @@ Canales de comunicación:
     Reglas: Ser educado, congruente con los canales de texto, no hacer spam.
 
 Rotación de roles:
-  (falta redactar esto)
+  Se verá por las afinidades de cada integrante, al igual que se hizo con la decisión para los roles iniciales, evitando que se repitan.
 
 
