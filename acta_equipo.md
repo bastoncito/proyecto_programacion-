@@ -7,16 +7,13 @@ Integrantes (y roles iniciales):
 -  Bastián Reyes: Frontend
 
 Canales de comunicación: 
-- Whatsapp https://chat.whatsapp.com/CHdNZuRGKp9JEJdOIBzbnU?mode=ac_t (si el enlace expira avisar)
+- Whatsapp https://chat.whatsapp.com/CHdNZuRGKp9JEJdOIBzbnU?mode=ac_t (Si el enlace expira, avisar.)
+    Propósito: Coordinar reuniones, resolver dudas sencillas y reportar problemas en el desarrollo del proyecto.
+    Reglas: Evitar entrar en tecnicismos (Discord está para eso), no hacer SPAM.
   
-    Proposito: Para cordinar reuniones, preguntar por dudas sencillas, avisar sobre problemas con el desarollo del proyecto.
-
-    Reglas: Evitar entrar en tecnicismos (Discord esta para eso), no hacer SPAM.
-- Discord https://discord.gg/8pYSVmQhgS (si el enlace expira avisar)
-  
-    Proposito: Discutir a detalle el proyecto o problemas, compartir recursos, tener reuniones por medio de los canales de voz, centralizar archivos y enlaces importantes.
-  
-    Reglas: Ser educado, congruente con los canales de texto, no hacer SPAM.
+- Discord https://discord.gg/8pYSVmQhgS (Si el enlace expira, avisar.)
+    Propósito: Discutir en detalle el proyecto o problemas técnicos, compartir recursos útiles, realizar reuniones mediante los canales de voz y centralizar archivos y enlaces importantes.
+    Reglas: Ser educado, congruente con los canales de texto, no hacer spam.
 
 Rotación de roles:
   (falta redactar esto)
