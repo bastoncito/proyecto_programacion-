@@ -1,4 +1,5 @@
-Requisitos funcionales:
+# Requisitos del proyecto
+## Requisitos funcionales:
 + Registro de usuarios: los usuarios deben ser capaz de registrarse y iniciar sesión mediante un usuario/correo y una contraseña. 
 + Agregar y completar tareas: la aplicación permite agregar y completar tareas propuestas por el usuario. 
 + Debe poseer un historial: el cual llevara registro de las tareas finalizadas recientemente y su fecha de finalización. 
@@ -10,7 +11,7 @@ Requisitos funcionales:
 + Sugerir tareas: la aplicación podrá sugerir tareas prestablecidas al usuario o tareas acorde a la hora/clima. 
 + Acceso a la hora/fecha/clima: la aplicación podrá acceder a la hora y fecha actual para poder determinar si las tareas estar por vencer, o recopilar información entre semanas para hacer resúmenes. 
 
-Requisitos no funcionales:
+## Requisitos no funcionales:
 + Interfaz intuitiva: la aplicación debe ser fácil de usar incluso para gente que no haya tenido experiencia con esta. 
 + Código documentado: el código debe de poseer buenas prácticas de programación además de estar bien documentado. 
 + Seguridad: las contraseñas y datos de los usuarios deben mantenerse en un entorno seguro mediante encriptación véase u otros métodos. 
@@ -21,3 +22,4 @@ Requisitos no funcionales:
 + Modularidad: la aplicación debe estar bien segmentada en módulos de bajo acoplamiento y alta cohesión. 
 + Accesibilidad: El tamaño de texto será adecuado considerando las distintas capacidades visuales de los usuarios. La paleta de colores será diseñada para evitar problemas de percepción en personas con daltonismo, se garantizará el contraste suficiente entre texto y fondo. 
 + Mobile-first: la aplicación está centrada en la experiencia móvil, aprovechando el formato vertical que brinda este. 
+
