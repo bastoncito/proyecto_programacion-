@@ -15,11 +15,12 @@
 + Interfaz intuitiva: la aplicación debe ser fácil de usar incluso para gente que no haya tenido experiencia con esta. 
 + Código documentado: el código debe de poseer buenas prácticas de programación además de estar bien documentado. 
 + Seguridad: las contraseñas y datos de los usuarios deben mantenerse en un entorno seguro mediante encriptación véase u otros métodos. 
-+ Tolerancia a fallos: la aplicación no debería fallar o caerse por errores de entrada del usuario. 
++ Robusto ante los errores del usuario: la aplicación no debería fallar o caerse por errores de entrada del usuario. 
 + Respuestas rápidas: la aplicación no debería tardar más de 3 segundos en completar acciones básicas. 
 + Versión de java 21: Se opta por la versión 21 de java debido a estabilidad y compatibilidad, además de las dependencias que esta versión ofrece.   
 + Backups/respaldo: se deben realizar copias de seguridad periódicas para garantizar la integridad y disponibilidad de los datos. 
 + Modularidad: la aplicación debe estar bien segmentada en módulos de bajo acoplamiento y alta cohesión. 
 + Accesibilidad: El tamaño de texto será adecuado considerando las distintas capacidades visuales de los usuarios. La paleta de colores será diseñada para evitar problemas de percepción en personas con daltonismo, se garantizará el contraste suficiente entre texto y fondo. 
 + Mobile-first: la aplicación está centrada en la experiencia móvil, aprovechando el formato vertical que brinda este. 
+
 
