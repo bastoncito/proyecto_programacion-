@@ -8,19 +8,19 @@ public class BaseDatos implements Serializable{
         usuarios= cargarUsuarios();
     }
     public List<Usuario> cargarUsuarios(){
-        File file = new File("lista");
+        File file = new File("lista.csv");
         if(!file.exists()){
             return new ArrayList<>();
         }
         try{
-            ObjectInputStream objectInput = new ObjectInputStream(new FileInputStream("lista"));
+            ObjectInputStream objectInput = new ObjectInputStream(new FileInputStream("lista.csv"));
             return (List<Usuario>) objectInput.readObject();
         }catch(IOException | ClassNotFoundException e){
             return new ArrayList<>();
         }
     }
     public void guardarBaseDatos() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("lista"))) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("lista.csv"))) {
             oos.writeObject(usuarios);
             System.out.println("Base de datos guardada correctamente.");
         } catch (IOException e) {
