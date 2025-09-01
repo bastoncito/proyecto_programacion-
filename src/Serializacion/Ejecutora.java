@@ -34,6 +34,6 @@ public class Ejecutora {
         System.out.println("=== Base de datos ===");
         b1.imprimirTodosUsuarios();
 
-        
+        b1.guardarBaseDatos();
     }
 }
