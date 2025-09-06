@@ -72,46 +72,30 @@ public class BaseDatos {
      * Recibe un usuario como parametro
      * lo agrega a la base de datos si su nombre y correo no estan registrados
      */
-    private boolean validarUsuario(Usuario usuario) {//Trabajar aqui--->>>Hacer restricciones para agregar usuarios----->>>CAMBIOS REALIZADOS
+    private String validarUsuario(Usuario usuario) {//Trabajar aqui--->>>Hacer restricciones para agregar usuarios----->>>CAMBIOS REALIZADOS
         if (usuario == null) {
-            System.out.println("Error: El usuario no puede ser nulo.");
-            return false;
-        }
-        // Validar que el nombre no esté vacío
-        if (usuario.getNombre_usuario() == null || usuario.getNombre_usuario() == "") {
-            System.out.println("Error: El nombre de usuario no puede estar vacío.");
-            return false;
-        }
-        // Validar que el correo no esté vacío
-        if (usuario.getCorreo_electronico() == null || usuario.getCorreo_electronico() == "") {
-            System.out.println("Error: El correo electrónico no puede estar vacío.");
-            return false;
-        }
-        if (usuario.getContraseña() == null || usuario.getContraseña() == ""){
-            System.out.println("Error: Contraseña vacía");
-            return false;
+            return "Error: El usuario no puede ser nulo.";
         }
         // Validar nombre
         if (usuarioExistePorNombre(usuario.getNombre_usuario())) {
-            System.out.println("Ya existe un usuario con el nombre: " + usuario.getNombre_usuario());
-            return false; // cortamos aquí
+            return "Ya existe un usuario con el nombre: " + usuario.getNombre_usuario();
         }
 
         // Validar correo
         if (usuarioExistePorCorreo(usuario.getCorreo_electronico())) {
-            System.out.println("Ya existe un usuario con el correo: " + usuario.getCorreo_electronico());
-            return false; // cortamos aquí
+            return "Ya existe un usuario con el correo: " + usuario.getCorreo_electronico();
         }
-
         // Si pasa las validaciones, lo agregamos
-        return true;
+        return null;
     }
 
     public void agregarUsuario(Usuario usuario){
-        if(validarUsuario(usuario)){
+        String valido = validarUsuario(usuario);
+        if(valido == null){
             usuarios.add(usuario);
             System.out.println("Usuario '" + usuario.getNombre_usuario() + "' agregado exitosamente.");
         }
+        System.err.println(valido);
     }
 
     /**
@@ -121,7 +105,6 @@ public class BaseDatos {
     public boolean usuarioExistePorCorreo(String correo) {
         for (Usuario usuarioExistente : usuarios) {
             if (usuarioExistente.getCorreo_electronico().equalsIgnoreCase(correo)) {
-                System.out.println("Ya existe un usuario con el correo electrónico: " + correo);
                 return true;
             }
         }
@@ -134,7 +117,6 @@ public class BaseDatos {
     public boolean usuarioExistePorNombre(String nombre){
         for (Usuario usuarioExistente : usuarios) {
             if (usuarioExistente.getNombre_usuario().equalsIgnoreCase(nombre)) {
-                System.out.println("Ya existe un usuario con el nombre: " + nombre);
                 return true;
             }
         }
