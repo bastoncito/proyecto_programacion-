@@ -1,6 +1,9 @@
 {
     "java.project.referencedLibraries": [
-        "lib/**/*.jar"
+        "lib\\gson-2.13.1.jar"
+    ],
+    "java.project.sourcePaths": [
+        "src\\data\\serializacion"
     ]
 }
 

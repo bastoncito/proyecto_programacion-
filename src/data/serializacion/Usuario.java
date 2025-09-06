@@ -1,15 +1,16 @@
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
-public class Usuario implements Serializable{
+import java.util.regex.Pattern;
+public class Usuario{
     String nombre_usuario,correo_electronico,contraseña;
     private List<Tarea> tareas;
+
     public Usuario(String nombre_usuario, String correo_electronico, String contraseña){
-        this.nombre_usuario=nombre_usuario;
-        this.correo_electronico=correo_electronico;
-        this.contraseña=contraseña;
+        setNombre_usuario(nombre_usuario);
+        setContraseña(contraseña);
+        setCorreo_electronico(correo_electronico);
         this.tareas=new ArrayList<>();
     }
     /**
@@ -26,14 +27,27 @@ public class Usuario implements Serializable{
         return contraseña;
     }
     public void setNombre_usuario(String nombre_usuario) {
-        this.nombre_usuario = nombre_usuario;
+        if(esNombreValido(nombre_usuario)){
+            this.nombre_usuario = nombre_usuario;
+        }else{
+            throw new IllegalArgumentException("Nombre de usuario no válido: " + nombre_usuario);
+        }
     }
     public void setCorreo_electronico(String correo_electronico) {
-        this.correo_electronico = correo_electronico;
+        if(esCorreoValido(correo_electronico)){
+            this.correo_electronico=correo_electronico;
+        }else{
+            throw new IllegalArgumentException("Correo electronico no válido: " + correo_electronico);
+        }
     }
-    public void setContraseña(String contraseña) {
-        this.contraseña = contraseña;
+    public void setContraseña(String nuevaContraseña) {
+    String resultado = validarContrasena(nuevaContraseña);
+    if (resultado == null) {
+        this.contraseña = nuevaContraseña;
+    } else {
+        throw new IllegalArgumentException(resultado);
     }
+}
     /**
      * Recibe una Tarea como parametro
      * la agrega a la base de datos si su nombre, descricpcion y exp son validos
@@ -84,12 +98,12 @@ public class Usuario implements Serializable{
             System.out.println("Error: La fecha debe ser igual o posterior a hoy.");
             return false;
         }
-        // Validar nombre
+        // Validar por nombre repetido en el ArrayList
         if (tareaExistePorNombre(tarea.getNombre())) {
             System.out.println("Ya existe una tarea con el nombre: " + tarea.getNombre());
             return false;
         }
-        // Validar descripción
+        // Validar por descripción repetida en el ArrayList
         if (tareaExistePorDescripcion(tarea.getDescripcion())) {
             System.out.println("Ya existe una tarea con la descripción: " + tarea.getDescripcion());
             return false;
@@ -116,6 +130,62 @@ public class Usuario implements Serializable{
         }
         return false;
     }
+    private boolean esNombreValido(String nombre){
+        if(nombre==null){
+            return false;
+        }
+        if(nombre.trim().isEmpty()){
+            return false;
+        }
+        if(nombre.length()<3 || nombre.length()>30 ){
+            return false;
+        }
+        return true;
+    }
+    private static boolean esCorreoValido(String correo) {
+    if (correo == null || correo.trim().isEmpty()) {
+        return false;
+    }
+    String regex = "[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}";
+    // [a-zA-Z0-9_]+ UNO O MAS, caracter (letras o numeros o '_')
+    // ([.][a-zA-Z0-9_]+)* CERO O MAS, punto '.' seguido de almenos un caracter 
+    // @ UN simbolo arroba
+    // [a-zA-Z0-9_]+ UNO O MAS, caracter (letras o numeros o '_')
+    // ([.][a-zA-Z0-9_]+)* CERO O MAS, punto '.' seguido de almenos un caracter
+    // [.][a-zA-Z]{2,5} UN punto '.', seguido de DOS A CINCO letras
+    return (correo.matches(regex));
+    }
+
+    public static String validarContrasena(String contraseña) {
+    if (contraseña == null || contraseña.trim().isEmpty()) {
+        return "La contraseña no puede estar vacía";
+    }
+
+    if (contraseña.length() < 8) {
+        return "La contraseña debe tener al menos 8 caracteres";
+    }
+
+    if (contraseña.contains(" ")) {
+        return "La contraseña no puede contener espacios";
+    }
+
+    boolean tieneMayuscula = Pattern.compile("[A-Z]").matcher(contraseña).find();
+    boolean tieneMinuscula = Pattern.compile("[a-z]").matcher(contraseña).find();
+    boolean tieneDigito = Pattern.compile("\\d").matcher(contraseña).find();
+    boolean tieneCaracterEspecial = Pattern.compile("[!@#$%^&*()_+\\-=\\[\\]{}|;:'\",.<>/?]").matcher(contraseña).find();
+
+    
+    if (!tieneMayuscula || !tieneMinuscula || !tieneDigito || !tieneCaracterEspecial) {
+         StringBuilder errores = new StringBuilder();
+         if (!tieneMayuscula) errores.append("- Debe contener al menos una mayúscula\n");
+        if (!tieneMinuscula) errores.append("- Debe contener al menos una minúscula\n");
+        if (!tieneDigito) errores.append("- Debe contener al menos un dígito\n");
+        if (!tieneCaracterEspecial) errores.append("- Debe contener al menos un carácter especial (!@#$%^&* etc.)\n");
+        return "La contraseña es demasiado débil. Requisitos:\n" + errores.toString();
+    }
+
+    return null; // Null indica que la contraseña es válida
+}
 
     public List<Tarea> getTareas() {
         return tareas;
