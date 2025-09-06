@@ -8,13 +8,13 @@
         "nombre": "Estudiar EDO",
         "descripcion": "Repasar la materia vista en clases",
         "exp": 150,
-        "fecha_expiracion": "Sep 6, 2025, 5:51:36 PM"
+        "fecha_expiracion": "Sep 6, 2025, 11:04:25 PM"
       },
       {
         "nombre": "Salir a trotar",
         "descripcion": "Salir a trotar por 20 minutos",
         "exp": 100,
-        "fecha_expiracion": "Sep 5, 2025, 5:51:36 PM"
+        "fecha_expiracion": "Sep 5, 2025, 11:04:25 PM"
       }
     ]
   },
@@ -27,7 +27,7 @@
         "nombre": "Hacer ejercicio",
         "descripcion": "30 minutos de gym",
         "exp": 80,
-        "fecha_expiracion": "Sep 5, 2025, 5:51:36 PM"
+        "fecha_expiracion": "Sep 5, 2025, 11:04:25 PM"
       }
     ]
   }

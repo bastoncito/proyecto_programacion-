@@ -23,12 +23,8 @@ public class Ejecutora {
         u2.agregarTarea(t3);
 
         // Agregar usuarios a la base de datos
-        if(!b1.usuarioExistePorCorreo(u1.getCorreo_electronico())){
-            b1.agregarUsuario(u1);
-        }
-        if(!b1.usuarioExistePorCorreo(u2.getCorreo_electronico())){
-            b1.agregarUsuario(u2);
-        }
+        b1.agregarUsuario(u1);
+        b1.agregarUsuario(u2);
 
         // Comentar hasta aca para mostrar serializacion
         System.out.println("=== Base de datos ===");

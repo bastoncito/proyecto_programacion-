@@ -1,3 +1,5 @@
+//POR HACER: Manejo centralizado de validaciones (eventualmente migrar los métodos de validaciones a una clase aparte o algo así)
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -70,19 +72,23 @@ public class BaseDatos {
      * Recibe un usuario como parametro
      * lo agrega a la base de datos si su nombre y correo no estan registrados
      */
-    public boolean agregarUsuario(Usuario usuario) {//Trabajar aqui--->>>Hacer restricciones para agregar usuarios----->>>CAMBIOS REALIZADOS
+    private boolean validarUsuario(Usuario usuario) {//Trabajar aqui--->>>Hacer restricciones para agregar usuarios----->>>CAMBIOS REALIZADOS
         if (usuario == null) {
             System.out.println("Error: El usuario no puede ser nulo.");
             return false;
         }
         // Validar que el nombre no esté vacío
-        if (usuario.getNombre_usuario() == null) {
+        if (usuario.getNombre_usuario() == null || usuario.getNombre_usuario() == "") {
             System.out.println("Error: El nombre de usuario no puede estar vacío.");
             return false;
         }
         // Validar que el correo no esté vacío
-        if (usuario.getCorreo_electronico() == null) {
+        if (usuario.getCorreo_electronico() == null || usuario.getCorreo_electronico() == "") {
             System.out.println("Error: El correo electrónico no puede estar vacío.");
+            return false;
+        }
+        if (usuario.getContraseña() == null || usuario.getContraseña() == ""){
+            System.out.println("Error: Contraseña vacía");
             return false;
         }
         // Validar nombre
@@ -98,9 +104,14 @@ public class BaseDatos {
         }
 
         // Si pasa las validaciones, lo agregamos
-        usuarios.add(usuario);
-        System.out.println("Usuario '" + usuario.getNombre_usuario() + "' agregado exitosamente.");
         return true;
+    }
+
+    public void agregarUsuario(Usuario usuario){
+        if(validarUsuario(usuario)){
+            usuarios.add(usuario);
+            System.out.println("Usuario '" + usuario.getNombre_usuario() + "' agregado exitosamente.");
+        }
     }
 
     /**

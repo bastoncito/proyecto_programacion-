@@ -12,6 +12,10 @@ public class Usuario implements Serializable{
         this.contraseña=contraseña;
         this.tareas=new ArrayList<>();
     }
+    /**
+     * Getters/Setters
+     * @return
+     */
     public String getNombre_usuario() {
         return nombre_usuario;
     }
@@ -34,18 +38,26 @@ public class Usuario implements Serializable{
      * Recibe una Tarea como parametro
      * la agrega a la base de datos si su nombre, descricpcion y exp son validos
      */
-    public boolean agregarTarea(Tarea tarea){//TRABAJAR AQUI---->>>Validar si la tarea se puede agregar
+    public void agregarTarea(Tarea tarea){//TRABAJAR AQUI---->>>Validar si la tarea se puede agregar
+        // Si pasa las validaciones, la agregamos
+        if(validarTarea(tarea)){
+            tareas.add(tarea);
+            System.out.println("Tarea '" + tarea.getNombre() + "' agregada exitosamente.");
+        }
+    }
+
+    private boolean validarTarea(Tarea tarea){
         if (tarea == null) {
             System.out.println("Error: La tarea no puede ser nula.");
             return false;
         }
         // Validar que el nombre no esté vacío
-        if (tarea.getNombre() == null) {
+        if (tarea.getNombre() == null || tarea.getNombre().isEmpty()) {
             System.out.println("Error: El nombre de la tarea no puede estar vacía.");
             return false;
         }
         // Validar que la descripcion no esté vacía
-        if (tarea.getDescripcion() == null) {
+        if (tarea.getDescripcion() == null || tarea.getDescripcion().isEmpty()) {
             System.out.println("Error: La descripción de la tarea no puede estar vacía.");
             return false;
         }
@@ -77,20 +89,16 @@ public class Usuario implements Serializable{
             System.out.println("Ya existe una tarea con el nombre: " + tarea.getNombre());
             return false;
         }
-
         // Validar descripción
         if (tareaExistePorDescripcion(tarea.getDescripcion())) {
             System.out.println("Ya existe una tarea con la descripción: " + tarea.getDescripcion());
             return false;
         }
 
-        // Si pasa las validaciones, la agregamos
-        tareas.add(tarea);
-        System.out.println("Tarea '" + tarea.getNombre() + "' agregada exitosamente.");
         return true;
     }
 
-    public boolean tareaExistePorNombre(String nombre){
+    private boolean tareaExistePorNombre(String nombre){
         for (Tarea tareaExistente : tareas) {
             if (tareaExistente.getNombre().equalsIgnoreCase(nombre)) {
                 System.out.println("Ya existe una tarea con el nombre: " + nombre);
@@ -99,7 +107,7 @@ public class Usuario implements Serializable{
         }
         return false;
     }
-    public boolean tareaExistePorDescripcion(String descripcion){
+    private boolean tareaExistePorDescripcion(String descripcion){
         for (Tarea tareaExistente : tareas) {
             if (tareaExistente.getDescripcion().equalsIgnoreCase(descripcion)) {
                 System.out.println("Ya existe una tarea con la descripcion: " + descripcion);
