@@ -18,10 +18,10 @@ public class Ejecutora {
         Usuario ubr3 = new Usuario("Julia", "jcampos@hotmail.com", "tr!Rep3tae");
         Usuario ubr4 = new Usuario("Miguelito", "mhernandez@alumnos.utalca.cl", "P0Wersl@vE");
         Usuario ubr5 = new Usuario("Valerie", "valtron@gmail.com", "g00dP@55w0rd");
-        Usuario uh1 = new Usuario("Alejandro Parra","aleparra@gmail.com","x");
-        Usuario uh2 = new Usuario("Cristobal Figueroa","criisdxd@gmail.com","x");
-        Usuario uh3 = new Usuario("Luis Retamal","lretamal@alumnos.utalca.cl","x");
-        Usuario uh4 = new Usuario("Mauro Friz","kikoman767@gmail.com","x");
+        Usuario uh1 = new Usuario("Alejandro Parra","aleparra@gmail.com","P4rr4!76");
+        Usuario uh2 = new Usuario("Cristobal Figueroa","criisdxd@gmail.com","b4lU.7FC");
+        Usuario uh3 = new Usuario("Luis Retamal","lretamal@alumnos.utalca.cl","hArdy@04");
+        Usuario uh4 = new Usuario("Mauro Friz","kikoman767@gmail.com","gh0St!44");
 
         Date fecha_actual = new Date();
         Date fechaTresHoras = new Date(System.currentTimeMillis() + hora*3); // +3 horas
@@ -70,6 +70,20 @@ public class Ejecutora {
         ubr5.agregarTarea(tbr4);
         ubr5.agregarTarea(tbr1);
 
+        uh1.agregarTarea(t4);
+        uh1.agregarTarea(t7);
+
+        uh2.agregarTarea(t2);
+        uh2.agregarTarea(t6);
+        uh2.agregarTarea(tbr3);
+
+        uh3.agregarTarea(tbr1);
+        uh3.agregarTarea(t1);
+        uh3.agregarTarea(t8);
+
+        uh4.agregarTarea(t3);
+        uh4.agregarTarea(t5);
+
         // Agregar usuarios a la base de datos
         b1.agregarUsuario(u1);
         b1.agregarUsuario(u2);
@@ -80,6 +94,10 @@ public class Ejecutora {
         b1.agregarUsuario(ubr3);
         b1.agregarUsuario(ubr4);
         b1.agregarUsuario(ubr5);
+        b1.agregarUsuario(uh1);
+        b1.agregarUsuario(uh2);
+        b1.agregarUsuario(uh3);
+        b1.agregarUsuario(uh4);
 
         // Agregar y mostrar base de datos
         System.out.println("=== Base de datos ===");
