@@ -18,6 +18,10 @@ public class Ejecutora {
         Usuario ubr3 = new Usuario("Julia", "jcampos@hotmail.com", "tr!Rep3tae");
         Usuario ubr4 = new Usuario("Miguelito", "mhernandez@alumnos.utalca.cl", "P0Wersl@vE");
         Usuario ubr5 = new Usuario("Valerie", "valtron@gmail.com", "g00dP@55w0rd");
+        Usuario uh1 = new Usuario("Alejandro Parra","aleparra@gmail.com","x");
+        Usuario uh2 = new Usuario("Cristobal Figueroa","criisdxd@gmail.com","x");
+        Usuario uh3 = new Usuario("Luis Retamal","lretamal@alumnos.utalca.cl","x");
+        Usuario uh4 = new Usuario("Mauro Friz","kikoman767@gmail.com","x");
 
         Date fecha_actual = new Date();
         Date fechaTresHoras = new Date(System.currentTimeMillis() + hora*3); // +3 horas
