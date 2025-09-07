@@ -70,7 +70,7 @@ public class Usuario{
         System.out.println("Tarea '" + tarea.getNombre() + "' agregada exitosamente.");
     }
 
-    private static String validarContrasena(String contraseña) {
+    private  String validarContrasena(String contraseña) {
     if (contraseña == null || contraseña.trim().isEmpty()) {
         return "La contraseña no puede estar vacía";
     }

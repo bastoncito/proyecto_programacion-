@@ -1,33 +1,89 @@
 [
   {
-    "nombre_usuario": "Matias",
-    "correo_electronico": "matias123@alumnos.utalca.cl",
+    "nombre_usuario": "Matias Gomez",
+    "correo_electronico": "mgomez22@alumnos.utalca.cl",
     "contraseña": "Contra5eña$EGURA",
     "tareas": [
       {
         "nombre": "Estudiar EDO",
         "descripcion": "Repasar la materia vista en clases",
         "exp": 150,
-        "fecha_expiracion": "Sep 7, 2025, 6:46:21 PM"
+        "fecha_expiracion": "Sep 7, 2025, 11:54:56 PM"
       },
       {
-        "nombre": "Salir a trotar",
-        "descripcion": "Salir a trotar por 20 minutos",
-        "exp": 100,
-        "fecha_expiracion": "Sep 6, 2025, 5:46:21 PM"
+        "nombre": "Aprender inglés",
+        "descripcion": "Practicar 30 minutos en Duolingo",
+        "exp": 60,
+        "fecha_expiracion": "Sep 7, 2025, 2:54:56 AM"
+      },
+      {
+        "nombre": "Aprender nuevo framework",
+        "descripcion": "Investigar por 2 horas Spring Boot",
+        "exp": 190,
+        "fecha_expiracion": "Sep 8, 2025, 11:54:56 PM"
       }
     ]
   },
   {
-    "nombre_usuario": "Carlos",
-    "correo_electronico": "carloselmaspro@alumnos.utalca.cl",
-    "contraseña": "7@d0AlRojo",
+    "nombre_usuario": "Juan Carlos Bodoque",
+    "correo_electronico": "elAlmadeLaFiesta@31minutos.cl",
+    "contraseña": "Nota.Verde31",
+    "tareas": [
+      {
+        "nombre": "Salir a trotar",
+        "descripcion": "Salir a trotar por 20 minutos",
+        "exp": 100,
+        "fecha_expiracion": "Sep 6, 2025, 10:54:56 PM"
+      },
+      {
+        "nombre": "Meditación matutina",
+        "descripcion": "10 minutos de meditación al despertar",
+        "exp": 30,
+        "fecha_expiracion": "Sep 7, 2025, 2:54:56 AM"
+      }
+    ]
+  },
+  {
+    "nombre_usuario": "Carlos Mendoza",
+    "correo_electronico": "cmendoza.profesional@gmail.com",
+    "contraseña": "M3nd0z4*97",
     "tareas": [
       {
         "nombre": "Hacer ejercicio",
         "descripcion": "30 minutos de gym",
         "exp": 80,
-        "fecha_expiracion": "Sep 6, 2025, 5:46:21 PM"
+        "fecha_expiracion": "Sep 7, 2025, 11:54:56 AM"
+      },
+      {
+        "nombre": "Limpieza del hogar",
+        "descripcion": "Limpiar toda la casa profundamente",
+        "exp": 160,
+        "fecha_expiracion": "Sep 8, 2025, 11:54:56 PM"
+      },
+      {
+        "nombre": "Aprender nuevo framework",
+        "descripcion": "Investigar por 2 horas Spring Boot",
+        "exp": 190,
+        "fecha_expiracion": "Sep 8, 2025, 11:54:56 PM"
+      }
+    ]
+  },
+  {
+    "nombre_usuario": "Javier Ruiz",
+    "correo_electronico": "javier.ruiz.data@scientist.com",
+    "contraseña": "J@v1erZiuR",
+    "tareas": [
+      {
+        "nombre": "Leer libro",
+        "descripcion": "Avanzar 2 capítulos de \u0027Luna de Pluton\u0027",
+        "exp": 90,
+        "fecha_expiracion": "Sep 7, 2025, 11:54:56 PM"
+      },
+      {
+        "nombre": "Salir a trotar",
+        "descripcion": "Salir a trotar por 20 minutos",
+        "exp": 100,
+        "fecha_expiracion": "Sep 6, 2025, 10:54:56 PM"
       }
     ]
   }

@@ -1,7 +1,6 @@
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-public class Tarea implements Serializable{
+public class Tarea{
     private String nombre, descripcion;
     private int exp;
     private Date fecha_expiracion;
