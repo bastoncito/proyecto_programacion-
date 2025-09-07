@@ -86,5 +86,88 @@
         "fecha_expiracion": "Sep 6, 2025, 10:54:56 PM"
       }
     ]
+  },
+  {
+    "nombre_usuario": "Federico Palacios",
+    "correo_electronico": "fpalacios@alumnos.utalca.cl",
+    "contraseña": "CH0col@teMA77er",
+    "tareas": [
+      {
+        "nombre": "Trabajar en proyecto",
+        "descripcion": "Seh.",
+        "exp": 150,
+        "fecha_expiracion": "Sep 7, 2025, 12:22:07 PM"
+      },
+      {
+        "nombre": "Leer libro",
+        "descripcion": "Avanzar 2 capítulos de \u0027Luna de Pluton\u0027",
+        "exp": 90,
+        "fecha_expiracion": "Sep 8, 2025, 12:22:07 AM"
+      }
+    ]
+  },
+  {
+    "nombre_usuario": "Mario",
+    "correo_electronico": "mariog@yahoo.es",
+    "contraseña": "7\\ph3xTwi|\\|",
+    "tareas": [
+      {
+        "nombre": "Barrer",
+        "descripcion": "Pasar la escoba por (al menos) todo el primer piso",
+        "exp": 350,
+        "fecha_expiracion": "Sep 7, 2025, 2:22:07 AM"
+      },
+      {
+        "nombre": "Organizar refrigerador",
+        "descripcion": "Ordenar alimentos y desechar lo vacío/vencido",
+        "exp": 200,
+        "fecha_expiracion": "Sep 7, 2025, 1:22:07 AM"
+      }
+    ]
+  },
+  {
+    "nombre_usuario": "Julia",
+    "correo_electronico": "jcampos@hotmail.com",
+    "contraseña": "tr!Rep3tae",
+    "tareas": [
+      {
+        "nombre": "Sacar hora para dentista",
+        "descripcion": "Hace falta una hora para control",
+        "exp": 25,
+        "fecha_expiracion": "Sep 8, 2025, 12:22:07 AM"
+      }
+    ]
+  },
+  {
+    "nombre_usuario": "Miguelito",
+    "correo_electronico": "mhernandez@alumnos.utalca.cl",
+    "contraseña": "P0Wersl@vE",
+    "tareas": [
+      {
+        "nombre": "Aprender nuevo framework",
+        "descripcion": "Investigar por 2 horas Spring Boot",
+        "exp": 190,
+        "fecha_expiracion": "Sep 9, 2025, 12:22:07 AM"
+      }
+    ]
+  },
+  {
+    "nombre_usuario": "Valerie",
+    "correo_electronico": "valtron@gmail.com",
+    "contraseña": "g00dP@55w0rd",
+    "tareas": [
+      {
+        "nombre": "Organizar refrigerador",
+        "descripcion": "Ordenar alimentos y desechar lo vacío/vencido",
+        "exp": 200,
+        "fecha_expiracion": "Sep 7, 2025, 1:22:07 AM"
+      },
+      {
+        "nombre": "Trabajar en proyecto",
+        "descripcion": "Seh.",
+        "exp": 150,
+        "fecha_expiracion": "Sep 7, 2025, 12:22:07 PM"
+      }
+    ]
   }
 ]

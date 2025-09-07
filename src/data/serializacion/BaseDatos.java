@@ -94,8 +94,9 @@ public class BaseDatos {
         if(valido == null){
             usuarios.add(usuario);
             System.out.println("Usuario '" + usuario.getNombre_usuario() + "' agregado exitosamente.");
+        }else{
+            System.err.println(valido);
         }
-        System.err.println(valido);
     }
 
     /**

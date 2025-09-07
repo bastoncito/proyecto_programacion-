@@ -1,6 +1,8 @@
 import java.util.Date;
 
 public class Ejecutora {
+    private static final int hora = 3600000; //1 hora en milisegundos
+    private static final int dia = 86400000; //1 dia en milisegundos
     public static void main(String[] args) {
         
         // Creación de la base de datos
@@ -11,12 +13,17 @@ public class Ejecutora {
         Usuario u2 = new Usuario("Juan Carlos Bodoque", "elAlmadeLaFiesta@31minutos.cl", "Nota.Verde31");
         Usuario u3 = new Usuario("Carlos Mendoza", "cmendoza.profesional@gmail.com", "M3nd0z4*97");
         Usuario u4 = new Usuario("Javier Ruiz", "javier.ruiz.data@scientist.com", "J@v1erZiuR");
+        Usuario ubr1 = new Usuario("Federico Palacios", "fpalacios@alumnos.utalca.cl", "CH0col@teMA77er");
+        Usuario ubr2 = new Usuario("Mario", "mariog@yahoo.es", "7\\ph3xTwi|\\|");
+        Usuario ubr3 = new Usuario("Julia", "jcampos@hotmail.com", "tr!Rep3tae");
+        Usuario ubr4 = new Usuario("Miguelito", "mhernandez@alumnos.utalca.cl", "P0Wersl@vE");
+        Usuario ubr5 = new Usuario("Valerie", "valtron@gmail.com", "g00dP@55w0rd");
 
         Date fecha_actual = new Date();
-        Date fechaTresHoras = new Date(System.currentTimeMillis() + 10800000); // +3 horas
-        Date fechaDoceHoras = new Date(System.currentTimeMillis() + 43200000); // +12 horas
-        Date fechaManana = new Date(System.currentTimeMillis() + 86400000); // +1 día
-        Date fechaDiaSiguiente = new Date(System.currentTimeMillis() + 172800000); // +2 días
+        Date fechaTresHoras = new Date(System.currentTimeMillis() + hora*3); // +3 horas
+        Date fechaDoceHoras = new Date(System.currentTimeMillis() + hora*12); // +12 horas
+        Date fechaManana = new Date(System.currentTimeMillis() + dia); // +1 día
+        Date fechaDiaSiguiente = new Date(System.currentTimeMillis() + dia*2); // +2 días
 
         Tarea t1 = new Tarea("Estudiar EDO", "Repasar la materia vista en clases", 150, fechaManana);
         Tarea t2 = new Tarea("Salir a trotar", "Salir a trotar por 20 minutos", 100, fecha_actual);
@@ -26,6 +33,10 @@ public class Ejecutora {
         Tarea t6 = new Tarea("Aprender inglés", "Practicar 30 minutos en Duolingo", 60, fechaTresHoras);
         Tarea t7 = new Tarea("Meditación matutina", "10 minutos de meditación al despertar", 30, fechaTresHoras);
         Tarea t8 = new Tarea("Aprender nuevo framework", "Investigar por 2 horas Spring Boot", 190, fechaDiaSiguiente);
+        Tarea tbr1 = new Tarea("Trabajar en proyecto", "Seh.", 150, fechaDoceHoras);
+        Tarea tbr2 = new Tarea("Sacar hora para dentista", "Hace falta una hora para control", 25, fechaManana);
+        Tarea tbr3 = new Tarea("Barrer", "Pasar la escoba por (al menos) todo el primer piso", 350, new Date(System.currentTimeMillis() + hora*2));
+        Tarea tbr4 = new Tarea("Organizar refrigerador", "Ordenar alimentos y desechar lo vacío/vencido", 200, new Date(System.currentTimeMillis() + hora));
 
         // Asignación tareas a usuarios
         u1.agregarTarea(t1);
@@ -42,11 +53,29 @@ public class Ejecutora {
         u4.agregarTarea(t4);
         u4.agregarTarea(t2);
 
+        ubr1.agregarTarea(tbr1);
+        ubr1.agregarTarea(t4);
+
+        ubr2.agregarTarea(tbr3);
+        ubr2.agregarTarea(tbr4);
+
+        ubr3.agregarTarea(tbr2);
+
+        ubr4.agregarTarea(t8);
+
+        ubr5.agregarTarea(tbr4);
+        ubr5.agregarTarea(tbr1);
+
         // Agregar usuarios a la base de datos
         b1.agregarUsuario(u1);
         b1.agregarUsuario(u2);
         b1.agregarUsuario(u3);
         b1.agregarUsuario(u4);
+        b1.agregarUsuario(ubr1);
+        b1.agregarUsuario(ubr2);
+        b1.agregarUsuario(ubr3);
+        b1.agregarUsuario(ubr4);
+        b1.agregarUsuario(ubr5);
 
         // Agregar y mostrar base de datos
         System.out.println("=== Base de datos ===");
@@ -165,7 +194,7 @@ public class Ejecutora {
             System.out.println(e.getMessage() + "\n");
         }
         try{
-            u1.agregarTarea(t2);
+            u1.agregarTarea(t1);
         }catch(Exception e){
             System.out.println(e.getMessage() + "\n");
         }       
