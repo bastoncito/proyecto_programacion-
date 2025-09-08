@@ -331,6 +331,12 @@
         "descripcion": "Mira a tu alrededor y dibuja algo que te llame la atención de forma sencilla",
         "exp": 100,
         "fecha_expiracion": "Sep 8, 2025, 9:09:02 PM"
+      },
+      {
+        "nombre": "Organizar el jard�n",
+        "descripcion": "a",
+        "exp": 21,
+        "fecha_expiracion": "Sep 9, 2025, 11:30:00 AM"
       }
     ]
   }

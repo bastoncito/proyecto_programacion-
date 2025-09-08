@@ -7,7 +7,7 @@ public class Ejecutora {
         
         // Creación de la base de datos
         BaseDatos b1 = new BaseDatos();
-
+        
         // Creación usuarios, fechas y tareas
         Usuario u1 = new Usuario("Matias Gomez", "mgomez22@alumnos.utalca.cl", "Contra5eña$EGURA");
         Usuario u2 = new Usuario("Juan Carlos Bodoque", "elAlmadeLaFiesta@31minutos.cl", "Nota.Verde31");
@@ -42,13 +42,13 @@ public class Ejecutora {
         Tarea t6 = new Tarea("Aprender inglés", "Practicar 30 minutos en Duolingo", 60, fechaTresHoras);
         Tarea t7 = new Tarea("Meditación matutina", "10 minutos de meditación al despertar", 30, fechaTresHoras);
         Tarea t8 = new Tarea("Aprender nuevo framework", "Investigar por 2 horas Spring Boot", 190, fechaDiaSiguiente);
-        Tarea tbr1 = new Tarea("Trabajar en proyecto", "Seh.", 150, fechaDoceHoras);
+        Tarea tbr1 = new Tarea("Trabajar en proyecto", "DKSAJLDKAJSDLKJALSJDLKJADLKJKDA", 150, fechaDoceHoras);
         Tarea tbr2 = new Tarea("Sacar hora para dentista", "Hace falta una hora para control", 25, fechaManana);
         Tarea tbr3 = new Tarea("Barrer", "Pasar la escoba por (al menos) todo el primer piso", 350, new Date(System.currentTimeMillis() + hora*2));
         Tarea tbr4 = new Tarea("Organizar refrigerador", "Ordenar alimentos y desechar lo vacío/vencido", 200, new Date(System.currentTimeMillis() + hora));
         Tarea td1 = new Tarea("Pasear a mascota.", "Sacar a pasear a tu mascota durante al menos 25 minutos.", 150, fechaManana);
         Tarea td2 = new Tarea("Aprender diagramas de Venn", "Investigar tecnicas para el desarrollo de diagramas de Venn", 100, fecha_actual);
-        Tarea td3 = new Tarea("Dibujar algo sencillo.", "Mira a tu alrededor y dibuja algo que te llame la atención de forma sencilla", 100, fechaManana);
+        Tarea td3 = new Tarea("Dibujar algo sencillo.", "Mira a tu alrededor y dibuja algo que te llame la atención", 100, fechaManana);
         Tarea td4 = new Tarea("Lavar la ropa.", "Junta toda la ropa sucio de tu pieza y lavala.", 150, fechaDoceHoras);
 
         // Asignación tareas a usuarios
