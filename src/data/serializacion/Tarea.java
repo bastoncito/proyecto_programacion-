@@ -1,5 +1,6 @@
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 public class Tarea{
     private String nombre, descripcion;
     private int exp;
@@ -53,6 +54,23 @@ public class Tarea{
             throw new IllegalArgumentException("La fecha debe ser igual o posterior a hoy.");
         }
         this.fecha_expiracion = fecha_expiracion;
+    }
+        public boolean tareaExistePorNombre(List<Tarea> tareas, Tarea tarea) {
+        for (Tarea t : tareas) {
+            if (t.getNombre().equalsIgnoreCase(tarea.getNombre())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean tareaExistePorDescripcion(List<Tarea> tareas, Tarea tarea) {
+        for (Tarea t : tareas) {
+            if (t.getDescripcion().equalsIgnoreCase(tarea.getDescripcion())) {
+                return true;
+            }
+        }
+        return false;
     }
     
     @Override
