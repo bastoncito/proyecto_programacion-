@@ -27,12 +27,16 @@ public class Tarea{
     public void setNombre(String nombre) {
         if(nombre == null || nombre.isEmpty()){
             throw new IllegalArgumentException("El nombre de la tarea no puede estar vacío.");
+        }if( nombre.length()<5 || nombre.length() > 30){
+            throw new IllegalArgumentException("El nombre de la tarea debe tener entre 5 y 30 carácteres");
         }
         this.nombre = nombre;
     }
     public void setDescripcion(String descripcion) {
         if(descripcion == null || descripcion.isEmpty()){
             throw new IllegalArgumentException("La descripción de la tarea no puede estar vacía.");
+        }if( nombre.length()<5 || nombre.length() > 40){
+            throw new IllegalArgumentException("La descripción debe tener entre 5 y 80 carácteres");
         }
         this.descripcion = descripcion;
     }

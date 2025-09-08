@@ -7,7 +7,7 @@ public class Ejecutora {
         
         // Creación de la base de datos
         BaseDatos b1 = new BaseDatos();
-        
+
         // Creación usuarios, fechas y tareas
         Usuario u1 = new Usuario("Matias Gomez", "mgomez22@alumnos.utalca.cl", "Contra5eña$EGURA");
         Usuario u2 = new Usuario("Juan Carlos Bodoque", "elAlmadeLaFiesta@31minutos.cl", "Nota.Verde31");

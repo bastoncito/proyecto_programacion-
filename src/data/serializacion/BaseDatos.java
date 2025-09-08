@@ -77,12 +77,12 @@ public class BaseDatos {
             return "Error: El usuario no puede ser nulo.";
         }
         // Validar nombre
-        if (usuarioExistePorNombre(usuario.getNombre_usuario())) {
+        if (usuarioExistePorNombre(usuario.getNombre_usuario()) != null) {
             return "Ya existe un usuario con el nombre: " + usuario.getNombre_usuario();
         }
 
         // Validar correo
-        if (usuarioExistePorCorreo(usuario.getCorreo_electronico())) {
+        if (usuarioExistePorCorreo(usuario.getCorreo_electronico()) != null) {
             return "Ya existe un usuario con el correo: " + usuario.getCorreo_electronico();
         }
         // Si pasa las validaciones, lo agregamos
@@ -103,25 +103,25 @@ public class BaseDatos {
      * Recibe un String correo
      * Devuelve si el correo existe en la base de datos
      */
-    public boolean usuarioExistePorCorreo(String correo) {
+    public Usuario usuarioExistePorCorreo(String correo) {
         for (Usuario usuarioExistente : usuarios) {
             if (usuarioExistente.getCorreo_electronico().equalsIgnoreCase(correo)) {
-                return true;
+                return usuarioExistente;
             }
         }
-        return false;
+        return null;
     }
     /**
      * Recibe un String nombre
      * Devuelve true si el nombre existe en la base de datos, false en caso opuesto
      */
-    public boolean usuarioExistePorNombre(String nombre){
+    public Usuario usuarioExistePorNombre(String nombre){
         for (Usuario usuarioExistente : usuarios) {
             if (usuarioExistente.getNombre_usuario().equalsIgnoreCase(nombre)) {
-                return true;
+                return usuarioExistente;
             }
         }
-        return false;
+        return null;
     }
 
     public void imprimirTodosUsuarios() {
