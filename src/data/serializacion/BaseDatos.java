@@ -1,3 +1,5 @@
+//POR HACER: Manejo centralizado de validaciones (eventualmente migrar los métodos de validaciones a una clase aparte o algo así)
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -68,34 +70,60 @@ public class BaseDatos {
     
     /**
      * Recibe un usuario como parametro
-     * lo agrega a la base de datos si su correo no esta registrado
+     * lo agrega a la base de datos si su nombre y correo no estan registrados
      */
-    public boolean agregarUsuario(Usuario usuario) {
-        if (usuario != null && !usuarioExistePorCorreo(usuario.getCorreo_electronico())) {
+    private String validarUsuario(Usuario usuario) {//Trabajar aqui--->>>Hacer restricciones para agregar usuarios----->>>CAMBIOS REALIZADOS
+        if (usuario == null) {
+            return "Error: El usuario no puede ser nulo.";
+        }
+        // Validar nombre
+        if (usuarioExistePorNombre(usuario.getNombre_usuario()) != null) {
+            return "Ya existe un usuario con el nombre: " + usuario.getNombre_usuario();
+        }
+
+        // Validar correo
+        if (usuarioExistePorCorreo(usuario.getCorreo_electronico()) != null) {
+            return "Ya existe un usuario con el correo: " + usuario.getCorreo_electronico();
+        }
+        // Si pasa las validaciones, lo agregamos
+        return null;
+    }
+
+    public void agregarUsuario(Usuario usuario){
+        String valido = validarUsuario(usuario);
+        if(valido == null){
             usuarios.add(usuario);
             System.out.println("Usuario '" + usuario.getNombre_usuario() + "' agregado exitosamente.");
-            return true;
+        }else{
+            System.err.println(valido);
         }
-        if (usuario == null) {
-            System.out.println("Error: no se puede agregar un usuario nulo.");
-        }
-        return false;
     }
 
     /**
      * Recibe un String correo
      * Devuelve si el correo existe en la base de datos
      */
-    public boolean usuarioExistePorCorreo(String correo) {
+    public Usuario usuarioExistePorCorreo(String correo) {
         for (Usuario usuarioExistente : usuarios) {
             if (usuarioExistente.getCorreo_electronico().equalsIgnoreCase(correo)) {
-                System.out.println("Ya existe un usuario con el correo electrónico: " + correo);
-                return true;
+                return usuarioExistente;
             }
         }
-        return false;
+        return null;
     }
-    
+    /**
+     * Recibe un String nombre
+     * Devuelve true si el nombre existe en la base de datos, false en caso opuesto
+     */
+    public Usuario usuarioExistePorNombre(String nombre){
+        for (Usuario usuarioExistente : usuarios) {
+            if (usuarioExistente.getNombre_usuario().equalsIgnoreCase(nombre)) {
+                return usuarioExistente;
+            }
+        }
+        return null;
+    }
+
     public void imprimirTodosUsuarios() {
         if (usuarios.isEmpty()) {
             System.out.println("No hay usuarios en la base de datos.");
