@@ -76,7 +76,7 @@ public class Tarea{
         }
         return false;
     }
-    
+   
     @Override
     public String toString() {
         return "La tarea '"+nombre+"' ("+descripcion+") que otorga "+exp+" puntos de experiencia, vence el "+ fecha_expiracion;
