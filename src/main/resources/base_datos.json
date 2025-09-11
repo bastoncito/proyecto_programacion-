@@ -8,19 +8,19 @@
         "nombre": "Estudiar EDO",
         "descripcion": "Repasar la materia vista en clases",
         "exp": 150,
-        "fecha_expiracion": "Sep 7, 2025, 11:54:56 PM"
+        "fecha_expiracion": "Sep 8, 2025, 9:09:02 PM"
       },
       {
         "nombre": "Aprender inglés",
         "descripcion": "Practicar 30 minutos en Duolingo",
         "exp": 60,
-        "fecha_expiracion": "Sep 7, 2025, 2:54:56 AM"
+        "fecha_expiracion": "Sep 8, 2025, 12:09:02 AM"
       },
       {
         "nombre": "Aprender nuevo framework",
         "descripcion": "Investigar por 2 horas Spring Boot",
         "exp": 190,
-        "fecha_expiracion": "Sep 8, 2025, 11:54:56 PM"
+        "fecha_expiracion": "Sep 9, 2025, 9:09:02 PM"
       }
     ]
   },
@@ -33,13 +33,13 @@
         "nombre": "Salir a trotar",
         "descripcion": "Salir a trotar por 20 minutos",
         "exp": 100,
-        "fecha_expiracion": "Sep 6, 2025, 10:54:56 PM"
+        "fecha_expiracion": "Sep 7, 2025, 9:09:02 PM"
       },
       {
         "nombre": "Meditación matutina",
         "descripcion": "10 minutos de meditación al despertar",
         "exp": 30,
-        "fecha_expiracion": "Sep 7, 2025, 2:54:56 AM"
+        "fecha_expiracion": "Sep 8, 2025, 12:09:02 AM"
       }
     ]
   },
@@ -52,19 +52,19 @@
         "nombre": "Hacer ejercicio",
         "descripcion": "30 minutos de gym",
         "exp": 80,
-        "fecha_expiracion": "Sep 7, 2025, 11:54:56 AM"
+        "fecha_expiracion": "Sep 8, 2025, 9:09:02 AM"
       },
       {
         "nombre": "Limpieza del hogar",
         "descripcion": "Limpiar toda la casa profundamente",
         "exp": 160,
-        "fecha_expiracion": "Sep 8, 2025, 11:54:56 PM"
+        "fecha_expiracion": "Sep 9, 2025, 9:09:02 PM"
       },
       {
         "nombre": "Aprender nuevo framework",
         "descripcion": "Investigar por 2 horas Spring Boot",
         "exp": 190,
-        "fecha_expiracion": "Sep 8, 2025, 11:54:56 PM"
+        "fecha_expiracion": "Sep 9, 2025, 9:09:02 PM"
       }
     ]
   },
@@ -77,13 +77,13 @@
         "nombre": "Leer libro",
         "descripcion": "Avanzar 2 capítulos de \u0027Luna de Pluton\u0027",
         "exp": 90,
-        "fecha_expiracion": "Sep 7, 2025, 11:54:56 PM"
+        "fecha_expiracion": "Sep 8, 2025, 9:09:02 PM"
       },
       {
         "nombre": "Salir a trotar",
         "descripcion": "Salir a trotar por 20 minutos",
         "exp": 100,
-        "fecha_expiracion": "Sep 6, 2025, 10:54:56 PM"
+        "fecha_expiracion": "Sep 7, 2025, 9:09:02 PM"
       }
     ]
   },
@@ -96,13 +96,13 @@
         "nombre": "Trabajar en proyecto",
         "descripcion": "Seh.",
         "exp": 150,
-        "fecha_expiracion": "Sep 7, 2025, 12:22:07 PM"
+        "fecha_expiracion": "Sep 8, 2025, 9:09:02 AM"
       },
       {
         "nombre": "Leer libro",
         "descripcion": "Avanzar 2 capítulos de \u0027Luna de Pluton\u0027",
         "exp": 90,
-        "fecha_expiracion": "Sep 8, 2025, 12:22:07 AM"
+        "fecha_expiracion": "Sep 8, 2025, 9:09:02 PM"
       }
     ]
   },
@@ -115,13 +115,13 @@
         "nombre": "Barrer",
         "descripcion": "Pasar la escoba por (al menos) todo el primer piso",
         "exp": 350,
-        "fecha_expiracion": "Sep 7, 2025, 2:22:07 AM"
+        "fecha_expiracion": "Sep 7, 2025, 11:09:02 PM"
       },
       {
         "nombre": "Organizar refrigerador",
         "descripcion": "Ordenar alimentos y desechar lo vacío/vencido",
         "exp": 200,
-        "fecha_expiracion": "Sep 7, 2025, 1:22:07 AM"
+        "fecha_expiracion": "Sep 7, 2025, 10:09:02 PM"
       }
     ]
   },
@@ -134,7 +134,7 @@
         "nombre": "Sacar hora para dentista",
         "descripcion": "Hace falta una hora para control",
         "exp": 25,
-        "fecha_expiracion": "Sep 8, 2025, 12:22:07 AM"
+        "fecha_expiracion": "Sep 8, 2025, 9:09:02 PM"
       }
     ]
   },
@@ -147,7 +147,7 @@
         "nombre": "Aprender nuevo framework",
         "descripcion": "Investigar por 2 horas Spring Boot",
         "exp": 190,
-        "fecha_expiracion": "Sep 9, 2025, 12:22:07 AM"
+        "fecha_expiracion": "Sep 9, 2025, 9:09:02 PM"
       }
     ]
   },
@@ -160,13 +160,13 @@
         "nombre": "Organizar refrigerador",
         "descripcion": "Ordenar alimentos y desechar lo vacío/vencido",
         "exp": 200,
-        "fecha_expiracion": "Sep 7, 2025, 1:22:07 AM"
+        "fecha_expiracion": "Sep 7, 2025, 10:09:02 PM"
       },
       {
         "nombre": "Trabajar en proyecto",
         "descripcion": "Seh.",
         "exp": 150,
-        "fecha_expiracion": "Sep 7, 2025, 12:22:07 PM"
+        "fecha_expiracion": "Sep 8, 2025, 9:09:02 AM"
       }
     ]
   },
@@ -179,13 +179,13 @@
         "nombre": "Leer libro",
         "descripcion": "Avanzar 2 capítulos de \u0027Luna de Pluton\u0027",
         "exp": 90,
-        "fecha_expiracion": "Sep 8, 2025, 8:58:19 PM"
+        "fecha_expiracion": "Sep 8, 2025, 9:09:02 PM"
       },
       {
         "nombre": "Meditación matutina",
         "descripcion": "10 minutos de meditación al despertar",
         "exp": 30,
-        "fecha_expiracion": "Sep 7, 2025, 11:58:19 PM"
+        "fecha_expiracion": "Sep 8, 2025, 12:09:02 AM"
       }
     ]
   },
@@ -198,19 +198,19 @@
         "nombre": "Salir a trotar",
         "descripcion": "Salir a trotar por 20 minutos",
         "exp": 100,
-        "fecha_expiracion": "Sep 7, 2025, 8:58:19 PM"
+        "fecha_expiracion": "Sep 7, 2025, 9:09:02 PM"
       },
       {
         "nombre": "Aprender inglés",
         "descripcion": "Practicar 30 minutos en Duolingo",
         "exp": 60,
-        "fecha_expiracion": "Sep 7, 2025, 11:58:19 PM"
+        "fecha_expiracion": "Sep 8, 2025, 12:09:02 AM"
       },
       {
         "nombre": "Barrer",
         "descripcion": "Pasar la escoba por (al menos) todo el primer piso",
         "exp": 350,
-        "fecha_expiracion": "Sep 7, 2025, 10:58:19 PM"
+        "fecha_expiracion": "Sep 7, 2025, 11:09:02 PM"
       }
     ]
   },
@@ -223,19 +223,19 @@
         "nombre": "Trabajar en proyecto",
         "descripcion": "Seh.",
         "exp": 150,
-        "fecha_expiracion": "Sep 8, 2025, 8:58:19 AM"
+        "fecha_expiracion": "Sep 8, 2025, 9:09:02 AM"
       },
       {
         "nombre": "Estudiar EDO",
         "descripcion": "Repasar la materia vista en clases",
         "exp": 150,
-        "fecha_expiracion": "Sep 8, 2025, 8:58:19 PM"
+        "fecha_expiracion": "Sep 8, 2025, 9:09:02 PM"
       },
       {
         "nombre": "Aprender nuevo framework",
         "descripcion": "Investigar por 2 horas Spring Boot",
         "exp": 190,
-        "fecha_expiracion": "Sep 9, 2025, 8:58:19 PM"
+        "fecha_expiracion": "Sep 9, 2025, 9:09:02 PM"
       }
     ]
   },
@@ -248,13 +248,95 @@
         "nombre": "Hacer ejercicio",
         "descripcion": "30 minutos de gym",
         "exp": 80,
-        "fecha_expiracion": "Sep 8, 2025, 8:58:19 AM"
+        "fecha_expiracion": "Sep 8, 2025, 9:09:02 AM"
       },
       {
         "nombre": "Limpieza del hogar",
         "descripcion": "Limpiar toda la casa profundamente",
         "exp": 160,
-        "fecha_expiracion": "Sep 9, 2025, 8:58:19 PM"
+        "fecha_expiracion": "Sep 9, 2025, 9:09:02 PM"
+      }
+    ]
+  },
+  {
+    "nombre_usuario": "Cristóbal Herrera",
+    "correo_electronico": "cherrera21@alumnos.utalca.cl",
+    "contraseña": "Anashe123.",
+    "tareas": [
+      {
+        "nombre": "Pasear a mascota.",
+        "descripcion": "Sacar a pasear a tu mascota durante al menos 25 minutos.",
+        "exp": 150,
+        "fecha_expiracion": "Sep 8, 2025, 9:09:02 PM"
+      },
+      {
+        "nombre": "Aprender diagramas de Venn",
+        "descripcion": "Investigar tecnicas para el desarrollo de diagramas de Venn",
+        "exp": 100,
+        "fecha_expiracion": "Sep 7, 2025, 9:09:02 PM"
+      }
+    ]
+  },
+  {
+    "nombre_usuario": "Diego Pezoa",
+    "correo_electronico": "dpezoa21@alumnos.utalca.cl",
+    "contraseña": "Chancho!21",
+    "tareas": [
+      {
+        "nombre": "Dibujar algo sencillo.",
+        "descripcion": "Mira a tu alrededor y dibuja algo que te llame la atención de forma sencilla",
+        "exp": 100,
+        "fecha_expiracion": "Sep 8, 2025, 9:09:02 PM"
+      },
+      {
+        "nombre": "Lavar la ropa.",
+        "descripcion": "Junta toda la ropa sucio de tu pieza y lavala.",
+        "exp": 150,
+        "fecha_expiracion": "Sep 8, 2025, 9:09:02 AM"
+      }
+    ]
+  },
+  {
+    "nombre_usuario": "Matías Pezoa",
+    "correo_electronico": "mati.pezoa11@gmail.com",
+    "contraseña": "Roblox.lol1",
+    "tareas": [
+      {
+        "nombre": "Pasear a mascota.",
+        "descripcion": "Sacar a pasear a tu mascota durante al menos 25 minutos.",
+        "exp": 150,
+        "fecha_expiracion": "Sep 8, 2025, 9:09:02 PM"
+      },
+      {
+        "nombre": "Lavar la ropa.",
+        "descripcion": "Junta toda la ropa sucio de tu pieza y lavala.",
+        "exp": 150,
+        "fecha_expiracion": "Sep 8, 2025, 9:09:02 AM"
+      }
+    ]
+  },
+  {
+    "nombre_usuario": "Cecilia Oses",
+    "correo_electronico": "edith04@gmail.com",
+    "contraseña": "Ceciceci!chl2",
+    "tareas": [
+      {
+        "nombre": "Aprender diagramas de Venn",
+        "descripcion": "Investigar tecnicas para el desarrollo de diagramas de Venn",
+        "exp": 100,
+        "fecha_expiracion": "Sep 7, 2025, 9:09:02 PM"
+      },
+      {
+        "nombre": "Dibujar algo sencillo.",
+        "descripcion": "Mira a tu alrededor y dibuja algo que te llame la atención de forma sencilla",
+        "exp": 100,
+        "fecha_expiracion": "Sep 8, 2025, 9:09:02 PM"
+      },
+      {
+        "nombre": "Organizar el jard�n",
+        "descripcion": "a",
+        "exp": 21,
+        "fecha_expiracion": "Sep 9, 2025, 11:30:00 AM"
       }
     ]
   }
