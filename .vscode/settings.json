@@ -1,9 +1,6 @@
 {
-    "java.project.referencedLibraries": [
-        "lib\\gson-2.13.1.jar"
-    ],
     "java.project.sourcePaths": [
-        "src\\data\\serializacion"
-    ]
+        "src/main/java"
+    ],
+    "java.configuration.updateBuildConfiguration": "automatic"
 }
-
