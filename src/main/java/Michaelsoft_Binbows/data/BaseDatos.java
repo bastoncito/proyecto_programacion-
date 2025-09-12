@@ -1,4 +1,5 @@
 //POR HACER: Manejo centralizado de validaciones (eventualmente migrar los métodos de validaciones a una clase aparte o algo así)
+package Michaelsoft_Binbows.data;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -24,31 +25,40 @@ public class BaseDatos {
      * Carga la lista de usuarios desde el archivo JSON.
      * Si el archivo no existe, devuelve una lista vacía.
      */
-    public List<Usuario> cargarUsuarios() {
-        try (Reader reader = new FileReader(ARCHIVO_JSON)) {
-            // TypeToken para decirle a Gson que queremos deserializar una lista de Usuarios (ArrayList<Usurario>)
-            Type tipoListaUsuarios = new TypeToken<ArrayList<Usuario>>(){}.getType();
-            
+public List<Usuario> cargarUsuarios() {
+    // InputStream es la forma correcta de leer un archivo desde los recursos.
+    // ClassLoader es el "cargador" de la aplicación, le pedimos que encuentre el archivo en su "mochila".
+    try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(ARCHIVO_JSON)) {
+
+        // Si getResourceAsStream devuelve null, el archivo NO existe en los recursos.
+        if (inputStream == null) {
+            System.out.println("LOG: Archivo '" + ARCHIVO_JSON + "' no encontrado en src/main/resources.");
+            return new ArrayList<>(); // Devolvemos una lista vacía.
+        }
+
+        // Convertimos el flujo de bytes (InputStream) en un flujo de caracteres (Reader) que Gson puede usar.
+        try (Reader reader = new InputStreamReader(inputStream)) {
+            Type tipoListaUsuarios = new TypeToken<ArrayList<Usuario>>() {}.getType();
             List<Usuario> usuariosCargados = gson.fromJson(reader, tipoListaUsuarios);
 
+            // Si el archivo JSON está vacío, fromJson puede devolver null.
             if (usuariosCargados != null) {
-                System.out.println(usuariosCargados.size() + " usuarios cargados desde " + ARCHIVO_JSON);
+                System.out.println("LOG: " + usuariosCargados.size() + " usuarios cargados exitosamente desde el archivo de recursos.");
                 return usuariosCargados;
             }
-        } catch (FileNotFoundException e) {
-            // No existe json 
-            System.out.println("Archivo " + ARCHIVO_JSON + " no encontrado. Se creará uno nuevo al guardar.");
-        } catch (IOException e) {
-            // No se pudo leer o escribir
-            System.err.println("Error de E/S al leer el archivo: " + e.getMessage());
-        } catch (Exception e) {
-            // Json corrupto
-            System.err.println("Error al parsear el archivo JSON: " + e.getMessage());
         }
-        
-        // Si pasa alguna de las excepciones se crea un Array List vacio
-        return new ArrayList<>();
+
+    } catch (IOException e) {
+        // Este error ocurriría si hay un problema leyendo el flujo de datos.
+        System.err.println("ERROR: No se pudo leer el archivo de recursos '" + ARCHIVO_JSON + "'. Causa: " + e.getMessage());
+    } catch (Exception e) {
+        // Captura otros errores, como un JSON malformado.
+        System.err.println("ERROR: Hubo un problema al parsear el archivo JSON. Causa: " + e.getMessage());
     }
+
+    // Si algo sale mal o el archivo está vacío, devolvemos una lista vacía.
+    return new ArrayList<>();
+}
 
     /**
      * Guarda la lista actual de usuarios en el archivo JSON.
@@ -77,12 +87,12 @@ public class BaseDatos {
             return "Error: El usuario no puede ser nulo.";
         }
         // Validar nombre
-        if (usuarioExistePorNombre(usuario.getNombre_usuario()) != null) {
+        if (usuarioExistePorNombre(usuario.getNombre_usuario())) {
             return "Ya existe un usuario con el nombre: " + usuario.getNombre_usuario();
         }
 
         // Validar correo
-        if (usuarioExistePorCorreo(usuario.getCorreo_electronico()) != null) {
+        if (usuarioExistePorCorreo(usuario.getCorreo_electronico())) {
             return "Ya existe un usuario con el correo: " + usuario.getCorreo_electronico();
         }
         // Si pasa las validaciones, lo agregamos
@@ -103,25 +113,25 @@ public class BaseDatos {
      * Recibe un String correo
      * Devuelve si el correo existe en la base de datos
      */
-    public Usuario usuarioExistePorCorreo(String correo) {
+    public boolean usuarioExistePorCorreo(String correo) {
         for (Usuario usuarioExistente : usuarios) {
             if (usuarioExistente.getCorreo_electronico().equalsIgnoreCase(correo)) {
-                return usuarioExistente;
+                return true;
             }
         }
-        return null;
+        return false;
     }
     /**
      * Recibe un String nombre
      * Devuelve true si el nombre existe en la base de datos, false en caso opuesto
      */
-    public Usuario usuarioExistePorNombre(String nombre){
+    public boolean usuarioExistePorNombre(String nombre){
         for (Usuario usuarioExistente : usuarios) {
             if (usuarioExistente.getNombre_usuario().equalsIgnoreCase(nombre)) {
-                return usuarioExistente;
+                return true;
             }
         }
-        return null;
+        return false;
     }
 
     public void imprimirTodosUsuarios() {

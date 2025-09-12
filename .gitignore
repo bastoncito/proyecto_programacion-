@@ -26,3 +26,16 @@ replay_pid*
 .env
 .env.*
 
+# Gradle
+.gradle/
+build/
+bin/
+out/
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Libraries and JAR files
+*.jar              
+lib/ 

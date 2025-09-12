@@ -1,3 +1,6 @@
+/* 
+package Michaelsoft_Binbows.data;
+
 import java.util.Date;
 
 public class Ejecutora {
@@ -22,11 +25,6 @@ public class Ejecutora {
         Usuario uh2 = new Usuario("Cristobal Figueroa","criisdxd@gmail.com","b4lU.7FC");
         Usuario uh3 = new Usuario("Luis Retamal","lretamal@alumnos.utalca.cl","hArdy@04");
         Usuario uh4 = new Usuario("Mauro Friz","kikoman767@gmail.com","gh0St!44");
-        Usuario ud1 = new Usuario("Cristóbal Herrera", "cherrera21@alumnos.utalca.cl","Anashe123." );
-        Usuario ud2 = new Usuario("Diego Pezoa", "dpezoa21@alumnos.utalca.cl","Chancho!21" );
-        Usuario ud3 = new Usuario("Matías Pezoa", "mati.pezoa11@gmail.com","Roblox.lol1" );
-        Usuario ud4 = new Usuario("Cecilia Oses", "edith04@gmail.com","Ceciceci!chl2" );
-        
 
         Date fecha_actual = new Date();
         Date fechaTresHoras = new Date(System.currentTimeMillis() + hora*3); // +3 horas
@@ -42,14 +40,10 @@ public class Ejecutora {
         Tarea t6 = new Tarea("Aprender inglés", "Practicar 30 minutos en Duolingo", 60, fechaTresHoras);
         Tarea t7 = new Tarea("Meditación matutina", "10 minutos de meditación al despertar", 30, fechaTresHoras);
         Tarea t8 = new Tarea("Aprender nuevo framework", "Investigar por 2 horas Spring Boot", 190, fechaDiaSiguiente);
-        Tarea tbr1 = new Tarea("Trabajar en proyecto", "DKSAJLDKAJSDLKJALSJDLKJADLKJKDA", 150, fechaDoceHoras);
+        Tarea tbr1 = new Tarea("Trabajar en proyecto", "Seh.", 150, fechaDoceHoras);
         Tarea tbr2 = new Tarea("Sacar hora para dentista", "Hace falta una hora para control", 25, fechaManana);
         Tarea tbr3 = new Tarea("Barrer", "Pasar la escoba por (al menos) todo el primer piso", 350, new Date(System.currentTimeMillis() + hora*2));
         Tarea tbr4 = new Tarea("Organizar refrigerador", "Ordenar alimentos y desechar lo vacío/vencido", 200, new Date(System.currentTimeMillis() + hora));
-        Tarea td1 = new Tarea("Pasear a mascota.", "Sacar a pasear a tu mascota durante al menos 25 minutos.", 150, fechaManana);
-        Tarea td2 = new Tarea("Aprender diagramas de Venn", "Investigar tecnicas para el desarrollo de diagramas de Venn", 100, fecha_actual);
-        Tarea td3 = new Tarea("Dibujar algo sencillo.", "Mira a tu alrededor y dibuja algo que te llame la atención", 100, fechaManana);
-        Tarea td4 = new Tarea("Lavar la ropa.", "Junta toda la ropa sucio de tu pieza y lavala.", 150, fechaDoceHoras);
 
         // Asignación tareas a usuarios
         u1.agregarTarea(t1);
@@ -93,18 +87,6 @@ public class Ejecutora {
         uh4.agregarTarea(t3);
         uh4.agregarTarea(t5);
 
-        ud1.agregarTarea(td1);
-        ud1.agregarTarea(td2);
-
-        ud2.agregarTarea(td3);
-        ud2.agregarTarea(td4);
-
-        ud3.agregarTarea(td1);
-        ud3.agregarTarea(td4);
-
-        ud4.agregarTarea(td2);
-        ud4.agregarTarea(td3);
-
         // Agregar usuarios a la base de datos
         b1.agregarUsuario(u1);
         b1.agregarUsuario(u2);
@@ -119,10 +101,6 @@ public class Ejecutora {
         b1.agregarUsuario(uh2);
         b1.agregarUsuario(uh3);
         b1.agregarUsuario(uh4);
-        b1.agregarUsuario(ud1);
-        b1.agregarUsuario(ud2);
-        b1.agregarUsuario(ud3);
-        b1.agregarUsuario(ud4);
 
         // Agregar y mostrar base de datos
         System.out.println("=== Base de datos ===");
@@ -247,3 +225,4 @@ public class Ejecutora {
         }       
     }
 }
+*/
