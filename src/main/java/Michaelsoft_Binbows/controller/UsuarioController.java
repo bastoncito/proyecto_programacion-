@@ -5,6 +5,8 @@ package Michaelsoft_Binbows.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody; // Necesario para el método de prueba
 
 import Michaelsoft_Binbows.data.BaseDatos;
@@ -48,6 +50,41 @@ public class UsuarioController {
         // 3. Devolver el nombre de la plantilla.
         //    Spring buscará un archivo llamado "lista-usuarios.html" dentro de la carpeta "src/main/resources/templates/".
         return "lista-usuarios";
+    }
+
+    @GetMapping("/login")
+    public String mostrarLogin(Model model) {
+        // Si quieres mostrar mensajes de error que ya agregaste en el POST,
+        // Thymeleaf los recibirá mediante el model ("error")
+        return "login";
+    }
+
+    @PostMapping("/login")
+    public String procesarLogin(
+            @RequestParam("username") String username,
+            @RequestParam("password") String password,
+            Model model) {
+
+        System.out.println("LOG: procesarLogin recibido: " + username);
+
+        // Validación básica de campos
+        if (username == null || username.trim().isEmpty() || password == null || password.trim().isEmpty()) {
+            model.addAttribute("error", "Usuario y contraseña son requeridos.");
+            return "login";
+        }
+
+        // Validación frente a la "base de datos" (recorre la lista y compara)
+        for (Usuario u : baseDatos.getUsuarios()) {
+            if (username.equals(u.getNombre_usuario()) && password.equals(u.getContraseña())) {
+                // Credenciales válidas -> redirige a la lista de usuarios (o a la página deseada)
+                System.out.println("LOG: Credenciales válidas, redirigiendo a /usuarios");
+                return "redirect:/usuarios";
+            }
+        }
+
+        // Si no se encontró coincidencia
+        model.addAttribute("error", "Credenciales inválidas.");
+        return "login";
     }
 
     /**
