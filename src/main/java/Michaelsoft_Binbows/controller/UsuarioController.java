@@ -52,17 +52,76 @@ public class UsuarioController {
         return "lista-usuarios";
     }
 
+    @GetMapping("/home")
+    public String mostrarMain(Model model) {
+        System.out.println("LOG: El método 'mostrarMain' ha sido llamado por una petición a /home.");
+        return "home";
+    }
+
+    @GetMapping("/register")
+    public String mostrarRegister(Model model) {
+        System.out.println("LOG: El método 'mostrarRegister' ha sido llamado por una petición a /register.");
+        return "register";
+    }
+    @PostMapping("/register")
+    public String procesarRegister(
+            @RequestParam("usuario") String username,
+            @RequestParam("email") String email,
+            @RequestParam("contraseña1") String password,
+            @RequestParam("contraseña2") String passwordConfirm,
+            Model model) {
+
+        System.out.println("LOG: procesarRegister recibido: " + username + ", " + email);
+        // Validación básica de campos
+        if(username == null || username.trim().isEmpty() ||
+           email == null || email.trim().isEmpty() ||
+           password == null || password.trim().isEmpty() ||
+           passwordConfirm == null || passwordConfirm.trim().isEmpty()) {
+            model.addAttribute("error", "Todos los campos son requeridos.");
+            return "register";
+        }
+        //Validar si el usuario ya está registrado
+        for(Usuario u : baseDatos.getUsuarios()) {
+            if(username.equals(u.getNombre_usuario())) {
+                model.addAttribute("error", "El nombre de usuario ya existe.");
+                return "register";
+            }
+            if(email.equals(u.getCorreo_electronico())) {
+                model.addAttribute("error", "El email ya está registrado.");
+                return "register";
+            }
+        }
+        //Validar si la contraseña y su confirmación coinciden
+        if(!password.equals(passwordConfirm)) {
+            model.addAttribute("error", "Las contraseñas no coinciden.");
+            return "register";
+        }
+        //Validar la sintáxis del correo y contraseña
+        //Si todo está bien, crear el nuevo usuario y agregarlo a la base de datos
+        try {
+            Usuario nuevoUsuario = new Usuario(username, email, password);
+            baseDatos.agregarUsuario(nuevoUsuario);
+            System.out.println("LOG: Nuevo usuario registrado: " + username);
+            return "redirect:/home";
+        } catch (IllegalArgumentException e) {
+            System.out.println("LOG: Error al registrar usuario: " + e.getMessage());
+            model.addAttribute("error", e.getMessage());
+        }
+        return "register";
+    }
+
     @GetMapping("/login")
     public String mostrarLogin(Model model) {
         // Si quieres mostrar mensajes de error que ya agregaste en el POST,
         // Thymeleaf los recibirá mediante el model ("error")
-        return "login";
+        System.out.println("LOG: El método 'mostrarLogin' ha sido llamado por una petición a /login.");
+        return "loginreal";
     }
 
     @PostMapping("/login")
     public String procesarLogin(
-            @RequestParam("username") String username,
-            @RequestParam("password") String password,
+            @RequestParam("usuario") String username,
+            @RequestParam("contraseña") String password,
             Model model) {
 
         System.out.println("LOG: procesarLogin recibido: " + username);
@@ -70,7 +129,7 @@ public class UsuarioController {
         // Validación básica de campos
         if (username == null || username.trim().isEmpty() || password == null || password.trim().isEmpty()) {
             model.addAttribute("error", "Usuario y contraseña son requeridos.");
-            return "login";
+            return "loginreal";
         }
 
         // Validación frente a la "base de datos" (recorre la lista y compara)
@@ -84,7 +143,7 @@ public class UsuarioController {
 
         // Si no se encontró coincidencia
         model.addAttribute("error", "Credenciales inválidas.");
-        return "login";
+        return "loginreal";
     }
 
     /**
@@ -97,5 +156,12 @@ public class UsuarioController {
     public String decirHola() {
         System.out.println("LOG: El método de prueba 'decirHola' ha sido llamado por una petición a /hola.");
         return "<h1>¡Éxito! La respuesta viene del controlador de Java.</h1>";
+    }
+
+    @GetMapping("/error")
+    @ResponseBody
+    public String mostrarError() {
+        System.out.println("LOG: El método 'mostrarError' ha sido llamado por una petición a /error.");
+        return "<h1>Ups.</h1>";
     }
 }

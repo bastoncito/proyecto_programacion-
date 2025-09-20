@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="register.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sección del Login -->
+        <div class="register-section">
+            <h1>Registro de Usuario</h1>
+
+            <form action="">
+                <label for="usuario">Usuario</label>
+                <div class="input-container">
+                    <input type="text" placeholder="" name="usuario" id="usuario" required>
+                    <i class='bx bxs-user'></i>
+                </div>
+
+                <label for="email">Correo Electronico</label>
+                <div class="input-container">
+                    <input type="text" name="email" id="email" required>
+                    <i class='bx bxs-envelope'></i>
+                </div>
+
+                <label for="contraseña1">Contraseña</label>
+                <div class="input-container">
+                    <input type="password" name="contraseña1" id="contraseña1" required>
+                    <i class='bx bxs-lock-alt' ></i>
+                </div>
+
+                <label for="contraseña2">Confirmar Contraseña</label>
+                <div class="input-container">
+                    <input type="password" name="contraseña1" id="contraseña2" required>
+                    <i class='bx bxs-lock-alt' ></i>
+                </div>
+                
+                <button type="submit">Crear Cuenta</button>
+                <!--Esto es un mensaje de error proveniente cortesía de Thymeleaf :bbb-->
+
+                <p th:if="${error}" th:text="${error}" style="color: red;"></p>
+                
+                <a href="#">Ya tienes una cuenta? Inicia sesión</a>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
