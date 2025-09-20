@@ -9,7 +9,7 @@ body {
     display: flex;
     height: 100vh;
     overflow: hidden;
-    background-image: url('/sources/fondo.png');
+    background-image: url('sources/fondo.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -29,7 +29,7 @@ p, li {
 /* Container App - 65% */
 .container-app {
     width: 65%;
-    background-image: url('/sources/fondo.png');
+    background-image: url('sources/fondo.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -48,7 +48,7 @@ p, li {
     display: flex;
     flex-direction: column;
     padding: 20px;
-    border-radius: 25px 0px 0px 25px;
+    border-radius: 25px 0 0 25px;
 }
 
 /* Top Globales */
