@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoodTime</title>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="loginreal.css">
+    <link rel="stylesheet" th:href="@{/loginreal.css}">
 </head>
 <body>
     <div class="container">
@@ -20,7 +20,7 @@
                 <label for="contraseña">Contraseña</label>
                 <input type="password" name="contraseña" id="contraseña" required>
                 <i class='bx bxs-lock-alt' ></i>
-                
+
                 <p th:if="${error}" th:text="${error}" style="color: red;"></p>
 
                 <a href="#">¿Olvido su contraseña?</a>
@@ -33,7 +33,7 @@
             <p id="p1">Cambia horas perdidas por metas cumplidas. Aprende, crea, crece, y desconéctate de lo que no suma.</p>
             <p id="p2">Crea tu cuenta y súmate</p>
             <button type="submit" class="btn-login">Registrarse</button>
-            <img src="logo_negro.png" alt="logo">
+            <img th:src="@{/logo_negro.png}" alt="logo">
         </div>
         
     </div>

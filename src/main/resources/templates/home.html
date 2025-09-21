@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Good Time - Home</title>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" th:href="@{/home.css}">
 </head>
 <body>
     .
@@ -68,7 +68,7 @@
 
         <!--Logo-->
         <div class="logo-section">
-            <img src="logo_negro.png" alt="logo_negro" class="logo-text">
+            <img th:src="@{/logo_negro.png}" alt="logo_negro" class="logo-text">
         </div>
     </div>
 </body>

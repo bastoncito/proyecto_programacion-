@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="estilos.css">
+    <link rel="stylesheet" th:href="@{/estilos.css}">
     <title>Registro</title>
 </head>
 <body>
     <div class="cabecera">
-        <img src="tipo1HD.png" alt="Logo">
+        <img th:src="@{/tipo1HD.png}" alt="Logo">
     </div>
 
     <form th:action="@{/login}" method="post">

@@ -10,6 +10,11 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
+//Con esta línea, volvemos a esta clase un Spring Bean, que será gestionado por el framework e inyectado en los controladores.
+//De esta manera nos evitamos crear nuevas instancias en cada controlador, y los conflictos que surjan a partir de esto.
+@Service
 public class BaseDatos {
     private List<Usuario> usuarios;
     private static final String ARCHIVO_JSON = "base_datos.json";
