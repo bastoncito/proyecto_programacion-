@@ -31,18 +31,13 @@ public class BaseDatos {
      * Si el archivo no existe, devuelve una lista vacía.
      */
 public List<Usuario> cargarUsuarios() {
-    // InputStream es la forma correcta de leer un archivo desde los recursos.
-    // ClassLoader es el "cargador" de la aplicación, le pedimos que encuentre el archivo en su "mochila".
-    try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(ARCHIVO_JSON)) {
-
-        // Si getResourceAsStream devuelve null, el archivo NO existe en los recursos.
-        if (inputStream == null) {
-            System.out.println("LOG: Archivo '" + ARCHIVO_JSON + "' no encontrado en src/main/resources.");
+    // Se utiliza FileReader en vez de getResourceAsStream para evitar problemas con rutas relativas.
+    File archivo = new File(ARCHIVO_JSON);
+    if (!archivo.exists()) {
+            System.out.println("LOG: Archivo '" + ARCHIVO_JSON + "' no encontrado.");
             return new ArrayList<>(); // Devolvemos una lista vacía.
         }
-
-        // Convertimos el flujo de bytes (InputStream) en un flujo de caracteres (Reader) que Gson puede usar.
-        try (Reader reader = new InputStreamReader(inputStream)) {
+    try (Reader reader = new FileReader(ARCHIVO_JSON)) {
             Type tipoListaUsuarios = new TypeToken<ArrayList<Usuario>>() {}.getType();
             List<Usuario> usuariosCargados = gson.fromJson(reader, tipoListaUsuarios);
 
@@ -51,8 +46,6 @@ public List<Usuario> cargarUsuarios() {
                 System.out.println("LOG: " + usuariosCargados.size() + " usuarios cargados exitosamente desde el archivo de recursos.");
                 return usuariosCargados;
             }
-        }
-
     } catch (IOException e) {
         // Este error ocurriría si hay un problema leyendo el flujo de datos.
         System.err.println("ERROR: No se pudo leer el archivo de recursos '" + ARCHIVO_JSON + "'. Causa: " + e.getMessage());
@@ -60,7 +53,6 @@ public List<Usuario> cargarUsuarios() {
         // Captura otros errores, como un JSON malformado.
         System.err.println("ERROR: Hubo un problema al parsear el archivo JSON. Causa: " + e.getMessage());
     }
-
     // Si algo sale mal o el archivo está vacío, devolvemos una lista vacía.
     return new ArrayList<>();
 }
@@ -109,6 +101,7 @@ public List<Usuario> cargarUsuarios() {
         if(valido == null){
             usuarios.add(usuario);
             System.out.println("Usuario '" + usuario.getNombre_usuario() + "' agregado exitosamente.");
+            guardarBaseDatos();
         }else{
             System.err.println(valido);
         }

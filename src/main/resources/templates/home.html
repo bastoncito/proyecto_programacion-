@@ -28,10 +28,12 @@
                 <i class='bx bxs-message-square-add'></i>
             </div>
             <div class="task-list">
-                <button class="task-item">Tarea 1</button>
-                <button class="task-item">Tarea 2</button>
-                <button class="task-item">Tarea 3</button>
-                <button class="task-item">Tarea 4</button>
+                <button class="task-item"
+                        th:each="tarea, stat : ${tareas}"
+                        th:if="${stat.index < 4}"
+                        th:text="${tarea.nombre}">
+                </button>
+                <p th:if="${#lists.isEmpty(tareas)}">No tienes tareas anotadas.</p>
             </div>
         </div>
     </div>
@@ -43,7 +45,7 @@
             <div class="user-info-content">
                 <div class="welcome-group">
                     <h1 class="welcome-text">Bienvenido</h1>
-                    <h1 class="username">User123</h1>
+                    <h1 th:text="${nombre_usuario}" class="username"></h1>
                 </div>
                 <div class="separator-line"></div>
                 <div class="datetime-group">

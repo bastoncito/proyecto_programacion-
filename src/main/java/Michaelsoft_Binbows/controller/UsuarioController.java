@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody; // Necesario para el método de prueba
 
 import Michaelsoft_Binbows.data.BaseDatos;
+import Michaelsoft_Binbows.data.Tarea;
 import Michaelsoft_Binbows.data.Usuario;
 import jakarta.servlet.http.HttpSession;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -64,7 +66,13 @@ public class UsuarioController {
     @GetMapping("/home")
     public String mostrarMain(Model model, HttpSession session) {
         System.out.println("LOG: El método 'mostrarMain' ha sido llamado por una petición a /home.");
-        
+
+        Usuario usuarioActual = (Usuario) session.getAttribute("usuarioActual");
+        model.addAttribute("nombre_usuario", usuarioActual != null ? usuarioActual.getNombre_usuario() : "-");
+
+        List<Tarea> tareas = usuarioActual != null ?usuarioActual.getTareas() : Collections.emptyList();
+        model.addAttribute("tareas", tareas);
+
         return "home";
     }
 

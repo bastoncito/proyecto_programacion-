@@ -339,5 +339,17 @@
         "fecha_expiracion": "Sep 9, 2025, 11:30:00 AM"
       }
     ]
+  },
+  {
+    "nombre_usuario": "Bastoncito",
+    "correo_electronico": "email1@muisierto.cl",
+    "contraseña": "Asdf12345@",
+    "tareas": []
+  },
+  {
+    "nombre_usuario": "newUser123 ",
+    "correo_electronico": "newuser@buencorreo.com",
+    "contraseña": "F1reoftheM!nd",
+    "tareas": []
   }
 ]

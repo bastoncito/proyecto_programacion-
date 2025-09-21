@@ -31,6 +31,7 @@
                     <td th:text="${usuario.correo_electronico}">correo@ejemplo.com</td>
                     <td th:text="${usuario.getTareas().size()}">0</td>
                 </tr>
+                <p th:if="${#lists.isEmpty(usuariosParaLaVista)}">No hay usuarios registrados.</p>
             </tbody>
         </table>
     </div>
