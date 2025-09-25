@@ -31,9 +31,9 @@ body {
 
 /* ===== SECCIÓN DEL REGISTER ===== */
 .register-section {
+    padding: 0 0 50 0px;
     flex: 1;
     background-color: #fff;
-    padding: 50px 40px;
     display: flex;
     flex-direction: column;
     justify-content: center;

@@ -101,14 +101,15 @@ public class AutorizacionController {
 
         // Validación frente a la "base de datos" (recorre la lista y compara)
         for (Usuario u : baseDatos.getUsuarios()) {
-            if (username.equals(u.getNombre_usuario()) && password.equals(u.getContraseña())) {
-                // Credenciales válidas -> redirige a la lista de usuarios (o a la página deseada)
-                System.out.println("LOG: Credenciales válidas, redirigiendo a /usuarios");
+            boolean credencialesValidas = password.equals(u.getContraseña()) && (username.equals(u.getNombre_usuario()) || username.equals(u.getCorreo_electronico()));
+
+            if (credencialesValidas) {
+                System.out.println("LOG: Credenciales válidas para usuario: " + u.getNombre_usuario());
                 session.setAttribute("usuarioActual", u);
-                return "redirect:/home";
+            return "redirect:/home";
             }
         }
-
+        
         // Si no se encontró coincidencia
         model.addAttribute("error", "Credenciales inválidas.");
         return "loginreal";
