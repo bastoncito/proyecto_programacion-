@@ -3,15 +3,22 @@ package Michaelsoft_Binbows.data;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+
 public class Usuario{
     private String nombre_usuario,correo_electronico,contraseña;
+    private int experiencia;
+    private int nivelExperiencia;
     private List<Tarea> tareas;
+    private List<Tarea> tareasCompletadas;
 
     public Usuario(String nombre_usuario, String correo_electronico, String contraseña){
         setNombre_usuario(nombre_usuario);
         setContraseña(contraseña);
         setCorreo_electronico(correo_electronico);
         this.tareas=new ArrayList<>();
+        this.tareasCompletadas=new ArrayList<>();
+        this.experiencia=0;
+        this.nivelExperiencia=1;
     }
     /**
      * Getters/Setters
@@ -147,12 +154,66 @@ public class Usuario{
     return (correo.matches(regex));
     }
 
+    /*
+    * Recibe la tarea que se completo por el usuario
+    * Marca una tarea como completada, la mueve a la lista de tareas completadas,
+    * añade la experiencia al usuario y verifica si sube de nivel.
+    */
+    public void completarTarea(Tarea tareaACompletar) {
+        // Validar que la tarea a completar realmente existe en la lista.
+        if (!tareas.contains(tareaACompletar)) {
+            throw new IllegalArgumentException("La tarea '" + tareaACompletar.getNombre() + "' no se encuentra en la lista de tareas pendientes de este usuario.");
+    }
+
+        // Mover la tarea de la lista la lista de completadas.
+        tareas.remove(tareaACompletar);
+        tareasCompletadas.add(tareaACompletar);
+
+        // Añadir la experiencia de la tarea al total del usuario.
+        this.experiencia += tareaACompletar.getExp();
+        System.out.println("¡'" + this.nombre_usuario + "' ha completado la tarea '" + tareaACompletar.getNombre() + "' y ha ganado " + tareaACompletar.getExp() + " de experiencia!");
+        System.out.println("Experiencia total: " + this.experiencia);
+
+        // Llamado al método que verificará si el usuario ha subido de nivel.
+        verificarSubidaDeNivel();
+    }
+    
+    /*
+    * Comprueba si la experiencia total del usuario es suficiente para subir al siguiente nivel.
+    * Utiliza un bucle por si se ganan múltiples niveles a la vez.
+    */
+    private void verificarSubidaDeNivel() {
+        // Calculamos la experiencia necesaria para el SIGUIENTE nivel.
+        int expSiguienteNivel = SistemaNiveles.experienciaParaNivel(this.nivelExperiencia + 1);
+
+        // El usuario subira de nivel hasta donde su experiencia le permita
+        while (this.experiencia >= expSiguienteNivel) {
+            this.nivelExperiencia++;
+            this.experiencia -= expSiguienteNivel;
+            System.out.println("¡FELICIDADES! ¡Has subido al nivel " + this.nivelExperiencia + "!");
+            // Se calcula la experiencia necesaria para el proximo nivel
+            expSiguienteNivel = SistemaNiveles.experienciaParaNivel(this.nivelExperiencia + 1);
+        }   
+    }
+
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Usuario: ").append(nombre_usuario).append("\n")
-          .append("Correo: ").append(correo_electronico).append("\n")
-          .append("Número de tareas: ").append(tareas.size()).append("\n");
-          return sb.toString();
+    // Calculamos la experiencia para el proximo nivel para mostrarla (ya que el usuario no la guarda)
+    int expParaSiguienteNivel = SistemaNiveles.experienciaParaNivel(this.nivelExperiencia + 1);
+
+    return String.format(
+        "<<< Usuario: %s >>>\n" +
+        "Nivel: %d\n" +
+        "Experiencia: %d / %d\n" +
+        "Correo: %s\n" +
+        "Tareas Pendientes: %d\n" +
+        "Tareas Completadas: %d",
+        this.nombre_usuario,
+        this.nivelExperiencia,
+        this.experiencia,
+        expParaSiguienteNivel,
+        this.correo_electronico,
+        this.tareas.size(),
+        this.tareasCompletadas.size());
     }
 }
