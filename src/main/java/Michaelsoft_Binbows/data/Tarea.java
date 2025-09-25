@@ -61,7 +61,8 @@ public class Tarea{
         }
         this.fecha_expiracion = fecha_expiracion;
     }
-        public boolean tareaExistePorNombre(List<Tarea> tareas, Tarea tarea) {
+    //innecesario?
+    public boolean tareaExistePorNombre(List<Tarea> tareas, Tarea tarea) {
         for (Tarea t : tareas) {
             if (t.getNombre().equalsIgnoreCase(tarea.getNombre())) {
                 return true;

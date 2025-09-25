@@ -66,7 +66,9 @@ public class UsuarioController {
     @GetMapping("/home")
     public String mostrarMain(Model model, HttpSession session) {
         System.out.println("LOG: El método 'mostrarMain' ha sido llamado por una petición a /home.");
-
+        if(session.getAttribute("usuarioActual") == null){
+            return "redirect:/error";
+        }
         Usuario usuarioActual = (Usuario) session.getAttribute("usuarioActual");
         model.addAttribute("nombre_usuario", usuarioActual != null ? usuarioActual.getNombre_usuario() : "-");
 

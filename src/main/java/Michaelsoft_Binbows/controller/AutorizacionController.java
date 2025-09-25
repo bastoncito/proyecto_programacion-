@@ -21,7 +21,8 @@ public class AutorizacionController {
 
     //Métodos para registro
     @GetMapping("/register")
-    public String mostrarRegister(Model model) {
+    public String mostrarRegister(Model model, HttpSession session) {
+        session.removeAttribute("usuarioActual");
         System.out.println("LOG: El método 'mostrarRegister' ha sido llamado por una petición a /register.");
         return "register";
     }
@@ -77,8 +78,8 @@ public class AutorizacionController {
 
     //Métodos para login
     @GetMapping("/login")
-    public String mostrarLogin(
-        Model model) {
+    public String mostrarLogin(Model model, HttpSession session) {
+        session.removeAttribute("usuarioActual");
         System.out.println("LOG: El método 'mostrarLogin' ha sido llamado por una petición a /login.");
         return "loginreal";
     }
