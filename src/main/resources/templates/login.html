@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/estilos.css}">
+    <title>Registro</title>
+</head>
+<body>
+    <div class="cabecera">
+        <img th:src="@{/tipo1HD.png}" alt="Logo">
+    </div>
+
+    <form th:action="@{/login}" method="post">
+        <!-- Si usas Spring Security: -->
+        <!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/> -->
+
+        <label for="username">Nombre de usuario</label>
+        <input type="text" id="username" name="username"><br><br>
+
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" name="password"><br><br>
+
+        <input type="submit" value="Entrar">
+    </form>
+
+    <p th:if="${error}" th:text="${error}" style="color: red;"></p>
+</body>
+</html>

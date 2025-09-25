@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Good Time - Home</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" th:href="@{/home.css}">
+</head>
+<body>
+    .
+    <!--Sección Aplicación-->
+    <div class="container-app">
+        <!--Top Globales-->
+        <div class="top-section">
+            <h1>Top Globales</h1>
+            <ol>
+                <li>User123</li>
+                <li>SerA123</li>
+                <li>BSer123</li>
+            </ol>
+        </div>
+
+        <!--Tareas Pendientes-->
+        <div class="task-section">
+            <div class="task-header">
+                <h1>Tareas Pendientes</h1>
+                <i class='bx bxs-message-square-add'></i>
+            </div>
+            <div class="task-list">
+                <button class="task-item"
+                        th:each="tarea, stat : ${tareas}"
+                        th:if="${stat.index < 4}"
+                        th:text="${tarea.nombre}">
+                </button>
+                <p th:if="${#lists.isEmpty(tareas)}">No tienes tareas anotadas.</p>
+            </div>
+        </div>
+    </div>
+
+    <!--Sección Usuario-->
+    <div class="container-user">
+        <!--Información del Usuario-->
+        <div class="info-section">
+            <div class="user-info-content">
+                <div class="welcome-group">
+                    <h1 class="welcome-text">Bienvenido</h1>
+                    <h1 th:text="${nombre_usuario}" class="username"></h1>
+                </div>
+                <div class="separator-line"></div>
+                <div class="datetime-group">
+                    <p class="date">25 de agosto|2025</p>
+                    <p class="time">19:35</p>
+                </div>
+            </div>
+            <div class="user-avatar">
+                <!-- Círculo del usuario -->
+            </div>
+        </div>
+
+        <!--Racha-->
+        <div class="streak-section">
+            <h1 class="streak-title">Racha Actual</h1>
+            <div class="streak-line"></div>
+            <div class="streak-content">
+                <p class="streak-days">15 días</p>
+                <i class='bx bxs-hot streak-icon'></i>
+            </div>
+        </div>
+
+        <!--Logo-->
+        <div class="logo-section">
+            <img th:src="@{/logo_negro.png}" alt="logo_negro" class="logo-text">
+        </div>
+    </div>
+</body>
+</html>

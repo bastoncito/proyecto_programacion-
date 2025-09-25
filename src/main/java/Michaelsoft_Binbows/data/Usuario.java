@@ -1,3 +1,5 @@
+package Michaelsoft_Binbows.data;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -70,7 +72,7 @@ public class Usuario{
         System.out.println("Tarea '" + tarea.getNombre() + "' agregada exitosamente.");
     }
 
-    private String validarContrasena(String contraseña) {
+    private  String validarContrasena(String contraseña) {
     if (contraseña == null || contraseña.trim().isEmpty()) {
         return "La contraseña no puede estar vacía";
     }
@@ -131,7 +133,7 @@ public class Usuario{
         return true;
     }
     
-    private boolean correoValido(String correo) {
+    private static boolean correoValido(String correo) {
     if (correo == null || correo.trim().isEmpty()) {
         return false;
     }
