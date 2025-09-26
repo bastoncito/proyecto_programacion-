@@ -10,6 +10,7 @@ public class Usuario{
     private int nivelExperiencia;
     private List<Tarea> tareas;
     private List<Tarea> tareasCompletadas;
+    private List<Logro> logros;
 
     public Usuario(String nombre_usuario, String correo_electronico, String contraseña){
         setNombre_usuario(nombre_usuario);
@@ -17,6 +18,7 @@ public class Usuario{
         setCorreo_electronico(correo_electronico);
         this.tareas=new ArrayList<>();
         this.tareasCompletadas=new ArrayList<>();
+        this.logros = new ArrayList<>();
         this.experiencia=0;
         this.nivelExperiencia=1;
     }
@@ -38,7 +40,26 @@ public class Usuario{
     public List<Tarea> getTareas() {
         return tareas;
     }
-
+    public int getNivelExperiencia() {
+        return nivelExperiencia;
+    }
+    public int getExperiencia() {
+        return experiencia;
+    }
+    /*
+    * Devuelve una copia de la lista de logros que el usuario ha desbloqueado.
+    * @return Una lista nueva(para evitar alterar la original) de objetos Logro.
+     */
+    public List<Logro> getLogros() {
+        return new ArrayList<>(this.logros);
+    }
+    /*
+    * Devuelve una copia de la lista de tareas que el usuario ha completado.
+    * @return Una lista nueva (para evitar alterar la original) de objetos Tarea.
+    */
+    public List<Tarea> getTareasCompletadas() {
+        return new ArrayList<>(this.tareasCompletadas);
+}
     public void setNombre_usuario(String nombre_usuario) {
         if(esNombreValido(nombre_usuario)){
             this.nombre_usuario = nombre_usuario;
@@ -194,6 +215,12 @@ public class Usuario{
             // Se calcula la experiencia necesaria para el proximo nivel
             expSiguienteNivel = SistemaNiveles.experienciaParaNivel(this.nivelExperiencia + 1);
         }   
+    }
+    /*
+     * 
+     */
+    private void comprobarYDesbloquearLogros(){
+        //por hacer
     }
 
     @Override
