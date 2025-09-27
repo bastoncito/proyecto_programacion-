@@ -39,7 +39,6 @@ public class Usuario{
     public String getContraseña() {
         return contraseña;
     }
-    
     public List<Tarea> getTareas() {
         return tareas;
     }
@@ -51,6 +50,9 @@ public class Usuario{
     }
     public Date getFechaRegistro() {
         return fechaRegistro;
+    }
+    public int getNumeroCompletadas() {
+        return tareasCompletadas.size();
     }
     /*
     * Devuelve una copia de la lista de logros que el usuario ha desbloqueado.

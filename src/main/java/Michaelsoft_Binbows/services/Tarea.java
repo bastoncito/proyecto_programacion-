@@ -1,6 +1,5 @@
 package Michaelsoft_Binbows.services;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 public class Tarea{
@@ -52,21 +51,23 @@ public class Tarea{
         }
         this.exp = exp;
     }
-    public void setFechaExpiracion(Date fecha_expiracion) {
-        if(fecha_expiracion == null){
+    public void setFechaExpiracion(Date fechaExpiracion) {
+        if(fechaExpiracion == null){
             throw new IllegalArgumentException("La fecha no puede estar vacía.");
         }
-        Date fecha_actual = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");//Simplificar el formato
-        String fechaTarea = sdf.format(fecha_expiracion);
-        String fechaHoy = sdf.format(fecha_actual);
-        if (fechaTarea.compareTo(fechaHoy) < 0) {
+        Date fechaActual = new Date();
+        if(fechaExpiracion.before(fechaActual)){ 
             throw new IllegalArgumentException("La fecha debe ser igual o posterior a hoy.");
         }
-        this.fechaExpiracion = fecha_expiracion;
+        //revisa si 
+        long diferenciaMilisegundos = fechaExpiracion.getTime() - fechaActual.getTime();
+        if (diferenciaMilisegundos < 60 * 60 * 1000) {
+            throw new IllegalArgumentException("La fecha debe ser al menos 1 hora posterior a la actual.");
+        }
+        this.fechaExpiracion = fechaExpiracion;
     }
-    public void setFechaCompletada(Date fecha_completada) {
-        this.fechaCompletada = fecha_completada;
+    public void setFechaCompletada(Date fechaCompletada) {
+        this.fechaCompletada = fechaCompletada;
     }
     public boolean tareaExistePorNombre(List<Tarea> tareas, Tarea tarea) {
         for (Tarea t : tareas) {
