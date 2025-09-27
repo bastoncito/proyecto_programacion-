@@ -6,25 +6,29 @@ import java.util.List;
 public class Tarea{
     private String nombre, descripcion;
     private int exp;
-    private Date fecha_expiracion;
+    private Date fechaExpiracion;
+    private Date fechaCompletada = null;
     // constructor
     public Tarea (String nombre, String descripcion, int exp, Date fecha_expiracion){
         setNombre(nombre);
         setDescripcion(descripcion);
         setExp(exp);
-        setFecha_expiracion(fecha_expiracion);
+        setFechaExpiracion(fecha_expiracion);
     }
     public String getNombre() {
         return nombre;
     }
-    public Date getFecha_expiracion() {
-        return fecha_expiracion;
+    public Date getFechaExpiracion() {
+        return fechaExpiracion;
     }
     public int getExp() {
         return exp;
     }
     public String getDescripcion() {
         return descripcion;
+    }
+    public Date getFechaCompletada() {
+        return fechaCompletada;
     }
     public void setNombre(String nombre) {
         if(nombre == null || nombre.isEmpty()){
@@ -48,7 +52,7 @@ public class Tarea{
         }
         this.exp = exp;
     }
-    public void setFecha_expiracion(Date fecha_expiracion) {
+    public void setFechaExpiracion(Date fecha_expiracion) {
         if(fecha_expiracion == null){
             throw new IllegalArgumentException("La fecha no puede estar vacía.");
         }
@@ -59,7 +63,10 @@ public class Tarea{
         if (fechaTarea.compareTo(fechaHoy) < 0) {
             throw new IllegalArgumentException("La fecha debe ser igual o posterior a hoy.");
         }
-        this.fecha_expiracion = fecha_expiracion;
+        this.fechaExpiracion = fecha_expiracion;
+    }
+    public void setFechaCompletada(Date fecha_completada) {
+        this.fechaCompletada = fecha_completada;
     }
     public boolean tareaExistePorNombre(List<Tarea> tareas, Tarea tarea) {
         for (Tarea t : tareas) {
@@ -78,9 +85,8 @@ public class Tarea{
         }
         return false;
     }
-   
     @Override
     public String toString() {
-        return "La tarea '"+nombre+"' ("+descripcion+") que otorga "+exp+" puntos de experiencia, vence el "+ fecha_expiracion;
+        return "La tarea '"+nombre+"' ("+descripcion+") que otorga "+exp+" puntos de experiencia, vence el "+ fechaExpiracion;
     }
 }

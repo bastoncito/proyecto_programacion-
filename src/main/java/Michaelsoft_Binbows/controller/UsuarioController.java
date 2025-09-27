@@ -70,7 +70,7 @@ public class UsuarioController {
             return "redirect:/error";
         }
         Usuario usuarioActual = (Usuario) session.getAttribute("usuarioActual");
-        model.addAttribute("nombre_usuario", usuarioActual != null ? usuarioActual.getNombre_usuario() : "-");
+        model.addAttribute("nombre_usuario", usuarioActual != null ? usuarioActual.getNombreUsuario() : "-");
 
         List<Tarea> tareas = usuarioActual != null ?usuarioActual.getTareas() : Collections.emptyList();
         model.addAttribute("tareas", tareas);

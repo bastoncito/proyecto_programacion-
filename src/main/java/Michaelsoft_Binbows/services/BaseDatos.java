@@ -32,13 +32,13 @@ public class BaseDatos {
             return "Error: El usuario no puede ser nulo.";
         }
         // Validar nombre
-        if (usuarioExistePorNombre(usuario.getNombre_usuario())) {
-            return "Ya existe un usuario con el nombre: " + usuario.getNombre_usuario();
+        if (usuarioExistePorNombre(usuario.getNombreUsuario())) {
+            return "Ya existe un usuario con el nombre: " + usuario.getNombreUsuario();
         }
 
         // Validar correo
-        if (usuarioExistePorCorreo(usuario.getCorreo_electronico())) {
-            return "Ya existe un usuario con el correo: " + usuario.getCorreo_electronico();
+        if (usuarioExistePorCorreo(usuario.getCorreoElectronico())) {
+            return "Ya existe un usuario con el correo: " + usuario.getCorreoElectronico();
         }
         // Si pasa las validaciones, lo agregamos
         return null;
@@ -48,7 +48,7 @@ public class BaseDatos {
         String valido = validarUsuario(usuario);
         if(valido == null){
             usuarios.add(usuario);
-            System.out.println("Usuario '" + usuario.getNombre_usuario() + "' agregado exitosamente.");
+            System.out.println("Usuario '" + usuario.getNombreUsuario() + "' agregado exitosamente.");
             this.persistencia.guardarBaseDatos(this.usuarios);
         }else{
             System.err.println(valido);
@@ -61,7 +61,7 @@ public class BaseDatos {
      */
     public boolean usuarioExistePorCorreo(String correo) {
         for (Usuario usuarioExistente : usuarios) {
-            if (usuarioExistente.getCorreo_electronico().equalsIgnoreCase(correo)) {
+            if (usuarioExistente.getCorreoElectronico().equalsIgnoreCase(correo)) {
                 return true;
             }
         }
@@ -73,7 +73,7 @@ public class BaseDatos {
      */
     public boolean usuarioExistePorNombre(String nombre){
         for (Usuario usuarioExistente : usuarios) {
-            if (usuarioExistente.getNombre_usuario().equalsIgnoreCase(nombre)) {
+            if (usuarioExistente.getNombreUsuario().equalsIgnoreCase(nombre)) {
                 return true;
             }
         }
@@ -91,8 +91,8 @@ public class BaseDatos {
         for (int i = 0; i < usuarios.size(); i++) {
             Usuario u = usuarios.get(i);
             System.out.println("\nUSUARIO #" + (i + 1));
-            System.out.println("  Nombre: " + u.getNombre_usuario());
-            System.out.println("  Email: " + u.getCorreo_electronico());
+            System.out.println("  Nombre: " + u.getNombreUsuario());
+            System.out.println("  Email: " + u.getCorreoElectronico());
             
             if (u.getTareas() == null || u.getTareas().isEmpty()) {
                 System.out.println("  Tareas: 0");
