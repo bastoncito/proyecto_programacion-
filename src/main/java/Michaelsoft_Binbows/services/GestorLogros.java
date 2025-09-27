@@ -1,7 +1,5 @@
 package Michaelsoft_Binbows.services;
 
-import Michaelsoft_Binbows.data.Logro;
-import Michaelsoft_Binbows.data.Usuario;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -12,12 +10,19 @@ public class GestorLogros {
     private static final List<Logro> LOGROS_DISPONIBLES = new ArrayList<>();
 
     static {
-        LOGROS_DISPONIBLES.add(new Logro("COMPLETE_1_TASK", "¡Primeros Pasos!", "Completa tu primera tarea.", 50));
+        LOGROS_DISPONIBLES.add(new Logro("JOIN_APP", "El primero es gratis", "Únete a Good Time", 0));
+        LOGROS_DISPONIBLES.add(new Logro("COMPLETE_1_TASK", "Primeros Pasos", "Completa tu primera tarea.", 50));
         LOGROS_DISPONIBLES.add(new Logro("COMPLETE_10_TASKS", "Trabajador Incansable", "Completa 10 tareas.", 150));
         LOGROS_DISPONIBLES.add(new Logro("COMPLETE_50_TASKS", "Maestro de la Productividad", "Completa 50 tareas.", 300));
         LOGROS_DISPONIBLES.add(new Logro("REACH_LEVEL_5", "Aprendiz", "Alcanza el nivel 5.", 100));
         LOGROS_DISPONIBLES.add(new Logro("REACH_LEVEL_20", "Veterano", "Alcanza el nivel 20.", 200));
         LOGROS_DISPONIBLES.add(new Logro("REACH_LEVEL_35", "Maestro", "Alcanza el nivel 35.", 500));
+        LOGROS_DISPONIBLES.add(new Logro("7_DAY_STREAK", "Dedicación", "Mantén una racha por una semana", 150));
+        LOGROS_DISPONIBLES.add(new Logro("30_DAY_STREAK", "Maratón", "Mantén una racha por un mes", 500));
+        LOGROS_DISPONIBLES.add(new Logro("MORNING_TASK", "Madrugador", "Completa una tarea entre 6:00-8:00 AM", 50));
+        LOGROS_DISPONIBLES.add(new Logro("CLOSE_CALL", "Uy.", "Termina una tarea 5 minutos antes de que expire", 50));
+        LOGROS_DISPONIBLES.add(new Logro("TOP_10_RANKING", "Ejemplo a seguir", "Quédate en el top 10 por al menos un día", 500));
+        
         
         verificarUnicidadDeIds();
     }
@@ -74,6 +79,8 @@ public class GestorLogros {
         final String idLogro = logro.getId();
         
         switch (idLogro) {
+            case "JOIN_APP":
+                return true; // Siempre se cumple al unirse
             case "COMPLETE_1_TASK":
                 return usuario.getTareasCompletadas().size() >= 1;
             case "COMPLETE_10_TASKS":
@@ -86,6 +93,16 @@ public class GestorLogros {
                 return usuario.getNivelExperiencia() >= 20;
             case "REACH_LEVEL_35":
                 return usuario.getNivelExperiencia() >= 35;
+            case "7_DAY_STREAK":
+                // return si usuario tiene racha de 7+ dias
+            case "30_DAY_STREAK":
+                // return si usuario tiene racha de 30+ dias
+            case "MORNING_TASK":
+                // return si se completó una tarea entre las 6 y 8
+            case "CLOSE_CALL":
+                // return si una tarea fue completada 5 minutos antes de expirar
+            case "TOP_10_RANKING":
+                // return si usuario estuvo en top 10 al menos un dia
             default:
                 System.err.println("LOG: ID de logro no reconocido: " + idLogro);
                 return false;

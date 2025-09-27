@@ -1,4 +1,4 @@
-package Michaelsoft_Binbows.data;
+package Michaelsoft_Binbows.services;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody; // Necesario para el método de prueba
 
-import Michaelsoft_Binbows.data.BaseDatos;
-import Michaelsoft_Binbows.data.Tarea;
-import Michaelsoft_Binbows.data.Usuario;
+import Michaelsoft_Binbows.services.BaseDatos;
+import Michaelsoft_Binbows.services.Tarea;
+import Michaelsoft_Binbows.services.Usuario;
 import jakarta.servlet.http.HttpSession;
 
 import java.util.Collections;
@@ -76,6 +76,21 @@ public class UsuarioController {
         model.addAttribute("tareas", tareas);
 
         return "home";
+    }
+
+    @GetMapping("/admin")
+    public String mostrarAdmin(Model model, HttpSession session) {
+        System.out.println("LOG: El método 'mostrarAdmin' ha sido llamado por una petición a /admin.");
+        /* 
+        Completar cuándo esté listo el login de Admin
+
+        if(session.getAttribute("usuarioActual") == null){
+            return "redirect:/error";
+        }
+        Usuario usuarioActual = (Usuario) session.getAttribute("usuarioActual");
+        model.addAttribute("nombre_usuario", usuarioActual != null ? usuarioActual.getNombre_usuario() : "-");
+        */
+        return "admin";
     }
 
     /**

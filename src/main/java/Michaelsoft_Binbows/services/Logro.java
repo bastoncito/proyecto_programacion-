@@ -1,4 +1,4 @@
-package Michaelsoft_Binbows.data;
+package Michaelsoft_Binbows.services;
 
 
 public class Logro {

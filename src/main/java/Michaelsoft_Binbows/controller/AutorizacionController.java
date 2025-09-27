@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.servlet.http.HttpSession;
-import Michaelsoft_Binbows.data.BaseDatos;
-import Michaelsoft_Binbows.data.Usuario;
+import Michaelsoft_Binbows.services.BaseDatos;
+import Michaelsoft_Binbows.services.Usuario;
 
 @Controller
 public class AutorizacionController {
