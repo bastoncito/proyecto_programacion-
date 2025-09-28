@@ -1,31 +1,108 @@
 [
   {
-    "nombreUsuario": "Bastoncito",
-    "correoElectronico": "breyes24@utalca.cl",
-    "contraseña": "Asdf12345@",
+    "nombreUsuario": "Admin",
+    "correoElectronico": "admin@michaelsoftBinbows.com",
+    "contraseña": "SuperClaveSegura123!",
     "experiencia": 0,
     "nivelExperiencia": 1,
+    "rol": "ADMIN",
+    "fechaRegistro": "2025-09-28T20:16",
     "tareas": [
       {
-        "nombre": "Andar en bicicleta",
-        "descripcion": "Date una vuelta de una hora en bicicleta ",
-        "exp": 25,
-        "fechaExpiracion": "2025-09-30T17:27"
+        "nombre": "Estudiar Spring Boot",
+        "descripcion": "Completar el capítulo sobre Controladores",
+        "exp": 100,
+        "fechaExpiracion": "2025-10-02T20:16"
+      },
+      {
+        "nombre": "Planificar la Semana",
+        "descripcion": "Organizar el calendario para los próximos 7 días",
+        "exp": 50,
+        "fechaExpiracion": "2025-10-01T20:16"
       }
     ],
     "tareasCompletadas": [],
-    "logros": [],
-    "fechaRegistro": "2025-09-28T15:25"
+    "logros": []
   },
   {
-    "nombreUsuario": "UsuarioNuevo",
-    "correoElectronico": "user1@gmail.com",
-    "contraseña": "@Usuario1",
+    "nombreUsuario": "Matias Gomez",
+    "correoElectronico": "mgomez22@alumnos.utalca.cl",
+    "contraseña": "Saquenme.De.ED0",
     "experiencia": 0,
     "nivelExperiencia": 1,
+    "rol": "MODERADOR",
+    "fechaRegistro": "2025-09-28T20:16",
+    "tareas": [
+      {
+        "nombre": "Revisar Correo",
+        "descripcion": "Limpiar bandeja de entrada y responder urgentes",
+        "exp": 25,
+        "fechaExpiracion": "2025-09-30T20:16"
+      },
+      {
+        "nombre": "Limpiar la Cocina",
+        "descripcion": "Lavar platos y limpiar encimeras",
+        "exp": 25,
+        "fechaExpiracion": "2025-09-30T20:16"
+      }
+    ],
+    "tareasCompletadas": [],
+    "logros": []
+  },
+  {
+    "nombreUsuario": "Juan Carlos Bodoque",
+    "correoElectronico": "elAlmadeLaFiesta@31minutos.cl",
+    "contraseña": "Nota.Verde31",
+    "experiencia": 0,
+    "nivelExperiencia": 1,
+    "rol": "USUARIO",
+    "fechaRegistro": "2025-09-28T20:16",
+    "tareas": [
+      {
+        "nombre": "Hacer Ejercicio",
+        "descripcion": "30 minutos de cardio o pesas",
+        "exp": 50,
+        "fechaExpiracion": "2025-10-01T20:16"
+      },
+      {
+        "nombre": "Llamar a la familia",
+        "descripcion": "Ponerse al día con la familia",
+        "exp": 10,
+        "fechaExpiracion": "2025-09-29T20:16"
+      }
+    ],
+    "tareasCompletadas": [],
+    "logros": []
+  },
+  {
+    "nombreUsuario": "Valerie Tron",
+    "correoElectronico": "valtron@gmail.com",
+    "contraseña": "g00dP@55w0rd",
+    "experiencia": 0,
+    "nivelExperiencia": 1,
+    "rol": "USUARIO",
+    "fechaRegistro": "2025-09-28T20:16",
+    "tareas": [
+      {
+        "nombre": "Revisar Correo",
+        "descripcion": "Limpiar bandeja de entrada y responder urgentes",
+        "exp": 25,
+        "fechaExpiracion": "2025-09-30T20:16"
+      }
+    ],
+    "tareasCompletadas": [],
+    "logros": []
+  },
+  {
+    "nombreUsuario": "Julia Campos",
+    "correoElectronico": "jcampos@hotmail.com",
+    "contraseña": "tr!Rep3tae",
+    "experiencia": 0,
+    "nivelExperiencia": 1,
+    "rol": "USUARIO",
+    "fechaRegistro": "2025-09-28T20:16",
     "tareas": [],
     "tareasCompletadas": [],
-    "logros": [],
-    "fechaRegistro": "2025-09-28T17:15"
+    "logros": []
   }
 ]

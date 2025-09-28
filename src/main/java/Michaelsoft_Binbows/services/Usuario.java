@@ -9,10 +9,11 @@ public class Usuario{
     private String nombreUsuario,correoElectronico,contraseña;
     private int experiencia;
     private int nivelExperiencia;
+    private Rol rol;
+    private LocalDateTime fechaRegistro;
     private List<Tarea> tareas;
     private List<Tarea> tareasCompletadas;
     private List<Logro> logros;
-    private LocalDateTime fechaRegistro;
 
     public Usuario(String nombre_usuario, String correo_electronico, String contraseña){
         setNombreUsuario(nombre_usuario);
@@ -23,8 +24,9 @@ public class Usuario{
         this.logros = new ArrayList<>();
         this.experiencia=0;
         this.nivelExperiencia=1;
-    this.fechaRegistro = LocalDateTime.now(); // Fecha actual
-    }
+        this.rol = Rol.USUARIO;
+        this.fechaRegistro = LocalDateTime.now(); // Fecha actual
+        }
     /**
      * Getters/Setters
      */
@@ -53,6 +55,12 @@ public class Usuario{
     }
     public int getNumeroCompletadas() {
         return tareasCompletadas.size();
+    }
+    public Rol getRol() {
+        return rol;
+    }
+    public void setRol(Rol rol) {
+        this.rol = rol;
     }
     /*
     * Devuelve una copia de la lista de logros que el usuario ha desbloqueado.
@@ -240,12 +248,14 @@ public class Usuario{
 
         return String.format(
             "<<< Usuario: %s >>>\n" +
+            "Rol: %s\n" +
             "Nivel: %d\n" +
             "Experiencia: %d / %d\n" +
             "Correo: %s\n" +
             "Tareas Pendientes: %d\n" +
             "Tareas Completadas: %d",
             this.nombreUsuario,
+            this.rol,
             this.nivelExperiencia,
             this.experiencia,
             expParaSiguienteNivel,
