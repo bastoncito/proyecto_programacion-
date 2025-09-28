@@ -50,6 +50,7 @@ public class HomeController {
         model.addAttribute("nombre_usuario", usuarioActual != null ? usuarioActual.getNombreUsuario() : "-");
 
         List<Tarea> tareas = usuarioActual != null ?usuarioActual.getTareas() : Collections.emptyList();
+        model.addAttribute("usuario", usuarioActual);
         model.addAttribute("tareas", tareas);
 
         return "home";

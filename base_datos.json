@@ -5,9 +5,27 @@
     "contraseña": "Asdf12345@",
     "experiencia": 0,
     "nivelExperiencia": 1,
+    "tareas": [
+      {
+        "nombre": "Andar en bicicleta",
+        "descripcion": "Date una vuelta de una hora en bicicleta ",
+        "exp": 25,
+        "fechaExpiracion": "2025-09-30T17:27"
+      }
+    ],
+    "tareasCompletadas": [],
+    "logros": [],
+    "fechaRegistro": "2025-09-28T15:25"
+  },
+  {
+    "nombreUsuario": "UsuarioNuevo",
+    "correoElectronico": "user1@gmail.com",
+    "contraseña": "@Usuario1",
+    "experiencia": 0,
+    "nivelExperiencia": 1,
     "tareas": [],
     "tareasCompletadas": [],
     "logros": [],
-    "fechaRegistro": "Sep 28, 2025, 1:38:55 PM"
+    "fechaRegistro": "2025-09-28T17:15"
   }
 ]

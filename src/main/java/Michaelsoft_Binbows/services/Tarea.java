@@ -4,22 +4,18 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
 public class Tarea{
     private String nombre, descripcion;
     private int exp;
-    //Formato de fecha y hora aceptado: 2023-12-31T23:59
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime fechaExpiracion;
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime fechaCompletada = null;
     // constructor
-    public Tarea (String nombre, String descripcion, int exp, LocalDateTime fecha_expiracion){
+    public Tarea (String nombre, String descripcion, String dificultad){
         setNombre(nombre);
         setDescripcion(descripcion);
-        setExp(exp);
-        setFechaExpiracion(fecha_expiracion);
+        //Se calcula la experiencia en base a una de 6 categorías de dificultad
+        setExp(Dificultad.obtenerExpPorDificultad(dificultad));
+        setFechaExpiracion(Dificultad.obtenerDíasPorDificultad(dificultad));
     }
     public String getNombre() {
         return nombre;

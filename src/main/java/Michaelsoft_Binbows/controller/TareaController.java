@@ -33,20 +33,20 @@ public class TareaController {
         return "tareas";
     }
 
-    @GetMapping("/tareas/nueva")
+    @GetMapping("/nueva-tarea")
     public String mostrarFormularioNuevaTarea(Model model, HttpSession session) {
         if(session.getAttribute("usuarioActual") == null){
             return "redirect:/error";
         }
+        System.out.println("LOG: El método 'mostrarFormularioNuevaTarea' ha sido llamado por una petición a /nueva-tarea.");
         return "tarea-nueva";
     }
 
-    @PostMapping("/tareas/nueva")
+    @PostMapping("/nueva-tarea")
     public String procesarNuevaTarea(
         @RequestParam("nombre") String nombre,
         @RequestParam("descripcion") String descripcion, 
-    @RequestParam("fechaExpiracion") LocalDateTime fechaExpiracion,
-        @RequestParam("experiencia") int experiencia,
+        @RequestParam("dificultad") String dificultad,
         Model model,
         HttpSession session) {
         if(session.getAttribute("usuarioActual") == null){
@@ -54,12 +54,13 @@ public class TareaController {
         }
         Usuario usuarioActual = (Usuario) session.getAttribute("usuarioActual");
         try{
-            Tarea nuevaTarea = new Tarea(nombre, descripcion, experiencia, fechaExpiracion);
+            Tarea nuevaTarea = new Tarea(nombre, descripcion, dificultad);
             usuarioActual.agregarTarea(nuevaTarea);
             baseDatos.guardarBaseDatos();
             model.addAttribute("mensaje", "Tarea agregada exitosamente.");
             return "tarea-nueva";
         }catch(IllegalArgumentException e){
+            System.out.println("ERROR: " + e.getMessage());
             model.addAttribute("error", e.getMessage());
         }
         return "tarea-nueva";

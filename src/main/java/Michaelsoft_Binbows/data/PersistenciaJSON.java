@@ -24,12 +24,14 @@ public class PersistenciaJSON {
     private Gson gson;
 
     public PersistenciaJSON() {
-        // Creamos una instancia de Gson con adaptadores para LocalDateTime.
+        //Se define el formato
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-
+        //Serializador y deserializador para LocalDateTime
+        //Cuando src es null, devuelve null. Si no, lo formatea como un JsonPrimitive (String JSON simple)
         JsonSerializer<LocalDateTime> serializer = (LocalDateTime src, Type typeOfSrc, com.google.gson.JsonSerializationContext context) -> {
             return src == null ? null : new JsonPrimitive(src.format(formatter));
         };
+        //Cuando json es null, devuelve null. Si no, intenta parsear el String a un LocalDateTime usando el formateador definido.
         JsonDeserializer<LocalDateTime> deserializer = (JsonElement json, Type typeOfT, com.google.gson.JsonDeserializationContext context) -> {
             try {
                 return json == null ? null : LocalDateTime.parse(json.getAsString(), formatter);
@@ -37,7 +39,7 @@ public class PersistenciaJSON {
                 throw new JsonParseException(e);
             }
         };
-
+        //Creamos una instancia de Gson adaptada para el uso de LocalDateTime.
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, serializer)
                 .registerTypeAdapter(LocalDateTime.class, deserializer)

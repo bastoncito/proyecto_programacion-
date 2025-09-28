@@ -2,28 +2,49 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Tarea Nueva</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva Tarea</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="tarea-nueva.css">
 </head>
 <body>
-    <h1>Crear Nueva Tarea</h1>
-    <form th:action="@{/tareas/nueva}" method="post">
-        <label for="nombre">Nombre de la Tarea:</label>
-        <input type="text" id="nombre" name="nombre" required><br><br>
+    <div class="container">
+        <!-- Sección del Registro -->
+        <div class="creation-section">
+            <h1>Crear Nueva Tarea</h1>
 
-        <label for="descripcion">Descripción:</label>
-        <textarea id="descripcion" name="descripcion" required></textarea><br><br>
+            <form th:action="@{/nueva-tarea}" method="post">
+                <label for="nombre">Nombre</label>
+                <div class="input-container">
+                    <input type="text" placeholder="" name="nombre" id="nombre" required>
+                    <i class='bx bxs-message-edit' ></i>
+                </div>
 
-        <label for="exp">Experiencia (XP):</label>
-        <input type="number" id="exp" name="exp" required><br><br>
+                <label for="descripcion">Descripción</label>
+                <div class="input-container">
+                    <input type="text" name="descripcion" id="descripcion" required>
+                    <i class='bx bxs-message-detail' ></i>
+                </div>
 
-        <label for="fechaExpiracion">Fecha de Expiración:</label>
-        <input type="datetime-local" th:field="*{fechaExpiracion}" /><br><br>
+                <label for="categoria">Categoría:</label>
+                <select id="categoria" name="dificultad" required>
+                    <option value="Muy fácil">Muy fácil</option>
+                    <option value="Fácil">Fácil</option>
+                    <option value="Medio">Intermedio</option>
+                    <option value="Difícil">Difícil</option>
+                    <option value="Muy difícil">Muy difícil</option>
+                </select>
 
-        <button type="submit">Crear Tarea</button>
-        <p th:if="${mensaje}" th:text="${mensaje}"></p>
-        <p th:if="${error}" th:text="${error}" style="color:red;"></p>
-    </form>
-    <a th:href="@{/tareas}">Volver a la lista de tareas</a>
+                <div id="result" class="result-box">
+                    <span><span class="label">XP:</span> <span id="xp">—</span></span>
+                    <span><span class="label">Plazo:</span> <span id="plazo">—</span></span>
+                </div>
+                <p th:if="${mensaje}" th:text="${mensaje}"></p>
+                <p th:if="${error}" th:text="${error}" style="color:red;"></p>
+                <button type="submit">Crear Tarea</button>
+                <a th:href="@{/home}">Volver al inicio</a>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

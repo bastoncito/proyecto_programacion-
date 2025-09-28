@@ -5,27 +5,118 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Good Time - Home</title>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" th:href="@{/home.css}">
+    <link rel="stylesheet" th:href="@{/no.css}">
 </head>
 <body>
-    .
-    <!--Sección Aplicación-->
-    <div class="container-app">
-        <!--Top Globales-->
-        <div class="top-section">
-            <h1>Top Globales</h1>
-            <ol>
-                <li>User123</li>
-                <li>SerA123</li>
-                <li>BSer123</li>
-            </ol>
+    <!--Sección Anuncios-->
+    <div class="container-advertisements">
+        <!--Reto Semanal-->
+        <div class="reto-section">
+            <div class="reto-header">
+                <h1>DESAFÍO SEMANAL</h1>
+            </div>
+            <div class="reto-body">
+                <p>Título</p>
+                <p>Descripción de la tarea semanal...</p>
+                <p>Puntaje: 500 XP</p>
+                <button class="reto-button">Aceptar Desafío</button>
+            </div>
         </div>
 
+        <!--Clasificación (TOP)-->
+        <div class="top-section">
+            <div class="top-header">
+                <h1>TOP GLOBALES</h1>
+            </div>
+            <div class="top-body">
+                <div class="top-user">
+                    <div class="top-position">1</div>
+                    <div class="top-user-icon"><i class='bx bx-user'></i></div>
+                    <div class="top-user-name">User 1</div>
+                    <div class="top-user-points">X Puntos</div>
+                </div>
+                <div class="top-user">
+                    <div class="top-position">2</div>
+                    <div class="top-user-icon"><i class='bx bx-user'></i></div>
+                    <div class="top-user-name">User 2</div>
+                    <div class="top-user-points">Y Puntos</div>
+                </div>
+                <div class="top-user">
+                    <div class="top-position">3</div>
+                    <div class="top-user-icon"><i class='bx bx-user'></i></div>
+                    <div class="top-user-name">User 3</div>
+                    <div class="top-user-points">Z Puntos</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección Información -->
+    <div class="container-info">
+        <div class="info-left">
+            <!--Perfil de Usuario-->
+            <div class="info-section">
+                <div class="user-profile-top">
+                    <div class="user-top">
+                        <p th:text="${usuario.nivelExperiencia}"></p>
+                    </div>
+                    <div class="user-info">
+                        <strong><p th:text="${usuario.nombreUsuario}" class="username"></p></strong>
+                        <p th:text="${usuario.correoElectronico}"></p>
+                    </div>
+                    <div class="user-avatar"></div>
+                </div>
+                <div class="streak-section">
+                    <h1 class="streak-title">Racha Actual</h1>
+                    <div class="streak-line"></div>
+                    <div class="streak-content">
+                        <p class="streak-days">15 días</p>
+                        <i class='bx bxs-hot streak-icon'></i>
+                    </div>
+                </div>
+                <div class="info-buttons">
+                    <button>Cerrar Sesión</button>
+                    <button>Eliminar Cuenta</button>
+                </div>
+
+            </div>
+            <!--Clima-->
+            <div class="clima-section">
+                <div class="clima-hora"><p>12:30</p></div>
+                <div class="clima-main-content">
+                    <div class="clima-icon">
+                        <i class='bx bx-cloud-rain'></i>
+                    </div>
+                    <div class="clima-info">
+                        <p>15°C</p>
+                        <p>Humedad: 75%</p>
+                    </div>
+                </div>
+                <div class="clima-status">
+                    <h2>Lluvioso</h2>
+                </div>
+            </div>
+        </div>
+        <div class="info-right">
+            <!--Copas-->
+            <div class="copa-section">
+                <p>x Puntos</p>
+                <img th:src="@{/copa.png}" alt="copa">
+                <p>x Liga</p>
+            </div>
+            <!--Logo-->
+            <div class="logo-section">
+                <img th:src="@{/logo_negro.png}" alt="logo_negro">
+            </div>
+        </div>
+    </div>
+
+    <!--Sección Tareas-->
+    <div class="container-task">
         <!--Tareas Pendientes-->
         <div class="task-section">
             <div class="task-header">
                 <h1>Tareas Pendientes</h1>
-                <i class='bx bxs-message-square-add'></i>
             </div>
             <div class="task-list">
                 <button class="task-item"
@@ -35,42 +126,24 @@
                 </button>
                 <p th:if="${#lists.isEmpty(tareas)}">No tienes tareas anotadas.</p>
             </div>
+            <div class="task-buttons">
+                <button>Agregar Tarea</button>
+                <button>Eliminar Tarea</button>
+            </div>
         </div>
     </div>
-
-    <!--Sección Usuario-->
-    <div class="container-user">
-        <!--Información del Usuario-->
-        <div class="info-section">
-            <div class="user-info-content">
-                <div class="welcome-group">
-                    <h1 class="welcome-text">Bienvenido</h1>
-                    <h1 th:text="${nombre_usuario}" class="username"></h1>
-                </div>
-                <div class="separator-line"></div>
-                <div class="datetime-group">
-                    <p class="date">25 de agosto|2025</p>
-                    <p class="time">19:35</p>
-                </div>
-            </div>
-            <div class="user-avatar">
-                <!-- Círculo del usuario -->
-            </div>
+    
+    <!--Sección Historial-->
+    <div class="container-history">
+        <h2>Historal de tareas</h2>
+        <div class="view-section">
+            <div class="param-bar">
+            <span>Nombre</span>
+            <span>Descripción</span>
+            <span>Puntos</span>
         </div>
-
-        <!--Racha-->
-        <div class="streak-section">
-            <h1 class="streak-title">Racha Actual</h1>
-            <div class="streak-line"></div>
-            <div class="streak-content">
-                <p class="streak-days">15 días</p>
-                <i class='bx bxs-hot streak-icon'></i>
-            </div>
-        </div>
-
-        <!--Logo-->
-        <div class="logo-section">
-            <img th:src="@{/logo_negro.png}" alt="logo_negro" class="logo-text">
+        <div class="more-section">
+            <button>Mostrar Todo</button>
         </div>
     </div>
 </body>
