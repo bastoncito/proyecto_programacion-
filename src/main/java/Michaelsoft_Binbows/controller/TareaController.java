@@ -1,6 +1,7 @@
 package Michaelsoft_Binbows.controller;
 
 import java.util.Collections;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -24,9 +25,10 @@ public class TareaController {
         if(session.getAttribute("usuarioActual") == null){
             return "redirect:/error";
         }
+        System.out.println("LOG: El método 'mostrarTareas' ha sido llamado por una petición a /tareas.");
         Usuario usuarioActual = (Usuario) session.getAttribute("usuarioActual");
         List<Tarea> tareas = usuarioActual != null ?usuarioActual.getTareas() : Collections.emptyList();
-        model.addAttribute("nombre_usuario", usuarioActual != null ? usuarioActual.getNombreUsuario() : "-");
+        model.addAttribute("tareas",  tareas);
 
         return "tareas";
     }
@@ -36,10 +38,31 @@ public class TareaController {
         if(session.getAttribute("usuarioActual") == null){
             return "redirect:/error";
         }
-        Usuario usuarioActual = (Usuario) session.getAttribute("usuarioActual");
-        model.addAttribute("nombre_usuario", usuarioActual != null ? usuarioActual.getNombreUsuario() : "-");
+        return "tarea-nueva";
+    }
 
-        return "";
+    @PostMapping("/tareas/nueva")
+    public String procesarNuevaTarea(
+        @RequestParam("nombre") String nombre,
+        @RequestParam("descripcion") String descripcion, 
+    @RequestParam("fechaExpiracion") LocalDateTime fechaExpiracion,
+        @RequestParam("experiencia") int experiencia,
+        Model model,
+        HttpSession session) {
+        if(session.getAttribute("usuarioActual") == null){
+            return "redirect:/error";
+        }
+        Usuario usuarioActual = (Usuario) session.getAttribute("usuarioActual");
+        try{
+            Tarea nuevaTarea = new Tarea(nombre, descripcion, experiencia, fechaExpiracion);
+            usuarioActual.agregarTarea(nuevaTarea);
+            baseDatos.guardarBaseDatos();
+            model.addAttribute("mensaje", "Tarea agregada exitosamente.");
+            return "tarea-nueva";
+        }catch(IllegalArgumentException e){
+            model.addAttribute("error", e.getMessage());
+        }
+        return "tarea-nueva";
     }
 
     @GetMapping("/tareas/historial")

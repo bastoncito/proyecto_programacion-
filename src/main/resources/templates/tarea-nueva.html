@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Tarea Nueva</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <h1>Crear Nueva Tarea</h1>
+    <form th:action="@{/tareas/nueva}" method="post">
+        <label for="nombre">Nombre de la Tarea:</label>
+        <input type="text" id="nombre" name="nombre" required><br><br>
+
+        <label for="descripcion">Descripción:</label>
+        <textarea id="descripcion" name="descripcion" required></textarea><br><br>
+
+        <label for="exp">Experiencia (XP):</label>
+        <input type="number" id="exp" name="exp" required><br><br>
+
+        <label for="fechaExpiracion">Fecha de Expiración:</label>
+        <input type="datetime-local" th:field="*{fechaExpiracion}" /><br><br>
+
+        <button type="submit">Crear Tarea</button>
+        <p th:if="${mensaje}" th:text="${mensaje}"></p>
+        <p th:if="${error}" th:text="${error}" style="color:red;"></p>
+    </form>
+    <a th:href="@{/tareas}">Volver a la lista de tareas</a>
+</body>
+</html>

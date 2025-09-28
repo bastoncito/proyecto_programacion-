@@ -1,7 +1,7 @@
 package Michaelsoft_Binbows.services;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -12,7 +12,7 @@ public class Usuario{
     private List<Tarea> tareas;
     private List<Tarea> tareasCompletadas;
     private List<Logro> logros;
-    private Date fechaRegistro;
+    private LocalDateTime fechaRegistro;
 
     public Usuario(String nombre_usuario, String correo_electronico, String contraseña){
         setNombreUsuario(nombre_usuario);
@@ -23,7 +23,7 @@ public class Usuario{
         this.logros = new ArrayList<>();
         this.experiencia=0;
         this.nivelExperiencia=1;
-        this.fechaRegistro = new Date(); // Fecha actual
+    this.fechaRegistro = LocalDateTime.now(); // Fecha actual
     }
     /**
      * Getters/Setters
@@ -48,7 +48,7 @@ public class Usuario{
     public int getExperiencia() {
         return experiencia;
     }
-    public Date getFechaRegistro() {
+    public LocalDateTime getFechaRegistro() {
         return fechaRegistro;
     }
     public int getNumeroCompletadas() {
@@ -194,7 +194,7 @@ public class Usuario{
             throw new IllegalArgumentException("La tarea '" + tareaACompletar.getNombre() + "' no se encuentra en la lista de tareas pendientes de este usuario.");
         }
 
-        tareaACompletar.setFechaCompletada(new Date()); // Marca la fecha de completado como la actual.
+    tareaACompletar.setFechaCompletada(LocalDateTime.now()); // Marca la fecha de completado como la actual.
 
         // Mover la tarea de la lista la lista de completadas.
         tareas.remove(tareaACompletar);

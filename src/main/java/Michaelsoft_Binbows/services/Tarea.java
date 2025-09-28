@@ -1,14 +1,21 @@
 package Michaelsoft_Binbows.services;
 
-import java.util.Date;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
 public class Tarea{
     private String nombre, descripcion;
     private int exp;
-    private Date fechaExpiracion;
-    private Date fechaCompletada = null;
+    //Formato de fecha y hora aceptado: 2023-12-31T23:59
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    private LocalDateTime fechaExpiracion;
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    private LocalDateTime fechaCompletada = null;
     // constructor
-    public Tarea (String nombre, String descripcion, int exp, Date fecha_expiracion){
+    public Tarea (String nombre, String descripcion, int exp, LocalDateTime fecha_expiracion){
         setNombre(nombre);
         setDescripcion(descripcion);
         setExp(exp);
@@ -17,7 +24,7 @@ public class Tarea{
     public String getNombre() {
         return nombre;
     }
-    public Date getFechaExpiracion() {
+    public LocalDateTime getFechaExpiracion() {
         return fechaExpiracion;
     }
     public int getExp() {
@@ -26,7 +33,7 @@ public class Tarea{
     public String getDescripcion() {
         return descripcion;
     }
-    public Date getFechaCompletada() {
+    public LocalDateTime getFechaCompletada() {
         return fechaCompletada;
     }
     public void setNombre(String nombre) {
@@ -51,22 +58,22 @@ public class Tarea{
         }
         this.exp = exp;
     }
-    public void setFechaExpiracion(Date fechaExpiracion) {
+    public void setFechaExpiracion(LocalDateTime fechaExpiracion) {
         if(fechaExpiracion == null){
             throw new IllegalArgumentException("La fecha no puede estar vacía.");
         }
-        Date fechaActual = new Date();
-        if(fechaExpiracion.before(fechaActual)){ 
+        LocalDateTime fechaActual = LocalDateTime.now();
+        if(fechaExpiracion.isBefore(fechaActual)){ 
             throw new IllegalArgumentException("La fecha debe ser igual o posterior a hoy.");
         }
-        //revisa si 
-        long diferenciaMilisegundos = fechaExpiracion.getTime() - fechaActual.getTime();
+        // revisa si la fecha está al menos 1 hora en el futuro
+        long diferenciaMilisegundos = Duration.between(fechaActual, fechaExpiracion).toMillis();
         if (diferenciaMilisegundos < 60 * 60 * 1000) {
             throw new IllegalArgumentException("La fecha debe ser al menos 1 hora posterior a la actual.");
         }
         this.fechaExpiracion = fechaExpiracion;
     }
-    public void setFechaCompletada(Date fechaCompletada) {
+    public void setFechaCompletada(LocalDateTime fechaCompletada) {
         this.fechaCompletada = fechaCompletada;
     }
     public boolean tareaExistePorNombre(List<Tarea> tareas, Tarea tarea) {

@@ -16,6 +16,14 @@ public class BaseDatos {
 
     public BaseDatos() {
         this.persistencia = new PersistenciaJSON();
+        cargarBaseDatos();
+    }
+
+    public void guardarBaseDatos() {
+        this.persistencia.guardarBaseDatos(this.usuarios);
+    }
+
+    public void cargarBaseDatos() {
         this.usuarios = this.persistencia.cargarUsuarios();
     }
 
@@ -49,7 +57,7 @@ public class BaseDatos {
         if(valido == null){
             usuarios.add(usuario);
             System.out.println("Usuario '" + usuario.getNombreUsuario() + "' agregado exitosamente.");
-            this.persistencia.guardarBaseDatos(this.usuarios);
+            guardarBaseDatos();
         }else{
             System.err.println(valido);
         }

@@ -1,12 +1,20 @@
 package Michaelsoft_Binbows.data;
 
 import java.io.*;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonSerializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonParseException;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
 
 import Michaelsoft_Binbows.services.Usuario;
@@ -16,8 +24,25 @@ public class PersistenciaJSON {
     private Gson gson;
 
     public PersistenciaJSON() {
-        // Creamos una instancia de Gson. setPrettyPrinting() hace que el archivo JSON sea legible. (lo hara con tabulaciones, en vez de una sola linea)
-        this.gson = new GsonBuilder().setPrettyPrinting().create();
+        // Creamos una instancia de Gson con adaptadores para LocalDateTime.
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+
+        JsonSerializer<LocalDateTime> serializer = (LocalDateTime src, Type typeOfSrc, com.google.gson.JsonSerializationContext context) -> {
+            return src == null ? null : new JsonPrimitive(src.format(formatter));
+        };
+        JsonDeserializer<LocalDateTime> deserializer = (JsonElement json, Type typeOfT, com.google.gson.JsonDeserializationContext context) -> {
+            try {
+                return json == null ? null : LocalDateTime.parse(json.getAsString(), formatter);
+            } catch (Exception e) {
+                throw new JsonParseException(e);
+            }
+        };
+
+        this.gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDateTime.class, serializer)
+                .registerTypeAdapter(LocalDateTime.class, deserializer)
+                .setPrettyPrinting()
+                .create();
     }
 
     /**

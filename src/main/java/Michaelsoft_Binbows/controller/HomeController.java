@@ -92,4 +92,10 @@ public class HomeController {
         System.out.println("LOG: El método de prueba 'decirHola' ha sido llamado por una petición a /hola.");
         return "<h1>¡Éxito! La respuesta viene del controlador de Java.</h1>";
     }
+
+    @GetMapping("/error")
+    @ResponseBody
+    public String mostrarError() {
+        return "<h1>¿No se te está olvidando algo?</h1>";
+    }
 }
