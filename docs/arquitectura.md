@@ -1,5 +1,6 @@
 ## Estructura del proyecto
 
+```text
 proyecto_programacion-/
 ├─ readme.md
 ├─ base_datos.json
