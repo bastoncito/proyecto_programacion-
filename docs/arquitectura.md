@@ -12,14 +12,14 @@ proyecto_programacion-/
 │  ├─ main/
 │  │  ├─ java/
 │  │  │  ├─ Michaelsoft_Binbows/
-│  │  │  │  ├─ controller/
-│  │  │  │  │  ├─ TareaController.java
+│  │  │  │  ├─ controller/ --> Llamadas a la capa de servicios (validaciones de entradas/solicitudes) + endpoints
+│  │  │  │  │  ├─ TareaController.java 
 │  │  │  │  │  ├─ AutorizacionController.java
 │  │  │  │  │  ├─ HomeController.java
 │  │  │  │  │  ├─ AdminController.java
-│  │  │  │  ├─ data/
+│  │  │  │  ├─ data/ --> Almacenamiento de información y persistencia de datos
 │  │  │  │  │  ├─ PersistenciaJSON.java
-│  │  │  │  ├─ services/
+│  │  │  │  ├─ services/ --> La lógica de la solución en sí
 │  │  │  │  │  ├─ BaseDatos.java
 │  │  │  │  │  ├─ Logro.java
 │  │  │  │  │  ├─ GestorLogro.java
@@ -27,8 +27,9 @@ proyecto_programacion-/
 │  │  │  │  │  ├─ Tarea.java
 │  │  │  │  │  ├─ SistemaNiveles.java
 │  │  │  │  ├─ ProyectoApplication.java
-│  │  ├─ resources/
+│  │  ├─ resources/ --> Recursos para visualización de cada página
 │  │  │  ├─ static/
 │  │  │  │  ├─ (.css + imágenes)
 │  │  │  ├─ templates/
 │  │  │  │  ├─ (.html)
+
