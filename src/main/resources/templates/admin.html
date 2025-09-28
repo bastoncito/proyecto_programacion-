@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pestaña Administrador</title>
+    <link rel="stylesheet" th:href="@{/admin.css}">
+    <!-- Librería de iconos -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+    <!-- Sección Barra de Tareas -->
+    <div class="container-task-bar">
+        <!-- Logo -->
+        <div class="logo-placeholder">
+            <img th:src="@{/logo_negro.png}" style="width:180px; height:auto;">
+        </div>
+
+        <!-- Lista navegación -->
+        <ul>
+            <li><a th:href="@{/usuarios}"><i class='bx bxs-group'></i> Usuarios</a></li>
+            <li><a href="#"><i class='bx bx-task'></i> Tareas</a></li>
+            <li><a href="#"><i class='bx bxs-bar-chart-alt-2'></i> Top</a></li>
+            <li><a href="#"><i class='bx bxs-tag'></i> Roles</a></li>
+            <li><a href="#"><i class='bx bxs-id-card'></i> Administradores</a></li>
+        </ul>
+
+        <!-- Botón cerrar sesión -->
+        <button>Cerrar Sesión</button>
+    </div>
+
+    <!-- Sección Información -->
+    <div class="container-info">
+        <div class="info-section">
+            <div class="user-info">
+                <p><strong>User123</strong></p>
+                <p>user123@gmail.com</p>
+                <p>Super Admin</p>
+            </div>
+            <div class="user-avatar"></div>
+        </div>
+    </div>
+
+    <!-- Sección Zona de Trabajo -->
+    <div class="container-work">
+        <!-- Título de sección -->
+        <div class="section-title">Usuarios</div>
+        <div class="section-line"></div>
+
+        <!-- Barra de parámetros -->
+        <div class="param-bar">
+            <span>Nombre</span>
+            <span>Correo</span>
+            <span>Rol</span>
+            <span>Acciones</span>
+        </div>
+
+        <!-- Recuadro lista dinámica -->
+        <div class="list-box">
+            <p>Aquí irá la lista dinámica (usuarios, tareas, etc.)</p>
+        </div>
+    </div>
+</body>
+</html>

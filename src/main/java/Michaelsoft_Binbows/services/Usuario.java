@@ -1,42 +1,44 @@
-package Michaelsoft_Binbows.data;
+package Michaelsoft_Binbows.services;
 
 import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.regex.Pattern;
 
 public class Usuario{
-    private String nombre_usuario,correo_electronico,contraseña;
+    private String nombreUsuario,correoElectronico,contraseña;
     private int experiencia;
     private int nivelExperiencia;
     private List<Tarea> tareas;
     private List<Tarea> tareasCompletadas;
     private List<Logro> logros;
+    private LocalDateTime fechaRegistro;
 
     public Usuario(String nombre_usuario, String correo_electronico, String contraseña){
-        setNombre_usuario(nombre_usuario);
+        setNombreUsuario(nombre_usuario);
         setContraseña(contraseña);
-        setCorreo_electronico(correo_electronico);
+        setCorreoElectronico(correo_electronico);
         this.tareas=new ArrayList<>();
         this.tareasCompletadas=new ArrayList<>();
         this.logros = new ArrayList<>();
         this.experiencia=0;
         this.nivelExperiencia=1;
+    this.fechaRegistro = LocalDateTime.now(); // Fecha actual
     }
     /**
      * Getters/Setters
      */
-    public String getNombre_usuario() {
-        return nombre_usuario;
+    public String getNombreUsuario() {
+        return nombreUsuario;
     }
     
-    public String getCorreo_electronico() {
-        return correo_electronico;
+    public String getCorreoElectronico() {
+        return correoElectronico;
     }
     
     public String getContraseña() {
         return contraseña;
     }
-    
     public List<Tarea> getTareas() {
         return tareas;
     }
@@ -45,6 +47,12 @@ public class Usuario{
     }
     public int getExperiencia() {
         return experiencia;
+    }
+    public LocalDateTime getFechaRegistro() {
+        return fechaRegistro;
+    }
+    public int getNumeroCompletadas() {
+        return tareasCompletadas.size();
     }
     /*
     * Devuelve una copia de la lista de logros que el usuario ha desbloqueado.
@@ -59,31 +67,31 @@ public class Usuario{
     */
     public List<Tarea> getTareasCompletadas() {
         return new ArrayList<>(this.tareasCompletadas);
-}
-    public void setNombre_usuario(String nombre_usuario) {
+    }
+    public void setNombreUsuario(String nombre_usuario) {
         if(esNombreValido(nombre_usuario)){
-            this.nombre_usuario = nombre_usuario;
+            this.nombreUsuario = nombre_usuario;
         }else{
             throw new IllegalArgumentException("Nombre de usuario no válido: " + nombre_usuario);
         }
     }
     
-    public void setCorreo_electronico(String correo_electronico) {
+    public void setCorreoElectronico(String correo_electronico) {
         if(correoValido(correo_electronico)){
-            this.correo_electronico=correo_electronico;
+            this.correoElectronico=correo_electronico;
         }else{
             throw new IllegalArgumentException("Correo electronico no válido: " + correo_electronico);
         }
     }
     
     public void setContraseña(String nuevaContraseña) {
-    String resultado = validarContrasena(nuevaContraseña);
-    if (resultado == null) {
-        this.contraseña = nuevaContraseña;
-    } else {
-        throw new IllegalArgumentException(resultado);
+        String resultado = validarContrasena(nuevaContraseña);
+        if (resultado == null) {
+            this.contraseña = nuevaContraseña;
+        } else {
+            throw new IllegalArgumentException(resultado);
+        }
     }
-}
     /**
      * Recibe una Tarea como parametro
      * la agrega a la base de datos si su nombre, descricpcion y exp son validos
@@ -101,34 +109,34 @@ public class Usuario{
     }
 
     private  String validarContrasena(String contraseña) {
-    if (contraseña == null || contraseña.trim().isEmpty()) {
-        return "La contraseña no puede estar vacía";
+        if (contraseña == null || contraseña.trim().isEmpty()) {
+            return "La contraseña no puede estar vacía";
+        }
+
+        if (contraseña.length() < 8) {
+            return "La contraseña debe tener al menos 8 caracteres";
+        }
+
+        if (contraseña.contains(" ")) {
+            return "La contraseña no puede contener espacios";
+        }
+
+        boolean tieneMayuscula = Pattern.compile("[A-Z]").matcher(contraseña).find();
+        boolean tieneMinuscula = Pattern.compile("[a-z]").matcher(contraseña).find();
+        boolean tieneDigito = Pattern.compile("\\d").matcher(contraseña).find();
+        boolean tieneCaracterEspecial = Pattern.compile("[!@#$%^&*()_+\\-=\\[\\]{}|;:'\",.<>/?]").matcher(contraseña).find();
+
+        if (!tieneMayuscula || !tieneMinuscula || !tieneDigito || !tieneCaracterEspecial) {
+            StringBuilder errores = new StringBuilder();
+            if (!tieneMayuscula) errores.append("- Debe contener al menos una mayúscula\n");
+            if (!tieneMinuscula) errores.append("- Debe contener al menos una minúscula\n");
+            if (!tieneDigito) errores.append("- Debe contener al menos un dígito\n");
+            if (!tieneCaracterEspecial) errores.append("- Debe contener al menos un carácter especial (!@#$%^&* etc.)\n");
+            return "La contraseña es demasiado débil. Requisitos:\n" + errores.toString();
+        }
+
+        return null; // Null indica que la contraseña es válida
     }
-
-    if (contraseña.length() < 8) {
-        return "La contraseña debe tener al menos 8 caracteres";
-    }
-
-    if (contraseña.contains(" ")) {
-        return "La contraseña no puede contener espacios";
-    }
-
-    boolean tieneMayuscula = Pattern.compile("[A-Z]").matcher(contraseña).find();
-    boolean tieneMinuscula = Pattern.compile("[a-z]").matcher(contraseña).find();
-    boolean tieneDigito = Pattern.compile("\\d").matcher(contraseña).find();
-    boolean tieneCaracterEspecial = Pattern.compile("[!@#$%^&*()_+\\-=\\[\\]{}|;:'\",.<>/?]").matcher(contraseña).find();
-
-    if (!tieneMayuscula || !tieneMinuscula || !tieneDigito || !tieneCaracterEspecial) {
-         StringBuilder errores = new StringBuilder();
-        if (!tieneMayuscula) errores.append("- Debe contener al menos una mayúscula\n");
-        if (!tieneMinuscula) errores.append("- Debe contener al menos una minúscula\n");
-        if (!tieneDigito) errores.append("- Debe contener al menos un dígito\n");
-        if (!tieneCaracterEspecial) errores.append("- Debe contener al menos un carácter especial (!@#$%^&* etc.)\n");
-        return "La contraseña es demasiado débil. Requisitos:\n" + errores.toString();
-    }
-
-    return null; // Null indica que la contraseña es válida
-}
 
     private boolean tareaExistePorNombre(String nombre){
         for (Tarea tareaExistente : tareas) {
@@ -162,17 +170,17 @@ public class Usuario{
     }
     
     private static boolean correoValido(String correo) {
-    if (correo == null || correo.trim().isEmpty()) {
-        return false;
-    }
-    String regex = "[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}";
-    // [a-zA-Z0-9_]+ UNO O MAS, caracter (letras o numeros o '_')
-    // ([.][a-zA-Z0-9_]+)* CERO O MAS, punto '.' seguido de almenos un caracter 
-    // @ UN simbolo arroba
-    // [a-zA-Z0-9_]+ UNO O MAS, caracter (letras o numeros o '_')
-    // ([.][a-zA-Z0-9_]+)* CERO O MAS, punto '.' seguido de almenos un caracter
-    // [.][a-zA-Z]{2,5} UN punto '.', seguido de DOS A CINCO letras
-    return (correo.matches(regex));
+        if (correo == null || correo.trim().isEmpty()) {
+            return false;
+        }
+        String regex = "[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}";
+        // [a-zA-Z0-9_]+ UNO O MAS, caracter (letras o numeros o '_')
+        // ([.][a-zA-Z0-9_]+)* CERO O MAS, punto '.' seguido de almenos un caracter 
+        // @ UN simbolo arroba
+        // [a-zA-Z0-9_]+ UNO O MAS, caracter (letras o numeros o '_')
+        // ([.][a-zA-Z0-9_]+)* CERO O MAS, punto '.' seguido de almenos un caracter
+        // [.][a-zA-Z]{2,5} UN punto '.', seguido de DOS A CINCO letras
+        return (correo.matches(regex));
     }
 
     /*
@@ -184,7 +192,9 @@ public class Usuario{
         // Validar que la tarea a completar realmente existe en la lista.
         if (!tareas.contains(tareaACompletar)) {
             throw new IllegalArgumentException("La tarea '" + tareaACompletar.getNombre() + "' no se encuentra en la lista de tareas pendientes de este usuario.");
-    }
+        }
+
+    tareaACompletar.setFechaCompletada(LocalDateTime.now()); // Marca la fecha de completado como la actual.
 
         // Mover la tarea de la lista la lista de completadas.
         tareas.remove(tareaACompletar);
@@ -192,7 +202,7 @@ public class Usuario{
 
         // Añadir la experiencia de la tarea al total del usuario.
         this.experiencia += tareaACompletar.getExp();
-        System.out.println("¡'" + this.nombre_usuario + "' ha completado la tarea '" + tareaACompletar.getNombre() + "' y ha ganado " + tareaACompletar.getExp() + " de experiencia!");
+        System.out.println("¡'" + this.nombreUsuario + "' ha completado la tarea '" + tareaACompletar.getNombre() + "' y ha ganado " + tareaACompletar.getExp() + " de experiencia!");
         System.out.println("Experiencia total: " + this.experiencia);
 
         // Llamado al método que verificará si el usuario ha subido de nivel.
@@ -225,22 +235,22 @@ public class Usuario{
 
     @Override
     public String toString() {
-    // Calculamos la experiencia para el proximo nivel para mostrarla (ya que el usuario no la guarda)
-    int expParaSiguienteNivel = SistemaNiveles.experienciaParaNivel(this.nivelExperiencia + 1);
+        // Calculamos la experiencia para el proximo nivel para mostrarla (ya que el usuario no la guarda)
+        int expParaSiguienteNivel = SistemaNiveles.experienciaParaNivel(this.nivelExperiencia + 1);
 
-    return String.format(
-        "<<< Usuario: %s >>>\n" +
-        "Nivel: %d\n" +
-        "Experiencia: %d / %d\n" +
-        "Correo: %s\n" +
-        "Tareas Pendientes: %d\n" +
-        "Tareas Completadas: %d",
-        this.nombre_usuario,
-        this.nivelExperiencia,
-        this.experiencia,
-        expParaSiguienteNivel,
-        this.correo_electronico,
-        this.tareas.size(),
-        this.tareasCompletadas.size());
+        return String.format(
+            "<<< Usuario: %s >>>\n" +
+            "Nivel: %d\n" +
+            "Experiencia: %d / %d\n" +
+            "Correo: %s\n" +
+            "Tareas Pendientes: %d\n" +
+            "Tareas Completadas: %d",
+            this.nombreUsuario,
+            this.nivelExperiencia,
+            this.experiencia,
+            expParaSiguienteNivel,
+            this.correoElectronico,
+            this.tareas.size(),
+            this.tareasCompletadas.size());
     }
 }

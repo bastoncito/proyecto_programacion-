@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody; // Necesario para el método de prueba
 
-import Michaelsoft_Binbows.data.BaseDatos;
-import Michaelsoft_Binbows.data.Tarea;
-import Michaelsoft_Binbows.data.Usuario;
+import Michaelsoft_Binbows.services.BaseDatos;
+import Michaelsoft_Binbows.services.Tarea;
+import Michaelsoft_Binbows.services.Usuario;
 import jakarta.servlet.http.HttpSession;
 
 import java.util.Collections;
@@ -25,27 +25,16 @@ import java.util.List;
  * y decidir qué vista (archivo HTML) mostrarle al usuario.
  */
 @Controller // ANOTACIÓN CLAVE: Marca esta clase para que Spring la reconozca como un controlador.
-public class UsuarioController {
+public class AdminController {
 
     // Se inyecta la dependencia de BaseDatos, gracias a que BaseDatos es un Spring Bean (@Service).
     //(Véase BaseDatos.java para más detalles)
     private final BaseDatos baseDatos;
-    public UsuarioController(BaseDatos baseDatos) {
+    public AdminController(BaseDatos baseDatos) {
         this.baseDatos = baseDatos;
     }
 
-    @GetMapping("/")
-    public String redirigirLogin() {
-        return "redirect:/login";
-    }
-    /**
-     * Este método maneja las peticiones a la URL "/usuarios".
-     * @GetMapping("/usuarios") es la anotación que conecta la URL con este método.
-     *
-     * @param model Es un objeto que Spring nos proporciona para pasar datos desde el controlador a la vista HTML.
-     * @return El nombre del archivo HTML (sin la extensión .html) que se debe renderizar.
-     */
-    @GetMapping("/usuarios")
+    @GetMapping("/admin/usuarios")
     public String mostrarListaDeUsuarios(Model model) {
         
         System.out.println("LOG: El método 'mostrarListaDeUsuarios' ha sido llamado por una petición a /usuarios.");
@@ -63,30 +52,18 @@ public class UsuarioController {
         return "lista-usuarios";
     }
 
-    @GetMapping("/home")
-    public String mostrarMain(Model model, HttpSession session) {
-        System.out.println("LOG: El método 'mostrarMain' ha sido llamado por una petición a /home.");
+    @GetMapping("/admin")
+    public String mostrarAdmin(Model model, HttpSession session) {
+        System.out.println("LOG: El método 'mostrarAdmin' ha sido llamado por una petición a /admin.");
+        /* 
+        Completar cuándo esté listo el login de Admin
+
         if(session.getAttribute("usuarioActual") == null){
             return "redirect:/error";
         }
         Usuario usuarioActual = (Usuario) session.getAttribute("usuarioActual");
         model.addAttribute("nombre_usuario", usuarioActual != null ? usuarioActual.getNombre_usuario() : "-");
-
-        List<Tarea> tareas = usuarioActual != null ?usuarioActual.getTareas() : Collections.emptyList();
-        model.addAttribute("tareas", tareas);
-
-        return "home";
-    }
-
-    /**
-     * Este es un método de diagnóstico para verificar que el controlador responde.
-     * @ResponseBody le dice a Spring que no busque un archivo HTML, sino que devuelva
-     * el texto de este método directamente como respuesta al navegador.
-     */
-    @GetMapping("/hola")
-    @ResponseBody
-    public String decirHola() {
-        System.out.println("LOG: El método de prueba 'decirHola' ha sido llamado por una petición a /hola.");
-        return "<h1>¡Éxito! La respuesta viene del controlador de Java.</h1>";
+        */
+        return "admin";
     }
 }
