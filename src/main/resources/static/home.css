@@ -580,7 +580,7 @@ body {
     justify-content: flex-end
 }
 
-.task-buttons button {
+.task-buttons a {
     padding: 10px 24px;
     border: none;
     border-radius: 24px;
@@ -591,18 +591,18 @@ body {
 }
 
 /* Para el botón "Agregar Tarea" (primer botón) */
-.task-buttons button:first-child {
+.task-buttons a:first-child {
     background-color: #333;
     color: #fff;
 }
 
 /* Para el botón "Eliminar Tarea" (segundo botón) */
-.task-buttons button:last-child {
+.task-buttons a:last-child {
     background-color: #d9534f;
     color: #fff;
 }
 
-.task-buttons button:hover {
+.task-buttons a:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }

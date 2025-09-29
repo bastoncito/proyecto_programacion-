@@ -127,15 +127,15 @@
                 <p th:if="${#lists.isEmpty(tareas)}">No tienes tareas anotadas.</p>
             </div>
             <div class="task-buttons">
-                <button>Agregar Tarea</button>
-                <button>Eliminar Tarea</button>
+                <a th:href="@{/nueva-tarea}">Agregar Tarea</a>
+                <a>Eliminar Tarea</a>
             </div>
         </div>
     </div>
     
     <!--Sección Historial-->
     <div class="container-history">
-        <h2>Historal de tareas</h2>
+        <h2>Historial de tareas</h2>
         <div class="view-section">
             <div class="param-bar">
             <span>Nombre</span>
@@ -146,5 +146,41 @@
             <button>Mostrar Todo</button>
         </div>
     </div>
+
+    <!-- Modal JAVASCRIPT POR TERMINAR
+    <div class="modal" id="taskModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeModal">Cerrar</button>
+            <h2 id="modalTitle"></h2>
+            <p><strong>Descripcion:</strong> <span id="modalDescription"></span></p>
+            <p><strong>Vale:</strong> <span id="modalExp"></span></p>
+            <p><strong>Expira:</strong> <span id="modalExpire"></span></p>
+        </div>
+    </div>
+    <script>
+        const modal = document.getElementById("taskModal");
+        const modalTitle = document.getElementById("modalTitle");
+        const modalDescription = document.getElementById("modalDescription");
+        const modalExp = document.getElementById("modalExp");
+        const modalExpire = document.getElementById("modalExpire");
+        const closeModal = document.getElementById("closeModal");
+
+        // Show modal with task info
+        document.querySelectorAll(".view-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                modalTitle.textContent = btn.dataset.nombre;
+                modalDescription.textContent = btn.dataset.descripcion;
+                modalExp.textContent = btn.dataset.experiencia + " XP";
+                modalExpire.textContent = btn.dataset.expira;
+                modal.style.display = "flex";
+            });
+        });
+
+        // Close modal
+        closeModal.addEventListener("click", () => {
+            modal.style.display = "none";
+        });
+    </script>
+    -->
 </body>
 </html>

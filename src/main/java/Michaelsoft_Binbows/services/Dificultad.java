@@ -13,7 +13,7 @@ public class Dificultad {
      */
     private static int obtenerIDPorDificultad(String dificultad) {
         return switch (dificultad) {
-            case "Muy facil" -> 1;
+            case "Muy fácil" -> 1;
             case "Fácil" -> 2;
             case "Medio" -> 3;
             case "Difícil" -> 4;

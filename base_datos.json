@@ -44,6 +44,12 @@
         "descripcion": "Lavar platos y limpiar encimeras",
         "exp": 25,
         "fechaExpiracion": "2025-09-30T20:16"
+      },
+      {
+        "nombre": "Lava la loza ",
+        "descripcion": "Deja los platos del desayuno y almuerzo limpiecitos",
+        "exp": 25,
+        "fechaExpiracion": "2025-10-01T00:23"
       }
     ],
     "tareasCompletadas": [],
