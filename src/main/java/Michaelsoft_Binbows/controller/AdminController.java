@@ -46,7 +46,7 @@ public class AdminController {
 
         // Filtro de seguridad básico
         if (usuarioActual == null) {
-            return "redirect:/login";
+            return "redirect:/403";
         }
         if (usuarioActual.getRol() != Rol.ADMIN && usuarioActual.getRol() != Rol.MODERADOR) {
             return "redirect:/acceso-denegado"; 

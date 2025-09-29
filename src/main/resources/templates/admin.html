@@ -25,7 +25,9 @@
             <li><a href="#"><i class='bx bxs-id-card'></i> Administradores</a></li>
         </ul>
 
-        <button>Cerrar Sesión</button>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit">Cerrar Sesión</button>
+        </form>
     </div>
 
     <!-- Contenido principal (todo lo que está a la derecha) -->

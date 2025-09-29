@@ -44,12 +44,6 @@
         "descripcion": "Lavar platos y limpiar encimeras",
         "exp": 25,
         "fechaExpiracion": "2025-09-30T20:16"
-      },
-      {
-        "nombre": "Lava la loza ",
-        "descripcion": "Deja los platos del desayuno y almuerzo limpiecitos",
-        "exp": 25,
-        "fechaExpiracion": "2025-10-01T00:23"
       }
     ],
     "tareasCompletadas": [],
@@ -90,26 +84,6 @@
     "fechaRegistro": "2025-09-28T20:16",
     "tareas": [],
     "tareasCompletadas": [],
-    "logros": []
-  },
-  {
-    "nombreUsuario": "Bastoncito",
-    "correoElectronico": "breyes24@alumnos.utalca.cl",
-    "contraseña": "Asdf12345@",
-    "experiencia": 25,
-    "nivelExperiencia": 1,
-    "rol": "USUARIO",
-    "fechaRegistro": "2025-09-29T09:43",
-    "tareas": [],
-    "tareasCompletadas": [
-      {
-        "nombre": "Peinar a la gata",
-        "descripcion": "Despeluca un poco a la Clio, que anda dejando pelo por todas partes",
-        "exp": 25,
-        "fechaExpiracion": "2025-10-01T10:20",
-        "fechaCompletada": "2025-09-29T10:20"
-      }
-    ],
     "logros": []
   }
 ]
