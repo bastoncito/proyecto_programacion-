@@ -379,13 +379,13 @@ body {
 }
 
 /* Para el primer botón */
-.info-buttons button:first-child {
+.info-buttons .logout{
     background-color: #333;
     color: #fff;
 }
 
 /* Para el segundo botón */
-.info-buttons button:last-child {
+.info-buttons .borrar{
     background-color: #d9534f;
     color: #fff;
 }

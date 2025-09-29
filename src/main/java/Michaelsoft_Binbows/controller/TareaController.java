@@ -19,24 +19,32 @@ public class TareaController {
     public TareaController(BaseDatos baseDatos) {
         this.baseDatos = baseDatos;
     }
-
-    @GetMapping("/tareas")
-    public String mostrarTareas(Model model, HttpSession session) {
-        if(session.getAttribute("usuarioActual") == null){
-            return "redirect:/error";
+    @PostMapping("/eliminar-tarea")
+    public String eliminarTarea(Model model, HttpSession session, @RequestParam("nombreTarea") String nombreTarea){
+        Usuario usuarioActual = (Usuario)session.getAttribute("usuarioActual");
+        if(usuarioActual == null){
+            return "redirect:/403";
         }
-        System.out.println("LOG: El método 'mostrarTareas' ha sido llamado por una petición a /tareas.");
-        Usuario usuarioActual = (Usuario) session.getAttribute("usuarioActual");
-        List<Tarea> tareas = usuarioActual != null ?usuarioActual.getTareas() : Collections.emptyList();
-        model.addAttribute("tareas",  tareas);
+        usuarioActual.cancelarTarea(nombreTarea);
+        baseDatos.guardarBaseDatos();
+        return "redirect:/home";
+    }
 
-        return "tareas";
+    @PostMapping("/completar-tarea")
+    public String completarTarea(Model model, HttpSession session, @RequestParam("nombreTarea") String nombreTarea){
+        Usuario usuarioActual = (Usuario)session.getAttribute("usuarioActual");
+        if(usuarioActual == null){
+            return "redirect:/403";
+        }
+        usuarioActual.completarTarea(nombreTarea);
+        baseDatos.guardarBaseDatos();
+        return "redirect:/home";
     }
 
     @GetMapping("/nueva-tarea")
     public String mostrarFormularioNuevaTarea(Model model, HttpSession session) {
         if(session.getAttribute("usuarioActual") == null){
-            return "redirect:/error";
+            return "redirect:/403";
         }
         System.out.println("LOG: El método 'mostrarFormularioNuevaTarea' ha sido llamado por una petición a /nueva-tarea.");
         return "tarea-nueva";
@@ -50,7 +58,7 @@ public class TareaController {
         Model model,
         HttpSession session) {
         if(session.getAttribute("usuarioActual") == null){
-            return "redirect:/error";
+            return "redirect:/403";
         }
         Usuario usuarioActual = (Usuario) session.getAttribute("usuarioActual");
         try{
@@ -65,7 +73,7 @@ public class TareaController {
         }
         return "tarea-nueva";
     }
-
+    /* 
     @GetMapping("/tareas/historial")
     public String mostrarHistorialTTareas(Model model, HttpSession session) {
         if(session.getAttribute("usuarioActual") == null){
@@ -76,5 +84,23 @@ public class TareaController {
 
         return "";
     }
+        |*/
+
+            /* 
+    @GetMapping("/tareas")
+    public String mostrarTareas(Model model, HttpSession session) {
+        if(session.getAttribute("usuarioActual") == null){
+            return "redirect:/error";
+        }
+        @GetMapping("/eliminar")
+
+        System.out.println("LOG: El método 'mostrarTareas' ha sido llamado por una petición a /tareas.");
+        Usuario usuarioActual = (Usuario) session.getAttribute("usuarioActual");
+        List<Tarea> tareas = usuarioActual != null ?usuarioActual.getTareas() : Collections.emptyList();
+        model.addAttribute("tareas",  tareas);
+
+        return "tareas";
+    }
+    */
 
 }

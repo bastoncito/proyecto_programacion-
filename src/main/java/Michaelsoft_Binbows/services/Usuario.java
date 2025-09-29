@@ -196,13 +196,14 @@ public class Usuario{
     * Marca una tarea como completada, la mueve a la lista de tareas completadas,
     * añade la experiencia al usuario y verifica si sube de nivel.
     */
-    public void completarTarea(Tarea tareaACompletar) {
+    public void completarTarea(String nombreTarea) {
         // Validar que la tarea a completar realmente existe en la lista.
-        if (!tareas.contains(tareaACompletar)) {
-            throw new IllegalArgumentException("La tarea '" + tareaACompletar.getNombre() + "' no se encuentra en la lista de tareas pendientes de este usuario.");
+        Tarea tareaACompletar = buscarTareaPorNombre(nombreTarea);
+        if (tareaACompletar == null) {
+            throw new IllegalArgumentException("La tarea '" + nombreTarea + "' no se encuentra en la lista de tareas pendientes de este usuario.");
         }
 
-    tareaACompletar.setFechaCompletada(LocalDateTime.now()); // Marca la fecha de completado como la actual.
+        tareaACompletar.setFechaCompletada(LocalDateTime.now()); // Marca la fecha de completado como la actual.
 
         // Mover la tarea de la lista la lista de completadas.
         tareas.remove(tareaACompletar);
@@ -210,11 +211,21 @@ public class Usuario{
 
         // Añadir la experiencia de la tarea al total del usuario.
         this.experiencia += tareaACompletar.getExp();
-        System.out.println("¡'" + this.nombreUsuario + "' ha completado la tarea '" + tareaACompletar.getNombre() + "' y ha ganado " + tareaACompletar.getExp() + " de experiencia!");
+        System.out.println("¡'" + this.nombreUsuario + "' ha completado la tarea '" + nombreTarea + "' y ha ganado " + tareaACompletar.getExp() + " de experiencia!");
         System.out.println("Experiencia total: " + this.experiencia);
 
         // Llamado al método que verificará si el usuario ha subido de nivel.
         verificarSubidaDeNivel();
+    }
+
+    public void cancelarTarea(String nombreTarea){
+        Tarea tarea = buscarTareaPorNombre(nombreTarea);
+        if(tarea == null){
+            throw new IllegalArgumentException("La tarea '" + nombreTarea + "' no se encuentra en la lista de tareas pendientes de este usuario.");
+        }
+
+        tareas.remove(tarea);
+        System.out.println("La tarea '" + nombreTarea + "' ha sido eliminada. No has ganado puntos.");
     }
     
     /*
@@ -239,6 +250,15 @@ public class Usuario{
      */
     private void comprobarYDesbloquearLogros(){
         //por hacer
+    }
+
+    private Tarea buscarTareaPorNombre(String nombre){
+        for(Tarea t : this.tareas){
+            if(t.getNombre().trim().equals(nombre.trim())){
+                return t;
+            }
+        }
+        return null;
     }
 
     @Override

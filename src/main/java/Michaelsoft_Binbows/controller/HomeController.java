@@ -44,7 +44,7 @@ public class HomeController {
     public String mostrarHome(Model model, HttpSession session) {
         System.out.println("LOG: El método 'mostrarMain' ha sido llamado por una petición a /home.");
         if(session.getAttribute("usuarioActual") == null){
-            return "redirect:/error";
+            return "redirect:/403";
         }
         Usuario usuarioActual = (Usuario) session.getAttribute("usuarioActual");
         model.addAttribute("nombre_usuario", usuarioActual != null ? usuarioActual.getNombreUsuario() : "-");
@@ -54,6 +54,25 @@ public class HomeController {
         model.addAttribute("tareas", tareas);
 
         return "home";
+    }
+
+    @PostMapping("/logout")
+    public String cerrarSesion(Model model, HttpSession session){
+        Usuario actual = (Usuario)session.getAttribute("usuarioActual");
+        if(actual == null){
+            return "redirect:/403";
+        }
+        return "redirect:/";
+    }
+
+    @PostMapping("/borrar-cuenta")
+    public String borrarCuenta(Model model, HttpSession session){
+        Usuario actual = (Usuario)session.getAttribute("usuarioActual");
+        if(actual == null){
+            return "redirect:/403";
+        }
+        baseDatos.eliminarUsuario(actual);
+        return "redirect:/";
     }
 
     @GetMapping("/ranking")
@@ -94,9 +113,9 @@ public class HomeController {
         return "<h1>¡Éxito! La respuesta viene del controlador de Java.</h1>";
     }
 
-    @GetMapping("/error")
+    @GetMapping("/403")
     @ResponseBody
     public String mostrarError() {
-        return "<h1>¿No se te está olvidando algo?</h1>";
+        return "<title>Error</title><h1>403 - Forbidden</h1><h3>¿No se te está olvidando algo?</h3>";
     }
 }

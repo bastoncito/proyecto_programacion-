@@ -30,6 +30,15 @@ public class BaseDatos {
     public List<Usuario> getUsuarios() { 
         return new ArrayList<>(usuarios); // Devuelve una copia para evitar modificaciones externas
     }
+
+    public void eliminarUsuario(Usuario usuario){
+        if(usuario == null || !usuarioExistePorNombre(usuario.getNombreUsuario())){
+            throw new IllegalArgumentException("El usuario no existe en la base de datos");
+        }
+        usuarios.remove(usuario);
+        System.out.println("El usuario '" + usuario.getNombreUsuario() + "' ha sido eliminado.");
+        guardarBaseDatos();
+    }
     
     /**
      * Recibe un usuario como parametro

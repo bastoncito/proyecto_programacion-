@@ -3,6 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    .modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+/* The Close Button */
+.close-btn{
+  color: #aaaaaa;
+  float: right;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+</style>
     <title>Good Time - Home</title>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" th:href="@{/home.css}">
@@ -75,8 +114,12 @@
                     </div>
                 </div>
                 <div class="info-buttons">
-                    <button>Cerrar Sesión</button>
-                    <button>Eliminar Cuenta</button>
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit" class="logout">Cerrar Sesión</button>
+                    </form>
+                    <form th:action="@{/borrar-cuenta}" method="post">
+                        <button type="submit" class="borrar">Borrar Cuenta</button>
+                    </form>
                 </div>
 
             </div>
@@ -119,16 +162,19 @@
                 <h1>Tareas Pendientes</h1>
             </div>
             <div class="task-list">
-                <button class="task-item"
+                <button class="task-item open-modal"
                         th:each="tarea, stat : ${tareas}"
                         th:if="${stat.index < 4}"
-                        th:text="${tarea.nombre}">
+                        th:text="${tarea.nombre}"
+                        th:attr="data-nombre=${tarea.nombre},
+                        data-descripcion=${tarea.descripcion},
+                        data-experiencia=${tarea.exp},
+                        data-expira=${tarea.fechaExpiracion}">
                 </button>
                 <p th:if="${#lists.isEmpty(tareas)}">No tienes tareas anotadas.</p>
             </div>
             <div class="task-buttons">
                 <a th:href="@{/nueva-tarea}">Agregar Tarea</a>
-                <a>Eliminar Tarea</a>
             </div>
         </div>
     </div>
@@ -147,26 +193,52 @@
         </div>
     </div>
 
-    <!-- Modal JAVASCRIPT POR TERMINAR
     <div class="modal" id="taskModal">
         <div class="modal-content">
-            <button class="close-btn" id="closeModal">Cerrar</button>
+            <button class="close-btn" id="closeModal">X</button>
             <h2 id="modalTitle"></h2>
             <p><strong>Descripcion:</strong> <span id="modalDescription"></span></p>
             <p><strong>Vale:</strong> <span id="modalExp"></span></p>
             <p><strong>Expira:</strong> <span id="modalExpire"></span></p>
+            <button id="deleteButton">Eliminar Tarea</button>
+            <form id="deleteForm" th:action="@{/eliminar-tarea}" method="post">
+                <input type="hidden" name="nombreTarea" id="deleteTaskId">
+            </form>
+            <button id="completeButton">Marcar como completada</button> 
+            <form id="completeForm" th:action="@{/completar-tarea}" method="post">
+                <input type="hidden" name="nombreTarea" id="completeTaskId">
+            </form>
         </div>
     </div>
+
     <script>
         const modal = document.getElementById("taskModal");
+        const openButtons = document.querySelectorAll(".open-modal")
         const modalTitle = document.getElementById("modalTitle");
         const modalDescription = document.getElementById("modalDescription");
         const modalExp = document.getElementById("modalExp");
         const modalExpire = document.getElementById("modalExpire");
         const closeModal = document.getElementById("closeModal");
 
+        const deleteTaskId = document.getElementById("deleteTaskId");
+        const deleteForm = document.getElementById("deleteForm");
+
+        const completeTaskId = document.getElementById("completeTaskId");
+        const completeForm = document.getElementById("completeForm");
+
+        document.getElementById("deleteButton").addEventListener("click", () => {
+            deleteTaskId.value = modalTitle.textContent;
+            deleteForm.submit();
+        })
+
+         document.getElementById("completeButton").addEventListener("click", () => {
+            completeTaskId.value = modalTitle.textContent;
+            completeForm.submit();
+        })
+
+
         // Show modal with task info
-        document.querySelectorAll(".view-btn").forEach(btn => {
+        openButtons.forEach(btn => {
             btn.addEventListener("click", () => {
                 modalTitle.textContent = btn.dataset.nombre;
                 modalDescription.textContent = btn.dataset.descripcion;
@@ -181,6 +253,5 @@
             modal.style.display = "none";
         });
     </script>
-    -->
 </body>
 </html>
