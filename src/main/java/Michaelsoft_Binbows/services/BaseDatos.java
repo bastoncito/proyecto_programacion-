@@ -130,24 +130,44 @@ public class BaseDatos {
     * Centraliza la lógica para actualizar un usuario.
     * Valida los datos y luego guarda los cambios.
     */
-    public void actualizarUsuario(String correoOriginal, String nuevoNombre, Rol nuevoRol) {
-        // 1. Validación de unicidad
+    public void actualizarUsuario(String correoOriginal, String nuevoNombre, String nuevoCorreo, Rol nuevoRol) { // <--- CAMBIO 1: Acepta "nuevoCorreo"
+        // --- VALIDACIONES ---
+        // 1. Validar que el nuevo nombre no esté en uso por OTRO usuario (esto ya lo tenías).
         if (usuarioExistePorNombre(nuevoNombre, correoOriginal)) {
-            throw new IllegalStateException("El nombre '" + nuevoNombre + "' ya está en uso por otro usuario.");
+            throw new IllegalArgumentException("El nombre '" + nuevoNombre + "' ya está en uso por otro usuario.");
         }
 
-        // 2. Búsqueda
+        // 2. Validar que el nuevo correo no esté en uso por OTRO usuario. (¡ESTO ES NUEVO!)
+        if (usuarioExistePorCorreo(nuevoCorreo, correoOriginal)) { // <-- CAMBIO 2: Usa el nuevo método de ayuda
+            throw new IllegalArgumentException("El correo '" + nuevoCorreo + "' ya está registrado por otro usuario.");
+        }
+    
+        // 3. Buscar el usuario a actualizar.
         Usuario usuarioAActualizar = buscarUsuarioPorCorreo(correoOriginal);
         if (usuarioAActualizar == null) {
-            throw new IllegalStateException("No se pudo encontrar al usuario para actualizar.");
+            throw new IllegalStateException("Error crítico: No se pudo encontrar al usuario para actualizar.");
         }
 
-        // 3. Actualización (los setters del Usuario validan el formato)
+        // 4. Usar los setters del propio Usuario.
         usuarioAActualizar.setNombreUsuario(nuevoNombre);
+        usuarioAActualizar.setCorreoElectronico(nuevoCorreo); // <--- CAMBIO 3: Ahora actualiza el correo
         usuarioAActualizar.setRol(nuevoRol);
 
-        // 4. Guardado
+        // 5. Persistir los cambios en el archivo JSON.
         guardarBaseDatos();
+    }
+    
+    public boolean usuarioExistePorCorreo(String correo, String correoExcluido) {
+    for (Usuario usuarioExistente : usuarios) {
+        // Si el usuario que estamos revisando NO es el que estamos editando...
+        if (!usuarioExistente.getCorreoElectronico().equalsIgnoreCase(correoExcluido)) {
+            // ...comprobamos si su correo coincide.
+            if (usuarioExistente.getCorreoElectronico().equalsIgnoreCase(correo)) {
+                return true; // ¡Encontrado! El correo ya está en uso.
+            }
+        }
+    }
+    return false; // El correo está disponible.
     }
     
     public void imprimirTodosUsuarios() {

@@ -41,30 +41,38 @@ public class SeguridadService {
         return false;
     }
 
-    /**
-     * Comprueba si un usuario (actor) tiene permiso para eliminar a otro (objetivo).
-     * Las reglas suelen ser más estrictas que para editar.
-     *
-     * @param actor El usuario que intenta realizar la acción.
-     * @param objetivo El usuario que va a ser eliminado.
-     * @return true si el actor tiene permiso, false en caso contrario.
-     */
+    /*
+    * Comprueba si un usuario (actor) tiene permiso para eliminar a otro (objetivo).
+    *
+    * @param actor El usuario que intenta realizar la acción.
+    * @param objetivo El usuario que va a ser eliminado.
+    * @return true si el actor tiene permiso, false en caso contrario.
+    */
     public boolean puedeEliminar(Usuario actor, Usuario objetivo) {
+        // Reglas de seguridad básicas que no cambian
         if (actor == null || objetivo == null) {
             return false;
         }
         // Regla fundamental: Nadie puede eliminarse a sí mismo.
-        if (actor.equals(objetivo)) {
+        // (Usamos el correo como identificador único para ser más seguros)
+        if (actor.getCorreoElectronico().equalsIgnoreCase(objetivo.getCorreoElectronico())) {
             return false;
         }
 
-        // Regla de negocio: Solo los ADMIN pueden eliminar usuarios.
-        // Además, un ADMIN no puede eliminar a otro ADMIN.
+        // --- LÓGICA DE ROLES ---
+
+        // Regla 1: Un ADMIN puede eliminar a MODERADORES y USUARIOS.
         if (actor.getRol() == Rol.ADMIN) {
+            // La única restricción para un Admin es que no puede eliminar a otro Admin.
             return objetivo.getRol() != Rol.ADMIN;
         }
         
-        // Si el actor no es ADMIN (es MODERADOR o USUARIO), no puede eliminar a nadie.
+        // Regla 2: Un MODERADOR solo puede eliminar a usuarios con el rol USUARIO.
+        if (actor.getRol() == Rol.MODERADOR) {
+            return objetivo.getRol() == Rol.USUARIO;
+        }
+        
+        // Si el actor no es ni ADMIN ni MODERADOR (es decir, es USUARIO), no puede eliminar a nadie.
         return false;
     }
 }
