@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.servlet.http.HttpSession;
 import Michaelsoft_Binbows.services.BaseDatos;
 import Michaelsoft_Binbows.services.Usuario;
+import Michaelsoft_Binbows.services.Rol;
 
 @Controller
 public class AutorizacionController {
@@ -86,7 +87,7 @@ public class AutorizacionController {
 
     @PostMapping("/login")
     public String procesarLogin(
-            @RequestParam("usuario") String username,
+            @RequestParam("usuario") String username, //puede ser el nombre de usuario o correo electronico
             @RequestParam("contraseña") String password,
             HttpSession session,
             Model model) {
@@ -106,7 +107,15 @@ public class AutorizacionController {
             if (credencialesValidas) {
                 System.out.println("LOG: Credenciales válidas para usuario: " + u.getNombreUsuario());
                 session.setAttribute("usuarioActual", u);
-            return "redirect:/home";
+                if(u.getRol()==Rol.ADMIN){
+                    System.out.println("LOG: El usuario es ADMIN. Redirigiendo a /admin.");
+                    return "redirect:/admin"; // Si el usuario tiene rol ADMIN redirige la pagina a el panel de admin
+                } else if (u.getRol()==Rol.MODERADOR){
+                    System.out.println("LOG: El usuario es MODERADOR. Redirigiendo a /home (o a un panel de moderador).");
+                    return "redirect:/home"; // Por ahora, los moderadores también van a /home, posiblemente podriamos hacer una pestaña de admin duplicada pero que en los admins no pueda editar
+                }else{
+                    return "redirect:/home";
+                }
             }
         }
         

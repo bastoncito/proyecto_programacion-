@@ -1,47 +1,74 @@
-// Asegúrate de que este paquete coincida exactamente con el de tus otras clases.
+// Ubicación del controlador
 package Michaelsoft_Binbows.controller;   
 
-import org.springframework.boot.autoconfigure.graphql.GraphQlProperties.Http;
-// --- Imports necesarios de Spring Framework y Java ---
+// Imports de Spring y Java
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody; // Necesario para el método de prueba
-
-import Michaelsoft_Binbows.services.BaseDatos;
-import Michaelsoft_Binbows.services.Tarea;
-import Michaelsoft_Binbows.services.Usuario;
 import jakarta.servlet.http.HttpSession;
 
-import java.util.Collections;
+// Imports de nuestras propias clases
+import Michaelsoft_Binbows.services.Rol;
+import Michaelsoft_Binbows.services.Usuario;
+import Michaelsoft_Binbows.services.SeguridadService;
+import Michaelsoft_Binbows.services.BaseDatos;
+
 import java.util.List;
 
 /**
- * Esta clase es un Controlador de Spring.v
- * Su responsabilidad es recibir peticiones web del navegador,
- * interactuar con la lógica de negocio (como la clase BaseDatos),
- * y decidir qué vista (archivo HTML) mostrarle al usuario.
+ * Controlador para gestionar el panel de administración.
+ * Maneja las rutas que empiezan con /admin.
  */
-@Controller // ANOTACIÓN CLAVE: Marca esta clase para que Spring la reconozca como un controlador.
+@Controller
 public class AdminController {
 
-    // Se inyecta la dependencia de BaseDatos, gracias a que BaseDatos es un Spring Bean (@Service).
-    //(Véase BaseDatos.java para más detalles)
+    // Dependencias que necesita el controlador para funcionar.
+    // Son 'final' porque se asignan una vez en el constructor y no cambian.
     private final BaseDatos baseDatos;
-    public AdminController(BaseDatos baseDatos) {
+    private final SeguridadService seguridadService;
+
+    // Constructor para la Inyección de Dependencias.
+    // Spring se encarga de pasarnos las instancias de BaseDatos y SeguridadService.
+    public AdminController(BaseDatos baseDatos, SeguridadService seguridadService) {
         this.baseDatos = baseDatos;
+        this.seguridadService = seguridadService;
     }
-        @GetMapping("/admin")
-    public String mostrarAdmin(Model model, HttpSession session) {
-        System.out.println("LOG: El método 'mostrarAdmin' ha sido llamado por una petición a /admin.");
+    
+    /**
+     * Muestra la página principal del panel de administración.
+     * Carga la lista de usuarios y verifica los permisos del visitante.
+     */
+    @GetMapping("/admin")
+    public String mostrarPanelAdmin(Model model, HttpSession session) {
         
+        // Obtenemos el usuario que inició sesión desde su "mochila" (la sesión).
+        Usuario usuarioActual = (Usuario) session.getAttribute("usuarioActual");
+
+        // --- Filtro de Seguridad ---
+        // Si nadie ha iniciado sesión, lo mandamos al login.
+        if (usuarioActual == null) {
+            System.out.println("LOG: Acceso denegado a /admin (no hay sesión). Redirigiendo a /login.");
+            return "redirect:/login";
+        }
+        
+        // Si el usuario no es ADMIN o MODERADOR, no debería estar aquí.
+        if (usuarioActual.getRol() != Rol.ADMIN && usuarioActual.getRol() != Rol.MODERADOR) {
+            System.out.println("LOG: Acceso denegado a /admin para el rol " + usuarioActual.getRol() + ".");
+            return "redirect:/acceso-denegado"; 
+        }
+
+        // Si pasa los filtros, preparamos la página.
+        System.out.println("LOG: Acceso a /admin concedido para: " + usuarioActual.getNombreUsuario());
+        
+        // 1. Pedimos a la base de datos la lista de todos los usuarios.
         List<Usuario> todosLosUsuarios = baseDatos.getUsuarios();
-
-        model.addAttribute("listaDeUsuarios", todosLosUsuarios);
-
-
+        
+        // 2. "Empaquetamos" los datos para que el HTML pueda usarlos.
+        model.addAttribute("usuarioActual", usuarioActual); // Para saber quién está viendo la página.
+        model.addAttribute("listaDeUsuarios", todosLosUsuarios); // La lista para la tabla.
+        model.addAttribute("seguridadService", this.seguridadService); // La herramienta para chequear permisos.
+        
+        // 3. Le decimos a Spring que renderice el archivo "admin.html".
         return "admin";
     }
 

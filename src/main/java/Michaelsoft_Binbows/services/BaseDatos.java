@@ -96,6 +96,30 @@ public class BaseDatos {
         }
         return false;
     }
+    /**
+ * Busca un usuario en la base de datos por su dirección de correo electrónico.
+ * La búsqueda no distingue entre mayúsculas y minúsculas.
+ *
+ * @param correo El correo electrónico del usuario a buscar.
+ * @return El objeto Usuario si se encuentra, o 'null' si no existe un usuario con ese correo.
+ */
+public Usuario buscarUsuarioPorCorreo(String correo) {
+    if (correo == null || correo.trim().isEmpty()) {
+        return null; // No buscamos si el correo es nulo o vacío.
+    }
+    
+    // Recorremos la lista de todos los usuarios.
+    for (Usuario usuario : this.usuarios) {
+        // Comparamos los correos ignorando mayúsculas/minúsculas.
+        if (usuario.getCorreoElectronico().equalsIgnoreCase(correo)) {
+            // Se encontro el usuario asi que retorono el objeto usuario completo
+            return usuario;
+        }
+    }
+    
+    // No se encontro usuario se retorna null
+    return null;
+}
 
     public void imprimirTodosUsuarios() {
         if (usuarios.isEmpty()) {
