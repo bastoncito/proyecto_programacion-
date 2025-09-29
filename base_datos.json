@@ -81,25 +81,6 @@
     "logros": []
   },
   {
-    "nombreUsuario": "Valerie Tron",
-    "correoElectronico": "valtron@gmail.com",
-    "contraseña": "g00dP@55w0rd",
-    "experiencia": 0,
-    "nivelExperiencia": 1,
-    "rol": "USUARIO",
-    "fechaRegistro": "2025-09-28T20:16",
-    "tareas": [
-      {
-        "nombre": "Revisar Correo",
-        "descripcion": "Limpiar bandeja de entrada y responder urgentes",
-        "exp": 25,
-        "fechaExpiracion": "2025-09-30T20:16"
-      }
-    ],
-    "tareasCompletadas": [],
-    "logros": []
-  },
-  {
     "nombreUsuario": "Julia Campos",
     "correoElectronico": "jcampos@hotmail.com",
     "contraseña": "tr!Rep3tae",

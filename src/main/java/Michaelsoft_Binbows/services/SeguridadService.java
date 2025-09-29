@@ -40,4 +40,31 @@ public class SeguridadService {
         // Si el actor no es ni ADMIN ni MODERADOR, se llega aquí.
         return false;
     }
+
+    /**
+     * Comprueba si un usuario (actor) tiene permiso para eliminar a otro (objetivo).
+     * Las reglas suelen ser más estrictas que para editar.
+     *
+     * @param actor El usuario que intenta realizar la acción.
+     * @param objetivo El usuario que va a ser eliminado.
+     * @return true si el actor tiene permiso, false en caso contrario.
+     */
+    public boolean puedeEliminar(Usuario actor, Usuario objetivo) {
+        if (actor == null || objetivo == null) {
+            return false;
+        }
+        // Regla fundamental: Nadie puede eliminarse a sí mismo.
+        if (actor.equals(objetivo)) {
+            return false;
+        }
+
+        // Regla de negocio: Solo los ADMIN pueden eliminar usuarios.
+        // Además, un ADMIN no puede eliminar a otro ADMIN.
+        if (actor.getRol() == Rol.ADMIN) {
+            return objetivo.getRol() != Rol.ADMIN;
+        }
+        
+        // Si el actor no es ADMIN (es MODERADOR o USUARIO), no puede eliminar a nadie.
+        return false;
+    }
 }

@@ -66,9 +66,18 @@
                     <div class="user-cell" th:text="${usuario.rol}"></div>
                     <div class="user-cell" th:text="${usuario.nivelExperiencia}"></div>
                     <div class="user-cell actions">
-                        <button class="btn-edit">Editar</button>
-                        <button class="btn-delete">Eliminar</button>
+                        <!-- El enlace "Editar" ahora apunta a /admin con el parámetro del correo -->
+                        <a th:if="${seguridadService.puedeEditar(usuarioActual, usuario)}"
+                        th:href="@{/admin(editarUsuarioCorreo=${usuario.correoElectronico})}" 
+                        class="btn-edit">Editar</a>
+
+                        <!-- El enlace "Eliminar" apunta a /admin/eliminar con el parámetro del correo -->
+                        <a th:if="${seguridadService.puedeEliminar(usuarioActual, usuario)}"
+                        th:href="@{/admin/eliminar(correo=${usuario.correoElectronico})}"
+                        class="btn-delete"
+                        onclick="return confirm('¿Estás seguro de que quieres eliminar a este usuario?');">Eliminar</a>
                     </div>
+
                 </div>
 
                 <!-- Mensaje para cuando no hay usuarios -->

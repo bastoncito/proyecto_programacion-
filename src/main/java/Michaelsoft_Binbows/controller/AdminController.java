@@ -1,10 +1,12 @@
-// Ubicación del controlador
-package Michaelsoft_Binbows.controller;   
+package Michaelsoft_Binbows.controller;
 
 // Imports de Spring y Java
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.servlet.http.HttpSession;
 
 // Imports de nuestras propias clases
@@ -13,63 +15,114 @@ import Michaelsoft_Binbows.services.Usuario;
 import Michaelsoft_Binbows.services.SeguridadService;
 import Michaelsoft_Binbows.services.BaseDatos;
 
-import java.util.List;
-
 /**
- * Controlador para gestionar el panel de administración.
- * Maneja las rutas que empiezan con /admin.
+ * Controlador para el panel de administración.
+ * Maneja la visualización y gestión de usuarios.
  */
 @Controller
 public class AdminController {
 
-    // Dependencias que necesita el controlador para funcionar.
-    // Son 'final' porque se asignan una vez en el constructor y no cambian.
+    // Dependencias del controlador
     private final BaseDatos baseDatos;
     private final SeguridadService seguridadService;
 
-    // Constructor para la Inyección de Dependencias.
-    // Spring se encarga de pasarnos las instancias de BaseDatos y SeguridadService.
+    // Inyección de dependencias
     public AdminController(BaseDatos baseDatos, SeguridadService seguridadService) {
         this.baseDatos = baseDatos;
         this.seguridadService = seguridadService;
     }
     
     /**
-     * Muestra la página principal del panel de administración.
-     * Carga la lista de usuarios y verifica los permisos del visitante.
+     * Muestra la página principal del panel de admin.
+     * Carga la lista de usuarios y prepara el modal de edición si es necesario.
      */
     @GetMapping("/admin")
-    public String mostrarPanelAdmin(Model model, HttpSession session) {
+    public String mostrarPanelAdmin(
+            @RequestParam(name = "editarUsuarioCorreo", required = false) String correoAEditar,
+            Model model, 
+            HttpSession session) {
         
-        // Obtenemos el usuario que inició sesión desde su "mochila" (la sesión).
         Usuario usuarioActual = (Usuario) session.getAttribute("usuarioActual");
 
-        // --- Filtro de Seguridad ---
-        // Si nadie ha iniciado sesión, lo mandamos al login.
+        // Filtro de seguridad básico
         if (usuarioActual == null) {
-            System.out.println("LOG: Acceso denegado a /admin (no hay sesión). Redirigiendo a /login.");
             return "redirect:/login";
         }
-        
-        // Si el usuario no es ADMIN o MODERADOR, no debería estar aquí.
         if (usuarioActual.getRol() != Rol.ADMIN && usuarioActual.getRol() != Rol.MODERADOR) {
-            System.out.println("LOG: Acceso denegado a /admin para el rol " + usuarioActual.getRol() + ".");
             return "redirect:/acceso-denegado"; 
         }
 
-        // Si pasa los filtros, preparamos la página.
-        System.out.println("LOG: Acceso a /admin concedido para: " + usuarioActual.getNombreUsuario());
+        // Preparamos los datos para la vista
+        model.addAttribute("usuarioActual", usuarioActual);
+        model.addAttribute("listaDeUsuarios", baseDatos.getUsuarios());
+        model.addAttribute("seguridadService", this.seguridadService);
         
-        // 1. Pedimos a la base de datos la lista de todos los usuarios.
-        List<Usuario> todosLosUsuarios = baseDatos.getUsuarios();
+        // Si se pidió editar, buscamos al usuario y lo pasamos al modelo para el modal
+        if (correoAEditar != null) {
+            Usuario usuarioAEditar = baseDatos.buscarUsuarioPorCorreo(correoAEditar);
+            if (usuarioAEditar != null && seguridadService.puedeEditar(usuarioActual, usuarioAEditar)) {
+                model.addAttribute("usuarioParaEditar", usuarioAEditar);
+            }
+        }
         
-        // 2. "Empaquetamos" los datos para que el HTML pueda usarlos.
-        model.addAttribute("usuarioActual", usuarioActual); // Para saber quién está viendo la página.
-        model.addAttribute("listaDeUsuarios", todosLosUsuarios); // La lista para la tabla.
-        model.addAttribute("seguridadService", this.seguridadService); // La herramienta para chequear permisos.
-        
-        // 3. Le decimos a Spring que renderice el archivo "admin.html".
         return "admin";
     }
 
+    /**
+     * Procesa el guardado de los cambios de un usuario desde el modal.
+     */
+    @PostMapping("/admin/guardar")
+    public String guardarUsuarioEditado(
+            @RequestParam("nombreUsuario") String nuevoNombre,
+            @RequestParam("correoElectronico") String correoOriginal,
+            @RequestParam("rol") Rol nuevoRol,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        Usuario actor = (Usuario) session.getAttribute("usuarioActual");
+        Usuario objetivo = baseDatos.buscarUsuarioPorCorreo(correoOriginal);
+
+        // Chequeo de seguridad en el servidor
+        if (!seguridadService.puedeEditar(actor, objetivo)) {
+            return "redirect:/acceso-denegado";
+        }
+
+        // Se intentan aplicar los cambios. Si hay un error de validación, se atrapa.
+        try {
+            baseDatos.actualizarUsuario(correoOriginal, nuevoNombre, nuevoRol);
+            redirectAttributes.addFlashAttribute("success", "Usuario '" + nuevoNombre + "' actualizado.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin?editarUsuarioCorreo=" + correoOriginal; // Vuelve al modal con el error
+        }
+        
+        return "redirect:/admin";
+    }
+
+    /**
+     * Elimina un usuario.
+     */
+    @GetMapping("/admin/eliminar")
+    public String eliminarUsuario(@RequestParam("correo") String correoAEliminar, HttpSession session, RedirectAttributes redirectAttributes) {
+        Usuario actor = (Usuario) session.getAttribute("usuarioActual");
+        Usuario objetivo = baseDatos.buscarUsuarioPorCorreo(correoAEliminar);
+
+        // Chequeo de seguridad en el servidor
+        if (!seguridadService.puedeEliminar(actor, objetivo)) {
+            return "redirect:/acceso-denegado";
+        }
+        
+        baseDatos.eliminarUsuario(objetivo);
+        redirectAttributes.addFlashAttribute("success", "Usuario '" + objetivo.getNombreUsuario() + "' eliminado.");
+
+        return "redirect:/admin";
+    }
+    
+    /**
+     * Página de "Acceso Denegado".
+     */
+    @GetMapping("/acceso-denegado")
+    public String mostrarAccesoDenegado() {
+        return "acceso-denegado"; 
+    }
 }
