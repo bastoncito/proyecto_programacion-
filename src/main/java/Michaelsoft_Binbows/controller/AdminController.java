@@ -33,37 +33,16 @@ public class AdminController {
     public AdminController(BaseDatos baseDatos) {
         this.baseDatos = baseDatos;
     }
-
-    @GetMapping("/admin/usuarios")
-    public String mostrarListaDeUsuarios(Model model) {
-        
-        System.out.println("LOG: El método 'mostrarListaDeUsuarios' ha sido llamado por una petición a /usuarios.");
-
-        // 1. Obtener los datos usando nuestra lógica de negocio existente.
-        List<Usuario> listaDeUsuarios = baseDatos.getUsuarios();
-        
-        // 2. Agregar la lista de usuarios al "model".
-        //    Esto es como poner los datos en una bandeja para llevarlos a la mesa (el HTML).
-        //    La clave "usuariosParaLaVista" es el nombre que usaremos en el archivo HTML para acceder a esta lista.
-        model.addAttribute("usuariosParaLaVista", listaDeUsuarios);
-        
-        // 3. Devolver el nombre de la plantilla.
-        //    Spring buscará un archivo llamado "lista-usuarios.html" dentro de la carpeta "src/main/resources/templates/".
-        return "lista-usuarios";
-    }
-
-    @GetMapping("/admin")
+        @GetMapping("/admin")
     public String mostrarAdmin(Model model, HttpSession session) {
         System.out.println("LOG: El método 'mostrarAdmin' ha sido llamado por una petición a /admin.");
-        /* 
-        Completar cuándo esté listo el login de Admin
+        
+        List<Usuario> todosLosUsuarios = baseDatos.getUsuarios();
 
-        if(session.getAttribute("usuarioActual") == null){
-            return "redirect:/error";
-        }
-        Usuario usuarioActual = (Usuario) session.getAttribute("usuarioActual");
-        model.addAttribute("nombre_usuario", usuarioActual != null ? usuarioActual.getNombre_usuario() : "-");
-        */
+        model.addAttribute("listaDeUsuarios", todosLosUsuarios);
+
+
         return "admin";
     }
+
 }

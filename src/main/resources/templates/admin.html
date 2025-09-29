@@ -1,63 +1,81 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pestaña Administrador</title>
+    <title>Panel de Administrador</title>
+    
+    <!-- CSS y Librerías -->
     <link rel="stylesheet" th:href="@{/admin.css}">
-    <!-- Librería de iconos -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
-    <!-- Sección Barra de Tareas -->
+    <!-- Barra lateral izquierda -->
     <div class="container-task-bar">
-        <!-- Logo -->
         <div class="logo-placeholder">
-            <img th:src="@{/logo_negro.png}" style="width:180px; height:auto;">
+            <img th:src="@{/logo_negro.png}" style="width:180px; height:auto;" alt="Logo">
         </div>
 
-        <!-- Lista navegación -->
+        <!-- Navegación principal -->
         <ul>
-            <li><a th:href="@{/usuarios}"><i class='bx bxs-group'></i> Usuarios</a></li>
+            <li><a th:href="@{/admin}"><i class='bx bxs-group'></i> Usuarios</a></li>
             <li><a href="#"><i class='bx bx-task'></i> Tareas</a></li>
             <li><a href="#"><i class='bx bxs-bar-chart-alt-2'></i> Top</a></li>
             <li><a href="#"><i class='bx bxs-tag'></i> Roles</a></li>
             <li><a href="#"><i class='bx bxs-id-card'></i> Administradores</a></li>
         </ul>
 
-        <!-- Botón cerrar sesión -->
         <button>Cerrar Sesión</button>
     </div>
 
-    <!-- Sección Información -->
-    <div class="container-info">
-        <div class="info-section">
-            <div class="user-info">
-                <p><strong>User123</strong></p>
-                <p>user123@gmail.com</p>
-                <p>Super Admin</p>
+    <!-- Contenido principal (todo lo que está a la derecha) -->
+    <div class="main-content">
+        
+        <!-- Tarjeta de información del usuario (arriba a la derecha) -->
+        <div class="container-info">
+            <div class="info-section">
+                <div class="user-info">
+                    <p><strong>User123</strong></p>
+                    <p>user123@gmail.com</p>
+                    <p>Super Admin</p>
+                </div>
+                <div class="user-avatar"></div>
             </div>
-            <div class="user-avatar"></div>
-        </div>
-    </div>
-
-    <!-- Sección Zona de Trabajo -->
-    <div class="container-work">
-        <!-- Título de sección -->
-        <div class="section-title">Usuarios</div>
-        <div class="section-line"></div>
-
-        <!-- Barra de parámetros -->
-        <div class="param-bar">
-            <span>Nombre</span>
-            <span>Correo</span>
-            <span>Rol</span>
-            <span>Acciones</span>
         </div>
 
-        <!-- Recuadro lista dinámica -->
-        <div class="list-box">
-            <p>Aquí irá la lista dinámica (usuarios, tareas, etc.)</p>
+        <!-- Zona de trabajo principal (título y tabla) -->
+        <div class="container-work">
+            <div class="section-title">Usuarios</div>
+            <div class="section-line"></div>
+
+            <!-- Contenedor de la tabla -->
+            <div class="list-box">
+                <!-- Cabecera de la tabla -->
+                <div class="param-bar">
+                    <span>Nombre</span>
+                    <span>Correo</span>
+                    <span>Rol</span>
+                    <span>Nivel</span>
+                    <span>Acciones</span>
+                </div>
+
+                <!-- Filas de datos (generadas dinámicamente) -->
+                <div class="user-row" th:each="usuario : ${listaDeUsuarios}">
+                    <div class="user-cell" th:text="${usuario.nombreUsuario}"></div>
+                    <div class="user-cell" th:text="${usuario.correoElectronico}"></div>
+                    <div class="user-cell" th:text="${usuario.rol}"></div>
+                    <div class="user-cell" th:text="${usuario.nivelExperiencia}"></div>
+                    <div class="user-cell actions">
+                        <button class="btn-edit">Editar</button>
+                        <button class="btn-delete">Eliminar</button>
+                    </div>
+                </div>
+
+                <!-- Mensaje para cuando no hay usuarios -->
+                <div th:if="${listaDeUsuarios.isEmpty()}" class="empty-list-message">
+                    <p>No hay usuarios registrados.</p>
+                </div>
+            </div>
         </div>
     </div>
 </body>

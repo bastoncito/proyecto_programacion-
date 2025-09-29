@@ -1,4 +1,6 @@
-/* ====== GENERAL ====== */
+/* -------------------------- */
+/* Estilos Generales          */
+/* -------------------------- */
 body {
     margin: 0;
     padding: 0;
@@ -8,48 +10,26 @@ body {
     background-color: #f5f5f5;
 }
 
-/* ====== BARRA DE TAREAS ====== */
+/* -------------------------- */
+/* Barra Lateral (Sidebar)    */
+/* -------------------------- */
 .container-task-bar {
     width: 15%;
+    min-width: 200px;
     background-color: #FFC839;
     color: #333;
-    font-size: 20px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     padding: 20px 0;
 }
 
-/* Lista de navegación */
-.container-task-bar ul {
-    list-style: none;
-    padding: 0;
-    margin: 50px 0;
-    width: 100%;
-}
+.logo-placeholder { padding: 0 20px; }
+.container-task-bar ul { list-style: none; padding: 0; margin: 50px 0; width: 100%; }
+.container-task-bar li { margin: 55px 0; }
+.container-task-bar a { text-decoration: none; color: #333; font-weight: 600; font-size: 20px; display: flex; align-items: center; padding-left: 20px; gap: 12px; }
+.container-task-bar i { font-size: 22px; }
 
-.container-task-bar li {
-    margin: 55px 0;
-}
-
-.container-task-bar a {
-    text-decoration: none;
-    color: #333;
-    font-weight: 600; /* más grueso */
-    font-size: 20px;
-    display: flex;
-    align-items: center;
-    padding-left: 20px; /* separación izquierda */
-    gap: 12px; /* espacio entre icono y texto */
-    text-align: left;
-}
-
-/* Ajuste de iconos */
-.container-task-bar i {
-    font-size: 22px; /* tamaño similar al texto */
-}
-
-/* Botón cerrar sesión */
 .container-task-bar button {
     background-color: #ff6b6b;
     border: none;
@@ -59,21 +39,28 @@ body {
     border-radius: 8px;
     cursor: pointer;
     margin: 0 auto 20px auto;
-    display: block;
     width: 80%;
 }
+.container-task-bar button:hover { background-color: #ff4d4d; }
 
-.container-task-bar button:hover {
-    background-color: #ff4d4d;
+/* -------------------------- */
+/* Contenido Principal (Derecha) */
+/* -------------------------- */
+.main-content {
+    width: 85%;
+    padding: 20px 30px;
+    box-sizing: border-box;
+    position: relative; /* Contexto para posicionar la info del usuario */
+    height: 100vh;
+    overflow-y: auto;
 }
 
-/* ====== SECCIÓN INFO ====== */
+/* Tarjeta de info de usuario (arriba a la derecha) */
 .container-info {
-    position: absolute;
+    position: absolute; /* Lo sacamos del flujo normal */
     top: 20px;
-    right: 20px;
-    width: 350px; /* tamaño fijo del rectángulo */
-    box-sizing: border-box;
+    right: 30px;
+    width: 350px;
 }
 
 .info-section {
@@ -83,66 +70,73 @@ body {
     background-color: white;
     border-radius: 12px;
     padding: 15px 20px;
-    box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
-/* User info (izquierda del rectángulo) */
-.user-info {
-    text-align: left;
-    font-size: 14px;
-    color: #333;
-}
+.user-info { font-size: 14px; }
+.user-avatar { width: 60px; height: 60px; background-color: #ccc; border-radius: 50%; }
 
-/* Avatar (derecha del rectángulo) */
-.user-avatar {
-    width: 60px;
-    height: 60px;
-    background-color: #ccc;
-    border-radius: 50%;
-}
-
-/* ====== ZONA DE TRABAJO ====== */
+/* -------------------------- */
+/* Zona de Trabajo / Tabla    */
+/* -------------------------- */
 .container-work {
-    position: absolute;
-    top: 120px; /* debajo del info-section */
-    right: 0;
-    width: 85%;
-    height: calc(100% - 120px);
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-/* Encabezado de sección */
-.container-work .section-title {
-    font-size: 32px; /* tu ajuste */
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.container-work .section-line {
     width: 100%;
-    height: 3px;
-    background-color: #ccc;
-    margin-bottom: 20px;
+    margin-top: 100px; 
 }
 
-/* Barra de parámetros */
-.container-work .param-bar {
-    display: flex;
-    justify-content: space-between;
-    background-color: #333;
-    color: white;
-    padding: 12px 15px;
-    font-size: 18px;
-    border-radius: 8px 8px 0 0;
-}
+.section-title { font-size: 32px; font-weight: bold; margin-bottom: 10px; }
+.section-line { width: 100%; height: 3px; background-color: #ccc; margin-bottom: 20px; }
 
-/* Recuadro lista dinámica */
-.container-work .list-box {
+/* Contenedor de la tabla */
+.list-box {
     background-color: white;
-    flex: 1;
-    border-radius: 0 0 8px 8px;
-    box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
-    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    overflow: hidden;
 }
+
+/* Estructura de la tabla (cabecera y filas) */
+.param-bar, .user-row {
+    display: grid;
+    /* Columnas: Nombre, Correo, Rol, Nivel, Acciones */
+    grid-template-columns: 1.5fr 2.5fr 1fr 0.5fr 1fr; 
+    align-items: center;
+    padding: 12px 20px;
+    gap: 15px;
+}
+
+/* Cabecera de la tabla */
+.param-bar {
+    background-color: #343a40;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+/* Filas de datos de la tabla */
+.user-row {
+    border-top: 1px solid #f0f0f0;
+    font-size: 15px;
+}
+.user-row:hover { background-color: #f8f9fa; }
+
+/* Celdas individuales */
+.user-cell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.user-cell.actions { display: flex; gap: 8px; }
+
+/* Mensaje para lista vacía */
+.empty-list-message { text-align: center; padding: 20px; }
+
+/* Botones de acción */
+.btn-edit, .btn-delete {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: white;
+    font-size: 14px;
+}
+.btn-edit:hover { background-color: #e2e6ea; }
+.btn-delete { border-color: #dc3545; color: #dc3545; }
+.btn-delete:hover { background-color: #dc3545; color: white; }
