@@ -17,8 +17,8 @@ public class Usuario{
 
     public Usuario(String nombre_usuario, String correo_electronico, String contraseña){
         setNombreUsuario(nombre_usuario);
-        setContraseña(contraseña);
         setCorreoElectronico(correo_electronico);
+        setContraseña(contraseña);
         this.tareas=new ArrayList<>();
         this.tareasCompletadas=new ArrayList<>();
         this.logros = new ArrayList<>();

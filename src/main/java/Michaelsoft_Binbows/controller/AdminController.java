@@ -50,7 +50,7 @@ public class AdminController {
         Usuario usuarioActual = (Usuario) session.getAttribute("usuarioActual");
 
         if (usuarioActual == null || (usuarioActual.getRol() != Rol.ADMIN && usuarioActual.getRol() != Rol.MODERADOR)) {
-            return "redirect:/login";
+            return "redirect:/403";
         }
 
         model.addAttribute("usuarioActual", usuarioActual);

@@ -26,12 +26,14 @@ body {
     width: 900px;
     height: 700px;
     border-radius: 25px;
+    padding: 0 35px 0 35px;
     overflow: hidden;
 }
 
 /* ===== SECCIÓN DEL REGISTER ===== */
 .register-section {
-    padding: 0 0 50 0px;
+    width:35%;
+    padding: 0 25px 0 25px;
     flex: 1;
     background-color: #fff;
     display: flex;
