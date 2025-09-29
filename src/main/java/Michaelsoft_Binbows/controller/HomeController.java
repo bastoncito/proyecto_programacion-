@@ -81,12 +81,12 @@ public class HomeController {
         //Se crean 2 listas para 2 tipos diferentes de ranking
         List<Usuario> rankingNivel = baseDatos.getUsuarios();
         List<Usuario> rankingCompletadas = baseDatos.getUsuarios();
-        rankingNivel.sort(Comparator.comparing(Usuario::getNivelExperiencia));
-        rankingCompletadas.sort(Comparator.comparing(Usuario::getNumeroCompletadas));
+        rankingNivel.sort(Comparator.comparing(Usuario::getNivelExperiencia).reversed());
+        rankingCompletadas.sort(Comparator.comparing(Usuario::getNumeroCompletadas).reversed());
         model.addAttribute("rankingNivel", rankingNivel != null ? rankingNivel : Collections.emptyList());
         model.addAttribute("rankingCompletadas", rankingCompletadas != null ? rankingCompletadas : Collections.emptyList());
 
-        return "";
+        return "ranking";
     }
 
     @GetMapping("/perfil")
