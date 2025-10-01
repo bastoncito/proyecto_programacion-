@@ -204,7 +204,7 @@
             <form id="deleteForm" th:action="@{/eliminar-tarea}" method="post">
                 <input type="hidden" name="nombreTarea" id="deleteTaskId">
             </form>
-            <button id="completeButton">Marcar como completada</button> 
+            <button id="completeButton" class="">Marcar como completada</button> 
             <form id="completeForm" th:action="@{/completar-tarea}" method="post">
                 <input type="hidden" name="nombreTarea" id="completeTaskId">
             </form>
