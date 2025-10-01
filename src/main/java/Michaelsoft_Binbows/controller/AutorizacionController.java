@@ -123,4 +123,21 @@ public class AutorizacionController {
         model.addAttribute("error", "Credenciales inválidas.");
         return "loginreal";
     }
+    /*
+    * Cierra la sesión del usuario actual.
+    * Invalida la sesión HTTP para eliminar todos los atributos guardados (como 'usuarioActual')
+    * y luego redirige al usuario a la página de inicio de sesión.
+    *
+    * @param session La sesión HTTP que se va a invalidar.
+    * @return Una cadena de redirección a la página de login.
+    */
+    @PostMapping("/logout")
+    public String procesarLogout(HttpSession session) {
+        // Se invalida la sesión actual del usuario
+        session.invalidate();
+        System.out.println("LOG: Sesión cerrada exitosamente. Redirigiendo a /login.");
+        // Se redirige a la página de inicio de sesión
+        return "redirect:/login";
+    }
 }
+

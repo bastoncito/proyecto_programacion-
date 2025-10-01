@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SeguridadService {
 
-    /**
+    /*
      * Comprueba si un usuario (actor) tiene permiso para editar a otro usuario (objetivo)
      * basándose en la jerarquía de roles.
      *
@@ -24,20 +24,23 @@ public class SeguridadService {
             return false;
         }
 
-        // Un ADMIN puede editar a cualquiera (MODERADOR o USUARIO),
-        // pero por seguridad, no le permitiremos editarse a sí mismo desde esta interfaz.
+        // --- LÓGICA DE ROLES MEJORADA ---
+
+        // Regla 1: Un ADMIN puede editar a cualquiera (MODERADOR o USUARIO),
+        // pero no puede editar a otro ADMIN ni a sí mismo.
         if (actor.getRol() == Rol.ADMIN) {
-            // Un admin no puede editar a otro admin (o a sí mismo) para evitar conflictos.
             return objetivo.getRol() != Rol.ADMIN;
         }
 
-        // Un MODERADOR solo puede editar a usuarios con el rol USUARIO.
+        // Regla 2: Un MODERADOR solo puede editar a usuarios con el rol USUARIO.
+        // Esto previene que un moderador pueda siquiera intentar abrir el modal
+        // para editar a otro moderador o a un admin.
         if (actor.getRol() == Rol.MODERADOR) {
             return objetivo.getRol() == Rol.USUARIO;
         }
 
         // Un USUARIO no tiene permisos para editar a nadie.
-        // Si el actor no es ni ADMIN ni MODERADOR, se llega aquí.
+        // Si el actor no es ni ADMIN ni MODERADOR, se llega aquí y devuelve false.
         return false;
     }
 
@@ -73,6 +76,35 @@ public class SeguridadService {
         }
         
         // Si el actor no es ni ADMIN ni MODERADOR (es decir, es USUARIO), no puede eliminar a nadie.
+        return false;
+    }
+    /*
+     * Comprueba si un usuario (actor) tiene permiso para ASIGNAR un rol específico.
+     * Esta es la regla de negocio principal para la promoción y degradación de usuarios.
+     *
+     * @param actor El usuario que realiza la acción (ej. el admin logueado).
+     * @param rolAAsignar El rol que se intenta asignar al usuario objetivo.
+     * @return true si el actor tiene permiso para asignar ese rol, false en caso contrario.
+     */
+    public boolean puedeAsignarRol(Usuario actor, Rol rolAAsignar) {
+        // Verificación básica de seguridad.
+        if (actor == null || rolAAsignar == null) {
+            return false;
+        }
+
+        // Un ADMIN puede asignar roles de MODERADOR y USUARIO.
+        // Por seguridad, no permitimos que se asigne el rol de ADMIN desde el panel.
+        if (actor.getRol() == Rol.ADMIN) {
+            return rolAAsignar == Rol.MODERADOR || rolAAsignar == Rol.USUARIO;
+        }
+
+        // Un MODERADOR solo puede asignar (o mantener) el rol de USUARIO.
+        // Por seguridad, no permitimos que se asigne el rol de MODERADOR desde el panel.
+        if (actor.getRol() == Rol.MODERADOR) {
+            return rolAAsignar == Rol.USUARIO;
+        }
+        
+        // Si no es admin ni moderador, no puede asignar ningún rol.
         return false;
     }
 }

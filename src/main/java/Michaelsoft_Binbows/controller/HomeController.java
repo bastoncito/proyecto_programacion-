@@ -56,15 +56,6 @@ public class HomeController {
         return "home";
     }
 
-    @PostMapping("/logout")
-    public String cerrarSesion(Model model, HttpSession session){
-        Usuario actual = (Usuario)session.getAttribute("usuarioActual");
-        if(actual == null){
-            return "redirect:/403";
-        }
-        return "redirect:/";
-    }
-
     @PostMapping("/borrar-cuenta")
     public String borrarCuenta(Model model, HttpSession session){
         Usuario actual = (Usuario)session.getAttribute("usuarioActual");

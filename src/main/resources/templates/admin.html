@@ -25,7 +25,10 @@
             <li><a href="#"><i class='bx bxs-id-card'></i> Administradores</a></li>
         </ul>
 
-        <button>Cerrar Sesión</button>
+        <form th:action="@{/logout}" method="post">
+        <!-- El botón ahora es de tipo 'submit' para que envíe el formulario al hacer clic -->
+            <button type="submit">Cerrar Sesión</button>
+        </form>
     </div>
 
     <!-- Contenido principal (todo lo que está a la derecha) -->
@@ -33,11 +36,11 @@
         
         <!-- Tarjeta de información del usuario (arriba a la derecha) -->
         <div class="container-info">
-            <div class="info-section">
+            <div class="info-section" th:if="${usuarioActual != null}">
                 <div class="user-info">
-                    <p><strong>User123</strong></p>
-                    <p>user123@gmail.com</p>
-                    <p>Super Admin</p>
+                    <p><strong th:text="${usuarioActual.nombreUsuario}">Nombre del Usuario</strong></p>
+                    <p th:text="${usuarioActual.correoElectronico}">correo@ejemplo.com</p>
+                    <p th:text="${usuarioActual.rol}">Rol del Usuario</p>
                 </div>
                 <div class="user-avatar"></div>
             </div>
