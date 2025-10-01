@@ -1,52 +1,16 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-    .modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  padding-top: 100px; /* Location of the box */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
-
-/* Modal Content */
-.modal-content {
-  background-color: #fefefe;
-  margin: auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-}
-
-/* The Close Button */
-.close-btn{
-  color: #aaaaaa;
-  float: right;
-  font-size: 10px;
-  font-weight: bold;
-}
-
-.close-btn:hover,
-.close-btn:focus {
-  color: #000;
-  text-decoration: none;
-  cursor: pointer;
-}
-</style>
     <title>Good Time - Home</title>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" th:href="@{/home.css}">
+    <link rel="stylesheet" th:href="@{/loader.css}">
 </head>
 <body>
+    <!--Pantalla de carga-->
+    <div th:replace="~{fragments :: loadingScreen}"></div>
     <!--Sección Anuncios-->
     <div class="container-advertisements">
         <!--Reto Semanal-->
@@ -115,10 +79,14 @@
                 </div>
                 <div class="info-buttons">
                     <form th:action="@{/logout}" method="post">
-                        <button type="submit" class="logout">Cerrar Sesión</button>
+                        <button type="submit" class="logout" onclick="return confirm('¿Estás seguro de que quieres cerrar la sesión?');">
+                            Cerrar Sesión
+                        </button>
                     </form>
                     <form th:action="@{/borrar-cuenta}" method="post">
-                        <button type="submit" class="borrar">Borrar Cuenta</button>
+                        <button type="submit" class="borrar" onclick="return confirm('¡ATENCIÓN! ¿Estás seguro de que quieres eliminar tu cuenta? Esta acción es permanente y no se puede deshacer.');">
+                            Borrar Cuenta
+                        </button>
                     </form>
                 </div>
 
@@ -252,6 +220,16 @@
         closeModal.addEventListener("click", () => {
             modal.style.display = "none";
         });
+    </script>
+    <script>
+        window.onload = function() {
+            const loader = document.getElementById('loader-wrapper');
+            
+            // Simulamos 1.4 segundos
+            setTimeout(function() {
+                loader.style.display = 'none';
+            }, 1420); 
+        };
     </script>
 </body>
 </html>

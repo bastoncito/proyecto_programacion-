@@ -26,7 +26,7 @@
         </ul>
 
         <form th:action="@{/logout}" method="post">
-            <button type="submit">Cerrar Sesión</button>
+            <button type="submit" onclick="return confirm('¿Estás seguro de que quieres cerrar la sesión?');">Cerrar Sesión</button>
         </form>
     </div>
 
