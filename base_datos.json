@@ -73,5 +73,17 @@
     ],
     "tareasCompletadas": [],
     "logros": []
+  },
+  {
+    "nombreUsuario": "zketsh01",
+    "correoElectronico": "dpezoa21@alumnos.utalca.cl",
+    "contraseña": "User123.",
+    "experiencia": 0,
+    "nivelExperiencia": 1,
+    "rol": "USUARIO",
+    "fechaRegistro": "2025-10-04T18:14",
+    "tareas": [],
+    "tareasCompletadas": [],
+    "logros": []
   }
 ]

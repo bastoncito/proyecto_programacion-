@@ -56,16 +56,6 @@ public class HomeController {
         return "home";
     }
 
-    @PostMapping("/borrar-cuenta")
-    public String borrarCuenta(Model model, HttpSession session){
-        Usuario actual = (Usuario)session.getAttribute("usuarioActual");
-        if(actual == null){
-            return "redirect:/403";
-        }
-        baseDatos.eliminarUsuario(actual);
-        return "redirect:/";
-    }
-
     @GetMapping("/ranking")
     public String mostrarRanking(Model model) {
         System.out.println("LOG: El método 'mostrarRanking' ha sido llamado por una petición a /home.");
@@ -79,7 +69,7 @@ public class HomeController {
 
         return "ranking";
     }
-
+/* 
     @GetMapping("/perfil")
     public String mostrarPerfil(Model model, HttpSession session) {
         System.out.println("LOG: El método 'mostrarPerfil' ha sido llamado por una petición a /home.");
@@ -91,6 +81,7 @@ public class HomeController {
 
         return "";
     }
+*/
 
     /**
      * Este es un método de diagnóstico para verificar que el controlador responde.

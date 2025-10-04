@@ -78,14 +78,14 @@
                     </div>
                 </div>
                 <div class="info-buttons">
-                    <form th:action="@{/logout}" method="post">
-                        <button type="submit" class="logout" onclick="return confirm('¿Estás seguro de que quieres cerrar la sesión?');">
-                            Cerrar Sesión
+                    <form th:action="@{/perfil}" method="get">
+                        <button type="submit" class="logout">
+                            Ver Perfil
                         </button>
                     </form>
-                    <form th:action="@{/borrar-cuenta}" method="post">
-                        <button type="submit" class="borrar" onclick="return confirm('¡ATENCIÓN! ¿Estás seguro de que quieres eliminar tu cuenta? Esta acción es permanente y no se puede deshacer.');">
-                            Borrar Cuenta
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit" class="borrar" onclick="return confirm('¿Estás seguro de que quieres cerrar la sesión?');">
+                            Cerrar Sesión
                         </button>
                     </form>
                 </div>
