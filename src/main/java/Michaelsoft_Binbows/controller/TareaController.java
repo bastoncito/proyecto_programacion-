@@ -1,12 +1,15 @@
 package Michaelsoft_Binbows.controller;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.servlet.http.HttpSession;
+import Michaelsoft_Binbows.CustomUserDetails;
 import Michaelsoft_Binbows.services.*;
+import org.springframework.security.core.Authentication;
 
 @Controller
 public class TareaController {
@@ -16,32 +19,27 @@ public class TareaController {
         this.baseDatos = baseDatos;
     }
     @PostMapping("/eliminar-tarea")
-    public String eliminarTarea(Model model, HttpSession session, @RequestParam("nombreTarea") String nombreTarea){
-        Usuario usuarioActual = (Usuario)session.getAttribute("usuarioActual");
-        if(usuarioActual == null){
-            return "redirect:/403";
-        }
+    public String eliminarTarea(Model model, @RequestParam("nombreTarea") String nombreTarea){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        Usuario usuarioActual = userDetails.getUsuario();
         usuarioActual.cancelarTarea(nombreTarea);
         baseDatos.guardarBaseDatos();
         return "redirect:/home";
     }
 
     @PostMapping("/completar-tarea")
-    public String completarTarea(Model model, HttpSession session, @RequestParam("nombreTarea") String nombreTarea){
-        Usuario usuarioActual = (Usuario)session.getAttribute("usuarioActual");
-        if(usuarioActual == null){
-            return "redirect:/403";
-        }
+    public String completarTarea(Model model, @RequestParam("nombreTarea") String nombreTarea){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        Usuario usuarioActual = userDetails.getUsuario();
         usuarioActual.completarTarea(nombreTarea);
         baseDatos.guardarBaseDatos();
         return "redirect:/home";
     }
 
     @GetMapping("/nueva-tarea")
-    public String mostrarFormularioNuevaTarea(Model model, HttpSession session) {
-        if(session.getAttribute("usuarioActual") == null){
-            return "redirect:/403";
-        }
+    public String mostrarFormularioNuevaTarea(Model model) {
         System.out.println("LOG: El método 'mostrarFormularioNuevaTarea' ha sido llamado por una petición a /nueva-tarea.");
         return "tarea-nueva";
     }
@@ -51,12 +49,10 @@ public class TareaController {
         @RequestParam("nombre") String nombre,
         @RequestParam("descripcion") String descripcion, 
         @RequestParam("dificultad") String dificultad,
-        Model model,
-        HttpSession session) {
-        if(session.getAttribute("usuarioActual") == null){
-            return "redirect:/403";
-        }
-        Usuario usuarioActual = (Usuario) session.getAttribute("usuarioActual");
+        Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        Usuario usuarioActual = userDetails.getUsuario(); 
         try{
             Tarea nuevaTarea = new Tarea(nombre, descripcion, dificultad);
             usuarioActual.agregarTarea(nuevaTarea);

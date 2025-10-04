@@ -3,6 +3,7 @@ package Michaelsoft_Binbows.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 // Imports de Spring y Java
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,8 +17,11 @@ import jakarta.servlet.http.HttpSession;
 import Michaelsoft_Binbows.services.Rol;
 import Michaelsoft_Binbows.services.Usuario;
 import Michaelsoft_Binbows.services.SeguridadService;
+import Michaelsoft_Binbows.CustomUserDetails;
 import Michaelsoft_Binbows.services.BaseDatos;
 import java.util.Arrays;
+
+import org.springframework.security.core.Authentication;
 
 /**
  * Controlador para el panel de administración.
@@ -66,8 +70,10 @@ public class AdminController {
             @RequestParam(name = "error", required = false) String error,
             Model model, 
             HttpSession session) {
-        
-        Usuario usuarioActual = (Usuario) session.getAttribute("usuarioActual");
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        Usuario usuarioActual = userDetails.getUsuario(); 
 
         if (usuarioActual == null || (usuarioActual.getRol() != Rol.ADMIN && usuarioActual.getRol() != Rol.MODERADOR)) {
             return "redirect:/403";
@@ -125,12 +131,13 @@ public class AdminController {
             @RequestParam("correoElectronicoOriginal") String correoOriginal,
             @RequestParam("nuevoCorreo") String nuevoCorreo,
             @RequestParam("rol") Rol nuevoRol,
-            HttpSession session,
             RedirectAttributes redirectAttributes) {
 
         System.out.println("\n--- INICIO PROCESO DE EDICIÓN DE USUARIO ---");
 
-        Usuario actor = (Usuario) session.getAttribute("usuarioActual");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        Usuario actor = userDetails.getUsuario();
         Usuario objetivo = baseDatos.buscarUsuarioPorCorreo(correoOriginal);
 
         System.out.println("LOG: Actor '" + actor.getNombreUsuario() + "' (Rol: " + actor.getRol() + ") intenta editar a '" + objetivo.getNombreUsuario() + "'.");
@@ -175,7 +182,9 @@ public class AdminController {
      */
     @GetMapping("/admin/eliminar")
     public String eliminarUsuario(@RequestParam("correo") String correoAEliminar, HttpSession session, RedirectAttributes redirectAttributes) {
-        Usuario actor = (Usuario) session.getAttribute("usuarioActual");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        Usuario actor = userDetails.getUsuario();
         Usuario objetivo = baseDatos.buscarUsuarioPorCorreo(correoAEliminar);
 
         // Chequeo de seguridad en el servidor

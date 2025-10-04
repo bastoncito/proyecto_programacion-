@@ -169,6 +169,15 @@ public class BaseDatos {
     }
     return false; // El correo está disponible.
     }
+
+    public Usuario buscarUsuarioPorNombre(String nombreUsuario){
+        for(Usuario u : usuarios){
+            if(u.getNombreUsuario().equals(nombreUsuario)){
+                return u;
+            }
+        }
+        return null;
+    }
     
     public void imprimirTodosUsuarios() {
         if (usuarios.isEmpty()) {

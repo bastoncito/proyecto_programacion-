@@ -26,6 +26,7 @@
         </ul>
 
         <form th:action="@{/logout}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             <button type="submit" onclick="return confirm('¿Estás seguro de que quieres cerrar la sesión?');">Cerrar Sesión</button>
         </form>
     </div>
@@ -97,6 +98,7 @@
         
         <!-- Formulario que envía los datos al endpoint /admin/guardar -->
         <form th:action="@{/admin/guardar}" method="post" class="edit-form">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             
             <!-- Campo oculto para enviar el correo original, que es el identificador -->
             <input type="hidden" name="correoElectronicoOriginal" th:value="${usuarioParaEditar.correoElectronico}">

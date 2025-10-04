@@ -2,6 +2,8 @@
 package Michaelsoft_Binbows.controller;   
 
 import org.springframework.boot.autoconfigure.graphql.GraphQlProperties.Http;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 // --- Imports necesarios de Spring Framework y Java ---
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody; // Necesario para el método de prueba
 
+import Michaelsoft_Binbows.CustomUserDetails;
 import Michaelsoft_Binbows.services.BaseDatos;
 import Michaelsoft_Binbows.services.Tarea;
 import Michaelsoft_Binbows.services.Usuario;
@@ -43,10 +46,9 @@ public class HomeController {
     @GetMapping("/home")
     public String mostrarHome(Model model, HttpSession session) {
         System.out.println("LOG: El método 'mostrarMain' ha sido llamado por una petición a /home.");
-        if(session.getAttribute("usuarioActual") == null){
-            return "redirect:/403";
-        }
-        Usuario usuarioActual = (Usuario) session.getAttribute("usuarioActual");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        Usuario usuarioActual = userDetails.getUsuario(); 
         model.addAttribute("nombre_usuario", usuarioActual != null ? usuarioActual.getNombreUsuario() : "-");
 
         List<Tarea> tareas = usuarioActual != null ?usuarioActual.getTareas() : Collections.emptyList();
@@ -58,11 +60,10 @@ public class HomeController {
 
     @PostMapping("/borrar-cuenta")
     public String borrarCuenta(Model model, HttpSession session){
-        Usuario actual = (Usuario)session.getAttribute("usuarioActual");
-        if(actual == null){
-            return "redirect:/403";
-        }
-        baseDatos.eliminarUsuario(actual);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        Usuario usuarioActual = userDetails.getUsuario(); 
+        baseDatos.eliminarUsuario(usuarioActual);
         return "redirect:/";
     }
 
@@ -83,10 +84,9 @@ public class HomeController {
     @GetMapping("/perfil")
     public String mostrarPerfil(Model model, HttpSession session) {
         System.out.println("LOG: El método 'mostrarPerfil' ha sido llamado por una petición a /home.");
-        if(session.getAttribute("usuarioActual") == null){
-            return "redirect:/error";
-        }
-        Usuario usuarioActual = (Usuario) session.getAttribute("usuarioActual");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        Usuario usuarioActual = userDetails.getUsuario(); 
         model.addAttribute("nombre_usuario", usuarioActual != null ? usuarioActual.getNombreUsuario() : "-");
 
         return "";

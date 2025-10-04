@@ -15,6 +15,7 @@
         <div class="login-section">
             <h1>Inicio de Sesión</h1>
             <form th:action="@{/login}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <label for="usuario">Usuario o correo electrónico</label>
                 <input type="text" name="usuario" id="usuario" required>
                 <i class='bx bxs-user'></i>
