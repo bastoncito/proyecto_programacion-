@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import Michaelsoft_Binbows.data.*;
+import Michaelsoft_Binbows.exceptions.EdicionInvalidaException;
+import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 
 @Service
 public class BaseDatos {
@@ -52,7 +54,7 @@ public class BaseDatos {
         return null;
     }
 
-    public void agregarUsuario(Usuario usuario){
+    public void agregarUsuario(Usuario usuario) throws RegistroInvalidoException{
         String valido = validarUsuario(usuario);
         if(valido == null){
             usuarios.add(usuario);
@@ -60,7 +62,7 @@ public class BaseDatos {
             guardarBaseDatos();
         }else{
             // En lugar de imprimir, lanzamos una excepción para que el controlador la atrape
-            throw new IllegalStateException(valido);
+            throw new RegistroInvalidoException(valido);
         }
     }
 
@@ -130,28 +132,32 @@ public class BaseDatos {
     * Centraliza la lógica para actualizar un usuario.
     * Valida los datos y luego guarda los cambios.
     */
-    public void actualizarUsuario(String correoOriginal, String nuevoNombre, String nuevoCorreo, Rol nuevoRol) { // <--- CAMBIO 1: Acepta "nuevoCorreo"
+    public void actualizarUsuario(String correoOriginal, String nuevoNombre, String nuevoCorreo, Rol nuevoRol) throws EdicionInvalidaException { // <--- CAMBIO 1: Acepta "nuevoCorreo"
         // --- VALIDACIONES ---
         // 1. Validar que el nuevo nombre no esté en uso por OTRO usuario (esto ya lo tenías).
         if (usuarioExistePorNombre(nuevoNombre, correoOriginal)) {
-            throw new IllegalArgumentException("El nombre '" + nuevoNombre + "' ya está en uso por otro usuario.");
+            throw new EdicionInvalidaException("El nombre '" + nuevoNombre + "' ya está en uso por otro usuario.", correoOriginal);
         }
 
         // 2. Validar que el nuevo correo no esté en uso por OTRO usuario. (¡ESTO ES NUEVO!)
         if (usuarioExistePorCorreo(nuevoCorreo, correoOriginal)) { // <-- CAMBIO 2: Usa el nuevo método de ayuda
-            throw new IllegalArgumentException("El correo '" + nuevoCorreo + "' ya está registrado por otro usuario.");
+            throw new EdicionInvalidaException("El correo '" + nuevoCorreo + "' ya está registrado por otro usuario.", correoOriginal);
         }
     
         // 3. Buscar el usuario a actualizar.
         Usuario usuarioAActualizar = buscarUsuarioPorCorreo(correoOriginal);
         if (usuarioAActualizar == null) {
-            throw new IllegalStateException("Error crítico: No se pudo encontrar al usuario para actualizar.");
+            throw new EdicionInvalidaException("Error crítico: No se pudo encontrar al usuario para actualizar.", correoOriginal);
         }
 
         // 4. Usar los setters del propio Usuario.
-        usuarioAActualizar.setNombreUsuario(nuevoNombre);
-        usuarioAActualizar.setCorreoElectronico(nuevoCorreo); // <--- CAMBIO 3: Ahora actualiza el correo
-        usuarioAActualizar.setRol(nuevoRol);
+        try{
+            usuarioAActualizar.setNombreUsuario(nuevoNombre);
+            usuarioAActualizar.setCorreoElectronico(nuevoCorreo); // <--- CAMBIO 3: Ahora actualiza el correo
+            usuarioAActualizar.setRol(nuevoRol);
+        }catch(RegistroInvalidoException e){
+            throw new EdicionInvalidaException(e.getMessage(), correoOriginal);
+        }
 
         // 5. Persistir los cambios en el archivo JSON.
         guardarBaseDatos();

@@ -18,6 +18,7 @@ import Michaelsoft_Binbows.services.Rol;
 import Michaelsoft_Binbows.services.Usuario;
 import Michaelsoft_Binbows.services.SeguridadService;
 import Michaelsoft_Binbows.CustomUserDetails;
+import Michaelsoft_Binbows.exceptions.EdicionInvalidaException;
 import Michaelsoft_Binbows.services.BaseDatos;
 import java.util.Arrays;
 
@@ -131,7 +132,7 @@ public class AdminController {
             @RequestParam("correoElectronicoOriginal") String correoOriginal,
             @RequestParam("nuevoCorreo") String nuevoCorreo,
             @RequestParam("rol") Rol nuevoRol,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes) throws EdicionInvalidaException {
 
         System.out.println("\n--- INICIO PROCESO DE EDICIÓN DE USUARIO ---");
 

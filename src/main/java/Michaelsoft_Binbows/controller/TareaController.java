@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.servlet.http.HttpSession;
 import Michaelsoft_Binbows.CustomUserDetails;
+import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
+import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
 import Michaelsoft_Binbows.services.*;
 import org.springframework.security.core.Authentication;
 
@@ -19,7 +21,7 @@ public class TareaController {
         this.baseDatos = baseDatos;
     }
     @PostMapping("/eliminar-tarea")
-    public String eliminarTarea(Model model, @RequestParam("nombreTarea") String nombreTarea){
+    public String eliminarTarea(Model model, @RequestParam("nombreTarea") String nombreTarea) throws RegistroInvalidoException{
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         Usuario usuarioActual = userDetails.getUsuario();
@@ -29,7 +31,7 @@ public class TareaController {
     }
 
     @PostMapping("/completar-tarea")
-    public String completarTarea(Model model, @RequestParam("nombreTarea") String nombreTarea){
+    public String completarTarea(Model model, @RequestParam("nombreTarea") String nombreTarea) throws RegistroInvalidoException{
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         Usuario usuarioActual = userDetails.getUsuario();
@@ -49,20 +51,14 @@ public class TareaController {
         @RequestParam("nombre") String nombre,
         @RequestParam("descripcion") String descripcion, 
         @RequestParam("dificultad") String dificultad,
-        Model model) {
+        Model model) throws RegistroInvalidoException, TareaInvalidaException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         Usuario usuarioActual = userDetails.getUsuario(); 
-        try{
-            Tarea nuevaTarea = new Tarea(nombre, descripcion, dificultad);
-            usuarioActual.agregarTarea(nuevaTarea);
-            baseDatos.guardarBaseDatos();
-            model.addAttribute("mensaje", "Tarea agregada exitosamente.");
-            return "tarea-nueva";
-        }catch(IllegalArgumentException e){
-            System.out.println("ERROR: " + e.getMessage());
-            model.addAttribute("error", e.getMessage());
-        }
+        Tarea nuevaTarea = new Tarea(nombre, descripcion, dificultad);
+        usuarioActual.agregarTarea(nuevaTarea);
+        baseDatos.guardarBaseDatos();
+        model.addAttribute("mensaje", "Tarea agregada exitosamente.");
         return "tarea-nueva";
     }
     /* 

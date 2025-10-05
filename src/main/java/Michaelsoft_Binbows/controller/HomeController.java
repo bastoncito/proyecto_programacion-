@@ -1,7 +1,7 @@
 // Asegúrate de que este paquete coincida exactamente con el de tus otras clases.
 package Michaelsoft_Binbows.controller;   
 
-import org.springframework.boot.autoconfigure.graphql.GraphQlProperties.Http;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 // --- Imports necesarios de Spring Framework y Java ---
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody; // Necesario para el método de prueba
 
 import Michaelsoft_Binbows.CustomUserDetails;

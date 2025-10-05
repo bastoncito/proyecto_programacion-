@@ -11,13 +11,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.servlet.http.HttpSession;
 
 import Michaelsoft_Binbows.CustomUserDetails;
+import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 import Michaelsoft_Binbows.services.BaseDatos;
 import Michaelsoft_Binbows.services.Usuario;
-import Michaelsoft_Binbows.services.Rol;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 
 @Controller
 public class AutorizacionController {
@@ -34,7 +33,7 @@ public class AutorizacionController {
     }
 
     //Guarda los usuarios nuevos con contraseñas encriptadas
-    public void registrarUsuario(Usuario usuario) {
+    public void registrarUsuario(Usuario usuario) throws RegistroInvalidoException {
         String encodedPassword = passwordEncoder.encode(usuario.getContraseña());
         usuario.setContraseña(encodedPassword);
         baseDatos.agregarUsuario(usuario);
@@ -53,49 +52,23 @@ public class AutorizacionController {
             @RequestParam("email") String email,
             @RequestParam("contraseña1") String password,
             @RequestParam("contraseña2") String passwordConfirm,
-            Model model) {
+            Model model) throws RegistroInvalidoException {
 
         System.out.println("LOG: procesarRegister recibido: " + username + ", " + email);
-        // Validación básica de campos
-        if(username == null || username.trim().isEmpty() ||
-           email == null || email.trim().isEmpty() ||
-           password == null || password.trim().isEmpty() ||
-           passwordConfirm == null || passwordConfirm.trim().isEmpty()) {
-            model.addAttribute("error", "Todos los campos son requeridos.");
-            return "register";
-        }
-        //Validar si el usuario ya está registrado
-        for(Usuario u : baseDatos.getUsuarios()) {
-            if(username.equals(u.getNombreUsuario())) {
-                model.addAttribute("error", "El nombre de usuario ya existe.");
-                return "register";
-            }
-            if(email.equals(u.getCorreoElectronico())) {
-                model.addAttribute("error", "El email ya está registrado.");
-                return "register";
-            }
-        }
-        //Validar si la contraseña y su confirmación coinciden
         if(!password.equals(passwordConfirm)) {
             model.addAttribute("error", "Las contraseñas no coinciden.");
             return "register";
         }
         //Validar la sintáxis del correo y contraseña
         //Si todo está bien, crear el nuevo usuario y agregarlo a la base de datos
-        try {
-            Usuario nuevoUsuario = new Usuario(username, email, password);
-            registrarUsuario(nuevoUsuario);
-            System.out.println("LOG: Nuevo usuario registrado: " + username);
-            CustomUserDetails userDetails = new CustomUserDetails(nuevoUsuario);
-            UsernamePasswordAuthenticationToken authToken = 
-                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authToken);
-            return "redirect:/home";
-        } catch (IllegalArgumentException e) {
-            System.out.println("LOG: Error al registrar usuario: " + e.getMessage());
-            model.addAttribute("error", e.getMessage());
-        }
-        return "register";
+        Usuario nuevoUsuario = new Usuario(username, email, password);
+        registrarUsuario(nuevoUsuario);
+        System.out.println("LOG: Nuevo usuario registrado: " + username);
+        CustomUserDetails userDetails = new CustomUserDetails(nuevoUsuario);
+        UsernamePasswordAuthenticationToken authToken = 
+            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+        return "redirect:/home";
     }
 
     //Métodos para login
