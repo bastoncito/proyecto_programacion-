@@ -125,7 +125,20 @@
                     </option>
                 </select>
             </div>
+
+            <div class="section-line" style="margin-top: 15px; margin-bottom: 15px;"></div>
             
+            <div class="form-group">
+                <label for="nuevaContraseña">Nueva Contraseña (Opcional)</label>
+                <!-- 'type="password"' para que el texto no sea visible. -->
+                <input type="password" id="nuevaContraseña" name="nuevaContraseña" placeholder="Dejar en blanco para no cambiar">
+            </div>
+
+            <div class="form-group">
+                <label for="confirmarContraseña">Confirmar Nueva Contraseña</label>
+                <input type="password" id="confirmarContraseña" name="confirmarContraseña" placeholder="Repetir la nueva contraseña">
+            </div>
+
             <!-- Mensaje de error del servidor, si lo hay (usando addFlashAttribute) -->
             <div th:if="${error}" class="alert-error" th:text="${error}"></div>
              <!-- Mensaje de éxito del servidor -->

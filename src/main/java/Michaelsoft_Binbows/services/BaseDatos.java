@@ -8,12 +8,19 @@ import Michaelsoft_Binbows.data.*;
 import Michaelsoft_Binbows.exceptions.EdicionInvalidaException;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Autowired;
+
 @Service
 public class BaseDatos {
     private List<Usuario> usuarios;
     private PersistenciaJSON persistencia;
 
-    public BaseDatos() {
+    private final PasswordEncoder passwordEncoder;
+
+
+    public BaseDatos(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder=passwordEncoder;
         this.persistencia = new PersistenciaJSON();
         cargarBaseDatos();
     }
@@ -161,6 +168,36 @@ public class BaseDatos {
 
         // 5. Persistir los cambios en el archivo JSON.
         guardarBaseDatos();
+    }
+
+    /*
+     * Actualiza la contraseña de un usuario de forma segura.
+     * Primero valida la nueva contraseña y luego la encripta antes de guardarla.
+     *
+     * @param correoUsuario El correo del usuario cuya contraseña se va a cambiar.
+     * @param nuevaContraseñaSinEncriptar La nueva contraseña en texto plano.
+     * @throws RegistroInvalidoException Si la nueva contraseña no cumple con los requisitos de seguridad.
+     */
+    public void actualizarContraseñaUsuario(String correoUsuario, String nuevaContraseñaSinEncriptar) throws RegistroInvalidoException {
+        Usuario usuario = buscarUsuarioPorCorreo(correoUsuario);
+        if (usuario == null) {
+            // Esto no debería pasar si viene del controlador, pero es una buena medida de seguridad.
+            throw new IllegalArgumentException("No se encontró un usuario con el correo: " + correoUsuario);
+        }
+        
+        // 1. Validamos la contraseña usando las reglas que ya tienes en la clase Usuario.
+        //    Esto lanzará una excepción si la contraseña es débil (corta, sin mayúsculas, etc.).
+        usuario.setContraseña(nuevaContraseñaSinEncriptar);
+        
+        // 2. Si la validación pasa, ahora la encriptamos antes de guardarla de verdad.
+        String contraseñaEncriptada = passwordEncoder.encode(nuevaContraseñaSinEncriptar);
+        
+        // 3. Establecemos la contraseña ya encriptada en el objeto usuario.
+        usuario.setContraseña(contraseñaEncriptada);
+        
+        // 4. Guardamos todos los cambios en el archivo JSON.
+        guardarBaseDatos();
+        System.out.println("LOG: La contraseña del usuario '" + usuario.getNombreUsuario() + "' ha sido actualizada y encriptada.");
     }
     
     public boolean usuarioExistePorCorreo(String correo, String correoExcluido) {

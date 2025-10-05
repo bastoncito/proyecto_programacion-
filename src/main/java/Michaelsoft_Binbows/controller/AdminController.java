@@ -19,6 +19,7 @@ import Michaelsoft_Binbows.services.Usuario;
 import Michaelsoft_Binbows.services.SeguridadService;
 import Michaelsoft_Binbows.CustomUserDetails;
 import Michaelsoft_Binbows.exceptions.EdicionInvalidaException;
+import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 import Michaelsoft_Binbows.services.BaseDatos;
 import java.util.Arrays;
 
@@ -132,6 +133,8 @@ public class AdminController {
             @RequestParam("correoElectronicoOriginal") String correoOriginal,
             @RequestParam("nuevoCorreo") String nuevoCorreo,
             @RequestParam("rol") Rol nuevoRol,
+            @RequestParam(name = "nuevaContraseña", required = false) String nuevaContraseña,
+            @RequestParam(name = "confirmarContraseña", required = false) String confirmarContraseña,
             RedirectAttributes redirectAttributes) throws EdicionInvalidaException {
 
         System.out.println("\n--- INICIO PROCESO DE EDICIÓN DE USUARIO ---");
@@ -165,19 +168,46 @@ public class AdminController {
 
         // Se intentan aplicar los cambios. Si hay un error de validación, se atrapa.
         try {
-            baseDatos.actualizarUsuario(correoOriginal, nuevoNombre, nuevoCorreo, nuevoRol);
-            redirectAttributes.addFlashAttribute("success", "Usuario '" + nuevoNombre + "' actualizado correctamente.");
-            System.out.println("SUCCESS: Usuario actualizado exitosamente en la base de datos.");
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            // Usamos System.err para que los errores se impriman en un color diferente en la consola
-            System.err.println("ERROR: Fallo al actualizar usuario. Causa: " + e.getMessage());
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            redirectAttributes.addAttribute("editarUsuarioCorreo", correoOriginal);
+                // Actualizacion los datos básicos del usuario (nombre, correo, rol).
+                baseDatos.actualizarUsuario(correoOriginal, nuevoNombre, nuevoCorreo, nuevoRol);
+                
+                //  Revisamos si se quiera cambiar la contraseña
+                //  Solo procederemos si el campo de nueva contraseña NO está vacío.
+                if (nuevaContraseña != null && !nuevaContraseña.isEmpty()) {
+                    System.out.println("LOG: Se ha detectado un intento de cambio de contraseña.");
+                    
+                    //  La contraseña ingresada y su confirmacion deben coincidir
+                    if (!nuevaContraseña.equals(confirmarContraseña)) {
+                        System.err.println("ERROR: Las contraseñas no coinciden.");
+                        throw new IllegalArgumentException("Las contraseñas no coinciden. Inténtalo de nuevo.");
+                    }
+                    
+                    //  Si coinciden llamamos al metodo actualizarContraseñaUsuario
+                    //  Este método se encargará de la validación de seguridad y la encriptación.
+                    baseDatos.actualizarContraseñaUsuario(nuevoCorreo, nuevaContraseña);
+                    
+                    System.out.println("SUCCESS: La contraseña fue actualizada exitosamente.");
+                }
+                
+                redirectAttributes.addFlashAttribute("success", "Usuario '" + nuevoNombre + "' actualizado correctamente.");
+                System.out.println("SUCCESS: Usuario actualizado exitosamente en la base de datos.");
+
+            } catch (IllegalArgumentException | IllegalStateException | RegistroInvalidoException e) {
+                //  Capturamos cualquier error, ya sea de la actualización normal o del cambio de contraseña.
+                System.err.println("ERROR: Fallo al actualizar usuario. Causa: " + e.getMessage());
+                redirectAttributes.addFlashAttribute("error", e.getMessage());
+                redirectAttributes.addAttribute("editarUsuarioCorreo", correoOriginal);
+                return "redirect:/admin";
+            } catch (EdicionInvalidaException e) {
+                //  Capturamos la excepción específica de la edición.
+                System.err.println("ERROR: Fallo al actualizar usuario. Causa: " + e.getMessage());
+                redirectAttributes.addFlashAttribute("error", e.getMessage());
+                redirectAttributes.addAttribute("editarUsuarioCorreo", e.getCorreo());
+                return "redirect:/admin";
+            }
+            
             return "redirect:/admin";
         }
-        
-        return "redirect:/admin";
-    }
     /**
      * Elimina un usuario.
      */
