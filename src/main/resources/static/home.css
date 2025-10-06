@@ -687,3 +687,72 @@ body {
   text-decoration: none;
   cursor: pointer;
 }
+/* ========================================= */
+/* === ESTILOS PARA LA SECCIÓN DE HISTORIAL === */
+/* ========================================= */
+
+/* Define la estructura de 3 columnas para la cabecera del historial.
+   Esto alinea los títulos "Nombre", "Puntos Ganados", "Completada el". */
+.container-history .param-bar {
+    display: grid;
+    grid-template-columns: 2.5fr 1.5fr 2fr; /* Nombre (más ancho), Puntos, Fecha */
+    gap: 10px;
+    padding-left: 15px; /* Añade un poco de espacio a la izquierda */
+    padding-right: 15px;
+}
+
+/* Da estilos al contenedor de la lista de tareas del historial. */
+.history-list {
+    flex-grow: 1; /* Permite que la lista ocupe el espacio vertical disponible */
+    overflow-y: auto; /* Añade una barra de scroll si el contenido excede la altura */
+    margin-top: 10px;
+}
+
+/* Define la estructura de 3 columnas para CADA FILA del historial.
+   Es CRUCIAL que coincida con la estructura de .param-bar para que se alineen. */
+.history-row {
+    display: grid;
+    grid-template-columns: 2.5fr 1.5fr 2fr; /* Misma estructura que la cabecera */
+    gap: 10px;
+    padding: 12px 15px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+    align-items: center; /* Centra verticalmente el contenido de cada celda */
+}
+
+/* Elimina el borde inferior de la última fila para un acabado más limpio. */
+.history-row:last-child {
+    border-bottom: none;
+}
+
+/* Le da un color verde y negrita a los puntos de experiencia ganados. */
+.history-row .exp-points {
+    font-weight: 600;
+    color: #28a745; 
+}
+
+/* Estilos para el mensaje que aparece cuando no hay tareas en el historial. */
+.history-empty {
+    text-align: center;
+    padding: 30px 20px;
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* Estilos para el botón "Mostrar Todo". */
+.btn-show-all {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.2s;
+}
+
+.btn-show-all:hover {
+    background-color: #5a6268;
+}
