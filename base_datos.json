@@ -82,5 +82,25 @@
       }
     ],
     "logros": []
+  },
+  {
+    "nombreUsuario": "zketsh01",
+    "correoElectronico": "dpezoa21@alumnos.utalca.cl",
+    "contraseña": "$2a$10$QllAiODpyJWvloM3/zN3zuValT98feTdci3pEAWGQ4Kyga13zlCYm",
+    "experiencia": 50,
+    "nivelExperiencia": 1,
+    "rol": "USUARIO",
+    "fechaRegistro": "2025-10-06T00:40",
+    "tareas": [],
+    "tareasCompletadas": [
+      {
+        "nombre": "Corregir errores",
+        "descripcion": "Buscar errores en el proyecto y arreglarlos",
+        "exp": 50,
+        "fechaExpiracion": "2025-10-09T02:32",
+        "fechaCompletada": "2025-10-06T02:32"
+      }
+    ],
+    "logros": []
   }
 ]
