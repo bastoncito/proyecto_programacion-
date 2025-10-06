@@ -8,8 +8,11 @@
     <!-- CSS y Librerías -->
     <link rel="stylesheet" th:href="@{/admin.css}">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" th:href="@{/loader.css}">
 </head>
 <body>
+    <!--Pantalla de carga-->
+    <div th:replace="~{fragments :: loadingScreen}"></div>
     <!-- Barra lateral izquierda -->
     <div class="container-task-bar">
         <div class="logo-placeholder">
@@ -151,5 +154,15 @@
             </form>
         </div>
     </div>
+    <script>
+        window.onload = function() {
+            const loader = document.getElementById('loader-wrapper');
+            
+            // Simulamos 1.4 segundos
+            setTimeout(function() {
+                loader.style.display = 'none';
+            }, 1420); 
+        };
+    </script>
 </body>
 </html>

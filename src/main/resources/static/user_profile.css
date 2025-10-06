@@ -207,20 +207,20 @@ body{
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 30vh;
+    height: 40vh;
     width: 100%;
 }
 
 .container-img img {
-    height: 25vw;
+    height: 18vw;
 }
 
 .container-buttons{
     display: flex;
     justify-content:flex-end;
-    align-items:center;
+    align-items:end;
     gap: 2%;
-    height: 40vh;
+    height: 30vh;
     width: 100%;
     margin-top: auto;
     margin-bottom: 1vh;

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Good Time - Home</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="home_test.css">
+</head>
+<body>
+
+    <!--Sección Anuncios-->
+    <div class="container-advertisements">
+        <!--Reto Semanal-->
+        <div class="reto-section">
+            <div class="reto-header">
+                <h1>DESAFÍO SEMANAL</h1>
+            </div>
+            <div class="reto-body">
+                <p>Título</p>
+                <p>Descripción de la tarea semanal...</p>
+                <p>Puntaje: 500 XP</p>
+                <button class="reto-button">Aceptar Desafío</button>
+            </div>
+        </div>
+
+        <!--Clasificación (TOP)-->
+        <div class="top-section">
+            <div class="top-header">
+                <h1>TOP GLOBALES</h1>
+            </div>
+            <div class="top-body">
+                <div class="top-user">
+                    <div class="top-position">1</div>
+                    <div class="top-user-icon"><i class='bx bx-user'></i></div>
+                    <div class="top-user-name">User 1</div>
+                    <div class="top-user-points">X Puntos</div>
+                </div>
+                <div class="top-user">
+                    <div class="top-position">2</div>
+                    <div class="top-user-icon"><i class='bx bx-user'></i></div>
+                    <div class="top-user-name">User 2</div>
+                    <div class="top-user-points">Y Puntos</div>
+                </div>
+                <div class="top-user">
+                    <div class="top-position">3</div>
+                    <div class="top-user-icon"><i class='bx bx-user'></i></div>
+                    <div class="top-user-name">User 3</div>
+                    <div class="top-user-points">Z Puntos</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección Información -->
+    <div class="container-info">
+        <div class="info-left">
+            <!--Perfil de Usuario-->
+            <div class="info-section">
+                <div class="user-profile-top">
+                    <div class="user-top">
+                        <p>25</p>
+                    </div>
+                    <div class="user-info">
+                        <strong><p class="username">JuanPerez123</p></strong>
+                        <p>juan.perez@ejemplo.com</p>
+                    </div>
+                    <div class="user-avatar"></div>
+                </div>
+                <div class="streak-section">
+                    <h1 class="streak-title">Racha Actual</h1>
+                    <div class="streak-line"></div>
+                    <div class="streak-content">
+                        <p class="streak-days">15 días</p>
+                        <i class='bx bxs-hot streak-icon'></i>
+                    </div>
+                </div>
+                <div class="info-buttons">
+                    <form action="/perfil" method="get">
+                        <button type="submit" class="logout">
+                            Ver Perfil
+                        </button>
+                    </form>
+                    <form action="/logout" method="post">
+                        <button type="submit" class="borrar" onclick="return confirm('¿Estás seguro de que quieres cerrar la sesión?');">
+                            Cerrar Sesión
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+            <!--Clima-->
+            <div class="clima-section">
+                <div class="clima-hora"><p>12:30</p></div>
+                <div class="clima-main-content">
+                    <div class="clima-icon">
+                        <i class='bx bx-cloud-rain'></i>
+                    </div>
+                    <div class="clima-info">
+                        <p>15°C</p>
+                        <p>Humedad: 75%</p>
+                    </div>
+                </div>
+                <div class="clima-status">
+                    <h2>Lluvioso</h2>
+                </div>
+            </div>
+        </div>
+        <div class="info-right">
+            <!--Copas-->
+            <div class="copa-section">
+                <p>x Puntos</p>
+                <img src="/src/main/resources/static/copa.png" alt="copa">
+                <p>x Liga</p>
+            </div>
+            <!--Logo-->
+            <div class="logo-section">
+                <img src="/src/main/resources/static/logo_negro.png" alt="logo_negro">
+            </div>
+        </div>
+    </div>
+
+    <!--Sección Tareas-->
+    <div class="container-task">
+        <!--Tareas Pendientes-->
+        <div class="task-section">
+            <div class="task-header">
+                <h1>Tareas Pendientes</h1>
+            </div>
+            <div class="task-list">
+                <!-- Ejemplo de 4 tareas -->
+                <button class="task-item open-modal"
+                        data-nombre="Estudiar JavaScript"
+                        data-descripcion="Completar el tutorial de funciones async/await"
+                        data-experiencia="150"
+                        data-expira="2025-10-10">
+                    Estudiar JavaScript
+                </button>
+                <button class="task-item open-modal"
+                        data-nombre="Hacer ejercicio"
+                        data-descripcion="30 minutos de cardio en el gimnasio"
+                        data-experiencia="100"
+                        data-expira="2025-10-08">
+                    Hacer ejercicio
+                </button>
+                <button class="task-item open-modal"
+                        data-nombre="Leer 20 páginas"
+                        data-descripcion="Continuar con el libro de desarrollo personal"
+                        data-experiencia="75"
+                        data-expira="2025-10-09">
+                    Leer 20 páginas
+                </button>
+                <button class="task-item open-modal"
+                        data-nombre="Proyecto final"
+                        data-descripcion="Avanzar con la presentación del proyecto"
+                        data-experiencia="200"
+                        data-expira="2025-10-15">
+                    Proyecto final
+                </button>
+                <!-- Descomenta para probar el mensaje de "sin tareas" -->
+                <!-- <p>No tienes tareas anotadas.</p> -->
+            </div>
+            <div class="task-buttons">
+                <a href="/nueva-tarea">Agregar Tarea</a>
+            </div>
+        </div>
+    </div>
+    
+    <!--Sección Historial-->
+    <div class="container-history">
+        <h2>Historial de tareas</h2>
+        <div class="view-section">
+            <div class="param-bar">
+            <span>Nombre</span>
+            <span>Descripción</span>
+            <span>Puntos</span>
+        </div>
+        <div class="more-section">
+            <button>Mostrar Todo</button>
+        </div>
+    </div>
+
+    <!-- Modal de tarea -->
+    <div class="modal" id="taskModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeModal">X</button>
+            <h2 id="modalTitle"></h2>
+            <p><strong>Descripcion:</strong> <span id="modalDescription"></span></p>
+            <p><strong>Vale:</strong> <span id="modalExp"></span></p>
+            <p><strong>Expira:</strong> <span id="modalExpire"></span></p>
+            <button id="deleteButton">Eliminar Tarea</button>
+            <form id="deleteForm" action="/eliminar-tarea" method="post">
+                <input type="hidden" name="nombreTarea" id="deleteTaskId">
+            </form>
+            <button id="completeButton" class="">Marcar como completada</button> 
+            <form id="completeForm" action="/completar-tarea" method="post">
+                <input type="hidden" name="nombreTarea" id="completeTaskId">
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById("taskModal");
+        const openButtons = document.querySelectorAll(".open-modal")
+        const modalTitle = document.getElementById("modalTitle");
+        const modalDescription = document.getElementById("modalDescription");
+        const modalExp = document.getElementById("modalExp");
+        const modalExpire = document.getElementById("modalExpire");
+        const closeModal = document.getElementById("closeModal");
+
+        const deleteTaskId = document.getElementById("deleteTaskId");
+        const deleteForm = document.getElementById("deleteForm");
+
+        const completeTaskId = document.getElementById("completeTaskId");
+        const completeForm = document.getElementById("completeForm");
+
+        document.getElementById("deleteButton").addEventListener("click", () => {
+            deleteTaskId.value = modalTitle.textContent;
+            deleteForm.submit();
+        })
+
+         document.getElementById("completeButton").addEventListener("click", () => {
+            completeTaskId.value = modalTitle.textContent;
+            completeForm.submit();
+        })
+
+
+        // Show modal with task info
+        openButtons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                modalTitle.textContent = btn.dataset.nombre;
+                modalDescription.textContent = btn.dataset.descripcion;
+                modalExp.textContent = btn.dataset.experiencia + " XP";
+                modalExpire.textContent = btn.dataset.expira;
+                modal.style.display = "flex";
+            });
+        });
+
+        // Close modal
+        closeModal.addEventListener("click", () => {
+            modal.style.display = "none";
+        });
+    </script>
+</body>
+</html>
