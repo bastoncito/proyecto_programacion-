@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.regex.Pattern;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
+import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
 
 public class Usuario{
     private String nombreUsuario,correoElectronico,contraseña;
@@ -254,13 +255,48 @@ public class Usuario{
         //por hacer
     }
 
-    private Tarea buscarTareaPorNombre(String nombre){
+    public Tarea buscarTareaPorNombre(String nombre){
         for(Tarea t : this.tareas){
             if(t.getNombre().trim().equals(nombre.trim())){
                 return t;
             }
         }
         return null;
+    }
+
+    /*
+    * Actualiza una tarea existente en la lista de tareas pendientes.
+    * Busca la tarea por su nombre original y reemplaza sus datos con los de la tarea actualizada.
+    *
+    * @param nombreOriginal El nombre actual de la tarea que se quiere modificar.
+    * @param tareaActualizada Un objeto Tarea con los nuevos datos (nombre, descripción, etc.).
+    * @throws RegistroInvalidoException Si la tarea original no se encuentra o si el nuevo nombre ya está en uso por otra tarea.
+    * @throws TareaInvalidaException Si los datos de la tarea actualizada son inválidos (lanzado por los setters).
+    */
+    public void actualizarTarea(String nombreOriginal, Tarea tareaActualizada) throws RegistroInvalidoException, TareaInvalidaException {
+        // Buscamos la tarea que queremos actualizar.
+        Tarea tareaAActualizar = buscarTareaPorNombre(nombreOriginal);
+        if (tareaAActualizar == null) {
+            throw new RegistroInvalidoException("Error: No se encontró la tarea '" + nombreOriginal + "' para actualizar.");
+        }
+        
+        //  Comprobamos si el nuevo nombre de la tarea ya está siendo usado por OTRA tarea.
+        //  Es importante asegurarse de que no estamos comparando la tarea consigo misma si el nombre no ha cambiado.
+        if (!nombreOriginal.equalsIgnoreCase(tareaActualizada.getNombre())) {
+            if (buscarTareaPorNombre(tareaActualizada.getNombre()) != null) {
+                throw new RegistroInvalidoException("Ya existe otra tarea con el nombre '" + tareaActualizada.getNombre() + "'. Elige un nombre diferente.");
+            }
+        }
+
+        //  Si todas las validaciones pasan, actualizamos los campos de la tarea original
+        //  con los nuevos valores. Usamos los 'setters' de la clase Tarea para que
+        //  se apliquen sus propias validaciones (ej. longitud del nombre, etc.).
+        tareaAActualizar.setNombre(tareaActualizada.getNombre());
+        tareaAActualizar.setDescripcion(tareaActualizada.getDescripcion());
+        tareaAActualizar.setExp(tareaActualizada.getExp());
+        tareaAActualizar.setFechaExpiracion(tareaActualizada.getFechaExpiracion());
+        
+        System.out.println("LOG: Tarea '" + nombreOriginal + "' actualizada exitosamente a '" + tareaActualizada.getNombre() + "'.");
     }
 
     @Override

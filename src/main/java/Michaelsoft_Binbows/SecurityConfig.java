@@ -15,7 +15,7 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/**.css", "/**.png", "/**.jpg", "/login", "/register").permitAll() // public endpoints
-                .requestMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_MOD")
+                .requestMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_MODERADOR")
                 .anyRequest().authenticated() // everything else requires login
             )
             .formLogin(form -> form
@@ -27,7 +27,7 @@ public class SecurityConfig {
                     CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
                 if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
                     response.sendRedirect("/admin");
-                } else if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_MOD"))) {
+                } else if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_MODERADOR"))) {
                     response.sendRedirect("/admin"); // or moderator panel
                 } else {
                     response.sendRedirect("/home");

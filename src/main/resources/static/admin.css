@@ -248,3 +248,87 @@ body {
     border-radius: 6px;
     margin-top: 10px;
 }
+.maestro-detalle-container {
+    display: flex;
+    gap: 20px;
+    height: 75vh; /* Ocupa una buena parte de la altura de la pantalla */
+}
+
+/* Panel izquierdo (lista de usuarios) */
+.panel-maestro {
+    flex: 0 0 250px; /* Base de 250px, no crece, no se encoge */
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Panel derecho (detalles de las tareas) */
+.panel-detalle {
+    flex-grow: 1; /* Ocupa el resto del espacio */
+    background-color: white;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    padding: 20px;
+}
+
+.panel-header {
+    font-size: 18px;
+    font-weight: 600;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e9ecef;
+    background-color: #f8f9fa;
+}
+
+.user-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: auto; /* Scroll si hay muchos usuarios */
+}
+
+.user-list a {
+    display: block;
+    padding: 12px 20px;
+    text-decoration: none;
+    color: #333;
+    border-bottom: 1px solid #e9ecef;
+    transition: background-color 0.2s;
+}
+
+.user-list a:hover {
+    background-color: #e2e6ea;
+}
+
+/* Estilo para el usuario actualmente seleccionado */
+.user-list a.active {
+    background-color: #FFC839; /* El color amarillo de tu marca */
+    color: #333;
+    font-weight: bold;
+}
+
+/* Mensaje cuando no hay usuario seleccionado */
+.placeholder-detalle {
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: #6c757d;
+    font-size: 1.2rem;
+}
+.placeholder-detalle i {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+.task-param-bar {
+    grid-template-columns: 2fr 1fr 1.5fr; /* Nombre, EXP, Fecha */
+}
+.panel-detalle .param-bar {
+    grid-template-columns: 2fr 1fr 1.5fr 1fr; /* Tarea, Exp, Fecha, Acciones */
+}
+.panel-detalle .user-row {
+    grid-template-columns: 2fr 1fr 1.5fr 1fr;
+}

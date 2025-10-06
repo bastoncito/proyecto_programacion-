@@ -11,14 +11,19 @@ public class Tarea{
     private int exp;
     private LocalDateTime fechaExpiracion;
     private LocalDateTime fechaCompletada = null;
-    // constructor
-        public Tarea (String nombre, String descripcion, String dificultad) throws TareaInvalidaException{
-            setNombre(nombre);
-            setDescripcion(descripcion);
-            //Se calcula la experiencia en base a una de 6 categorías de dificultad
-            setExp(Dificultad.obtenerExpPorDificultad(dificultad));
-            setFechaExpiracion(Dificultad.obtenerDíasPorDificultad(dificultad));
-        }
+    // Constructores
+    public Tarea (){
+        // Este constructor se deja vacío a propósito.
+        // Es requerido por algunos frameworks como Spring y Thymeleaf para poder
+        // crear objetos de esta clase sin necesidad de pasarle argumentos.
+    }
+    public Tarea (String nombre, String descripcion, String dificultad) throws TareaInvalidaException{
+        setNombre(nombre);
+        setDescripcion(descripcion);
+        //Se calcula la experiencia en base a una de 6 categorías de dificultad
+        setExp(Dificultad.obtenerExpPorDificultad(dificultad));
+        setFechaExpiracion(Dificultad.obtenerDíasPorDificultad(dificultad));
+    }
     public String getNombre() {
         return nombre;
     }

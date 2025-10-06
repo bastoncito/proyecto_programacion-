@@ -18,11 +18,11 @@
 
         <!-- Navegación principal -->
         <ul>
-            <li><a th:href="@{/admin}"><i class='bx bxs-group'></i> Usuarios</a></li>
-            <li><a href="#"><i class='bx bx-task'></i> Tareas</a></li>
+            <li><a th:href="@{/admin(vista='usuarios')}"><i class='bx bxs-group'></i> Usuarios</a></li>
+            <li><a th:href="@{/admin(vista='tareas')}"><i class='bx bx-task'></i> Tareas</a></li>
             <li><a href="#"><i class='bx bxs-bar-chart-alt-2'></i> Top</a></li>
-            <li><a href="#"><i class='bx bxs-tag'></i> Roles</a></li>
-            <li><a href="#"><i class='bx bxs-id-card'></i> Administradores</a></li>
+            <li><a href="#"><i class='bx bxs-trophy'></i> Logros</a></li>
+            <li><a th:href="@{/home}"><i class='bx bxs-home'></i> Home</a></li>
         </ul>
 
         <form th:action="@{/logout}" method="post">
@@ -48,106 +48,114 @@
 
         <!-- Zona de trabajo principal (título y tabla) -->
         <div class="container-work">
-            <div class="section-title">Usuarios</div>
-            <div class="section-line"></div>
 
-            <!-- Contenedor de la tabla -->
-            <div class="list-box">
-                <!-- Cabecera de la tabla -->
-                <div class="param-bar">
-                    <span>Nombre</span>
-                    <span>Correo</span>
-                    <span>Rol</span>
-                    <span>Nivel</span>
-                    <span>Acciones</span>
-                </div>
+            <div th:switch="${vistaActual}">
+                 <!-- Caso 1: Si la vista es 'usuarios' (o por defecto) -->
+                <div th:case="'usuarios'">
+                    <div class="section-title">Usuarios</div>
+                    <div class="section-line"></div>
 
-                <!-- Filas de datos (generadas dinámicamente) -->
-                <div class="user-row" th:each="usuario : ${listaDeUsuarios}">
-                    <div class="user-cell" th:text="${usuario.nombreUsuario}"></div>
-                    <div class="user-cell" th:text="${usuario.correoElectronico}"></div>
-                    <div class="user-cell" th:text="${usuario.rol}"></div>
-                    <div class="user-cell" th:text="${usuario.nivelExperiencia}"></div>
-                    <div class="user-cell actions">
-                        <!-- El enlace "Editar" ahora apunta a /admin con el parámetro del correo -->
-                        <a th:if="${seguridadService.puedeEditar(usuarioActual, usuario)}"
-                        th:href="@{/admin(editarUsuarioCorreo=${usuario.correoElectronico})}" 
-                        class="btn-edit">Editar</a>
-
-                        <!-- El enlace "Eliminar" apunta a /admin/eliminar con el parámetro del correo -->
-                        <a th:if="${seguridadService.puedeEliminar(usuarioActual, usuario)}"
-                        th:href="@{/admin/eliminar(correo=${usuario.correoElectronico})}"
-                        class="btn-delete"
-                        onclick="return confirm('¿Estás seguro de que quieres eliminar a este usuario?');">Eliminar</a>
+                    <div class="list-box">
+                        <div class="param-bar">
+                            <span>Nombre</span>
+                            <span>Correo</span>
+                            <span>Rol</span>
+                            <span>Nivel</span>
+                            <span>Acciones</span>
+                        </div>
+                        <!-- Filas de datos (generadas dinámicamente) -->
+                        <div class="user-row" th:each="usuario : ${listaDeUsuarios}">
+                            <div class="user-cell" th:text="${usuario.nombreUsuario}"></div>
+                            <div class="user-cell" th:text="${usuario.correoElectronico}"></div>
+                            <div class="user-cell" th:text="${usuario.rol}"></div>
+                            <div class="user-cell" th:text="${usuario.nivelExperiencia}"></div>
+                            <div class="user-cell actions">
+                                <!-- El enlace "Editar" ahora apunta a /admin con el parámetro del correo -->
+                                <a th:if="${seguridadService.puedeEditar(usuarioActual, usuario)}"
+                                th:href="@{/admin(editarUsuarioCorreo=${usuario.correoElectronico}, vista='usuarios')}" 
+                                class="btn-edit">Editar</a>
+                                <!-- El enlace "Eliminar" apunta a /admin/eliminar con el parámetro del correo -->
+                                <a th:if="${seguridadService.puedeEliminar(usuarioActual, usuario)}"
+                                th:href="@{/admin/eliminar(correo=${usuario.correoElectronico})}"
+                                class="btn-delete"
+                                onclick="return confirm('¿Estás seguro de que quieres eliminar a este usuario?');">Eliminar</a>
+                            </div>
+                        </div>
+                        <!-- Mensaje para cuando no hay usuarios -->
+                        <div th:if="${listaDeUsuarios.isEmpty()}" class="empty-list-message">
+                            <p>No hay usuarios registrados.</p>
+                        </div>
                     </div>
-
                 </div>
-
-                <!-- Mensaje para cuando no hay usuarios -->
-                <div th:if="${listaDeUsuarios.isEmpty()}" class="empty-list-message">
-                    <p>No hay usuarios registrados.</p>
+                 <!-- Caso 2: Si la vista es 'tareas' -->
+                <div th:case="'tareas'">
+                    <div th:replace="~{tareas-fragment :: contenidoTareasMaestroDetalle}"></div>
                 </div>
+                
+                
+
+
             </div>
         </div>
     </div>
-<div class="modal-overlay" th:if="${usuarioParaEditar != null}">
+
+    <div class="modal-overlay" th:if="${usuarioParaEditar != null}">
     
-    <div class="modal-content">
-        <h2>Editar Usuario</h2>
-        <div class="section-line"></div>
-        
-        <!-- Formulario que envía los datos al endpoint /admin/guardar -->
-        <form th:action="@{/admin/guardar}" method="post" class="edit-form">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <div class="modal-content">
+            <h2>Editar Usuario</h2>
+            <div class="section-line"></div>
             
-            <!-- Campo oculto para enviar el correo original, que es el identificador -->
-            <input type="hidden" name="correoElectronicoOriginal" th:value="${usuarioParaEditar.correoElectronico}">
+            <!-- Formulario que envía los datos al endpoint /admin/guardar -->
+            <form th:action="@{/admin/guardar}" method="post" class="edit-form">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             
-            <div class="form-group">
-                <label for="nombreUsuario">Nombre de Usuario</label>
-                <input type="text" id="nombreUsuario" name="nombreUsuario" th:value="${usuarioParaEditar.nombreUsuario}" required>
-            </div>
+                <!-- Campo oculto para enviar el correo original, que es el identificador -->
+                <input type="hidden" name="correoElectronicoOriginal" th:value="${usuarioParaEditar.correoElectronico}">
             
-            <div class="form-group">
-                <label for="nuevoCorreo">Correo Electrónico</label>
-                <!-- Quitamos 'disabled' y añadimos el 'name' para que se envíe al servidor -->
-                <input type="email" id="nuevoCorreo" name="nuevoCorreo" th:value="${usuarioParaEditar.correoElectronico}" required>
-            </div>
+                <div class="form-group">
+                    <label for="nombreUsuario">Nombre de Usuario</label>
+                    <input type="text" id="nombreUsuario" name="nombreUsuario" th:value="${usuarioParaEditar.nombreUsuario}" required>
+                </div>
             
-            <div class="form-group">
-                <label for="rol">Rol del Usuario</label>
-                <!-- Iteramos sobre la lista 'rolesDisponibles' que preparamos en el controlador -->
-                <select id="rol" name="rol" required>
-                    <option th:each="rolValue : ${rolesDisponibles}"
+                <div class="form-group">
+                    <label for="nuevoCorreo">Correo Electrónico</label> 
+                    <input type="email" id="nuevoCorreo" name="nuevoCorreo" th:value="${usuarioParaEditar.correoElectronico}" required>
+                </div>
+            
+                <div class="form-group">
+                    <label for="rol">Rol del Usuario</label>
+                    <!-- Iteramos sobre la lista 'rolesDisponibles' que preparamos en el controlador -->
+                    <select id="rol" name="rol" required>
+                        <option th:each="rolValue : ${rolesDisponibles}"
                             th:value="${rolValue}"
                             th:text="${rolValue}"
                             th:selected="${rolValue == usuarioParaEditar.rol}">
-                    </option>
-                </select>
-            </div>
+                        </option>
+                    </select>
+                </div>
 
-            <div class="section-line" style="margin-top: 15px; margin-bottom: 15px;"></div>
+                <div class="section-line" style="margin-top: 15px; margin-bottom: 15px;"></div>
             
-            <div class="form-group">
-                <label for="nuevaContraseña">Nueva Contraseña (Opcional)</label>
-                <!-- 'type="password"' para que el texto no sea visible. -->
-                <input type="password" id="nuevaContraseña" name="nuevaContraseña" placeholder="Dejar en blanco para no cambiar">
-            </div>
+                <div class="form-group">
+                    <label for="nuevaContraseña">Nueva Contraseña (Opcional)</label>
+                    <!-- 'type="password"' para que el texto no sea visible. -->
+                    <input type="password" id="nuevaContraseña" name="nuevaContraseña" placeholder="Dejar en blanco para no cambiar">
+                </div>
 
-            <div class="form-group">
-                <label for="confirmarContraseña">Confirmar Nueva Contraseña</label>
-                <input type="password" id="confirmarContraseña" name="confirmarContraseña" placeholder="Repetir la nueva contraseña">
-            </div>
+                <div class="form-group">
+                    <label for="confirmarContraseña">Confirmar Nueva Contraseña</label>
+                    <input type="password" id="confirmarContraseña" name="confirmarContraseña" placeholder="Repetir la nueva contraseña">
+                </div>
 
-            <!-- Mensaje de error del servidor, si lo hay (usando addFlashAttribute) -->
-            <div th:if="${error}" class="alert-error" th:text="${error}"></div>
-             <!-- Mensaje de éxito del servidor -->
-            <div th:if="${success}" class="alert-success" th:text="${success}"></div>
+                <!-- Mensaje de error del servidor, si lo hay (usando addFlashAttribute) -->
+                <div th:if="${error}" class="alert-error" th:text="${error}"></div>
+                <!-- Mensaje de éxito del servidor -->
+                <div th:if="${success}" class="alert-success" th:text="${success}"></div>
             
-            <div class="form-actions">
-                <a th:href="@{/admin}" class="btn-cancel">Cerrar</a>
-                <button type="submit" class="btn-save">Guardar Cambios</button>
-            </div>
+                <div class="form-actions">
+                    <a th:href="@{/admin}" class="btn-cancel">Cerrar</a>
+                    <button type="submit" class="btn-save">Guardar Cambios</button>
+                </div>
             </form>
         </div>
     </div>

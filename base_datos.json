@@ -48,12 +48,39 @@
     "nombreUsuario": "Matias Gomez",
     "correoElectronico": "mgomez22@alumnos.utalca.cl",
     "contraseña": "$2a$10$Hpk2E/oJOvML3BldXuk5x.BDsbyjo3y5WprLDyOA0TC2om.kmCZ3O",
-    "experiencia": 0,
-    "nivelExperiencia": 1,
+    "experiencia": 20,
+    "nivelExperiencia": 2,
     "rol": "MODERADOR",
     "fechaRegistro": "2025-10-05T17:54",
-    "tareas": [],
-    "tareasCompletadas": [],
+    "tareas": [
+      {
+        "nombre": "Probar Tareas nuevas",
+        "descripcion": "verificar que el codigo no se rompio",
+        "exp": 50,
+        "fechaExpiracion": "2025-10-09T10:30"
+      },
+      {
+        "nombre": "Probar funcionalidad script",
+        "descripcion": "En formulario Tareas ahora se actualiza",
+        "exp": 50,
+        "fechaExpiracion": "2025-10-09T10:46"
+      },
+      {
+        "nombre": "Subir todo al github",
+        "descripcion": "le tengo miedo al merge",
+        "exp": 150,
+        "fechaExpiracion": "2025-10-11T10:46"
+      }
+    ],
+    "tareasCompletadas": [
+      {
+        "nombre": "Repasar EDO",
+        "descripcion": "Estudiar y avanzar en las guias de EDO",
+        "exp": 150,
+        "fechaExpiracion": "2025-10-11T10:30",
+        "fechaCompletada": "2025-10-06T10:46"
+      }
+    ],
     "logros": []
   }
 ]

@@ -17,9 +17,11 @@ import jakarta.servlet.http.HttpSession;
 import Michaelsoft_Binbows.services.Rol;
 import Michaelsoft_Binbows.services.Usuario;
 import Michaelsoft_Binbows.services.SeguridadService;
+import Michaelsoft_Binbows.services.Tarea;
 import Michaelsoft_Binbows.CustomUserDetails;
 import Michaelsoft_Binbows.exceptions.EdicionInvalidaException;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
+import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
 import Michaelsoft_Binbows.services.BaseDatos;
 import java.util.Arrays;
 
@@ -70,6 +72,7 @@ public class AdminController {
             @RequestParam(name = "vista", required = false, defaultValue = "usuarios") String vistaActual, 
             @RequestParam(name = "editarUsuarioCorreo", required = false) String correoAEditar,
             @RequestParam(name = "error", required = false) String error,
+            @RequestParam(name = "correo", required = false) String correoUsuarioSeleccionado,
             Model model, 
             HttpSession session) {
 
@@ -105,7 +108,11 @@ public class AdminController {
                 model.addAttribute("listaDeUsuarios", baseDatos.getUsuarios());
                 break;
             case "tareas":
-                // Lógica futura
+                model.addAttribute("listaDeUsuarios", baseDatos.getUsuarios());
+                if (correoUsuarioSeleccionado != null) {
+                Usuario usuarioSeleccionado = baseDatos.buscarUsuarioPorCorreo(correoUsuarioSeleccionado);
+                model.addAttribute("usuarioSeleccionado", usuarioSeleccionado);
+            }
                 break;
         }
         
@@ -229,6 +236,150 @@ public class AdminController {
         return "redirect:/admin";
     }
     
+    /*
+    * Elimina una tarea específica de un usuario.
+    * Se invoca desde la vista de tareas del panel de administración.
+    */
+    @GetMapping("/admin/tareas/eliminar")
+    public String eliminarTareaDeUsuario(
+        @RequestParam("correoUsuario") String correoUsuario,
+        @RequestParam("nombreTarea") String nombreTarea,
+        RedirectAttributes redirectAttributes) {
+
+        //  Obtenemos el usuario que está realizando la acción (el admin/moderador).
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        Usuario actor = userDetails.getUsuario();
+
+        //  Buscamos al usuario al que pertenece la tarea.
+        Usuario objetivo = baseDatos.buscarUsuarioPorCorreo(correoUsuario);
+
+        //  Chequeo de seguridad: ¿Tiene el admin permiso para modificar a este usuario?
+        //  Se reutiliza la lógica de 'puedeEditar' porque si puede editar al usuario,
+        //  también debería poder gestionar sus tareas.
+        if (!seguridadService.puedeEditar(actor, objetivo)) {
+            System.out.println("WARN: Fallo de seguridad al intentar eliminar tarea. El actor no tiene permisos sobre el objetivo.");
+            return "redirect:/acceso-denegado";
+        }
+
+        //  Si los permisos son correctos, procedemos a eliminar la tarea.
+        try {
+            // Necesitaremos un nuevo método en la clase Usuario para esto.
+            objetivo.cancelarTarea(nombreTarea);
+            
+            //  Guardamos los cambios en el archivo JSON.
+            baseDatos.guardarBaseDatos();
+            
+            redirectAttributes.addFlashAttribute("success", "Tarea '" + nombreTarea + "' eliminada correctamente.");
+            System.out.println("LOG: El admin '" + actor.getNombreUsuario() + "' eliminó la tarea '" + nombreTarea + "' del usuario '" + objetivo.getNombreUsuario() + "'.");
+
+        } catch (RegistroInvalidoException e) {
+            // Esto pasaría si la tarea no se encuentra, por ejemplo.
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            System.err.println("ERROR al eliminar tarea: " + e.getMessage());
+        }
+
+        //  Redirigimos de vuelta a la misma vista de tareas, manteniendo al usuario seleccionado.
+        redirectAttributes.addAttribute("vista", "tareas");
+        redirectAttributes.addAttribute("correo", correoUsuario);
+        return "redirect:/admin";
+    }
+
+    /*
+    * Muestra el formulario para que un administrador edite la tarea de un usuario.
+    * Este método se activa cuando se hace clic en el botón "Editar" de la tabla de tareas.
+    *
+    * @param correoUsuario El correo del usuario propietario de la tarea.
+    * @param nombreTarea El nombre de la tarea a editar.
+    * @param model El objeto Model para pasar datos a la vista.
+    * @return El nombre de la plantilla del formulario de edición ('admin-tarea-form').
+    */
+    @GetMapping("/admin/tareas/editar")
+    public String mostrarFormularioEditarTarea(
+            @RequestParam("correoUsuario") String correoUsuario,
+            @RequestParam("nombreTarea") String nombreTarea,
+            Model model) {
+        
+        // Buscamos al usuario en la base de datos.
+        Usuario usuario = baseDatos.buscarUsuarioPorCorreo(correoUsuario);
+        // Buscamos la tarea específica dentro de la lista de tareas de ese usuario.
+        Tarea tarea = usuario.buscarTareaPorNombre(nombreTarea);
+
+        // Medida de seguridad: si por alguna razón el usuario o la tarea no se encuentran,
+        // evitamos un error y simplemente volvemos al panel de admin.
+        if (usuario == null || tarea == null) {
+            return "redirect:/admin";
+        }
+
+        // Pasamos tanto el usuario como la tarea a la vista.
+        // El 'usuario' se necesita para el título y el enlace de "Cancelar".
+        // La 'tarea' se necesita para rellenar los campos del formulario.
+        model.addAttribute("usuario", usuario);
+        model.addAttribute("tarea", tarea);
+        
+        // Devolvemos el nombre de nuestra nueva plantilla HTML.
+        return "admin-tarea-form";
+    }
+
+    /*
+    * Procesa y guarda los cambios de una tarea editada por un administrador.
+    * Este método se activa cuando se envía el formulario desde 'admin-tarea-form.html'.
+    *
+    * @return Una redirección a la vista de tareas del usuario afectado.
+    */
+    @PostMapping("/admin/tareas/guardar")
+    public String guardarTareaEditada(
+            @RequestParam("correoUsuario") String correoUsuario,
+            @RequestParam("nombreOriginal") String nombreOriginal,
+            @RequestParam("nombre") String nuevoNombre,
+            @RequestParam("descripcion") String nuevaDescripcion,
+            @RequestParam("dificultad") String nuevaDificultad,
+            RedirectAttributes redirectAttributes,
+            Model model) {
+
+        Usuario usuario = baseDatos.buscarUsuarioPorCorreo(correoUsuario);
+
+        try {
+            //  Creamos un objeto Tarea temporal con los nuevos datos recibidos del formulario.
+            Tarea tareaActualizada = new Tarea(nuevoNombre, nuevaDescripcion, nuevaDificultad);
+            
+            //  Le pedimos al objeto Usuario que actualice la tarea original con los nuevos datos.
+            //  Toda la lógica de validación está dentro de este método en la clase Usuario.
+            usuario.actualizarTarea(nombreOriginal, tareaActualizada);
+            
+            //  Si la actualización fue exitosa, guardamos el estado completo de la base de datos.
+            baseDatos.guardarBaseDatos();
+
+            //  Preparamos un mensaje de éxito para mostrar después de la redirección.
+            redirectAttributes.addFlashAttribute("success", "Tarea actualizada correctamente.");
+            
+            //  Redirigimos de vuelta a la vista de tareas, manteniendo al usuario seleccionado.
+            redirectAttributes.addAttribute("vista", "tareas");
+            redirectAttributes.addAttribute("correo", correoUsuario);
+            return "redirect:/admin";
+
+        } catch (TareaInvalidaException | RegistroInvalidoException e) {
+            //  Si durante los pasos anteriores se lanzo una excepción de validación...
+            
+            //  volvemos a mostrar el formulario de edición con un mensaje de error.
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("usuario", usuario);
+            
+            //  Reconstruimos el objeto Tarea con los datos que el admin intentó guardar,
+            //  para que no tenga que volver a escribirlos todos.
+            try {
+                //  Usamos un constructor vacío y setters para evitar problemas si la dificultad es inválida.
+                Tarea tareaConDatosPrevios = new Tarea();
+                tareaConDatosPrevios.setNombre(nuevoNombre);
+                tareaConDatosPrevios.setDescripcion(nuevaDescripcion);
+                model.addAttribute("tarea", tareaConDatosPrevios);
+            } catch (TareaInvalidaException ignored) {}
+            
+            return "admin-tarea-form";
+        }
+    }
+
+
     /**
      * Página de "Acceso Denegado".
      */
