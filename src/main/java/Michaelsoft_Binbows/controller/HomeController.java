@@ -57,18 +57,6 @@ public class HomeController {
         return "home";
     }
 
-<<<<<<< HEAD
-=======
-    @PostMapping("/borrar-cuenta")
-    public String borrarCuenta(Model model, HttpSession session){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-        Usuario usuarioActual = userDetails.getUsuario(); 
-        baseDatos.eliminarUsuario(usuarioActual);
-        return "redirect:/";
-    }
-
->>>>>>> origin/spring-security
     @GetMapping("/ranking")
     public String mostrarRanking(Model model) {
         System.out.println("LOG: El método 'mostrarRanking' ha sido llamado por una petición a /home.");
@@ -82,16 +70,17 @@ public class HomeController {
 
         return "ranking";
     }
-/* 
+/*   
     @GetMapping("/perfil")
     public String mostrarPerfil(Model model, HttpSession session) {
-        System.out.println("LOG: El método 'mostrarPerfil' ha sido llamado por una petición a /home.");
+        System.out.println("LOG: El método 'mostrarPerfil' ha sido llamado por una petición a /perfil.");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         Usuario usuarioActual = userDetails.getUsuario(); 
+        model.addAttribute("usuario", usuarioActual);
         model.addAttribute("nombre_usuario", usuarioActual != null ? usuarioActual.getNombreUsuario() : "-");
 
-        return "";
+        return "user-profile";  // ← Este es el cambio crítico
     }
 */
 

@@ -107,7 +107,8 @@
             </div>
             
             <div class="container-buttons">
-                <form th:action="@{/perfil/cerrar-sesion}" method="post" style="width: 30%;">
+                <form th:action="@{/logout}" method="post" style="width: 30%;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                     <button type="submit" class="btn-cerrar_sesion" onclick="return confirm('¿Estás seguro de que quieres cerrar la sesión?');">
                         CERRAR SESIÓN
                     </button>

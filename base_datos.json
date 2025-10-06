@@ -59,11 +59,11 @@
   {
     "nombreUsuario": "zketsh01",
     "correoElectronico": "dpezoa21@alumnos.utalca.cl",
-    "contraseña": "User123.",
+    "contraseña": "$2a$10$QllAiODpyJWvloM3/zN3zuValT98feTdci3pEAWGQ4Kyga13zlCYm",
     "experiencia": 0,
     "nivelExperiencia": 1,
     "rol": "USUARIO",
-    "fechaRegistro": "2025-10-04T18:14",
+    "fechaRegistro": "2025-10-06T00:40",
     "tareas": [],
     "tareasCompletadas": [],
     "logros": []
