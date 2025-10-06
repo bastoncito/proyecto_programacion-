@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.regex.Pattern;
+import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 
 public class Usuario{
     private String nombreUsuario,correoElectronico,contraseña;
@@ -15,7 +16,7 @@ public class Usuario{
     private List<Tarea> tareasCompletadas;
     private List<Logro> logros;
 
-    public Usuario(String nombre_usuario, String correo_electronico, String contraseña){
+    public Usuario(String nombre_usuario, String correo_electronico, String contraseña) throws RegistroInvalidoException{
         setNombreUsuario(nombre_usuario);
         setCorreoElectronico(correo_electronico);
         setContraseña(contraseña);
@@ -76,41 +77,42 @@ public class Usuario{
     public List<Tarea> getTareasCompletadas() {
         return new ArrayList<>(this.tareasCompletadas);
     }
-    public void setNombreUsuario(String nombre_usuario) {
+    public void setNombreUsuario(String nombre_usuario) throws RegistroInvalidoException {
         if(esNombreValido(nombre_usuario)){
             this.nombreUsuario = nombre_usuario;
         }else{
-            throw new IllegalArgumentException("Nombre de usuario no válido: " + nombre_usuario);
+            throw new RegistroInvalidoException("Nombre de usuario no válido: " + nombre_usuario);
         }
     }
     
-    public void setCorreoElectronico(String correo_electronico) {
+    public void setCorreoElectronico(String correo_electronico) throws RegistroInvalidoException {
         if(correoValido(correo_electronico)){
             this.correoElectronico=correo_electronico;
         }else{
-            throw new IllegalArgumentException("Correo electronico no válido: " + correo_electronico);
+            throw new RegistroInvalidoException("Correo electronico no válido: " + correo_electronico);
         }
     }
     
-    public void setContraseña(String nuevaContraseña) {
+    public void setContraseña(String nuevaContraseña) throws RegistroInvalidoException {
         String resultado = validarContrasena(nuevaContraseña);
         if (resultado == null) {
             this.contraseña = nuevaContraseña;
         } else {
-            throw new IllegalArgumentException(resultado);
+            throw new RegistroInvalidoException(resultado);
         }
     }
     /**
      * Recibe una Tarea como parametro
      * la agrega a la base de datos si su nombre, descricpcion y exp son validos
+     * @throws RegistroInvalidoException 
      */
-    public void agregarTarea(Tarea tarea){//TRABAJAR AQUI---->>>Validar si la tarea se puede agregar
+    public void agregarTarea(Tarea tarea) throws RegistroInvalidoException{//TRABAJAR AQUI---->>>Validar si la tarea se puede agregar
         // Si pasa las validaciones, la agregamos
         if(tareaExistePorNombre(tarea.getNombre())){
-            throw new IllegalArgumentException("Tarea \"" + tarea.getNombre() + "\" ya existente.");
+            throw new RegistroInvalidoException("Tarea \"" + tarea.getNombre() + "\" ya existente.");
         }
         if(tareaExistePorDescripcion(tarea.getDescripcion())){
-            throw new IllegalArgumentException("Tarea con descripción \"" + tarea.getNombre() + "\" ya existe.");
+            throw new RegistroInvalidoException("Tarea con descripción \"" + tarea.getNombre() + "\" ya existe.");
         }
         tareas.add(tarea);
         System.out.println("Tarea '" + tarea.getNombre() + "' agregada exitosamente.");
@@ -196,11 +198,11 @@ public class Usuario{
     * Marca una tarea como completada, la mueve a la lista de tareas completadas,
     * añade la experiencia al usuario y verifica si sube de nivel.
     */
-    public void completarTarea(String nombreTarea) {
+    public void completarTarea(String nombreTarea) throws RegistroInvalidoException {
         // Validar que la tarea a completar realmente existe en la lista.
         Tarea tareaACompletar = buscarTareaPorNombre(nombreTarea);
         if (tareaACompletar == null) {
-            throw new IllegalArgumentException("La tarea '" + nombreTarea + "' no se encuentra en la lista de tareas pendientes de este usuario.");
+            throw new RegistroInvalidoException("La tarea '" + nombreTarea + "' no se encuentra en la lista de tareas pendientes de este usuario.");
         }
 
         tareaACompletar.setFechaCompletada(LocalDateTime.now()); // Marca la fecha de completado como la actual.
@@ -218,10 +220,10 @@ public class Usuario{
         verificarSubidaDeNivel();
     }
 
-    public void cancelarTarea(String nombreTarea){
+    public void cancelarTarea(String nombreTarea) throws RegistroInvalidoException{
         Tarea tarea = buscarTareaPorNombre(nombreTarea);
         if(tarea == null){
-            throw new IllegalArgumentException("La tarea '" + nombreTarea + "' no se encuentra en la lista de tareas pendientes de este usuario.");
+            throw new RegistroInvalidoException("La tarea '" + nombreTarea + "' no se encuentra en la lista de tareas pendientes de este usuario.");
         }
 
         tareas.remove(tarea);

@@ -2,7 +2,7 @@
   {
     "nombreUsuario": "Admin",
     "correoElectronico": "admin@michaelsoftBinbows.com",
-    "contraseña": "SuperClaveSegura123!",
+    "contraseña": "$2a$10$nqpuvP8H3L0j4n.dIM6pt.ayiAFtuSvleHb5FvC8Rkkemgc0t/1UG",
     "experiencia": 0,
     "nivelExperiencia": 1,
     "rol": "ADMIN",
@@ -25,52 +25,34 @@
     "logros": []
   },
   {
-    "nombreUsuario": "Matias Gomez",
-    "correoElectronico": "mgomez22@alumnos.utalca.cl",
-    "contraseña": "Saquenme.De.ED0",
-    "experiencia": 0,
+    "nombreUsuario": "Bastoncito",
+    "correoElectronico": "breyes24@alumnos.utalca.cl",
+    "contraseña": "$2a$10$V7rcRFErdLLO6vkQ8tKDy.qoYWQAMKH3BrPVivDQqEGIu51dUrE72",
+    "experiencia": 50,
     "nivelExperiencia": 1,
-    "rol": "MODERADOR",
-    "fechaRegistro": "2025-09-28T20:16",
-    "tareas": [
+    "rol": "USUARIO",
+    "fechaRegistro": "2025-10-04T13:33",
+    "tareas": [],
+    "tareasCompletadas": [
       {
-        "nombre": "Revisar Correo",
-        "descripcion": "Limpiar bandeja de entrada y responder urgentes",
-        "exp": 25,
-        "fechaExpiracion": "2025-09-30T20:16"
-      },
-      {
-        "nombre": "Limpiar la Cocina",
-        "descripcion": "Lavar platos y limpiar encimeras",
-        "exp": 25,
-        "fechaExpiracion": "2025-09-30T20:16"
+        "nombre": "Salir a trotar",
+        "descripcion": "Una hora de trote, para variar",
+        "exp": 50,
+        "fechaExpiracion": "2025-10-07T13:34",
+        "fechaCompletada": "2025-10-04T13:35"
       }
     ],
-    "tareasCompletadas": [],
     "logros": []
   },
   {
-    "nombreUsuario": "Juan Carlos Bodoques",
-    "correoElectronico": "elAlmadeLaFiesta@31minutos.cl",
-    "contraseña": "Nota.Verde31",
+    "nombreUsuario": "Matias Gomez",
+    "correoElectronico": "mgomez22@alumnos.utalca.cl",
+    "contraseña": "$2a$10$Hpk2E/oJOvML3BldXuk5x.BDsbyjo3y5WprLDyOA0TC2om.kmCZ3O",
     "experiencia": 0,
     "nivelExperiencia": 1,
-    "rol": "USUARIO",
-    "fechaRegistro": "2025-09-28T20:16",
-    "tareas": [
-      {
-        "nombre": "Hacer Ejercicio",
-        "descripcion": "30 minutos de cardio o pesas",
-        "exp": 50,
-        "fechaExpiracion": "2025-10-01T20:16"
-      },
-      {
-        "nombre": "Llamar a la familia",
-        "descripcion": "Ponerse al día con la familia",
-        "exp": 10,
-        "fechaExpiracion": "2025-09-29T20:16"
-      }
-    ],
+    "rol": "MODERADOR",
+    "fechaRegistro": "2025-10-05T17:54",
+    "tareas": [],
     "tareasCompletadas": [],
     "logros": []
   },

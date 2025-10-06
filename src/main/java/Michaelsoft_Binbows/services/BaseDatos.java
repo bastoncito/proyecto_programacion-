@@ -5,13 +5,22 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import Michaelsoft_Binbows.data.*;
+import Michaelsoft_Binbows.exceptions.EdicionInvalidaException;
+import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
 public class BaseDatos {
     private List<Usuario> usuarios;
     private PersistenciaJSON persistencia;
 
-    public BaseDatos() {
+    private final PasswordEncoder passwordEncoder;
+
+
+    public BaseDatos(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder=passwordEncoder;
         this.persistencia = new PersistenciaJSON();
         cargarBaseDatos();
     }
@@ -52,7 +61,7 @@ public class BaseDatos {
         return null;
     }
 
-    public void agregarUsuario(Usuario usuario){
+    public void agregarUsuario(Usuario usuario) throws RegistroInvalidoException{
         String valido = validarUsuario(usuario);
         if(valido == null){
             usuarios.add(usuario);
@@ -60,7 +69,7 @@ public class BaseDatos {
             guardarBaseDatos();
         }else{
             // En lugar de imprimir, lanzamos una excepción para que el controlador la atrape
-            throw new IllegalStateException(valido);
+            throw new RegistroInvalidoException(valido);
         }
     }
 
@@ -130,31 +139,65 @@ public class BaseDatos {
     * Centraliza la lógica para actualizar un usuario.
     * Valida los datos y luego guarda los cambios.
     */
-    public void actualizarUsuario(String correoOriginal, String nuevoNombre, String nuevoCorreo, Rol nuevoRol) { // <--- CAMBIO 1: Acepta "nuevoCorreo"
+    public void actualizarUsuario(String correoOriginal, String nuevoNombre, String nuevoCorreo, Rol nuevoRol) throws EdicionInvalidaException { // <--- CAMBIO 1: Acepta "nuevoCorreo"
         // --- VALIDACIONES ---
         // 1. Validar que el nuevo nombre no esté en uso por OTRO usuario (esto ya lo tenías).
         if (usuarioExistePorNombre(nuevoNombre, correoOriginal)) {
-            throw new IllegalArgumentException("El nombre '" + nuevoNombre + "' ya está en uso por otro usuario.");
+            throw new EdicionInvalidaException("El nombre '" + nuevoNombre + "' ya está en uso por otro usuario.", correoOriginal);
         }
 
         // 2. Validar que el nuevo correo no esté en uso por OTRO usuario. (¡ESTO ES NUEVO!)
         if (usuarioExistePorCorreo(nuevoCorreo, correoOriginal)) { // <-- CAMBIO 2: Usa el nuevo método de ayuda
-            throw new IllegalArgumentException("El correo '" + nuevoCorreo + "' ya está registrado por otro usuario.");
+            throw new EdicionInvalidaException("El correo '" + nuevoCorreo + "' ya está registrado por otro usuario.", correoOriginal);
         }
     
         // 3. Buscar el usuario a actualizar.
         Usuario usuarioAActualizar = buscarUsuarioPorCorreo(correoOriginal);
         if (usuarioAActualizar == null) {
-            throw new IllegalStateException("Error crítico: No se pudo encontrar al usuario para actualizar.");
+            throw new EdicionInvalidaException("Error crítico: No se pudo encontrar al usuario para actualizar.", correoOriginal);
         }
 
         // 4. Usar los setters del propio Usuario.
-        usuarioAActualizar.setNombreUsuario(nuevoNombre);
-        usuarioAActualizar.setCorreoElectronico(nuevoCorreo); // <--- CAMBIO 3: Ahora actualiza el correo
-        usuarioAActualizar.setRol(nuevoRol);
+        try{
+            usuarioAActualizar.setNombreUsuario(nuevoNombre);
+            usuarioAActualizar.setCorreoElectronico(nuevoCorreo); // <--- CAMBIO 3: Ahora actualiza el correo
+            usuarioAActualizar.setRol(nuevoRol);
+        }catch(RegistroInvalidoException e){
+            throw new EdicionInvalidaException(e.getMessage(), correoOriginal);
+        }
 
         // 5. Persistir los cambios en el archivo JSON.
         guardarBaseDatos();
+    }
+
+    /*
+     * Actualiza la contraseña de un usuario de forma segura.
+     * Primero valida la nueva contraseña y luego la encripta antes de guardarla.
+     *
+     * @param correoUsuario El correo del usuario cuya contraseña se va a cambiar.
+     * @param nuevaContraseñaSinEncriptar La nueva contraseña en texto plano.
+     * @throws RegistroInvalidoException Si la nueva contraseña no cumple con los requisitos de seguridad.
+     */
+    public void actualizarContraseñaUsuario(String correoUsuario, String nuevaContraseñaSinEncriptar) throws RegistroInvalidoException {
+        Usuario usuario = buscarUsuarioPorCorreo(correoUsuario);
+        if (usuario == null) {
+            // Esto no debería pasar si viene del controlador, pero es una buena medida de seguridad.
+            throw new IllegalArgumentException("No se encontró un usuario con el correo: " + correoUsuario);
+        }
+        
+        // 1. Validamos la contraseña usando las reglas que ya tienes en la clase Usuario.
+        //    Esto lanzará una excepción si la contraseña es débil (corta, sin mayúsculas, etc.).
+        usuario.setContraseña(nuevaContraseñaSinEncriptar);
+        
+        // 2. Si la validación pasa, ahora la encriptamos antes de guardarla de verdad.
+        String contraseñaEncriptada = passwordEncoder.encode(nuevaContraseñaSinEncriptar);
+        
+        // 3. Establecemos la contraseña ya encriptada en el objeto usuario.
+        usuario.setContraseña(contraseñaEncriptada);
+        
+        // 4. Guardamos todos los cambios en el archivo JSON.
+        guardarBaseDatos();
+        System.out.println("LOG: La contraseña del usuario '" + usuario.getNombreUsuario() + "' ha sido actualizada y encriptada.");
     }
     
     public boolean usuarioExistePorCorreo(String correo, String correoExcluido) {
@@ -168,6 +211,15 @@ public class BaseDatos {
         }
     }
     return false; // El correo está disponible.
+    }
+
+    public Usuario buscarUsuarioPorNombre(String nombreUsuario){
+        for(Usuario u : usuarios){
+            if(u.getNombreUsuario().equals(nombreUsuario)){
+                return u;
+            }
+        }
+        return null;
     }
     
     public void imprimirTodosUsuarios() {

@@ -4,13 +4,15 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
+
 public class Tarea{
     private String nombre, descripcion;
     private int exp;
     private LocalDateTime fechaExpiracion;
     private LocalDateTime fechaCompletada = null;
     // constructor
-        public Tarea (String nombre, String descripcion, String dificultad){
+        public Tarea (String nombre, String descripcion, String dificultad) throws TareaInvalidaException{
             setNombre(nombre);
             setDescripcion(descripcion);
             //Se calcula la experiencia en base a una de 6 categorías de dificultad
@@ -32,46 +34,47 @@ public class Tarea{
     public LocalDateTime getFechaCompletada() {
         return fechaCompletada;
     }
-    public void setNombre(String nombre) {
+    public void setNombre(String nombre) throws TareaInvalidaException {
         if(nombre == null || nombre.isEmpty()){
-            throw new IllegalArgumentException("El nombre de la tarea no puede estar vacío.");
+            throw new TareaInvalidaException("El nombre de la tarea no puede estar vacío.");
         }if( nombre.length()<5 || nombre.length() > 30){
-            throw new IllegalArgumentException("El nombre de la tarea debe tener entre 5 y 30 carácteres");
+            throw new TareaInvalidaException("El nombre de la tarea debe tener entre 5 y 30 carácteres");
         }
         this.nombre = nombre;
     }
-    public void setDescripcion(String descripcion) {
+    public void setDescripcion(String descripcion) throws TareaInvalidaException {
         if(descripcion == null || descripcion.isEmpty()){
-            throw new IllegalArgumentException("La descripción de la tarea no puede estar vacía.");
+            throw new TareaInvalidaException("La descripción de la tarea no puede estar vacía.");
         }if(descripcion.length()<5 || descripcion.length() > 70){
-            throw new IllegalArgumentException("La descripción debe tener entre 5 y 80 carácteres");
+            throw new TareaInvalidaException("La descripción debe tener entre 5 y 80 carácteres");
         }
         this.descripcion = descripcion;
     }
-    public void setExp(int exp) {
+    public void setExp(int exp) throws TareaInvalidaException {
         if(exp <= 0){
-            throw new IllegalArgumentException("La exp de la tarea no puede ser menor a 1.");
+            throw new TareaInvalidaException("La exp de la tarea no puede ser menor a 1.");
         }
         this.exp = exp;
     }
-    public void setFechaExpiracion(LocalDateTime fechaExpiracion) {
+    public void setFechaExpiracion(LocalDateTime fechaExpiracion) throws TareaInvalidaException {
         if(fechaExpiracion == null){
-            throw new IllegalArgumentException("La fecha no puede estar vacía.");
+            throw new TareaInvalidaException("La fecha no puede estar vacía.");
         }
         LocalDateTime fechaActual = LocalDateTime.now();
         if(fechaExpiracion.isBefore(fechaActual)){ 
-            throw new IllegalArgumentException("La fecha debe ser igual o posterior a hoy.");
+            throw new TareaInvalidaException("La fecha debe ser igual o posterior a hoy.");
         }
         // revisa si la fecha está al menos 1 hora en el futuro
         long diferenciaMilisegundos = Duration.between(fechaActual, fechaExpiracion).toMillis();
         if (diferenciaMilisegundos < 60 * 60 * 1000) {
-            throw new IllegalArgumentException("La fecha debe ser al menos 1 hora posterior a la actual.");
+            throw new TareaInvalidaException("La fecha debe ser al menos 1 hora posterior a la actual.");
         }
         this.fechaExpiracion = fechaExpiracion;
     }
     public void setFechaCompletada(LocalDateTime fechaCompletada) {
         this.fechaCompletada = fechaCompletada;
     }
+
     public boolean tareaExistePorNombre(List<Tarea> tareas, Tarea tarea) {
         for (Tarea t : tareas) {
             if (t.getNombre().equalsIgnoreCase(tarea.getNombre())) {

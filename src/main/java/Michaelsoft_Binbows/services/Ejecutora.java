@@ -5,13 +5,17 @@ package Michaelsoft_Binbows.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
+
 /**
  * Script para poblar la base de datos con 5 usuarios de ejemplo.
  * Esta versión es compatible con el constructor de Tarea que acepta
  * un String de dificultad para calcular la EXP y la fecha de expiración.
  */
 public class Ejecutora {
-
 
     /* 
     public static void main(String[] args) {

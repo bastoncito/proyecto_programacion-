@@ -84,8 +84,11 @@
                         </button>
                     </form>
                     <form th:action="@{/logout}" method="post">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                         <button type="submit" class="borrar" onclick="return confirm('¿Estás seguro de que quieres cerrar la sesión?');">
                             Cerrar Sesión
+                        </button>
+                    </form>
                         </button>
                     </form>
                 </div>
@@ -170,10 +173,12 @@
             <p><strong>Expira:</strong> <span id="modalExpire"></span></p>
             <button id="deleteButton">Eliminar Tarea</button>
             <form id="deleteForm" th:action="@{/eliminar-tarea}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <input type="hidden" name="nombreTarea" id="deleteTaskId">
             </form>
             <button id="completeButton" class="">Marcar como completada</button> 
             <form id="completeForm" th:action="@{/completar-tarea}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <input type="hidden" name="nombreTarea" id="completeTaskId">
             </form>
         </div>

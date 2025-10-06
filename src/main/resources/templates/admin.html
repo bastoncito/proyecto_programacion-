@@ -26,6 +26,7 @@
         </ul>
 
         <form th:action="@{/logout}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             <button type="submit" onclick="return confirm('¿Estás seguro de que quieres cerrar la sesión?');">Cerrar Sesión</button>
         </form>
     </div>
@@ -97,6 +98,7 @@
         
         <!-- Formulario que envía los datos al endpoint /admin/guardar -->
         <form th:action="@{/admin/guardar}" method="post" class="edit-form">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             
             <!-- Campo oculto para enviar el correo original, que es el identificador -->
             <input type="hidden" name="correoElectronicoOriginal" th:value="${usuarioParaEditar.correoElectronico}">
@@ -123,7 +125,20 @@
                     </option>
                 </select>
             </div>
+
+            <div class="section-line" style="margin-top: 15px; margin-bottom: 15px;"></div>
             
+            <div class="form-group">
+                <label for="nuevaContraseña">Nueva Contraseña (Opcional)</label>
+                <!-- 'type="password"' para que el texto no sea visible. -->
+                <input type="password" id="nuevaContraseña" name="nuevaContraseña" placeholder="Dejar en blanco para no cambiar">
+            </div>
+
+            <div class="form-group">
+                <label for="confirmarContraseña">Confirmar Nueva Contraseña</label>
+                <input type="password" id="confirmarContraseña" name="confirmarContraseña" placeholder="Repetir la nueva contraseña">
+            </div>
+
             <!-- Mensaje de error del servidor, si lo hay (usando addFlashAttribute) -->
             <div th:if="${error}" class="alert-error" th:text="${error}"></div>
              <!-- Mensaje de éxito del servidor -->
