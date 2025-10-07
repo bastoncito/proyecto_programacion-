@@ -118,5 +118,24 @@
       }
     ],
     "logros": []
+  },
+  {
+    "nombreUsuario": "Boton",
+    "correoElectronico": "Boton@gmail.com",
+    "contraseña": "$2a$10$XK.SlCiPJM6sMW4oJUgukuacBL4m0Nj0wk0XSzhHIwkEyelDvLC2K",
+    "experiencia": 0,
+    "nivelExperiencia": 1,
+    "rol": "USUARIO",
+    "fechaRegistro": "2025-10-06T21:33",
+    "tareas": [
+      {
+        "nombre": "Tarea desde boton",
+        "descripcion": "asignar tarea desde boton",
+        "exp": 150,
+        "fechaExpiracion": "2025-10-11T21:41"
+      }
+    ],
+    "tareasCompletadas": [],
+    "logros": []
   }
 ]

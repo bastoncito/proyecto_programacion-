@@ -10,8 +10,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.servlet.http.HttpSession;
+
 
 // Imports de nuestras propias clases
 import Michaelsoft_Binbows.services.Rol;
@@ -23,6 +25,7 @@ import Michaelsoft_Binbows.exceptions.EdicionInvalidaException;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
 import Michaelsoft_Binbows.services.BaseDatos;
+import Michaelsoft_Binbows.controller.AutorizacionController;
 import java.util.Arrays;
 
 import org.springframework.security.core.Authentication;
@@ -37,11 +40,13 @@ public class AdminController {
     // Dependencias del controlador
     private final BaseDatos baseDatos;
     private final SeguridadService seguridadService;
+    private final AutorizacionController autorizacionController;
 
     // Inyección de dependencias
-    public AdminController(BaseDatos baseDatos, SeguridadService seguridadService) {
+    public AdminController(BaseDatos baseDatos, SeguridadService seguridadService, AutorizacionController autorizacionController) {
         this.baseDatos = baseDatos;
         this.seguridadService = seguridadService;
+         this.autorizacionController = autorizacionController;
     }
     
     /*
@@ -68,13 +73,16 @@ public class AdminController {
      */
     @GetMapping("/admin")
     public String mostrarPanelAdmin(
-            // Añadimos el parámetro "vista" para la navegación
-            @RequestParam(name = "vista", required = false, defaultValue = "usuarios") String vistaActual, 
-            @RequestParam(name = "editarUsuarioCorreo", required = false) String correoAEditar,
-            @RequestParam(name = "error", required = false) String error,
-            @RequestParam(name = "correo", required = false) String correoUsuarioSeleccionado,
-            Model model, 
-            HttpSession session) {
+        // Añadimos el parámetro "vista" para la navegación
+        @RequestParam(name = "vista", required = false, defaultValue = "usuarios") String vistaActual, 
+        @RequestParam(name = "editarUsuarioCorreo", required = false) String correoAEditar,
+        @RequestParam(name = "crearUsuario", required = false) boolean crearUsuario,
+        @RequestParam(name = "error", required = false) String error,
+        @RequestParam(name = "correo", required = false) String correoUsuarioSeleccionado,
+        @RequestParam(name = "crearTarea", required = false) boolean crearTarea,
+        @RequestParam(name = "errorCreacionTarea", required = false) String errorCreacionTarea,
+        Model model, 
+        HttpSession session) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
@@ -89,6 +97,16 @@ public class AdminController {
         model.addAttribute("usuarioActual", usuarioActual);
         model.addAttribute("seguridadService", this.seguridadService);
         
+        // Aquí es donde comprobamos si la URL pide abrir el modal de creación, para el boton + multiusos.
+        if (crearUsuario) {
+            model.addAttribute("mostrarModalCrear", true);
+        }
+        if (crearTarea) {
+            model.addAttribute("mostrarModalCrearTarea", true);
+        }
+
+        model.addAttribute("listaDeUsuarios", baseDatos.getUsuarios());
+
         // --- LÓGICA DINÁMICA PARA LOS ROLES DISPONIBLES ---
         List<Rol> rolesDisponibles;
         if (usuarioActual.getRol() == Rol.ADMIN) {
@@ -105,7 +123,8 @@ public class AdminController {
         // --- Lógica para cargar datos según la vista ---
         switch (vistaActual) {
             case "usuarios":
-                model.addAttribute("listaDeUsuarios", baseDatos.getUsuarios());
+                //  model.addAttribute("listaDeUsuarios", baseDatos.getUsuarios());
+                //  la lista la añadi afuera 
                 break;
             case "tareas":
                 model.addAttribute("listaDeUsuarios", baseDatos.getUsuarios());
@@ -124,9 +143,14 @@ public class AdminController {
             }
         }
         
+        // Errores
         if (error != null && !error.isEmpty()) {
             model.addAttribute("error", error);
         }
+        if (errorCreacionTarea != null && !errorCreacionTarea.isEmpty()) {
+            model.addAttribute("errorCreacionTarea", errorCreacionTarea);
+        }
+
         
         return "admin";
     }
@@ -379,7 +403,95 @@ public class AdminController {
         }
     }
 
+    @GetMapping("/admin/usuarios/nuevo")
+    @ResponseBody // Usamos ResponseBody para no tener que crear un HTML todavía
+    public String mostrarFormularioNuevoUsuario() {
+        return "<h1>Formulario para crear un nuevo usuario (en construcción)</h1>";
+    }
 
+    @GetMapping("/admin/tareas/nuevo")
+    @ResponseBody
+    public String mostrarFormularioNuevaTarea() {
+        return "<h1>Formulario para que el admin cree una nueva tarea para un usuario (en construcción)</h1>";
+    }
+
+    @PostMapping("/admin/crear")
+    public String crearNuevoUsuario(
+        @RequestParam("nombreUsuario") String nombre,
+        @RequestParam("correo") String correo,
+        @RequestParam("contraseña") String contraseña,
+        @RequestParam("rol") Rol rol,
+        RedirectAttributes redirectAttributes) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        Usuario actor = userDetails.getUsuario();
+
+        // Chequeo de seguridad: ¿puede este admin/mod asignar este rol?
+        if (!seguridadService.puedeAsignarRol(actor, rol)) {
+            redirectAttributes.addFlashAttribute("errorCreacion", "No tienes permiso para crear un usuario con el rol de " + rol + ".");
+            redirectAttributes.addAttribute("crearUsuario", true); // Mantenemos el modal abierto
+            return "redirect:/admin";
+        }
+
+        try {
+            // Creamos una instancia de Usuario. Lanzará una excepción si los datos son inválidos.
+            Usuario nuevoUsuario = new Usuario(nombre, correo, contraseña);
+            nuevoUsuario.setRol(rol);
+        
+            autorizacionController.registrarUsuario(nuevoUsuario);
+
+            redirectAttributes.addFlashAttribute("success", "Usuario '" + nombre + "' creado exitosamente.");
+    
+        } catch (RegistroInvalidoException e) {
+            redirectAttributes.addFlashAttribute("errorCreacion", e.getMessage());
+            redirectAttributes.addAttribute("crearUsuario", true);
+            return "redirect:/admin";
+        }
+
+        return "redirect:/admin";
+    }
+
+    @PostMapping("/admin/tareas/crear")
+    public String crearNuevaTarea(
+        @RequestParam("correoUsuario") String correoUsuario,
+        @RequestParam("nombre") String nombre,
+        @RequestParam("descripcion") String descripcion,
+        @RequestParam("dificultad") String dificultad,
+        RedirectAttributes redirectAttributes) {
+
+        Usuario usuario = baseDatos.buscarUsuarioPorCorreo(correoUsuario);
+        if (usuario == null) {
+            redirectAttributes.addFlashAttribute("errorCreacionTarea", "El usuario seleccionado no es válido.");
+            redirectAttributes.addAttribute("crearTarea", true);
+            return "redirect:/admin?vista=tareas";
+        }
+
+        try {
+            // Creamos la nueva tarea
+            Tarea nuevaTarea = new Tarea(nombre, descripcion, dificultad);
+        
+            // La añadimos al usuario
+            usuario.agregarTarea(nuevaTarea);
+        
+            // Guardamos los cambios
+            baseDatos.guardarBaseDatos();
+
+            redirectAttributes.addFlashAttribute("success", "Tarea '" + nombre + "' añadida exitosamente a " + usuario.getNombreUsuario() + ".");
+        
+            // Redirigimos a la vista de tareas, con el usuario ya seleccionado
+            redirectAttributes.addAttribute("vista", "tareas");
+            redirectAttributes.addAttribute("correo", correoUsuario);
+            return "redirect:/admin";
+
+        } catch (TareaInvalidaException | RegistroInvalidoException e) {
+            // Si hay un error de validación (nombre duplicado, etc.)
+            redirectAttributes.addFlashAttribute("errorCreacionTarea", e.getMessage());
+            redirectAttributes.addAttribute("crearTarea", true);
+            redirectAttributes.addAttribute("vista", "tareas");
+            return "redirect:/admin";
+        }
+    }
     /**
      * Página de "Acceso Denegado".
      */

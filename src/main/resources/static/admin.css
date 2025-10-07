@@ -332,3 +332,28 @@ body {
 .panel-detalle .user-row {
     grid-template-columns: 2fr 1fr 1.5fr 1fr;
 }
+.fab {
+    position: fixed; /* Lo saca del flujo normal y lo posiciona relativo a la ventana */
+    bottom: 30px;    /* 30px desde la parte inferior */
+    right: 30px;     /* 30px desde la parte derecha */
+    width: 60px;     /* Ancho fijo */
+    height: 60px;    /* Altura fija */
+    background-color: #FFC839; 
+    color: #333;      /* Color del icono '+' */
+    border-radius: 50%; /* Lo hace perfectamente redondo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 32px; /* Tamaño del icono '+' */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Una sombra sutil para darle profundidad */
+    text-decoration: none; /* Quita el subrayado del enlace */
+    transition: all 0.3s ease; /* Una transición suave para los efectos */
+    z-index: 999; /* Asegura que esté por encima de otros elementos */
+}
+
+/* Efecto al pasar el ratón por encima: se agranda un poco y la sombra es más pronunciada */
+.fab:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    background-color: #e6b332; /* Un amarillo un poco más oscuro */
+}
