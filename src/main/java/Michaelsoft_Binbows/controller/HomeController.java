@@ -48,8 +48,8 @@
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
             Usuario usuarioActual = userDetails.getUsuario(); 
+            usuarioActual.resetRacha();
 
-            model.addAttribute("nombre_usuario", usuarioActual != null ? usuarioActual.getNombreUsuario() : "-");
             model.addAttribute("usuario", usuarioActual);
 
             List<Tarea> tareas = usuarioActual != null ?usuarioActual.getTareas() : Collections.emptyList();

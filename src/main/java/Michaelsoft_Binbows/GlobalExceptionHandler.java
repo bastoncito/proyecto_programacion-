@@ -16,12 +16,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
         return "tarea-nueva";
     }
 
-    @ExceptionHandler(LoginInvalidoException.class)
-    public String manejoLoginInvalidoException(LoginInvalidoException ex, Model model) {
-        model.addAttribute("error", ex.getMessage());
-        return "login";
-    }
-
     @ExceptionHandler(RegistroInvalidoException.class)
     public String manejoRegistroInvalidoException(RegistroInvalidoException ex, Model model) {
         model.addAttribute("error", ex.getMessage());

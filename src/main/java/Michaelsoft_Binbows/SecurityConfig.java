@@ -20,6 +20,7 @@ public class SecurityConfig {
             )
             .formLogin(form -> form
                 .loginPage("/login") // custom login page (you need to create it)
+                .failureUrl("/login?error")
                 .loginProcessingUrl("/login")
                 .usernameParameter("usuario")
                 .passwordParameter("contraseña")

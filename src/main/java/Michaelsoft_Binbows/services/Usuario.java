@@ -1,6 +1,7 @@
 package Michaelsoft_Binbows.services;
 
 import java.util.ArrayList;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -9,10 +10,10 @@ import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
 
 public class Usuario{
     private String nombreUsuario,correoElectronico,contraseña;
-    private int experiencia;
-    private int nivelExperiencia;
+    private int experiencia, nivelExperiencia, racha;
     private Rol rol;
     private LocalDateTime fechaRegistro;
+    private LocalDate fechaRacha;
     private List<Tarea> tareas;
     private List<Tarea> tareasCompletadas;
     private List<Logro> logros;
@@ -26,8 +27,10 @@ public class Usuario{
         this.logros = new ArrayList<>();
         this.experiencia=0;
         this.nivelExperiencia=1;
+        this.racha = 0;
         this.rol = Rol.USUARIO;
         this.fechaRegistro = LocalDateTime.now(); // Fecha actual
+        this.fechaRacha = null;
         }
     /**
      * Getters/Setters
@@ -60,6 +63,9 @@ public class Usuario{
     }
     public Rol getRol() {
         return rol;
+    }
+    public int getRacha(){
+        return racha;
     }
     public void setRol(Rol rol) {
         this.rol = rol;
@@ -211,6 +217,8 @@ public class Usuario{
         // Mover la tarea de la lista la lista de completadas.
         tareas.remove(tareaACompletar);
         tareasCompletadas.add(tareaACompletar);
+        // Verificar la subida de la racha
+        aumentarRacha();
 
         // Añadir la experiencia de la tarea al total del usuario.
         this.experiencia += tareaACompletar.getExp();
@@ -253,6 +261,38 @@ public class Usuario{
      */
     private void comprobarYDesbloquearLogros(){
         //por hacer
+    }
+
+    public void resetRacha(){
+        LocalDate hoy = LocalDate.now();
+        if(fechaRacha == null){
+            return; //no hacer nada. aplica para usuarios nuevos.
+        }
+        if(fechaRacha.plusDays(1).isBefore(hoy)){
+            racha = 0; //resetear racha si la última tarea se completo hace más de un día
+        }
+    }
+
+    public void aumentarRacha(){
+        LocalDate hoy = LocalDate.now();
+        if(fechaRacha == null || hoy.isAfter(fechaRacha)){
+            fechaRacha = hoy; //si es la primera tarea completada por el usuario 
+            racha++;
+        }
+    }
+
+    public void cuentarrachas(){
+        LocalDate hoy = LocalDate.now();
+        if(fechaRacha == null){
+            return; //no hacer nada
+        }
+        if(fechaRacha.plusDays(1).isBefore(hoy)){
+            racha = 0; //resetear racha si la última tarea se completo hace más de un día
+            fechaRacha = hoy;
+        } else if(hoy.isAfter(fechaRacha)){
+            fechaRacha = hoy;
+            racha++;
+        }
     }
 
     public Tarea buscarTareaPorNombre(String nombre){

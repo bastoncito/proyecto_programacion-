@@ -71,10 +71,17 @@ public class AutorizacionController {
         return "redirect:/home";
     }
 
-    //Métodos para login
+    /*
+     * Por temas de Spring Security, este es la única excepción que no puedo manejar dentro de GlobalExceptionHandler
+     */
     @GetMapping("/login")
-    public String mostrarLogin(Model model) {
+    public String mostrarLogin(@RequestParam(value = "error", required = false) String error, Model model) {
         System.out.println("LOG: El método 'mostrarLogin' ha sido llamado por una petición a /login.");
+        if(error != null){
+            System.out.println("LOG: Error al hacer login");
+            model.addAttribute("error", "Credenciales inválidas");
+        }
         return "loginreal";
     }
+
 }
