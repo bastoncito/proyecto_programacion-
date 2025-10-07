@@ -12,6 +12,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonParseException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.lang.reflect.Type;
@@ -25,24 +26,37 @@ public class PersistenciaJSON {
 
     public PersistenciaJSON() {
         //Se define el formato
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         //Serializador y deserializador para LocalDateTime
         //Cuando src es null, devuelve null. Si no, lo formatea como un JsonPrimitive (String JSON simple)
-        JsonSerializer<LocalDateTime> serializer = (LocalDateTime src, Type typeOfSrc, com.google.gson.JsonSerializationContext context) -> {
-            return src == null ? null : new JsonPrimitive(src.format(formatter));
+        JsonSerializer<LocalDateTime> serializer1 = (LocalDateTime src, Type typeOfSrc, com.google.gson.JsonSerializationContext context) -> {
+            return src == null ? null : new JsonPrimitive(src.format(dateTimeFormatter));
+        };
+        JsonSerializer<LocalDate> serializer2 = (LocalDate src, Type typeOfSrc, com.google.gson.JsonSerializationContext context) -> {
+            return src == null ? null : new JsonPrimitive(src.format(dateFormatter));
         };
         //Cuando json es null, devuelve null. Si no, intenta parsear el String a un LocalDateTime usando el formateador definido.
-        JsonDeserializer<LocalDateTime> deserializer = (JsonElement json, Type typeOfT, com.google.gson.JsonDeserializationContext context) -> {
+        JsonDeserializer<LocalDateTime> deserializer1 = (JsonElement json, Type typeOfT, com.google.gson.JsonDeserializationContext context) -> {
             try {
-                return json == null ? null : LocalDateTime.parse(json.getAsString(), formatter);
+                return json == null ? null : LocalDateTime.parse(json.getAsString(), dateTimeFormatter);
+            } catch (Exception e) {
+                throw new JsonParseException(e);
+            }
+        };
+        JsonDeserializer<LocalDate> deserializer2 = (JsonElement json, Type typeOfT, com.google.gson.JsonDeserializationContext context) -> {
+            try {
+                return json == null ? null : LocalDate.parse(json.getAsString(), dateFormatter);
             } catch (Exception e) {
                 throw new JsonParseException(e);
             }
         };
         //Creamos una instancia de Gson adaptada para el uso de LocalDateTime.
         this.gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDateTime.class, serializer)
-                .registerTypeAdapter(LocalDateTime.class, deserializer)
+                .registerTypeAdapter(LocalDateTime.class, serializer1)
+                .registerTypeAdapter(LocalDateTime.class, deserializer1)
+                .registerTypeAdapter(LocalDate.class, serializer2)
+                .registerTypeAdapter(LocalDate.class, deserializer2)
                 .setPrettyPrinting()
                 .create();
     }

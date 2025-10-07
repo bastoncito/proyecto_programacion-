@@ -5,6 +5,7 @@
     "contraseña": "$2a$10$nqpuvP8H3L0j4n.dIM6pt.ayiAFtuSvleHb5FvC8Rkkemgc0t/1UG",
     "experiencia": 0,
     "nivelExperiencia": 1,
+    "racha": 0,
     "rol": "ADMIN",
     "fechaRegistro": "2025-09-28T20:16",
     "tareas": [
@@ -28,8 +29,9 @@
     "nombreUsuario": "Bastoncito",
     "correoElectronico": "breyes24@alumnos.utalca.cl",
     "contraseña": "$2a$10$V7rcRFErdLLO6vkQ8tKDy.qoYWQAMKH3BrPVivDQqEGIu51dUrE72",
-    "experiencia": 50,
+    "experiencia": 60,
     "nivelExperiencia": 1,
+    "racha": 0,
     "rol": "USUARIO",
     "fechaRegistro": "2025-10-04T13:33",
     "tareas": [],
@@ -40,6 +42,13 @@
         "exp": 50,
         "fechaExpiracion": "2025-10-07T13:34",
         "fechaCompletada": "2025-10-04T13:35"
+      },
+      {
+        "nombre": "Tarea1",
+        "descripcion": "Descripción de tarea válida.",
+        "exp": 10,
+        "fechaExpiracion": "2025-10-08T01:33",
+        "fechaCompletada": "2025-10-07T01:33"
       }
     ],
     "logros": []
@@ -50,6 +59,7 @@
     "contraseña": "$2a$10$Hpk2E/oJOvML3BldXuk5x.BDsbyjo3y5WprLDyOA0TC2om.kmCZ3O",
     "experiencia": 40,
     "nivelExperiencia": 4,
+    "racha": 0,
     "rol": "MODERADOR",
     "fechaRegistro": "2025-10-05T17:54",
     "tareas": [
@@ -105,6 +115,7 @@
     "contraseña": "$2a$10$QllAiODpyJWvloM3/zN3zuValT98feTdci3pEAWGQ4Kyga13zlCYm",
     "experiencia": 50,
     "nivelExperiencia": 1,
+    "racha": 0,
     "rol": "USUARIO",
     "fechaRegistro": "2025-10-06T00:40",
     "tareas": [],
@@ -125,6 +136,7 @@
     "contraseña": "$2a$10$XK.SlCiPJM6sMW4oJUgukuacBL4m0Nj0wk0XSzhHIwkEyelDvLC2K",
     "experiencia": 0,
     "nivelExperiencia": 1,
+    "racha": 0,
     "rol": "USUARIO",
     "fechaRegistro": "2025-10-06T21:33",
     "tareas": [
@@ -135,6 +147,20 @@
         "fechaExpiracion": "2025-10-11T21:41"
       }
     ],
+    "tareasCompletadas": [],
+    "logros": []
+   },
+   {
+    "nombreUsuario": "John GoodTime",
+    "correoElectronico": "jgdaman@gmail.com",
+    "contraseña": "$2a$10$PFNxwHUvsgi1bFqecx02Kua/CYXI1eV3seFF48NeF40JKY.GIBbkG",
+    "experiencia": 0,
+    "nivelExperiencia": 1,
+    "racha": 0,
+    "rol": "USUARIO",
+    "fechaRegistro": "2025-10-07T18:52",
+    "fechaRacha": "2025-10-07",
+    "tareas": [],
     "tareasCompletadas": [],
     "logros": []
   }
