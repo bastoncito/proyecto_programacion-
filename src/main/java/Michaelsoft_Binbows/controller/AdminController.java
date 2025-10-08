@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 // Imports de Spring y Java
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,13 +23,16 @@ import Michaelsoft_Binbows.services.Usuario;
 import Michaelsoft_Binbows.services.SeguridadService;
 import Michaelsoft_Binbows.services.Tarea;
 import Michaelsoft_Binbows.CustomUserDetails;
+import Michaelsoft_Binbows.exceptions.AdminCrearTareaException;
+import Michaelsoft_Binbows.exceptions.AdminCrearUsuarioException;
+import Michaelsoft_Binbows.exceptions.AdminGuardarTareaException;
 import Michaelsoft_Binbows.exceptions.EdicionInvalidaException;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
 import Michaelsoft_Binbows.services.BaseDatos;
-import Michaelsoft_Binbows.controller.AutorizacionController;
 import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -37,16 +42,23 @@ import org.springframework.security.core.Authentication;
 @Controller
 public class AdminController {
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     // Dependencias del controlador
     private final BaseDatos baseDatos;
     private final SeguridadService seguridadService;
-    private final AutorizacionController autorizacionController;
 
     // Inyección de dependencias
-    public AdminController(BaseDatos baseDatos, SeguridadService seguridadService, AutorizacionController autorizacionController) {
+    public AdminController(BaseDatos baseDatos, SeguridadService seguridadService) {
         this.baseDatos = baseDatos;
         this.seguridadService = seguridadService;
-         this.autorizacionController = autorizacionController;
+    }
+
+    public void registrarUsuario(Usuario usuario) throws RegistroInvalidoException {
+        String encodedPassword = passwordEncoder.encode(usuario.getContraseña());
+        usuario.setContraseña(encodedPassword);
+        baseDatos.agregarUsuario(usuario);
     }
     
     /*
@@ -224,17 +236,7 @@ public class AdminController {
                 System.out.println("SUCCESS: Usuario actualizado exitosamente en la base de datos.");
 
             } catch (IllegalArgumentException | IllegalStateException | RegistroInvalidoException e) {
-                //  Capturamos cualquier error, ya sea de la actualización normal o del cambio de contraseña.
-                System.err.println("ERROR: Fallo al actualizar usuario. Causa: " + e.getMessage());
-                redirectAttributes.addFlashAttribute("error", e.getMessage());
-                redirectAttributes.addAttribute("editarUsuarioCorreo", correoOriginal);
-                return "redirect:/admin";
-            } catch (EdicionInvalidaException e) {
-                //  Capturamos la excepción específica de la edición.
-                System.err.println("ERROR: Fallo al actualizar usuario. Causa: " + e.getMessage());
-                redirectAttributes.addFlashAttribute("error", e.getMessage());
-                redirectAttributes.addAttribute("editarUsuarioCorreo", e.getCorreo());
-                return "redirect:/admin";
+                throw new EdicionInvalidaException(confirmarContraseña, nuevoCorreo);
             }
             
             return "redirect:/admin";
@@ -359,7 +361,7 @@ public class AdminController {
             @RequestParam("descripcion") String nuevaDescripcion,
             @RequestParam("dificultad") String nuevaDificultad,
             RedirectAttributes redirectAttributes,
-            Model model) {
+            Model model) throws AdminGuardarTareaException {
 
         Usuario usuario = baseDatos.buscarUsuarioPorCorreo(correoUsuario);
 
@@ -383,23 +385,7 @@ public class AdminController {
             return "redirect:/admin";
 
         } catch (TareaInvalidaException | RegistroInvalidoException e) {
-            //  Si durante los pasos anteriores se lanzo una excepción de validación...
-            
-            //  volvemos a mostrar el formulario de edición con un mensaje de error.
-            model.addAttribute("error", e.getMessage());
-            model.addAttribute("usuario", usuario);
-            
-            //  Reconstruimos el objeto Tarea con los datos que el admin intentó guardar,
-            //  para que no tenga que volver a escribirlos todos.
-            try {
-                //  Usamos un constructor vacío y setters para evitar problemas si la dificultad es inválida.
-                Tarea tareaConDatosPrevios = new Tarea();
-                tareaConDatosPrevios.setNombre(nuevoNombre);
-                tareaConDatosPrevios.setDescripcion(nuevaDescripcion);
-                model.addAttribute("tarea", tareaConDatosPrevios);
-            } catch (TareaInvalidaException ignored) {}
-            
-            return "admin-tarea-form";
+            throw new AdminGuardarTareaException(e.getMessage(), usuario, nuevoNombre, nuevaDescripcion);
         }
     }
 
@@ -421,7 +407,7 @@ public class AdminController {
         @RequestParam("correo") String correo,
         @RequestParam("contraseña") String contraseña,
         @RequestParam("rol") Rol rol,
-        RedirectAttributes redirectAttributes) {
+        RedirectAttributes redirectAttributes) throws AdminCrearUsuarioException {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
@@ -439,14 +425,12 @@ public class AdminController {
             Usuario nuevoUsuario = new Usuario(nombre, correo, contraseña);
             nuevoUsuario.setRol(rol);
         
-            autorizacionController.registrarUsuario(nuevoUsuario);
+            registrarUsuario(nuevoUsuario);
 
             redirectAttributes.addFlashAttribute("success", "Usuario '" + nombre + "' creado exitosamente.");
     
         } catch (RegistroInvalidoException e) {
-            redirectAttributes.addFlashAttribute("errorCreacion", e.getMessage());
-            redirectAttributes.addAttribute("crearUsuario", true);
-            return "redirect:/admin";
+            throw new AdminCrearUsuarioException(e.getMessage());
         }
 
         return "redirect:/admin";
@@ -458,7 +442,7 @@ public class AdminController {
         @RequestParam("nombre") String nombre,
         @RequestParam("descripcion") String descripcion,
         @RequestParam("dificultad") String dificultad,
-        RedirectAttributes redirectAttributes) {
+        RedirectAttributes redirectAttributes) throws AdminCrearTareaException {
 
         Usuario usuario = baseDatos.buscarUsuarioPorCorreo(correoUsuario);
         if (usuario == null) {
@@ -486,10 +470,7 @@ public class AdminController {
 
         } catch (TareaInvalidaException | RegistroInvalidoException e) {
             // Si hay un error de validación (nombre duplicado, etc.)
-            redirectAttributes.addFlashAttribute("errorCreacionTarea", e.getMessage());
-            redirectAttributes.addAttribute("crearTarea", true);
-            redirectAttributes.addAttribute("vista", "tareas");
-            return "redirect:/admin";
+            throw new AdminCrearTareaException(e.getMessage());
         }
     }
     /**

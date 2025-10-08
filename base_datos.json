@@ -26,34 +26,6 @@
     "logros": []
   },
   {
-    "nombreUsuario": "Bastoncito",
-    "correoElectronico": "breyes24@alumnos.utalca.cl",
-    "contraseña": "$2a$10$V7rcRFErdLLO6vkQ8tKDy.qoYWQAMKH3BrPVivDQqEGIu51dUrE72",
-    "experiencia": 60,
-    "nivelExperiencia": 1,
-    "racha": 0,
-    "rol": "USUARIO",
-    "fechaRegistro": "2025-10-04T13:33",
-    "tareas": [],
-    "tareasCompletadas": [
-      {
-        "nombre": "Salir a trotar",
-        "descripcion": "Una hora de trote, para variar",
-        "exp": 50,
-        "fechaExpiracion": "2025-10-07T13:34",
-        "fechaCompletada": "2025-10-04T13:35"
-      },
-      {
-        "nombre": "Tarea1",
-        "descripcion": "Descripción de tarea válida.",
-        "exp": 10,
-        "fechaExpiracion": "2025-10-08T01:33",
-        "fechaCompletada": "2025-10-07T01:33"
-      }
-    ],
-    "logros": []
-  },
-  {
     "nombreUsuario": "Matias Gomez",
     "correoElectronico": "mgomez22@alumnos.utalca.cl",
     "contraseña": "$2a$10$Hpk2E/oJOvML3BldXuk5x.BDsbyjo3y5WprLDyOA0TC2om.kmCZ3O",
@@ -149,15 +121,15 @@
     ],
     "tareasCompletadas": [],
     "logros": []
-   },
-   {
+  },
+  {
     "nombreUsuario": "John GoodTime",
     "correoElectronico": "jgdaman@gmail.com",
     "contraseña": "$2a$10$PFNxwHUvsgi1bFqecx02Kua/CYXI1eV3seFF48NeF40JKY.GIBbkG",
     "experiencia": 0,
     "nivelExperiencia": 1,
     "racha": 0,
-    "rol": "USUARIO",
+    "rol": "MODERADOR",
     "fechaRegistro": "2025-10-07T18:52",
     "fechaRacha": "2025-10-07",
     "tareas": [],
