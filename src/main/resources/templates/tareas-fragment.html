@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="contenidoTareasMaestroDetalle">
+        <div class="section-title">Vista de Tareas</div>
+        <div class="section-line"></div>
+        
+        <!-- Contenedor principal para la vista de dos paneles -->
+        <div class="maestro-detalle-container">
+            
+            <!-- Panel Izquierdo: Lista de Usuarios -->
+            <div class="panel-maestro">
+                <div class="panel-header">Usuarios</div>
+                <ul class="user-list">
+                    <!-- Iteramos sobre todos los usuarios para crear los enlaces -->
+                    <li th:each="usuario : ${listaDeUsuarios}">
+                        <!-- Cada usuario es un enlace que recarga la página, 
+                             pasando el correo del usuario seleccionado. -->
+                        <a th:href="@{/admin(vista='tareas', correo=${usuario.correoElectronico})}"
+                           th:text="${usuario.nombreUsuario}"
+                           th:class="${usuarioSeleccionado != null && usuario.correoElectronico == usuarioSeleccionado.correoElectronico ? 'active' : ''}">
+                           <!-- La clase 'active' resalta al usuario seleccionado -->
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Panel Derecho: Tareas del Usuario Seleccionado -->
+            <div class="panel-detalle">
+                <!-- Mostramos este mensaje si no se ha seleccionado ningún usuario -->
+                <div th:if="${usuarioSeleccionado == null}" class="placeholder-detalle">
+                    <i class='bx bx-left-arrow-alt'></i>
+                    <span>Selecciona un usuario de la lista para ver sus tareas.</span>
+                </div>
+
+                <!-- Mostramos los detalles si SÍ hay un usuario seleccionado -->
+                <div th:if="${usuarioSeleccionado != null}">
+                    <div class="panel-header" th:text="'Tareas de ' + ${usuarioSeleccionado.nombreUsuario}"></div>
+                    
+                    <div th:if="${#lists.isEmpty(usuarioSeleccionado.tareas)}">
+                        <p class="no-tasks-message">Este usuario no tiene tareas pendientes.</p>
+                    </div>
+                    
+                    <div th:unless="${#lists.isEmpty(usuarioSeleccionado.tareas)}" class="list-box">
+                        <div class="param-bar">
+                            <span>Tarea</span>
+                            <span>Experiencia</span>
+                            <span>Fecha Límite</span>
+                            <span>Acciones</span>
+                        </div>
+                        <div class="user-row" th:each="tarea : ${usuarioSeleccionado.tareas}">
+                            <div class="user-cell" th:text="${tarea.nombre}"></div>
+                            <div class="user-cell" th:text="${tarea.exp} + ' XP'"></div>
+                            <div class="user-cell" th:text="${#temporals.format(tarea.fechaExpiracion, 'dd-MM-yyyy HH:mm')}"></div>
+
+                            <div class="user-cell actions">
+                                <a th:href="@{/admin/tareas/editar(correoUsuario=${usuarioSeleccionado.correoElectronico}, nombreTarea=${tarea.nombre})}" class="btn-edit">Editar</a>
+                                <a th:href="@{/admin/tareas/eliminar(correoUsuario=${usuarioSeleccionado.correoElectronico}, nombreTarea=${tarea.nombre})}" class="btn-delete" onclick="return confirm('¿Estás seguro de que quieres eliminar esta tarea?');">Eliminar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

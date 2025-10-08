@@ -1,0 +1,30 @@
+#loader-wrapper {
+    position: fixed; /* Se queda fijo en la pantalla, incluso si hay scroll */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999; /* Se asegura de que esté por encima de todo lo demás */
+    background-color: #ffffff; /* Fondo blanco sólido */
+    
+    /* Usamos flexbox para centrar el spinner perfectamente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* El spinner (el círculo que gira) */
+.loader {
+    border: 8px solid #f3f3f3; /* El círculo gris claro de fondo */
+    border-top: 8px solid #FFC839; /* El color principal que gira (el amarillo de tu marca) */
+    border-radius: 50%; /* Lo convierte en un círculo perfecto */
+    width: 60px;
+    height: 60px;
+    animation: spin 1.5s linear infinite; /* Aplica la animación de giro */
+}
+
+/* La animación que hace girar el spinner */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

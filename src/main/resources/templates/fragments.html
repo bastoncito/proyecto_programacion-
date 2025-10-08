@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+    <!-- 
+        Este es el fragmento reutilizable de la pantalla de carga.
+        Lo llamamos 'loadingScreen' para poder referenciarlo desde otras páginas.
+    -->
+    <div th:fragment="loadingScreen">
+        <!-- El contenedor principal que cubre toda la pantalla -->
+        <div id="loader-wrapper">
+            <!-- El spinner animado que gira en el centro -->
+            <div class="loader"></div>
+        </div>
+    </div>
+
+</body>
+</html>

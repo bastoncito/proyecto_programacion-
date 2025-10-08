@@ -1,0 +1,359 @@
+/* -------------------------- */
+/* Estilos Generales          */
+/* -------------------------- */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    height: 100vh;
+    background-color: #f5f5f5;
+}
+
+/* -------------------------- */
+/* Barra Lateral (Sidebar)    */
+/* -------------------------- */
+.container-task-bar {
+    width: 15%;
+    min-width: 200px;
+    background-color: #FFC839;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px 0;
+}
+
+.logo-placeholder { padding: 0 20px; }
+.container-task-bar ul { list-style: none; padding: 0; margin: 50px 0; width: 100%; }
+.container-task-bar li { margin: 55px 0; }
+.container-task-bar a { text-decoration: none; color: #333; font-weight: 600; font-size: 20px; display: flex; align-items: center; padding-left: 20px; gap: 12px; }
+.container-task-bar i { font-size: 22px; }
+
+.container-task-bar button {
+    background-color: #ff6b6b;
+    border: none;
+    color: white;
+    font-size: 18px;
+    padding: 12px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 0 auto 20px auto;
+    width: 80%;
+}
+.container-task-bar button:hover { background-color: #ff4d4d; }
+
+/* -------------------------- */
+/* Contenido Principal (Derecha) */
+/* -------------------------- */
+.main-content {
+    width: 85%;
+    padding: 20px 30px;
+    box-sizing: border-box;
+    position: relative; /* Contexto para posicionar la info del usuario */
+    height: 100vh;
+    overflow-y: auto;
+}
+
+/* Tarjeta de info de usuario (arriba a la derecha) */
+.container-info {
+    position: absolute; /* Lo sacamos del flujo normal */
+    top: 20px;
+    right: 30px;
+    width: 350px;
+}
+
+.info-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    border-radius: 12px;
+    padding: 15px 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.user-info { font-size: 14px; }
+.user-avatar { width: 60px; height: 60px; background-color: #ccc; border-radius: 50%; }
+
+/* -------------------------- */
+/* Zona de Trabajo / Tabla    */
+/* -------------------------- */
+.container-work {
+    width: 100%;
+    margin-top: 100px; 
+}
+
+.section-title { font-size: 32px; font-weight: bold; margin-bottom: 10px; }
+.section-line { width: 100%; height: 3px; background-color: #ccc; margin-bottom: 20px; }
+
+/* Contenedor de la tabla */
+.list-box {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+/* Estructura de la tabla (cabecera y filas) */
+.param-bar, .user-row {
+    display: grid;
+    /* Columnas: Nombre, Correo, Rol, Nivel, Acciones */
+    grid-template-columns: 1.5fr 2.5fr 1fr 0.5fr 1fr; 
+    align-items: center;
+    padding: 12px 20px;
+    gap: 15px;
+}
+
+/* Cabecera de la tabla */
+.param-bar {
+    background-color: #343a40;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+/* Filas de datos de la tabla */
+.user-row {
+    border-top: 1px solid #f0f0f0;
+    font-size: 15px;
+}
+.user-row:hover { background-color: #f8f9fa; }
+
+/* Celdas individuales */
+.user-cell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.user-cell.actions { display: flex; gap: 8px; }
+
+/* Mensaje para lista vacía */
+.empty-list-message { text-align: center; padding: 20px; }
+
+/* Botones de acción */
+.btn-edit, .btn-delete {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: white;
+    font-size: 14px;
+}
+.btn-edit:hover { background-color: #e2e6ea; }
+.btn-delete { border-color: #dc3545; color: #dc3545; }
+.btn-delete:hover { background-color: #dc3545; color: white; }
+.modal-overlay {
+    position: fixed; /* Se queda fijo en la pantalla */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Fondo semitransparente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Asegura que esté por encima de todo */
+}
+
+.modal-content {
+    background-color: white;
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    width: 100%;
+    max-width: 500px; /* Ancho máximo del modal */
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.form-group input, .form-group select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.form-group input:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}
+
+.form-group small {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 3px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end; /* Alinea los botones a la derecha */
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-save, .btn-cancel {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+    text-align: center;
+}
+
+.btn-save {
+    background-color: #28a745; /* Verde */
+    color: white;
+}
+.btn-save:hover { background-color: #218838; }
+
+.btn-cancel {
+    background-color: #6c757d; /* Gris */
+    color: white;
+}
+.btn-cancel:hover { background-color: #5a6268; }
+
+.alert-error {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    padding: 10px;
+    border-radius: 6px;
+    margin-top: 10px;
+}
+.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    padding: 10px;
+    border-radius: 6px;
+    margin-top: 10px;
+}
+.maestro-detalle-container {
+    display: flex;
+    gap: 20px;
+    height: 75vh; /* Ocupa una buena parte de la altura de la pantalla */
+}
+
+/* Panel izquierdo (lista de usuarios) */
+.panel-maestro {
+    flex: 0 0 250px; /* Base de 250px, no crece, no se encoge */
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Panel derecho (detalles de las tareas) */
+.panel-detalle {
+    flex-grow: 1; /* Ocupa el resto del espacio */
+    background-color: white;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    padding: 20px;
+}
+
+.panel-header {
+    font-size: 18px;
+    font-weight: 600;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e9ecef;
+    background-color: #f8f9fa;
+}
+
+.user-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: auto; /* Scroll si hay muchos usuarios */
+}
+
+.user-list a {
+    display: block;
+    padding: 12px 20px;
+    text-decoration: none;
+    color: #333;
+    border-bottom: 1px solid #e9ecef;
+    transition: background-color 0.2s;
+}
+
+.user-list a:hover {
+    background-color: #e2e6ea;
+}
+
+/* Estilo para el usuario actualmente seleccionado */
+.user-list a.active {
+    background-color: #FFC839; /* El color amarillo de tu marca */
+    color: #333;
+    font-weight: bold;
+}
+
+/* Mensaje cuando no hay usuario seleccionado */
+.placeholder-detalle {
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: #6c757d;
+    font-size: 1.2rem;
+}
+.placeholder-detalle i {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+.task-param-bar {
+    grid-template-columns: 2fr 1fr 1.5fr; /* Nombre, EXP, Fecha */
+}
+.panel-detalle .param-bar {
+    grid-template-columns: 2fr 1fr 1.5fr 1fr; /* Tarea, Exp, Fecha, Acciones */
+}
+.panel-detalle .user-row {
+    grid-template-columns: 2fr 1fr 1.5fr 1fr;
+}
+.fab {
+    position: fixed; /* Lo saca del flujo normal y lo posiciona relativo a la ventana */
+    bottom: 30px;    /* 30px desde la parte inferior */
+    right: 30px;     /* 30px desde la parte derecha */
+    width: 60px;     /* Ancho fijo */
+    height: 60px;    /* Altura fija */
+    background-color: #FFC839; 
+    color: #333;      /* Color del icono '+' */
+    border-radius: 50%; /* Lo hace perfectamente redondo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 32px; /* Tamaño del icono '+' */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Una sombra sutil para darle profundidad */
+    text-decoration: none; /* Quita el subrayado del enlace */
+    transition: all 0.3s ease; /* Una transición suave para los efectos */
+    z-index: 999; /* Asegura que esté por encima de otros elementos */
+}
+
+/* Efecto al pasar el ratón por encima: se agranda un poco y la sombra es más pronunciada */
+.fab:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    background-color: #e6b332; /* Un amarillo un poco más oscuro */
+}

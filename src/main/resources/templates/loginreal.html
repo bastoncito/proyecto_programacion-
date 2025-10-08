@@ -6,14 +6,17 @@
     <title>GoodTime</title>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/loginreal.css}">
+    <link rel="stylesheet" th:href="@{/loader.css}">
 </head>
 <body>
+    <div th:replace="~{fragments :: loadingScreen}"></div>
     <div class="container">
         <!-- Sección del Login -->
         <div class="login-section">
             <h1>Inicio de Sesión</h1>
             <form th:action="@{/login}" method="post">
-                <label for="usuario">Usuario</label>
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <label for="usuario">Usuario o correo electrónico</label>
                 <input type="text" name="usuario" id="usuario" required>
                 <i class='bx bxs-user'></i>
 
@@ -23,19 +26,31 @@
 
                 <p th:if="${error}" th:text="${error}" style="color: red;"></p>
 
-                <a href="#">¿Olvido su contraseña?</a>
                 <button type="submit">Iniciar Sesión</button>
             </form>
         </div>
         <!-- Sección del Register -->
         <div class="register-section">
+            <img th:src="@{/logo_negro.png}" alt="logo">
             <h2>Bienvenido a Good Time</h2>
             <p id="p1">Cambia horas perdidas por metas cumplidas. Aprende, crea, crece, y desconéctate de lo que no suma.</p>
             <p id="p2">Crea tu cuenta y súmate</p>
             <a th:href="@{/register}" class="btn-login">Registrarse</a>
-            <img th:src="@{/logo_negro.png}" alt="logo">
         </div>
         
     </div>
+    <script>
+        // Este script espera a que toda la página (incluyendo imágenes) se haya cargado.
+        window.onload = function() {
+            // Buscamos el contenedor del loader.
+            const loader = document.getElementById('loader-wrapper');
+            
+            // Simulamos un tiempo de carga de 1.4 segundos
+            setTimeout(function() {
+                // Ocultamos el loader.
+                loader.style.display = 'none';
+            }, 1420); 
+        };
+    </script>
 </body>
 </html>
