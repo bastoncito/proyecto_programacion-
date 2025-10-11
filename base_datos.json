@@ -20,6 +20,12 @@
         "descripcion": "Organizar el calendario para los próximos 7 días",
         "exp": 50,
         "fechaExpiracion": "2025-10-01T20:16"
+      },
+      {
+        "nombre": "Tarea11",
+        "descripcion": "Descripcion1",
+        "exp": 10,
+        "fechaExpiracion": "2025-10-09T13:57"
       }
     ],
     "tareasCompletadas": [],
@@ -40,6 +46,12 @@
         "descripcion": "le tengo miedo al merge",
         "exp": 150,
         "fechaExpiracion": "2025-10-11T10:46"
+      },
+      {
+        "nombre": "Nombre válido",
+        "descripcion": "Y una descripción válida :)",
+        "exp": 10,
+        "fechaExpiracion": "2025-10-09T13:33"
       }
     ],
     "tareasCompletadas": [
@@ -103,35 +115,36 @@
     "logros": []
   },
   {
-    "nombreUsuario": "Boton",
-    "correoElectronico": "Boton@gmail.com",
-    "contraseña": "$2a$10$XK.SlCiPJM6sMW4oJUgukuacBL4m0Nj0wk0XSzhHIwkEyelDvLC2K",
+    "nombreUsuario": "John GoodTime",
+    "correoElectronico": "jgdaman@gmail.com",
+    "contraseña": "$2a$10$PFNxwHUvsgi1bFqecx02Kua/CYXI1eV3seFF48NeF40JKY.GIBbkG",
+    "experiencia": 10,
+    "nivelExperiencia": 1,
+    "racha": 1,
+    "rol": "MODERADOR",
+    "fechaRegistro": "2025-10-07T18:52",
+    "fechaRacha": "2025-10-08",
+    "tareas": [],
+    "tareasCompletadas": [
+      {
+        "nombre": "Tarea de prueba n° ......",
+        "descripcion": "Y otra tarea de prueba más.",
+        "exp": 10,
+        "fechaExpiracion": "2025-10-09T12:18",
+        "fechaCompletada": "2025-10-08T12:18"
+      }
+    ],
+    "logros": []
+  },
+  {
+    "nombreUsuario": "Usuarionuevo",
+    "correoElectronico": "asdf@gmail.com",
+    "contraseña": "$2a$10$rlCxXhGtwYCr5iQuMk/0IeFI9XaXVo0DSML7l/l10i7gpYcobUKVy",
     "experiencia": 0,
     "nivelExperiencia": 1,
     "racha": 0,
     "rol": "USUARIO",
-    "fechaRegistro": "2025-10-06T21:33",
-    "tareas": [
-      {
-        "nombre": "Tarea desde boton",
-        "descripcion": "asignar tarea desde boton",
-        "exp": 150,
-        "fechaExpiracion": "2025-10-11T21:41"
-      }
-    ],
-    "tareasCompletadas": [],
-    "logros": []
-  },
-  {
-    "nombreUsuario": "John GoodTime",
-    "correoElectronico": "jgdaman@gmail.com",
-    "contraseña": "$2a$10$PFNxwHUvsgi1bFqecx02Kua/CYXI1eV3seFF48NeF40JKY.GIBbkG",
-    "experiencia": 0,
-    "nivelExperiencia": 1,
-    "racha": 0,
-    "rol": "MODERADOR",
-    "fechaRegistro": "2025-10-07T18:52",
-    "fechaRacha": "2025-10-07",
+    "fechaRegistro": "2025-10-08T13:56",
     "tareas": [],
     "tareasCompletadas": [],
     "logros": []
