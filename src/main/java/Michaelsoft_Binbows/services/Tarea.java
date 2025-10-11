@@ -3,19 +3,44 @@ package Michaelsoft_Binbows.services;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "tareas")
 public class Tarea{
-    private String nombre, descripcion;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+
+   @Column(nullable = false)
+    private String nombre;
+    
+    @Column(length = 500)
+    private String descripcion;
+    
     private int exp;
+    
     private LocalDateTime fechaExpiracion;
     private LocalDateTime fechaCompletada = null;
+
+    // Relación con Usuario (tarea activa)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
+    
+    // Relación con Usuario (tarea completada)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_completado_id")
+    private Usuario usuarioCompletado;
+
     // Constructores
-    public Tarea (){
-        // Este constructor se deja vacío a propósito.
-        // Es requerido por algunos frameworks como Spring y Thymeleaf para poder
-        // crear objetos de esta clase sin necesidad de pasarle argumentos.
+    public Tarea() {
+        // Constructor vacío requerido por JPA
     }
     public Tarea (String nombre, String descripcion, String dificultad) throws TareaInvalidaException{
         setNombre(nombre);
@@ -24,6 +49,29 @@ public class Tarea{
         setExp(Dificultad.obtenerExpPorDificultad(dificultad));
         setFechaExpiracion(Dificultad.obtenerDíasPorDificultad(dificultad));
     }
+    public Usuario getUsuario() {
+        return usuario;
+    }
+    
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+    
+    public Usuario getUsuarioCompletado() {
+        return usuarioCompletado;
+    }
+    
+    public void setUsuarioCompletado(Usuario usuarioCompletado) {
+        this.usuarioCompletado = usuarioCompletado;
+    }
+    public Long getId() {
+        return id;
+    }
+    
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getNombre() {
         return nombre;
     }

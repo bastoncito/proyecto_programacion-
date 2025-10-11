@@ -1,11 +1,37 @@
 package Michaelsoft_Binbows.services;
 
+import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
+@Entity
+@Table(name = "logros")
 public class Logro {
-    private final String nombre;
-    private final String id;
-    private final String descripcion;
-    private final int experienciaRecompensa;
+    
+    @Id
+    @Column(nullable = false, unique = true)
+    private String id;
+    
+    @Column(nullable = false, length = 100)
+    private String nombre;
+    
+    @Column(nullable = false, length = 500)
+    private String descripcion;
+    
+    @Column(nullable = false)
+    private int experienciaRecompensa;
+    
+    // Relación muchos a muchos con Usuario
+    @ManyToMany(mappedBy = "logros")
+    private List<Usuario> usuarios = new ArrayList<>();
+
+    /**
+     * Constructor vacío requerido por JPA.
+     * No usar directamente - usar el constructor con parámetros.
+     */
+    protected Logro() {
+        // Constructor protegido para JPA
+    }
 
     /**
      * Constructor de la clase Logro.
@@ -48,10 +74,62 @@ public class Logro {
     }
 
     // GETTERS
-    public String getId() { return id; }
-    public String getNombre() { return nombre; }
-    public String getDescripcion() { return descripcion; }
-    public int getPuntosRecompensa() { return experienciaRecompensa; }
+    public String getId() { 
+        return id; 
+    }
     
-
+    public String getNombre() { 
+        return nombre; 
+    }
+    
+    public String getDescripcion() { 
+        return descripcion; 
+    }
+    
+    public int getPuntosRecompensa() { 
+        return experienciaRecompensa; 
+    }
+    
+    // Getter adicional para compatibilidad con código que use getExperienciaRecompensa
+    public int getExperienciaRecompensa() { 
+        return experienciaRecompensa; 
+    }
+    
+    public List<Usuario> getUsuarios() {
+        return usuarios;
+    }
+    
+    // SETTERS necesarios para JPA (aunque idealmente no se usen directamente)
+    protected void setId(String id) {
+        this.id = id;
+    }
+    
+    protected void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+    
+    protected void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    
+    protected void setExperienciaRecompensa(int experienciaRecompensa) {
+        this.experienciaRecompensa = experienciaRecompensa;
+    }
+    
+    protected void setUsuarios(List<Usuario> usuarios) {
+        this.usuarios = usuarios;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Logro)) return false;
+        Logro logro = (Logro) o;
+        return id != null && id.equals(logro.getId());
+    }
+    
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

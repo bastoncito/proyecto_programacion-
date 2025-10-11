@@ -4,20 +4,67 @@ import java.util.ArrayList;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Pattern;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "usuarios")
+
 public class Usuario{
-    private String nombreUsuario,correoElectronico,contraseña;
-    private int experiencia, nivelExperiencia, racha;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+
+    
+    @Column(unique = true, nullable = false)
+    private String nombreUsuario;
+    
+    @Column(unique = true, nullable = false)
+    private String correoElectronico;
+    
+    @Column(nullable = false)
+    private String contraseña;
+
+    private int experiencia;
+    private int nivelExperiencia; 
+    private int racha;
+
+    @Enumerated(EnumType.STRING)
     private Rol rol;
+
     private LocalDateTime fechaRegistro;
     private LocalDate fechaRacha;
-    private List<Tarea> tareas;
-    private List<Tarea> tareasCompletadas;
-    private List<Logro> logros;
 
+    // Relación con Tareas activas
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Tarea> tareas = new ArrayList<>();
+    
+    // Relación con Tareas completadas
+    @OneToMany(mappedBy = "usuarioCompletado", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Tarea> tareasCompletadas = new ArrayList<>();
+    
+    // Relación muchos a muchos con Logros
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+        name = "usuario_logros",
+        joinColumns = @JoinColumn(name = "usuario_id"),
+        inverseJoinColumns = @JoinColumn(name = "logro_id")
+    )
+    private List<Logro> logros = new ArrayList<>();
+
+    protected Usuario() {
+        // Constructor vacío requerido por JPA
+        this.tareas = new ArrayList<>();
+        this.tareasCompletadas = new ArrayList<>();
+        this.logros = new ArrayList<>();
+    }
+    
     public Usuario(String nombre_usuario, String correo_electronico, String contraseña) throws RegistroInvalidoException{
         setNombreUsuario(nombre_usuario);
         setCorreoElectronico(correo_electronico);
@@ -35,6 +82,16 @@ public class Usuario{
     /**
      * Getters/Setters
      */
+
+    // Getters y Setters
+    public Long getId() {
+        return id;
+    }
+    
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getNombreUsuario() {
         return nombreUsuario;
     }

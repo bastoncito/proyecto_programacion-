@@ -2,51 +2,82 @@ package Michaelsoft_Binbows.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import Michaelsoft_Binbows.data.*;
+import org.springframework.transaction.annotation.Transactional;
+
 import Michaelsoft_Binbows.exceptions.EdicionInvalidaException;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+/**
+ * CLASE ADAPTADOR: BaseDatos ahora usa SQLite en lugar de JSON.
+ * Mantiene la misma interfaz pública para no romper los controllers existentes.
+ * Internamente usa los Repositorios JPA.
+ */
 @Service
 public class BaseDatos {
-    private List<Usuario> usuarios;
-    private PersistenciaJSON persistencia;
-
+    
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+    
     private final PasswordEncoder passwordEncoder;
 
-
     public BaseDatos(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder=passwordEncoder;
-        this.persistencia = new PersistenciaJSON();
-        cargarBaseDatos();
+        this.passwordEncoder = passwordEncoder;
+        // YA NO necesitamos PersistenciaJSON ni cargar/guardar manualmente
+        System.out.println("LOG: BaseDatos inicializado con SQLite.");
     }
 
+    /**
+     * YA NO SE USA - SQLite guarda automáticamente
+     * Mantenemos el método por compatibilidad pero no hace nada
+     */
+    @Deprecated
     public void guardarBaseDatos() {
-        this.persistencia.guardarBaseDatos(this.usuarios);
+        // JPA guarda automáticamente con @Transactional
+        // Este método ya no hace nada, pero lo mantenemos para no romper el código existente
+        System.out.println("LOG: guardarBaseDatos() llamado (ya no necesario con SQLite)");
     }
 
+    /**
+     * YA NO SE USA - SQLite carga automáticamente
+     * Mantenemos el método por compatibilidad pero no hace nada
+     */
+    @Deprecated
     public void cargarBaseDatos() {
-        this.usuarios = this.persistencia.cargarUsuarios();
+        // JPA carga automáticamente desde la BD
+        System.out.println("LOG: cargarBaseDatos() llamado (ya no necesario con SQLite)");
     }
 
+    /**
+     * Obtiene todos los usuarios de la base de datos
+     */
     public List<Usuario> getUsuarios() { 
-        return new ArrayList<>(usuarios);
+        return new ArrayList<>(usuarioRepository.findAll());
     }
 
+    /**
+     * Elimina un usuario de la base de datos
+     */
+    @Transactional
     public void eliminarUsuario(Usuario usuario){
-        // por si se intenta eliminar un usuario que no está en la lista.
-        boolean fueEliminado = usuarios.removeIf(u -> u.getCorreoElectronico().equalsIgnoreCase(usuario.getCorreoElectronico()));
-        if (fueEliminado) {
+        Optional<Usuario> usuarioEnBD = usuarioRepository.findByCorreoElectronico(usuario.getCorreoElectronico());
+        
+        if (usuarioEnBD.isPresent()) {
+            usuarioRepository.delete(usuarioEnBD.get());
             System.out.println("El usuario '" + usuario.getNombreUsuario() + "' ha sido eliminado.");
-            guardarBaseDatos();
         } else {
-             throw new IllegalArgumentException("El usuario a eliminar no fue encontrado en la base de datos.");
+            throw new IllegalArgumentException("El usuario a eliminar no fue encontrado en la base de datos.");
         }
     }
     
+    /**
+     * Valida si un usuario puede ser agregado
+     */
     private String validarUsuario(Usuario usuario) {
         if (usuario == null) {
             return "Error: El usuario no puede ser nulo.";
@@ -60,178 +91,173 @@ public class BaseDatos {
         return null;
     }
 
-    public void agregarUsuario(Usuario usuario) throws RegistroInvalidoException{
-        String valido = validarUsuario(usuario);
-        if(valido == null){
-            usuarios.add(usuario);
-            System.out.println("Usuario '" + usuario.getNombreUsuario() + "' agregado exitosamente.");
-            guardarBaseDatos();
-        }else{
-            // En lugar de imprimir, lanzamos una excepción para que el controlador la atrape
-            throw new RegistroInvalidoException(valido);
-        }
-    }
-
-    public boolean usuarioExistePorCorreo(String correo) {
-        for (Usuario usuarioExistente : usuarios) {
-            if (usuarioExistente.getCorreoElectronico().equalsIgnoreCase(correo)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /*
-    * Recibe un String nombre
-    * Devuelve true si el nombre existe en la base de datos, false en caso opuesto
-    */
-    public boolean usuarioExistePorNombre(String nombre){
-        for (Usuario usuarioExistente : usuarios) {
-            if (usuarioExistente.getNombreUsuario().equalsIgnoreCase(nombre)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
+    /**
+     * Agrega un nuevo usuario a la base de datos
+     */
+@Transactional
+public void agregarUsuario(Usuario usuario) throws RegistroInvalidoException{
+    System.out.println(">>> BaseDatos.agregarUsuario() iniciado");
+    System.out.println("    Usuario: " + usuario.getNombreUsuario());
+    System.out.println("    Email: " + usuario.getCorreoElectronico());
     
-    /*
-    Busca un usuario en la base de datos por su dirección de correo electrónico.
-    La búsqueda no distingue entre mayúsculas y minúsculas.
-    @param correo El correo electrónico del usuario a buscar.
-    @return El objeto Usuario si se encuentra, o 'null' si no existe un usuario con ese correo.
-    */
+    String valido = validarUsuario(usuario);
+    System.out.println("    Validación: " + (valido == null ? "OK" : valido));
+    
+    if(valido == null){
+        System.out.println("    Guardando en repository...");
+        usuarioRepository.save(usuario);
+        System.out.println("    ✓ save() ejecutado");
+        System.out.println("Usuario '" + usuario.getNombreUsuario() + "' agregado exitosamente.");
+    } else {
+        System.out.println("    ✗ Validación falló");
+        throw new RegistroInvalidoException(valido);
+    }
+}
+
+    /**
+     * Verifica si existe un usuario con el correo dado
+     */
+    public boolean usuarioExistePorCorreo(String correo) {
+        return usuarioRepository.existsByCorreoElectronico(correo);
+    }
+
+    /**
+     * Verifica si existe un usuario con el nombre dado
+     */
+    public boolean usuarioExistePorNombre(String nombre){
+        return usuarioRepository.existsByNombreUsuario(nombre);
+    }
+
+    /**
+     * Busca un usuario por su correo electrónico
+     */
     public Usuario buscarUsuarioPorCorreo(String correo) {
         if (correo == null || correo.trim().isEmpty()) {
-        return null; // No buscamos si el correo es nulo o vacío.
+            return null;
         }
-        // Recorremos la lista de todos los usuarios.
-        for (Usuario usuario : this.usuarios) {
-        // Comparamos los correos ignorando mayúsculas/minúsculas.
-            if (usuario.getCorreoElectronico().equalsIgnoreCase(correo)) {
-            // Se encontro el usuario asi que retorono el objeto usuario completo
-            return usuario;
-            }
-        }
-        // No se encontro usuario se retorna null
-        return null;
+        return usuarioRepository.findByCorreoElectronico(correo).orElse(null);
     }
 
-    /*
-    * Comprueba si un nombre ya está en uso por OTRO usuario.
-    * Es la versión sobrecargada de 'usuarioExistePorNombre' para usarla al editar.
-    */
+    /**
+     * Busca un usuario por su nombre de usuario
+     */
+    public Usuario buscarUsuarioPorNombre(String nombreUsuario){
+        return usuarioRepository.findByNombreUsuario(nombreUsuario).orElse(null);
+    }
+
+    /**
+     * Comprueba si un nombre ya está en uso por OTRO usuario
+     * (usado al editar)
+     */
     public boolean usuarioExistePorNombre(String nombre, String correoExcluido) {
-        for (Usuario usuarioExistente : usuarios) {
-            // Si el usuario que estamos revisando NO es el que estamos editando...
-            if (!usuarioExistente.getCorreoElectronico().equalsIgnoreCase(correoExcluido)) {
-                // ...comprobamos si su nombre coincide.
-                if (usuarioExistente.getNombreUsuario().equalsIgnoreCase(nombre)) {
-                    return true;
-                }
-            }
+        Optional<Usuario> usuarioConNombre = usuarioRepository.findByNombreUsuario(nombre);
+        
+        if (usuarioConNombre.isEmpty()) {
+            return false; // El nombre no existe, está disponible
         }
-        return false;
+        
+        // Si existe, verificamos que no sea el usuario que estamos editando
+        return !usuarioConNombre.get().getCorreoElectronico().equalsIgnoreCase(correoExcluido);
     }
 
-    /*
-    * Centraliza la lógica para actualizar un usuario.
-    * Valida los datos y luego guarda los cambios.
-    */
-    public void actualizarUsuario(String correoOriginal, String nuevoNombre, String nuevoCorreo, Rol nuevoRol) throws EdicionInvalidaException { // <--- CAMBIO 1: Acepta "nuevoCorreo"
-        // --- VALIDACIONES ---
-        // 1. Validar que el nuevo nombre no esté en uso por OTRO usuario (esto ya lo tenías).
+    /**
+     * Comprueba si un correo ya está en uso por OTRO usuario
+     * (usado al editar)
+     */
+    public boolean usuarioExistePorCorreo(String correo, String correoExcluido) {
+        if (correo.equalsIgnoreCase(correoExcluido)) {
+            return false; // Es el mismo usuario
+        }
+        return usuarioRepository.existsByCorreoElectronico(correo);
+    }
+
+    /**
+     * Actualiza los datos de un usuario
+     */
+    @Transactional
+    public void actualizarUsuario(String correoOriginal, String nuevoNombre, String nuevoCorreo, Rol nuevoRol) 
+            throws EdicionInvalidaException {
+        
+        // Validaciones
         if (usuarioExistePorNombre(nuevoNombre, correoOriginal)) {
-            throw new EdicionInvalidaException("El nombre '" + nuevoNombre + "' ya está en uso por otro usuario.", correoOriginal);
+            throw new EdicionInvalidaException(
+                "El nombre '" + nuevoNombre + "' ya está en uso por otro usuario.", 
+                correoOriginal
+            );
         }
 
-        // 2. Validar que el nuevo correo no esté en uso por OTRO usuario. (¡ESTO ES NUEVO!)
-        if (usuarioExistePorCorreo(nuevoCorreo, correoOriginal)) { // <-- CAMBIO 2: Usa el nuevo método de ayuda
-            throw new EdicionInvalidaException("El correo '" + nuevoCorreo + "' ya está registrado por otro usuario.", correoOriginal);
+        if (usuarioExistePorCorreo(nuevoCorreo, correoOriginal)) {
+            throw new EdicionInvalidaException(
+                "El correo '" + nuevoCorreo + "' ya está registrado por otro usuario.", 
+                correoOriginal
+            );
         }
     
-        // 3. Buscar el usuario a actualizar.
+        // Buscar el usuario a actualizar
         Usuario usuarioAActualizar = buscarUsuarioPorCorreo(correoOriginal);
         if (usuarioAActualizar == null) {
-            throw new EdicionInvalidaException("Error crítico: No se pudo encontrar al usuario para actualizar.", correoOriginal);
+            throw new EdicionInvalidaException(
+                "Error crítico: No se pudo encontrar al usuario para actualizar.", 
+                correoOriginal
+            );
         }
 
-        // 4. Usar los setters del propio Usuario.
+        // Actualizar datos
         try{
             usuarioAActualizar.setNombreUsuario(nuevoNombre);
-            usuarioAActualizar.setCorreoElectronico(nuevoCorreo); // <--- CAMBIO 3: Ahora actualiza el correo
+            usuarioAActualizar.setCorreoElectronico(nuevoCorreo);
             usuarioAActualizar.setRol(nuevoRol);
-        }catch(RegistroInvalidoException e){
+            
+            // JPA guarda automáticamente dentro de @Transactional
+            usuarioRepository.save(usuarioAActualizar);
+            
+        } catch(RegistroInvalidoException e){
             throw new EdicionInvalidaException(e.getMessage(), correoOriginal);
         }
-
-        // 5. Persistir los cambios en el archivo JSON.
-        guardarBaseDatos();
     }
 
-    /*
-     * Actualiza la contraseña de un usuario de forma segura.
-     * Primero valida la nueva contraseña y luego la encripta antes de guardarla.
-     *
-     * @param correoUsuario El correo del usuario cuya contraseña se va a cambiar.
-     * @param nuevaContraseñaSinEncriptar La nueva contraseña en texto plano.
-     * @throws RegistroInvalidoException Si la nueva contraseña no cumple con los requisitos de seguridad.
+    /**
+     * Actualiza la contraseña de un usuario
      */
-    public void actualizarContraseñaUsuario(String correoUsuario, String nuevaContraseñaSinEncriptar) throws RegistroInvalidoException {
+    @Transactional
+    public void actualizarContraseñaUsuario(String correoUsuario, String nuevaContraseñaSinEncriptar) 
+            throws RegistroInvalidoException {
+        
         Usuario usuario = buscarUsuarioPorCorreo(correoUsuario);
         if (usuario == null) {
-            // Esto no debería pasar si viene del controlador, pero es una buena medida de seguridad.
             throw new IllegalArgumentException("No se encontró un usuario con el correo: " + correoUsuario);
         }
         
-        // 1. Validamos la contraseña usando las reglas que ya tienes en la clase Usuario.
-        //    Esto lanzará una excepción si la contraseña es débil (corta, sin mayúsculas, etc.).
+        // 1. Validar la contraseña
         usuario.setContraseña(nuevaContraseñaSinEncriptar);
         
-        // 2. Si la validación pasa, ahora la encriptamos antes de guardarla de verdad.
+        // 2. Encriptar
         String contraseñaEncriptada = passwordEncoder.encode(nuevaContraseñaSinEncriptar);
         
-        // 3. Establecemos la contraseña ya encriptada en el objeto usuario.
+        // 3. Guardar
         usuario.setContraseña(contraseñaEncriptada);
+        usuarioRepository.save(usuario);
         
-        // 4. Guardamos todos los cambios en el archivo JSON.
-        guardarBaseDatos();
         System.out.println("LOG: La contraseña del usuario '" + usuario.getNombreUsuario() + "' ha sido actualizada y encriptada.");
     }
-    
-    public boolean usuarioExistePorCorreo(String correo, String correoExcluido) {
-    for (Usuario usuarioExistente : usuarios) {
-        // Si el usuario que estamos revisando NO es el que estamos editando...
-        if (!usuarioExistente.getCorreoElectronico().equalsIgnoreCase(correoExcluido)) {
-            // ...comprobamos si su correo coincide.
-            if (usuarioExistente.getCorreoElectronico().equalsIgnoreCase(correo)) {
-                return true; // ¡Encontrado! El correo ya está en uso.
-            }
-        }
-    }
-    return false; // El correo está disponible.
-    }
 
-    public Usuario buscarUsuarioPorNombre(String nombreUsuario){
-        for(Usuario u : usuarios){
-            if(u.getNombreUsuario().equals(nombreUsuario)){
-                return u;
-            }
-        }
-        return null;
-    }
-    
+    /**
+     * Imprime todos los usuarios (útil para debugging)
+     */
     public void imprimirTodosUsuarios() {
+        List<Usuario> usuarios = getUsuarios();
+        
         if (usuarios.isEmpty()) {
             System.out.println("No hay usuarios en la base de datos.");
             return;
         }
         
-        System.out.println("\n--- USUARIOS EN BASE DE DATOS ---");
+        System.out.println("\n--- USUARIOS EN BASE DE DATOS (SQLite) ---");
         
         for (int i = 0; i < usuarios.size(); i++) {
             Usuario u = usuarios.get(i);
             System.out.println("\nUSUARIO #" + (i + 1));
+            System.out.println("  ID: " + u.getId());
             System.out.println("  Nombre: " + u.getNombreUsuario());
             System.out.println("  Email: " + u.getCorreoElectronico());
             

@@ -47,29 +47,56 @@ public class AutorizacionController {
     }
 
     @PostMapping("/register")
-    public String procesarRegister(
-            @RequestParam("usuario") String username,
-            @RequestParam("email") String email,
-            @RequestParam("contraseña1") String password,
-            @RequestParam("contraseña2") String passwordConfirm,
-            Model model) throws RegistroInvalidoException {
+public String procesarRegister(
+        @RequestParam("usuario") String username,
+        @RequestParam("email") String email,
+        @RequestParam("contraseña1") String password,
+        @RequestParam("contraseña2") String passwordConfirm,
+        Model model) {
 
-        System.out.println("LOG: procesarRegister recibido: " + username + ", " + email);
-        if(!password.equals(passwordConfirm)) {
-            model.addAttribute("error", "Las contraseñas no coinciden.");
-            return "register";
-        }
-        //Validar la sintáxis del correo y contraseña
-        //Si todo está bien, crear el nuevo usuario y agregarlo a la base de datos
+    System.out.println("=== INICIO REGISTRO ===");
+    System.out.println("Username: " + username);
+    System.out.println("Email: " + email);
+    System.out.println("Password length: " + password.length());
+    
+    if(!password.equals(passwordConfirm)) {
+        model.addAttribute("error", "Las contraseñas no coinciden.");
+        return "register";
+    }
+    
+    try {
+        System.out.println("1. Creando usuario...");
         Usuario nuevoUsuario = new Usuario(username, email, password);
+        System.out.println("2. Usuario creado exitosamente");
+        
+        System.out.println("3. Llamando a registrarUsuario...");
         registrarUsuario(nuevoUsuario);
-        System.out.println("LOG: Nuevo usuario registrado: " + username);
+        System.out.println("4. registrarUsuario completado");
+        
+        System.out.println("5. Verificando en BD...");
+        Usuario verificar = baseDatos.buscarUsuarioPorCorreo(email);
+        if(verificar != null) {
+            System.out.println("✓ Usuario encontrado en BD: " + verificar.getNombreUsuario());
+        } else {
+            System.out.println("✗ Usuario NO encontrado en BD después de guardar!");
+        }
+        
         CustomUserDetails userDetails = new CustomUserDetails(nuevoUsuario);
         UsernamePasswordAuthenticationToken authToken = 
             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authToken);
+        
+        System.out.println("=== FIN REGISTRO EXITOSO ===");
         return "redirect:/home";
+        
+    } catch (Exception e) {
+        System.out.println("✗✗✗ ERROR EN REGISTRO: " + e.getClass().getName());
+        System.out.println("Mensaje: " + e.getMessage());
+        e.printStackTrace();
+        model.addAttribute("error", e.getMessage());
+        return "register";
     }
+}
 
     /*
      * Por temas de Spring Security, este es la única excepción que no puedo manejar dentro de GlobalExceptionHandler
