@@ -16,11 +16,9 @@ import jakarta.persistence.*;
 
 public class Usuario{
 
-    @Id
+     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
-
     
     @Column(unique = true, nullable = false)
     private String nombreUsuario;
@@ -58,11 +56,17 @@ public class Usuario{
     )
     private List<Logro> logros = new ArrayList<>();
 
+    // Constructor vacío protegido para JPA
     protected Usuario() {
-        // Constructor vacío requerido por JPA
         this.tareas = new ArrayList<>();
         this.tareasCompletadas = new ArrayList<>();
         this.logros = new ArrayList<>();
+        this.experiencia = 0;
+        this.nivelExperiencia = 1;
+        this.racha = 0;
+        this.rol = Rol.USUARIO;
+        this.fechaRegistro = LocalDateTime.now();
+        this.fechaRacha = null;
     }
     
     public Usuario(String nombre_usuario, String correo_electronico, String contraseña) throws RegistroInvalidoException{

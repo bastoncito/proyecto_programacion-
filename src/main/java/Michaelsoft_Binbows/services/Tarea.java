@@ -16,8 +16,7 @@ public class Tarea{
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-
-   @Column(nullable = false)
+    @Column(nullable = false)
     private String nombre;
     
     @Column(length = 500)
@@ -38,10 +37,11 @@ public class Tarea{
     @JoinColumn(name = "usuario_completado_id")
     private Usuario usuarioCompletado;
 
-    // Constructores
+    // Constructor vacío protegido para JPA
     public Tarea() {
         // Constructor vacío requerido por JPA
     }
+
     public Tarea (String nombre, String descripcion, String dificultad) throws TareaInvalidaException{
         setNombre(nombre);
         setDescripcion(descripcion);
