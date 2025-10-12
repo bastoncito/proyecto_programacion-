@@ -156,13 +156,13 @@ public class Usuario{
      * la agrega a la base de datos si su nombre, descricpcion y exp son validos
      * @throws RegistroInvalidoException 
      */
-    public void agregarTarea(Tarea tarea) throws RegistroInvalidoException{//TRABAJAR AQUI---->>>Validar si la tarea se puede agregar
+    public void agregarTarea(Tarea tarea) throws TareaInvalidaException{//TRABAJAR AQUI---->>>Validar si la tarea se puede agregar
         // Si pasa las validaciones, la agregamos
         if(tareaExistePorNombre(tarea.getNombre())){
-            throw new RegistroInvalidoException("Tarea \"" + tarea.getNombre() + "\" ya existente.");
+            throw new TareaInvalidaException("Tarea \"" + tarea.getNombre() + "\" ya existente." , tarea.getNombre(), tarea.getDescripcion());
         }
         if(tareaExistePorDescripcion(tarea.getDescripcion())){
-            throw new RegistroInvalidoException("Tarea con descripción \"" + tarea.getNombre() + "\" ya existe.");
+            throw new TareaInvalidaException("Tarea con descripción \"" + tarea.getNombre() + "\" ya existe.", tarea.getNombre(), tarea.getDescripcion());
         }
         tareas.add(tarea);
         System.out.println("Tarea '" + tarea.getNombre() + "' agregada exitosamente.");

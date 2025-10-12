@@ -54,6 +54,7 @@ public class TareaController {
 
     /**
      * Procesa la creación de una nueva tarea para el usuario actual.
+     * @throws TareaInvalidaException 
      */
     @PostMapping("/nueva-tarea")
     public String procesarNuevaTarea(
@@ -61,34 +62,19 @@ public class TareaController {
         @RequestParam("descripcion") String descripcion, 
         @RequestParam("dificultad") String dificultad,
         Model model,
-        RedirectAttributes redirectAttributes) {
+        RedirectAttributes redirectAttributes) throws TareaInvalidaException{
             
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         Usuario usuarioActual = userDetails.getUsuario(); 
-        
-        try {
-            Tarea nuevaTarea = new Tarea(nombre, descripcion, dificultad);
-            usuarioActual.agregarTarea(nuevaTarea);
-            baseDatos.guardarBaseDatos();
 
-            // Usamos RedirectAttributes para que el mensaje de éxito se vea en /home
-            redirectAttributes.addFlashAttribute("success_message", "¡Tarea agregada con éxito!");
-            return "redirect:/home";
+        Tarea nuevaTarea = new Tarea(nombre, descripcion, dificultad);
+        usuarioActual.agregarTarea(nuevaTarea);
+        baseDatos.guardarBaseDatos();
 
-        } catch (TareaInvalidaException | RegistroInvalidoException e) {
-            // Si hay un error, volvemos a mostrar el formulario con el mensaje
-            model.addAttribute("error", e.getMessage());
-            // Re-poblamos los datos que el usuario ya había escrito
-            try {
-                Tarea tareaConDatosPrevios = new Tarea();
-                tareaConDatosPrevios.setNombre(nombre);
-                tareaConDatosPrevios.setDescripcion(descripcion);
-                model.addAttribute("tarea", tareaConDatosPrevios);
-            } catch (TareaInvalidaException ignored) {}
-            
-            return "tarea-nueva";
-        }
+        // Usamos RedirectAttributes para que el mensaje de éxito se vea en /home
+        redirectAttributes.addFlashAttribute("mensaje", "¡Tarea agregada con éxito!");
+        return "tarea-nueva";
     }
     /* 
     @GetMapping("/tareas/historial")

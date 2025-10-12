@@ -52,38 +52,38 @@ public class Tarea{
     }
     public void setNombre(String nombre) throws TareaInvalidaException {
         if(nombre == null || nombre.isEmpty()){
-            throw new TareaInvalidaException("El nombre de la tarea no puede estar vacío.");
+            throw new TareaInvalidaException("El nombre de la tarea no puede estar vacío.", nombre, descripcion);
         }if( nombre.length()<5 || nombre.length() > 30){
-            throw new TareaInvalidaException("El nombre de la tarea debe tener entre 5 y 30 carácteres");
+            throw new TareaInvalidaException("El nombre de la tarea debe tener entre 5 y 30 carácteres", nombre, descripcion);
         }
         this.nombre = nombre;
     }
     public void setDescripcion(String descripcion) throws TareaInvalidaException {
         if(descripcion == null || descripcion.isEmpty()){
-            throw new TareaInvalidaException("La descripción de la tarea no puede estar vacía.");
+            throw new TareaInvalidaException("La descripción de la tarea no puede estar vacía.", nombre, descripcion);
         }if(descripcion.length()<5 || descripcion.length() > 70){
-            throw new TareaInvalidaException("La descripción debe tener entre 5 y 80 carácteres");
+            throw new TareaInvalidaException("La descripción debe tener entre 5 y 80 carácteres", nombre, descripcion);
         }
         this.descripcion = descripcion;
     }
     public void setExp(int exp) throws TareaInvalidaException {
         if(exp <= 0){
-            throw new TareaInvalidaException("La exp de la tarea no puede ser menor a 1.");
+            throw new TareaInvalidaException("La exp de la tarea no puede ser menor a 1.", nombre, descripcion);
         }
         this.exp = exp;
     }
     public void setFechaExpiracion(LocalDateTime fechaExpiracion) throws TareaInvalidaException {
         if(fechaExpiracion == null){
-            throw new TareaInvalidaException("La fecha no puede estar vacía.");
+            throw new TareaInvalidaException("La fecha no puede estar vacía.", nombre, descripcion);
         }
         LocalDateTime fechaActual = LocalDateTime.now();
         if(fechaExpiracion.isBefore(fechaActual)){ 
-            throw new TareaInvalidaException("La fecha debe ser igual o posterior a hoy.");
+            throw new TareaInvalidaException("La fecha debe ser igual o posterior a hoy.", nombre, descripcion);
         }
         // revisa si la fecha está al menos 1 hora en el futuro
         long diferenciaMilisegundos = Duration.between(fechaActual, fechaExpiracion).toMillis();
         if (diferenciaMilisegundos < 60 * 60 * 1000) {
-            throw new TareaInvalidaException("La fecha debe ser al menos 1 hora posterior a la actual.");
+            throw new TareaInvalidaException("La fecha debe ser al menos 1 hora posterior a la actual.", nombre, descripcion);
         }
         this.fechaExpiracion = fechaExpiracion;
     }

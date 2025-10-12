@@ -13,7 +13,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
 
     @ExceptionHandler(TareaInvalidaException.class)
     public String manejoTareaInvalidaException(TareaInvalidaException ex, Model model) {
-        model.addAttribute("error", ex.getMessage());
+         model.addAttribute("error", ex.getMessage());
+            // Re-poblamos los datos que el usuario ya había escrito
+            try {
+                Tarea tareaConDatosPrevios = new Tarea();
+                tareaConDatosPrevios.setNombre(ex.getNombre());
+                tareaConDatosPrevios.setDescripcion(ex.getDescripcion());
+                model.addAttribute("tarea", tareaConDatosPrevios);
+            } catch (TareaInvalidaException ignored) {}
         return "tarea-nueva";
     }
 

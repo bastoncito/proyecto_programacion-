@@ -472,7 +472,7 @@ public class AdminController {
             redirectAttributes.addAttribute("correo", correoUsuario);
             return "redirect:/admin";
 
-        } catch (TareaInvalidaException | RegistroInvalidoException e) {
+        } catch (TareaInvalidaException e) {
             // Si hay un error de validación (nombre duplicado, etc.)
             throw new AdminCrearTareaException(e.getMessage());
         }
