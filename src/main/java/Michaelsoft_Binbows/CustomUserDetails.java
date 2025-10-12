@@ -32,7 +32,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return usuario.getNombreUsuario();
+        return usuario.getCorreoElectronico();
     }
 
     // For simplicity, assume accounts are always valid:

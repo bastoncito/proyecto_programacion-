@@ -14,6 +14,9 @@ import Michaelsoft_Binbows.CustomUserDetails;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 import Michaelsoft_Binbows.services.BaseDatos;
 import Michaelsoft_Binbows.services.Usuario;
+import Michaelsoft_Binbows.data.UsuarioRepository;
+
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,8 +29,11 @@ public class AutorizacionController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
     private final BaseDatos baseDatos;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
     public AutorizacionController(BaseDatos baseDatos) {
         this.baseDatos = baseDatos;
     }
@@ -52,7 +58,7 @@ public class AutorizacionController {
             @RequestParam("email") String email,
             @RequestParam("contraseña1") String password,
             @RequestParam("contraseña2") String passwordConfirm,
-            Model model) throws RegistroInvalidoException {
+            Model model, HttpSession session) throws RegistroInvalidoException {
 
         System.out.println("LOG: procesarRegister recibido: " + username + ", " + email);
         if(!password.equals(passwordConfirm)) {
@@ -63,6 +69,9 @@ public class AutorizacionController {
         //Si todo está bien, crear el nuevo usuario y agregarlo a la base de datos
         Usuario nuevoUsuario = new Usuario(username, email, password);
         registrarUsuario(nuevoUsuario);
+        usuarioRepository.save(nuevoUsuario);
+        Optional<Usuario> usuarioCompleto = usuarioRepository.findByCorreoElectronico(email);
+        session.setAttribute("usuario", usuarioCompleto);
         System.out.println("LOG: Nuevo usuario registrado: " + username);
         CustomUserDetails userDetails = new CustomUserDetails(nuevoUsuario);
         UsernamePasswordAuthenticationToken authToken = 
@@ -83,5 +92,16 @@ public class AutorizacionController {
         }
         return "loginreal";
     }
+
+    @PostMapping("/login")
+public String login(@RequestParam String email, @RequestParam String password, HttpSession session) {
+    // 1. Autentica al usuario (verifica email y contraseña)
+    // 2. Busca el usuario en la base de datos por correo
+    Optional<Usuario> usuarioCompleto = usuarioRepository.findByCorreoElectronico(email);
+    // 3. Guarda el usuario completo en la sesión
+    session.setAttribute("usuario", usuarioCompleto);
+    // 4. Redirige a la página principal
+    return "redirect:/home";
+}
 
 }

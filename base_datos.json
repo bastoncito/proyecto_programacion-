@@ -1,8 +1,8 @@
 [
   {
     "nombreUsuario": "Admin",
-    "correoElectronico": "admin@michaelsoftBinbows.com",
     "contraseña": "$2a$10$nqpuvP8H3L0j4n.dIM6pt.ayiAFtuSvleHb5FvC8Rkkemgc0t/1UG",
+    "correoElectronico": "admin@michaelsoftBinbows.com",
     "experiencia": 0,
     "nivelExperiencia": 1,
     "racha": 0,
@@ -27,8 +27,8 @@
   },
   {
     "nombreUsuario": "Matias Gomez",
-    "correoElectronico": "mgomez22@alumnos.utalca.cl",
     "contraseña": "$2a$10$Hpk2E/oJOvML3BldXuk5x.BDsbyjo3y5WprLDyOA0TC2om.kmCZ3O",
+    "correoElectronico": "mgomez22@alumnos.utalca.cl",
     "experiencia": 40,
     "nivelExperiencia": 4,
     "racha": 0,
@@ -83,8 +83,8 @@
   },
   {
     "nombreUsuario": "zketsh01",
-    "correoElectronico": "dpezoa21@alumnos.utalca.cl",
     "contraseña": "$2a$10$U1KQ0IyCNyuyzmFIaPvjTeM4KynwNA6tKSLwfE57VM/3Otv9G/xme",
+    "correoElectronico": "dpezoa21@alumnos.utalca.cl",
     "experiencia": 50,
     "nivelExperiencia": 1,
     "racha": 0,
@@ -104,8 +104,8 @@
   },
   {
     "nombreUsuario": "Boton",
-    "correoElectronico": "Boton@gmail.com",
     "contraseña": "$2a$10$XK.SlCiPJM6sMW4oJUgukuacBL4m0Nj0wk0XSzhHIwkEyelDvLC2K",
+    "correoElectronico": "Boton@gmail.com",
     "experiencia": 0,
     "nivelExperiencia": 1,
     "racha": 0,
@@ -124,14 +124,27 @@
   },
   {
     "nombreUsuario": "John GoodTime",
-    "correoElectronico": "jgdaman@gmail.com",
     "contraseña": "$2a$10$PFNxwHUvsgi1bFqecx02Kua/CYXI1eV3seFF48NeF40JKY.GIBbkG",
+    "correoElectronico": "jgdaman@gmail.com",
     "experiencia": 0,
     "nivelExperiencia": 1,
     "racha": 0,
     "rol": "MODERADOR",
     "fechaRegistro": "2025-10-07T18:52",
     "fechaRacha": "2025-10-07",
+    "tareas": [],
+    "tareasCompletadas": [],
+    "logros": []
+  },
+  {
+    "nombreUsuario": "Usuario11",
+    "contraseña": "$2a$10$r5Z.r3JSTidfQQ2qf4.gEOLq2wLNwWQZo67NppQfOerW5b/Pg0O7K",
+    "correoElectronico": "usuario11@gmail.com",
+    "experiencia": 0,
+    "nivelExperiencia": 1,
+    "racha": 0,
+    "rol": "USUARIO",
+    "fechaRegistro": "2025-10-12T14:24",
     "tareas": [],
     "tareasCompletadas": [],
     "logros": []

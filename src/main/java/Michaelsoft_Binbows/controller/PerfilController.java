@@ -14,16 +14,17 @@ import Michaelsoft_Binbows.exceptions.EdicionInvalidaException;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 import Michaelsoft_Binbows.services.BaseDatos;
 import Michaelsoft_Binbows.services.Usuario;
+import Michaelsoft_Binbows.services.UsuarioService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class PerfilController {
 
-    private final BaseDatos baseDatos;
+    private final UsuarioService usuarioService;
     private final PasswordEncoder passwordEncoder;
 
-    public PerfilController(BaseDatos baseDatos, PasswordEncoder passwordEncoder) {
-        this.baseDatos = baseDatos;
+    public PerfilController(UsuarioService usuarioService, PasswordEncoder passwordEncoder) {
+        this.usuarioService = usuarioService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -33,7 +34,14 @@ public class PerfilController {
         
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-        Usuario usuarioActual = userDetails.getUsuario();
+        String correo = userDetails.getUsername(); // Si tu CustomUserDetails usa el correo como username
+        Usuario usuarioActual = usuarioService.buscarPorCorreo(correo);
+
+        // Verificación para evitar NullPointerException
+        if (usuarioActual == null) {
+            model.addAttribute("errorInfo", "No se encontró el usuario en la base de datos.");
+            return "user_profile";
+        }
 
         model.addAttribute("usuario", usuarioActual.getNombreUsuario());
         model.addAttribute("correo", usuarioActual.getCorreoElectronico());
@@ -55,12 +63,19 @@ public class PerfilController {
         
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-        Usuario usuarioActual = userDetails.getUsuario();
+        String correo = userDetails.getUsername(); // Si tu CustomUserDetails usa el correo como username
+        Usuario usuarioActual = usuarioService.buscarPorCorreo(correo);
+
+        if (usuarioActual == null) {
+            model.addAttribute("errorInfo", "No se encontró el usuario en la base de datos.");
+            return "user_profile";
+        }       
 
         //Verificar si hay cambios reales
         boolean hayUsuarioCambiado = !nuevoUsuario.equals(usuarioActual.getNombreUsuario());
         boolean hayCorreoCambiado = !nuevoCorreo.equals(usuarioActual.getCorreoElectronico());
         
+    
         if (!hayUsuarioCambiado && !hayCorreoCambiado) {
             model.addAttribute("infoInfo", "No hay cambios que guardar.");
             model.addAttribute("usuario", usuarioActual.getNombreUsuario());
@@ -71,12 +86,10 @@ public class PerfilController {
 
         try {
             //Validar duplicados y formato
-            baseDatos.actualizarUsuario(
-                usuarioActual.getCorreoElectronico(), // correo original
-                nuevoUsuario,                          // nuevo nombre
-                nuevoCorreo,                           // nuevo correo
-                usuarioActual.getRol()                 // mantener el rol
-            );
+            usuarioActual.setNombreUsuario(nuevoUsuario);
+            usuarioActual.setCorreoElectronico(nuevoCorreo);
+            // Si quieres mantener el rol, no necesitas cambiarlo
+            usuarioService.guardar(usuarioActual); // Guarda los cambios en la base de datos
             
             System.out.println("LOG: Perfil actualizado exitosamente para: " + nuevoUsuario);
             model.addAttribute("exitoInfo", "Información actualizada correctamente.");
@@ -84,9 +97,25 @@ public class PerfilController {
             //Actualizar los datos en el modelo con los nuevos valores
             model.addAttribute("usuario", nuevoUsuario);
             model.addAttribute("correo", nuevoCorreo);
+
+            // --- ACTUALIZA EL USUARIO AUTENTICADO EN EL CONTEXTO DE SEGURIDAD ---
+            CustomUserDetails nuevosDetalles = new CustomUserDetails(usuarioActual);
+            Authentication nuevaAuth = new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
+                nuevosDetalles,
+                auth.getCredentials(),
+                nuevosDetalles.getAuthorities()
+            );
+            SecurityContextHolder.getContext().setAuthentication(nuevaAuth);
+            // ---------------------------------------------------------------------
             
         } catch (EdicionInvalidaException e) {
             System.out.println("LOG: Error al actualizar perfil: " + e.getMessage());
+            model.addAttribute("errorInfo", e.getMessage());
+            // Mantener valores originales en caso de error
+            model.addAttribute("usuario", usuarioActual.getNombreUsuario());
+            model.addAttribute("correo", usuarioActual.getCorreoElectronico());
+        } catch (RegistroInvalidoException e) {
+            System.out.println("LOG: Error de registro inválido al actualizar perfil: " + e.getMessage());
             model.addAttribute("errorInfo", e.getMessage());
             // Mantener valores originales en caso de error
             model.addAttribute("usuario", usuarioActual.getNombreUsuario());
@@ -111,9 +140,15 @@ public class PerfilController {
         
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-        Usuario usuarioActual = userDetails.getUsuario();
+        String correo = userDetails.getUsername();
+        Usuario usuarioActual = usuarioService.buscarPorCorreo(correo);
 
         //Validar campos vacíos
+        if (usuarioActual == null) {
+        model.addAttribute("errorPassword", "No se encontró el usuario en la base de datos.");
+        return "user_profile";
+    }       
+
         if (contrasenaActual == null || contrasenaActual.trim().isEmpty() ||
             contrasenaNueva == null || contrasenaNueva.trim().isEmpty() ||
             contrasenaRepetida == null || contrasenaRepetida.trim().isEmpty()) {
@@ -151,15 +186,23 @@ public class PerfilController {
             return "user_profile";
         }
 
+        String resultado = usuarioService.validarContrasena(contrasenaNueva);
+        if (resultado != null) {
+            model.addAttribute("errorPassword", resultado);
+            model.addAttribute("usuario", usuarioActual.getNombreUsuario());
+            model.addAttribute("correo", usuarioActual.getCorreoElectronico());
+            model.addAttribute("nivel", usuarioActual.getNivelExperiencia());
+            return "user_profile";
+        }
+
         try {
             //REUTILIZAR: baseDatos.actualizarContraseñaUsuario() valida y hashea automáticamente
             //1. Valida con usuario.setContraseña() (requisitos de seguridad)
             //2. Hashea con passwordEncoder.encode()
             //3. Guarda en la base de datos
-            baseDatos.actualizarContraseñaUsuario(
-                usuarioActual.getCorreoElectronico(),
-                contrasenaNueva
-            );
+           usuarioActual.setContraseña(passwordEncoder.encode(contrasenaNueva));
+           //usuarioService.guardarSinValidarContraseña(usuarioActual);
+           usuarioService.guardarEnBD(usuarioActual); //Guarda la nueva contraseña en la base de datos
 
             System.out.println("LOG: Contraseña actualizada exitosamente para: " + usuarioActual.getNombreUsuario());
             model.addAttribute("exitoPassword", "Contraseña actualizada correctamente.");
@@ -182,15 +225,31 @@ public class PerfilController {
     }
 
     @PostMapping("/perfil/borrar-cuenta")
-    public String borrarCuenta(HttpSession session) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-        Usuario usuarioActual = userDetails.getUsuario();
-        
-        //Borrar la cuenta
-        baseDatos.eliminarUsuario(usuarioActual);
+public String borrarCuenta(HttpSession session, Model model) {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+    String correo = userDetails.getUsername();
+    Usuario usuarioActual = usuarioService.buscarPorCorreo(correo);
+
+    if (usuarioActual == null) {
+            model.addAttribute("errorInfo", "No se encontró el usuario en la base de datos.");
+            return "user_profile";
+        }
+
+    System.out.println("LOG: Intentando borrar usuario con ID: " + usuarioActual.getId());
+
+    try {
+        usuarioService.eliminar(usuarioActual.getId());
+        System.out.println("LOG: Usuario eliminado correctamente.");
         session.invalidate();
-        System.out.println("LOG: Cuenta eliminada desde perfil para: " + usuarioActual.getNombreUsuario());
         return "redirect:/login";
+    } catch (Exception e) {
+        System.out.println("LOG: Error al borrar usuario: " + e.getMessage());
+        model.addAttribute("errorDelete", "No se pudo borrar la cuenta: " + e.getMessage());
+        model.addAttribute("usuario", usuarioActual.getNombreUsuario());
+        model.addAttribute("correo", usuarioActual.getCorreoElectronico());
+        model.addAttribute("nivel", usuarioActual.getNivelExperiencia());
+        return "user_profile";
     }
+}
 }

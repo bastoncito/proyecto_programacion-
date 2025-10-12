@@ -20,6 +20,7 @@ import jakarta.servlet.http.HttpSession;
 // Imports de nuestras propias clases
 import Michaelsoft_Binbows.services.Rol;
 import Michaelsoft_Binbows.services.Usuario;
+import Michaelsoft_Binbows.services.UsuarioService;
 import Michaelsoft_Binbows.services.SeguridadService;
 import Michaelsoft_Binbows.services.Tarea;
 import Michaelsoft_Binbows.CustomUserDetails;
@@ -45,6 +46,9 @@ public class AdminController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private UsuarioService usuarioService;
+
     // Dependencias del controlador
     private final BaseDatos baseDatos;
     private final SeguridadService seguridadService;
@@ -58,7 +62,7 @@ public class AdminController {
     public void registrarUsuario(Usuario usuario) throws RegistroInvalidoException {
         String encodedPassword = passwordEncoder.encode(usuario.getContraseña());
         usuario.setContraseña(encodedPassword);
-        baseDatos.agregarUsuario(usuario);
+        usuarioService.guardarEnBD(usuario);
     }
     
     /*
@@ -117,7 +121,7 @@ public class AdminController {
             model.addAttribute("mostrarModalCrearTarea", true);
         }
 
-        model.addAttribute("listaDeUsuarios", baseDatos.getUsuarios());
+        model.addAttribute("listaDeUsuarios", usuarioService.obtenerTodos());
 
         // --- LÓGICA DINÁMICA PARA LOS ROLES DISPONIBLES ---
         List<Rol> rolesDisponibles;
@@ -139,9 +143,9 @@ public class AdminController {
                 //  la lista la añadi afuera 
                 break;
             case "tareas":
-                model.addAttribute("listaDeUsuarios", baseDatos.getUsuarios());
+                model.addAttribute("listaDeUsuarios", usuarioService.obtenerTodos());
                 if (correoUsuarioSeleccionado != null) {
-                Usuario usuarioSeleccionado = baseDatos.buscarUsuarioPorCorreo(correoUsuarioSeleccionado);
+                Usuario usuarioSeleccionado = usuarioService.buscarPorCorreo(correoUsuarioSeleccionado);
                 model.addAttribute("usuarioSeleccionado", usuarioSeleccionado);
             }
                 break;
@@ -149,7 +153,7 @@ public class AdminController {
         
         // Si se pulsa boton editar
         if (correoAEditar != null) {
-            Usuario usuarioAEditar = baseDatos.buscarUsuarioPorCorreo(correoAEditar);
+            Usuario usuarioAEditar = usuarioService.buscarPorCorreo(correoAEditar);
             if (usuarioAEditar != null && seguridadService.puedeEditar(usuarioActual, usuarioAEditar)) {
                 model.addAttribute("usuarioParaEditar", usuarioAEditar);
             }
@@ -185,7 +189,7 @@ public class AdminController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         Usuario actor = userDetails.getUsuario();
-        Usuario objetivo = baseDatos.buscarUsuarioPorCorreo(correoOriginal);
+        Usuario objetivo = usuarioService.buscarPorCorreo(correoOriginal);
 
         System.out.println("LOG: Actor '" + actor.getNombreUsuario() + "' (Rol: " + actor.getRol() + ") intenta editar a '" + objetivo.getNombreUsuario() + "'.");
         System.out.println("LOG: Datos recibidos del formulario:");
@@ -212,7 +216,7 @@ public class AdminController {
         // Se intentan aplicar los cambios. Si hay un error de validación, se atrapa.
         try {
                 // Actualizacion los datos básicos del usuario (nombre, correo, rol).
-                baseDatos.actualizarUsuario(correoOriginal, nuevoNombre, nuevoCorreo, nuevoRol);
+                usuarioService.actualizarUsuario(correoOriginal, nuevoNombre, nuevoCorreo, nuevoRol);
                 
                 //  Revisamos si se quiera cambiar la contraseña
                 //  Solo procederemos si el campo de nueva contraseña NO está vacío.
@@ -227,7 +231,7 @@ public class AdminController {
                     
                     //  Si coinciden llamamos al metodo actualizarContraseñaUsuario
                     //  Este método se encargará de la validación de seguridad y la encriptación.
-                    baseDatos.actualizarContraseñaUsuario(nuevoCorreo, nuevaContraseña);
+                    usuarioService.actualizarContraseñaUsuario(nuevoCorreo, nuevaContraseña);
                     
                     System.out.println("SUCCESS: La contraseña fue actualizada exitosamente.");
                 }
@@ -249,14 +253,14 @@ public class AdminController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         Usuario actor = userDetails.getUsuario();
-        Usuario objetivo = baseDatos.buscarUsuarioPorCorreo(correoAEliminar);
+        Usuario objetivo = usuarioService.buscarPorCorreo(correoAEliminar);
 
         // Chequeo de seguridad en el servidor
         if (!seguridadService.puedeEliminar(actor, objetivo)) {
             return "redirect:/acceso-denegado";
         }
         
-        baseDatos.eliminarUsuario(objetivo);
+        usuarioService.eliminarPorCorreo(correoAEliminar);
         redirectAttributes.addFlashAttribute("success", "Usuario '" + objetivo.getNombreUsuario() + "' eliminado.");
 
         return "redirect:/admin";
@@ -278,7 +282,7 @@ public class AdminController {
         Usuario actor = userDetails.getUsuario();
 
         //  Buscamos al usuario al que pertenece la tarea.
-        Usuario objetivo = baseDatos.buscarUsuarioPorCorreo(correoUsuario);
+        Usuario objetivo = usuarioService.buscarPorCorreo(correoUsuario);
 
         //  Chequeo de seguridad: ¿Tiene el admin permiso para modificar a este usuario?
         //  Se reutiliza la lógica de 'puedeEditar' porque si puede editar al usuario,
@@ -293,8 +297,8 @@ public class AdminController {
             // Necesitaremos un nuevo método en la clase Usuario para esto.
             objetivo.cancelarTarea(nombreTarea);
             
-            //  Guardamos los cambios en el archivo JSON.
-            baseDatos.guardarBaseDatos();
+            // Guardamos los cambios en la base de datos.
+            usuarioService.guardarEnBD(objetivo);
             
             redirectAttributes.addFlashAttribute("success", "Tarea '" + nombreTarea + "' eliminada correctamente.");
             System.out.println("LOG: El admin '" + actor.getNombreUsuario() + "' eliminó la tarea '" + nombreTarea + "' del usuario '" + objetivo.getNombreUsuario() + "'.");
@@ -327,7 +331,7 @@ public class AdminController {
             Model model) {
         
         // Buscamos al usuario en la base de datos.
-        Usuario usuario = baseDatos.buscarUsuarioPorCorreo(correoUsuario);
+        Usuario usuario = usuarioService.buscarPorCorreo(correoUsuario);
         // Buscamos la tarea específica dentro de la lista de tareas de ese usuario.
         Tarea tarea = usuario.buscarTareaPorNombre(nombreTarea);
 
@@ -363,7 +367,7 @@ public class AdminController {
             RedirectAttributes redirectAttributes,
             Model model) throws AdminGuardarTareaException {
 
-        Usuario usuario = baseDatos.buscarUsuarioPorCorreo(correoUsuario);
+        Usuario usuario = usuarioService.buscarPorCorreo(correoUsuario);
 
         try {
             //  Creamos un objeto Tarea temporal con los nuevos datos recibidos del formulario.
@@ -374,7 +378,7 @@ public class AdminController {
             usuario.actualizarTarea(nombreOriginal, tareaActualizada);
             
             //  Si la actualización fue exitosa, guardamos el estado completo de la base de datos.
-            baseDatos.guardarBaseDatos();
+            usuarioService.guardarEnBD(usuario);
 
             //  Preparamos un mensaje de éxito para mostrar después de la redirección.
             redirectAttributes.addFlashAttribute("success", "Tarea actualizada correctamente.");
@@ -444,7 +448,7 @@ public class AdminController {
         @RequestParam("dificultad") String dificultad,
         RedirectAttributes redirectAttributes) throws AdminCrearTareaException {
 
-        Usuario usuario = baseDatos.buscarUsuarioPorCorreo(correoUsuario);
+        Usuario usuario = usuarioService.buscarPorCorreo(correoUsuario);
         if (usuario == null) {
             redirectAttributes.addFlashAttribute("errorCreacionTarea", "El usuario seleccionado no es válido.");
             redirectAttributes.addAttribute("crearTarea", true);
@@ -459,7 +463,7 @@ public class AdminController {
             usuario.agregarTarea(nuevaTarea);
         
             // Guardamos los cambios
-            baseDatos.guardarBaseDatos();
+            usuarioService.guardarEnBD(usuario);
 
             redirectAttributes.addFlashAttribute("success", "Tarea '" + nombre + "' añadida exitosamente a " + usuario.getNombreUsuario() + ".");
         

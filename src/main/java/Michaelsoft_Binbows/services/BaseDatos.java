@@ -156,14 +156,9 @@ public class BaseDatos {
             throw new EdicionInvalidaException("Error crítico: No se pudo encontrar al usuario para actualizar.", correoOriginal);
         }
 
-        // 4. Usar los setters del propio Usuario.
-        try{
-            usuarioAActualizar.setNombreUsuario(nuevoNombre);
-            usuarioAActualizar.setCorreoElectronico(nuevoCorreo); // <--- CAMBIO 3: Ahora actualiza el correo
-            usuarioAActualizar.setRol(nuevoRol);
-        }catch(RegistroInvalidoException e){
-            throw new EdicionInvalidaException(e.getMessage(), correoOriginal);
-        }
+        usuarioAActualizar.setNombreUsuario(nuevoNombre);
+        usuarioAActualizar.setCorreoElectronico(nuevoCorreo); // <--- CAMBIO 3: Ahora actualiza el correo
+        usuarioAActualizar.setRol(nuevoRol);
 
         // 5. Persistir los cambios en el archivo JSON.
         guardarBaseDatos();

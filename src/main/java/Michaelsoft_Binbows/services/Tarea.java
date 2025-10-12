@@ -5,8 +5,17 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
+@Entity
 public class Tarea{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String nombre, descripcion;
     private int exp;
     private LocalDateTime fechaExpiracion;
@@ -17,6 +26,8 @@ public class Tarea{
         // Es requerido por algunos frameworks como Spring y Thymeleaf para poder
         // crear objetos de esta clase sin necesidad de pasarle argumentos.
     }
+
+
     public Tarea (String nombre, String descripcion, String dificultad) throws TareaInvalidaException{
         setNombre(nombre);
         setDescripcion(descripcion);

@@ -1,11 +1,17 @@
 package Michaelsoft_Binbows.services;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
+@Entity
 public class Logro {
-    private final String nombre;
-    private final String id;
-    private final String descripcion;
-    private final int experienciaRecompensa;
+    @Id
+    private String id; //Usamos el ID como clave primaria
+
+    private  String nombre;
+    //private final String id;
+    private  String descripcion;
+    private  int experienciaRecompensa;
 
     /**
      * Constructor de la clase Logro.
@@ -18,6 +24,16 @@ public class Logro {
      * @param descripcion La explicación de cómo se obtiene el logro.
      * @param experienciaRecompensa La cantidad de EXP que otorga el logro (puede ser 0).
      */
+
+     // Constructor vacío requerido por JPA
+    public Logro() {
+        this.id = "";
+        this.nombre = "";
+        this.descripcion = "";
+        this.experienciaRecompensa = 0;
+    }
+
+
     public Logro(String id, String nombre, String descripcion, int experienciaRecompensa) {
 
         // Validacion de ID: sin espacios y en mayúsculas (por convención).
@@ -46,6 +62,7 @@ public class Logro {
         this.descripcion = descripcion.trim();
         this.experienciaRecompensa = experienciaRecompensa;
     }
+
 
     // GETTERS
     public String getId() { return id; }

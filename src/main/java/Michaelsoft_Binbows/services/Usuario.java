@@ -7,16 +7,47 @@ import java.util.List;
 import java.util.regex.Pattern;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Transient;
+import jakarta.persistence.Id;
 
+@Entity
 public class Usuario{
-    private String nombreUsuario,correoElectronico,contraseña;
+    @NotBlank
+    private String nombreUsuario;
+
+    @NotBlank
+    private String contraseña;
+
+    @NotBlank
+    @Email
+    private String correoElectronico;
+    
     private int experiencia, nivelExperiencia, racha;
     private Rol rol;
     private LocalDateTime fechaRegistro;
     private LocalDate fechaRacha;
-    private List<Tarea> tareas;
+    /*private List<Tarea> tareas;
     private List<Tarea> tareasCompletadas;
-    private List<Logro> logros;
+    private List<Logro> logros;*/
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Transient //Temporalmente, hasta adaptar Tarea y Logro como entidades
+    private List<Tarea> tareas = new ArrayList<>();
+
+    @Transient
+    private List<Tarea> tareasCompletadas = new ArrayList<>();
+
+    @Transient
+    private List<Logro> logros = new ArrayList<>();
+
+    // Constructor vacío requerido por JPA
+    public Usuario() {}
 
     public Usuario(String nombre_usuario, String correo_electronico, String contraseña) throws RegistroInvalidoException{
         setNombreUsuario(nombre_usuario);
@@ -70,6 +101,30 @@ public class Usuario{
     public void setRol(Rol rol) {
         this.rol = rol;
     }
+    public void setId(Long id) {
+        this.id = id;
+    }
+    public Long getId() {
+        return id;
+    }
+    public void setExperiencia(int experiencia) {
+    this.experiencia = experiencia;
+    }
+    public void setNivelExperiencia(int nivelExperiencia) {
+        this.nivelExperiencia = nivelExperiencia;
+    }
+
+    public void setRacha(int racha) {
+        this.racha = racha;
+    }
+
+    public void setFechaRegistro(LocalDateTime fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
+    }
+
+    public void setFechaRacha(LocalDate fechaRacha) {
+        this.fechaRacha = fechaRacha;
+    }
     /*
     * Devuelve una copia de la lista de logros que el usuario ha desbloqueado.
     * @return Una lista nueva(para evitar alterar la original) de objetos Logro.
@@ -84,30 +139,18 @@ public class Usuario{
     public List<Tarea> getTareasCompletadas() {
         return new ArrayList<>(this.tareasCompletadas);
     }
-    public void setNombreUsuario(String nombre_usuario) throws RegistroInvalidoException {
-        if(esNombreValido(nombre_usuario)){
-            this.nombreUsuario = nombre_usuario;
-        }else{
-            throw new RegistroInvalidoException("Nombre de usuario no válido: " + nombre_usuario);
-        }
+    public void setNombreUsuario(String nombreUsuario) {
+    this.nombreUsuario = nombreUsuario;
+    }
+    public void setCorreoElectronico(String correoElectronico) {
+        this.correoElectronico = correoElectronico;
+    }
+    public void setContraseña(String contraseña) {
+        this.contraseña = contraseña;
     }
     
-    public void setCorreoElectronico(String correo_electronico) throws RegistroInvalidoException {
-        if(correoValido(correo_electronico)){
-            this.correoElectronico=correo_electronico;
-        }else{
-            throw new RegistroInvalidoException("Correo electronico no válido: " + correo_electronico);
-        }
-    }
-    
-    public void setContraseña(String nuevaContraseña) throws RegistroInvalidoException {
-        String resultado = validarContrasena(nuevaContraseña);
-        if (resultado == null) {
-            this.contraseña = nuevaContraseña;
-        } else {
-            throw new RegistroInvalidoException(resultado);
-        }
-    }
+
+
     /**
      * Recibe una Tarea como parametro
      * la agrega a la base de datos si su nombre, descricpcion y exp son validos
