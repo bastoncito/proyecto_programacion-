@@ -1,5 +1,7 @@
 ## Estructura del proyecto
 ### Dentro de la carpeta src/main/java/Michaelsoft_Binbows...
+
+```text
 ├─ controller/ --> Llamadas a la capa de servicios (validaciones de entradas/solicitudes) + endpoints
 │  ├─ TareaController.java 
 │  ├─ AutorizacionController.java
