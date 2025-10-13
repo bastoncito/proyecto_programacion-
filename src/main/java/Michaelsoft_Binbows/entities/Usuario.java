@@ -1,4 +1,4 @@
-package Michaelsoft_Binbows.services;
+package Michaelsoft_Binbows.entities;
 
 import java.util.ArrayList;
 import java.time.LocalDate;
@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
+import Michaelsoft_Binbows.services.Rol;
+import Michaelsoft_Binbows.services.SistemaNiveles;
 import io.micrometer.common.lang.NonNull;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

@@ -9,9 +9,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpSession;
-import Michaelsoft_Binbows.CustomUserDetails;
+import Michaelsoft_Binbows.entities.Tarea;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
+import Michaelsoft_Binbows.security.CustomUserDetails;
 import Michaelsoft_Binbows.services.*;
 
 import org.springframework.beans.factory.annotation.Autowired;

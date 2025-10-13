@@ -1,6 +1,8 @@
 package Michaelsoft_Binbows.services;
 
 import Michaelsoft_Binbows.data.TareaRepository;
+import Michaelsoft_Binbows.entities.Tarea;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

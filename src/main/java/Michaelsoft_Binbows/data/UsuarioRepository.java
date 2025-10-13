@@ -1,10 +1,10 @@
 package Michaelsoft_Binbows.data;
 
-import Michaelsoft_Binbows.services.Usuario;
-
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import Michaelsoft_Binbows.entities.Usuario;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 

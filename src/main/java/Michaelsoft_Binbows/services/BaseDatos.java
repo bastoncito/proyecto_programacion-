@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import Michaelsoft_Binbows.data.*;
+import Michaelsoft_Binbows.entities.Tarea;
+import Michaelsoft_Binbows.entities.Usuario;
 import Michaelsoft_Binbows.exceptions.EdicionInvalidaException;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 

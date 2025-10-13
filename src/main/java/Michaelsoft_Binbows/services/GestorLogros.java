@@ -5,6 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import Michaelsoft_Binbows.entities.Logro;
+import Michaelsoft_Binbows.entities.Usuario;
+
 public class GestorLogros {
 
     private static final List<Logro> LOGROS_DISPONIBLES = new ArrayList<>();

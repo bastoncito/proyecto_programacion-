@@ -1,6 +1,8 @@
 package Michaelsoft_Binbows.services;
 
 import Michaelsoft_Binbows.data.LogroRepository;
+import Michaelsoft_Binbows.entities.Logro;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

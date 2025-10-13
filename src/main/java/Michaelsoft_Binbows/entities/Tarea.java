@@ -1,10 +1,11 @@
-package Michaelsoft_Binbows.services;
+package Michaelsoft_Binbows.entities;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
+import Michaelsoft_Binbows.services.Dificultad;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;

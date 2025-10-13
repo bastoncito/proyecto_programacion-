@@ -1,7 +1,8 @@
 package Michaelsoft_Binbows.controller;
 
+import Michaelsoft_Binbows.entities.Logro;
 import Michaelsoft_Binbows.services.LogroService;
-import Michaelsoft_Binbows.services.Logro;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

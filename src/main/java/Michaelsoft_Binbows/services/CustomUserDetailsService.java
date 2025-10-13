@@ -1,7 +1,8 @@
-package Michaelsoft_Binbows;
+package Michaelsoft_Binbows.services;
 
 import Michaelsoft_Binbows.data.UsuarioRepository;
-import Michaelsoft_Binbows.services.*;
+import Michaelsoft_Binbows.entities.Usuario;
+import Michaelsoft_Binbows.security.CustomUserDetails;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -1,4 +1,4 @@
-package Michaelsoft_Binbows.services;
+package Michaelsoft_Binbows.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

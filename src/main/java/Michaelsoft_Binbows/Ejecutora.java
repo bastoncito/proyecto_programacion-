@@ -1,5 +1,5 @@
 
-package Michaelsoft_Binbows.services;
+package Michaelsoft_Binbows;
 
 
 import java.util.ArrayList;

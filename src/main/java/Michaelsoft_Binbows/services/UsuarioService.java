@@ -1,6 +1,8 @@
 package Michaelsoft_Binbows.services;
 
 import Michaelsoft_Binbows.data.UsuarioRepository;
+import Michaelsoft_Binbows.entities.Tarea;
+import Michaelsoft_Binbows.entities.Usuario;
 import Michaelsoft_Binbows.exceptions.EdicionInvalidaException;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 import Michaelsoft_Binbows.exceptions.TareaInvalidaException;

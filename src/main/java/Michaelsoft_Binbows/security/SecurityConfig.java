@@ -1,4 +1,4 @@
-package Michaelsoft_Binbows;
+package Michaelsoft_Binbows.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,12 +1,12 @@
-package Michaelsoft_Binbows;
+package Michaelsoft_Binbows.security;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import Michaelsoft_Binbows.entities.Tarea;
 import Michaelsoft_Binbows.exceptions.*;
-import Michaelsoft_Binbows.services.Tarea;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{

@@ -18,7 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
 
-import Michaelsoft_Binbows.services.Usuario;
+import Michaelsoft_Binbows.entities.Usuario;
 
 public class PersistenciaJSON {
     private static final String ARCHIVO_JSON = "base_datos.json";

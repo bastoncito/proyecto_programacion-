@@ -12,10 +12,10 @@
     import org.springframework.web.bind.annotation.PostMapping;
     import org.springframework.web.bind.annotation.ResponseBody; // Necesario para el método de prueba
 
-    import Michaelsoft_Binbows.CustomUserDetails;
-    import Michaelsoft_Binbows.services.BaseDatos;
-    import Michaelsoft_Binbows.services.Tarea;
-    import Michaelsoft_Binbows.services.Usuario;
+import Michaelsoft_Binbows.entities.Tarea;
+import Michaelsoft_Binbows.entities.Usuario;
+import Michaelsoft_Binbows.security.CustomUserDetails;
+import Michaelsoft_Binbows.services.BaseDatos;
 import Michaelsoft_Binbows.services.UsuarioService;
 import jakarta.servlet.http.HttpSession;
 

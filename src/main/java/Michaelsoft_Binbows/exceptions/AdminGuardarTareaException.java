@@ -1,6 +1,6 @@
 package Michaelsoft_Binbows.exceptions;
 
-import Michaelsoft_Binbows.services.Usuario;
+import Michaelsoft_Binbows.entities.Usuario;
 
 public class AdminGuardarTareaException extends Exception{
     private Usuario usuario;

@@ -1,6 +1,6 @@
 package Michaelsoft_Binbows.data;
 
-import Michaelsoft_Binbows.services.Usuario;
+import Michaelsoft_Binbows.entities.Usuario;
 import Michaelsoft_Binbows.services.UsuarioService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

@@ -3,6 +3,8 @@ package Michaelsoft_Binbows.services;
 
 import org.springframework.stereotype.Service;
 
+import Michaelsoft_Binbows.entities.Usuario;
+
 /**
  * Esta clase contiene la lógica de negocio relacionada con la seguridad y los permisos.
  * Al marcarla como @Service, le decimos a Spring que gestione su ciclo de vida.
