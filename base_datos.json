@@ -116,8 +116,8 @@
   },
   {
     "nombreUsuario": "Boton",
-    "correoElectronico": "Boton@gmail.com",
     "contraseña": "$2a$10$XK.SlCiPJM6sMW4oJUgukuacBL4m0Nj0wk0XSzhHIwkEyelDvLC2K",
+    "correoElectronico": "Boton@gmail.com",
     "experiencia": 0,
     "nivelExperiencia": 1,
     "racha": 1,
@@ -138,8 +138,8 @@
   },
   {
     "nombreUsuario": "John GoodTime",
-    "correoElectronico": "jgdaman@gmail.com",
     "contraseña": "$2a$10$PFNxwHUvsgi1bFqecx02Kua/CYXI1eV3seFF48NeF40JKY.GIBbkG",
+    "correoElectronico": "jgdaman@gmail.com",
     "experiencia": 0,
     "nivelExperiencia": 1,
     "racha": 0,
@@ -158,6 +158,19 @@
     "racha": 0,
     "rol": "USUARIO",
     "fechaRegistro": "2025-10-12T14:24",
+    "tareas": [],
+    "tareasCompletadas": [],
+    "logros": []
+  },
+  {
+    "nombreUsuario": "Usuario33",
+    "contraseña": "$2a$10$/NnHZMTynpPPSaOiYg6soeP49XwkyaIWHbhOnJhE2nFB2dpjPMnQy",
+    "correoElectronico": "usuario33@gmail.com",
+    "experiencia": 0,
+    "nivelExperiencia": 1,
+    "racha": 0,
+    "rol": "USUARIO",
+    "fechaRegistro": "2025-10-12T23:36",
     "tareas": [],
     "tareasCompletadas": [],
     "logros": []

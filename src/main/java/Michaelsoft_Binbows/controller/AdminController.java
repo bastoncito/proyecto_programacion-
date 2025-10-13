@@ -446,7 +446,7 @@ public class AdminController {
         @RequestParam("nombre") String nombre,
         @RequestParam("descripcion") String descripcion,
         @RequestParam("dificultad") String dificultad,
-        RedirectAttributes redirectAttributes) throws AdminCrearTareaException {
+        RedirectAttributes redirectAttributes) throws AdminCrearTareaException, RegistroInvalidoException {
 
         Usuario usuario = usuarioService.buscarPorCorreo(correoUsuario);
         if (usuario == null) {

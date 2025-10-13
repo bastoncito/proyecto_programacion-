@@ -3,6 +3,8 @@ package Michaelsoft_Binbows.services;
 import Michaelsoft_Binbows.data.UsuarioRepository;
 import Michaelsoft_Binbows.exceptions.EdicionInvalidaException;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
+import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
+import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -185,5 +187,38 @@ public class UsuarioService {
         }
         usuarioRepository.delete(usuario);
     }
+
+
+    //Metodos para manejar las tareas de los usuarios
+    @Transactional
+    public Usuario buscarPorCorreoConTareas(String correo) {
+        Usuario usuario = usuarioRepository.findByCorreoElectronico(correo).orElse(null);
+        if (usuario != null) {
+            usuario.getTareas().size(); // Fuerza la carga de tareas
+        }
+        return usuario;
+    }
+
+    @Transactional
+    public void agregarTareaAUsuario(String correo, Tarea tarea) throws TareaInvalidaException {
+        Usuario usuario = usuarioRepository.findByCorreoElectronico(correo).orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+        usuario.agregarTarea(tarea); 
+        usuarioRepository.save(usuario);
+    }
     
+    @Transactional
+    public void completarTarea(String correo, String nombreTarea) throws RegistroInvalidoException {
+        Usuario usuario = usuarioRepository.findByCorreoElectronico(correo)
+            .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+        usuario.completarTarea(nombreTarea); //accedes a la colección dentro de la transacción
+        usuarioRepository.save(usuario);
+    }
+
+    @Transactional
+    public void eliminarTarea(String correo, String nombreTarea) throws RegistroInvalidoException {
+        Usuario usuario = usuarioRepository.findByCorreoElectronico(correo)
+            .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+        usuario.cancelarTarea(nombreTarea); //Acceso seguro a la colección
+        usuarioRepository.save(usuario);
+    }
 }

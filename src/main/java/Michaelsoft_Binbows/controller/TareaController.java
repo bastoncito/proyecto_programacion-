@@ -13,22 +13,33 @@ import Michaelsoft_Binbows.CustomUserDetails;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
 import Michaelsoft_Binbows.services.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 
 @Controller
 public class TareaController {
     // Se inyecta la dependencia de BaseDatos, gracias a que BaseDatos es un Spring Bean (@Service).
-    private final BaseDatos baseDatos;
+    /*private final BaseDatos baseDatos;
     public TareaController(BaseDatos baseDatos) {
         this.baseDatos = baseDatos;
-    }
+    }*/
+
+    @Autowired
+    private UsuarioService usuarioService;
+
+
     @PostMapping("/eliminar-tarea")
     public String eliminarTarea(Model model, @RequestParam("nombreTarea") String nombreTarea) throws RegistroInvalidoException{
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-        Usuario usuarioActual = userDetails.getUsuario();
+        String correo = userDetails.getUsername();
+        /*Usuario usuarioActual = userDetails.getUsuario();
         usuarioActual.cancelarTarea(nombreTarea);
-        baseDatos.guardarBaseDatos();
+        usuarioService.guardarEnBD(usuarioActual); //Guarda el usuario y sus tareas en la base de datos*/
+
+        usuarioService.eliminarTarea(correo, nombreTarea);
+
         return "redirect:/home";
     }
 
@@ -36,9 +47,12 @@ public class TareaController {
     public String completarTarea(Model model, @RequestParam("nombreTarea") String nombreTarea) throws RegistroInvalidoException{
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-        Usuario usuarioActual = userDetails.getUsuario();
-        usuarioActual.completarTarea(nombreTarea);
-        baseDatos.guardarBaseDatos();
+        /*Usuario usuarioActual = userDetails.getUsuario();
+        usuarioActual.completarTarea(nombreTarea);*/
+        String correo = userDetails.getUsername();
+
+        usuarioService.completarTarea(correo, nombreTarea);
+        //usuarioService.guardarEnBD(usuarioActual); // Guarda el usuario y sus tareas en la base de datos
         return "redirect:/home";
     }
     /**
@@ -55,6 +69,7 @@ public class TareaController {
     /**
      * Procesa la creación de una nueva tarea para el usuario actual.
      * @throws TareaInvalidaException 
+     * @throws RegistroInvalidoException 
      */
     @PostMapping("/nueva-tarea")
     public String procesarNuevaTarea(
@@ -62,15 +77,16 @@ public class TareaController {
         @RequestParam("descripcion") String descripcion, 
         @RequestParam("dificultad") String dificultad,
         Model model,
-        RedirectAttributes redirectAttributes) throws TareaInvalidaException{
+        RedirectAttributes redirectAttributes) throws TareaInvalidaException, RegistroInvalidoException{
             
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-        Usuario usuarioActual = userDetails.getUsuario(); 
+        String correo = userDetails.getUsername();
+        //Usuario usuarioActual = userDetails.getUsuario(); 
 
         Tarea nuevaTarea = new Tarea(nombre, descripcion, dificultad);
-        usuarioActual.agregarTarea(nuevaTarea);
-        baseDatos.guardarBaseDatos();
+        usuarioService.agregarTareaAUsuario(correo, nuevaTarea);
+        //usuarioService.guardarEnBD(usuarioActual); //Guarda el usuario y sus tareas en la base de datos
 
         // Usamos RedirectAttributes para que el mensaje de éxito se vea en /home
         redirectAttributes.addFlashAttribute("mensaje", "¡Tarea agregada con éxito!");

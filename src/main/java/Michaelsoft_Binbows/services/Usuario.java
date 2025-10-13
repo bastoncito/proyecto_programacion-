@@ -7,15 +7,20 @@ import java.util.List;
 import java.util.regex.Pattern;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
+import io.micrometer.common.lang.NonNull;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Transient;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Usuario{
-    @NotBlank
+    /*@NotBlank
     private String nombreUsuario;
 
     @NotBlank
@@ -23,6 +28,18 @@ public class Usuario{
 
     @NotBlank
     @Email
+    private String correoElectronico;*/
+
+    @NonNull
+    @Column(nullable = false)
+    private String nombreUsuario;
+
+    @NonNull
+    @Column(nullable = false)
+    private String contraseña;
+
+    @NonNull
+    @Column(nullable = false, unique = true)
     private String correoElectronico;
     
     private int experiencia, nivelExperiencia, racha;
@@ -37,10 +54,11 @@ public class Usuario{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Transient //Temporalmente, hasta adaptar Tarea y Logro como entidades
+    
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY) 
     private List<Tarea> tareas = new ArrayList<>();
 
-    @Transient
+    @Transient  //Temporalmente, hasta adaptar Tarea y Logro como entidades
     private List<Tarea> tareasCompletadas = new ArrayList<>();
 
     @Transient
@@ -164,6 +182,7 @@ public class Usuario{
         if(tareaExistePorDescripcion(tarea.getDescripcion())){
             throw new TareaInvalidaException("Tarea con descripción \"" + tarea.getNombre() + "\" ya existe.", tarea.getNombre(), tarea.getDescripcion());
         }
+        tarea.setUsuario(this); // Asocia la tarea al usuario
         tareas.add(tarea);
         System.out.println("Tarea '" + tarea.getNombre() + "' agregada exitosamente.");
     }
