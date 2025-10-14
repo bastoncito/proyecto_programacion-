@@ -223,4 +223,36 @@ public class UsuarioService {
         usuario.cancelarTarea(nombreTarea); //Acceso seguro a la colección
         usuarioRepository.save(usuario);
     }
+
+    @Transactional
+    public Usuario guardarConTareas(Usuario usuario) throws EdicionInvalidaException, RegistroInvalidoException {
+        //Validaciones básicas
+        if (usuario.getNombreUsuario() == null || usuario.getNombreUsuario().trim().isEmpty()
+            || usuario.getNombreUsuario().length() < 3 || usuario.getNombreUsuario().length() > 30) {
+            throw new IllegalArgumentException("Nombre de usuario no válido: " + usuario.getNombreUsuario());
+        }
+        if (usuario.getCorreoElectronico() == null || !correoValido(usuario.getCorreoElectronico())) {
+            throw new IllegalArgumentException("Correo electrónico no válido: " + usuario.getCorreoElectronico());
+        }
+        String resultado = validarContrasena(usuario.getContraseña());
+        if (resultado != null) {
+            throw new IllegalArgumentException(resultado);
+        }
+        if (usuario.getNombreUsuario() == null || usuario.getNombreUsuario().trim().isEmpty()) {
+            throw new EdicionInvalidaException("Error", usuario.getCorreoElectronico());
+        }
+        if (usuario.getContraseña() == null || usuario.getContraseña().length() < 8) {
+            throw new RegistroInvalidoException("La contraseña debe tener al menos 8 caracteres.");
+        }
+
+        //Asocia las tareas pendientes y completadas al usuario antes de guardar
+        if (usuario.getTareas() != null) {
+            usuario.getTareas().forEach(t -> t.setUsuario(usuario));
+        }
+        if (usuario.getTareasCompletadas() != null) {
+            usuario.getTareasCompletadas().forEach(t -> t.setUsuario(usuario));
+        }
+
+        return usuarioRepository.save(usuario);
+    }
 }

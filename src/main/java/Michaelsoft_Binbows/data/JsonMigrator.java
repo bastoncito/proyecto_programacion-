@@ -43,7 +43,15 @@ public class JsonMigrator implements CommandLineRunner {
                     //Verifica si ya existe un usuario con ese correo
                     if (usuarioService.obtenerPorCorreo(usuario.getCorreoElectronico()).isEmpty()) {
                         usuario.setId(null); //Deja que JPA genere el id
-                        usuarioService.guardar(usuario);
+
+                        if (usuario.getTareas() != null) {
+                                usuario.getTareas().forEach(t -> t.setUsuario(usuario));
+                        }
+                        if (usuario.getTareasCompletadas() != null) {
+                            usuario.getTareasCompletadas().forEach(t -> t.setUsuario(usuario));
+                        }
+
+                        usuarioService.guardarConTareas(usuario);
                     }
                 }
                 System.out.println("Migración desde JSON completada.");
