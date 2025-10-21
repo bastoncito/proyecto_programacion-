@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.regex.Pattern;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
 import Michaelsoft_Binbows.services.Rol;
@@ -189,36 +188,6 @@ public class Usuario{
         System.out.println("Tarea '" + tarea.getNombre() + "' agregada exitosamente.");
     }
 
-    private  String validarContrasena(String contraseña) {
-        if (contraseña == null || contraseña.trim().isEmpty()) {
-            return "La contraseña no puede estar vacía";
-        }
-
-        if (contraseña.length() < 8) {
-            return "La contraseña debe tener al menos 8 caracteres";
-        }
-
-        if (contraseña.contains(" ")) {
-            return "La contraseña no puede contener espacios";
-        }
-
-        boolean tieneMayuscula = Pattern.compile("[A-Z]").matcher(contraseña).find();
-        boolean tieneMinuscula = Pattern.compile("[a-z]").matcher(contraseña).find();
-        boolean tieneDigito = Pattern.compile("\\d").matcher(contraseña).find();
-        boolean tieneCaracterEspecial = Pattern.compile("[!@#$%^&*()_+\\-=\\[\\]{}|;:'\",.<>/?]").matcher(contraseña).find();
-
-        if (!tieneMayuscula || !tieneMinuscula || !tieneDigito || !tieneCaracterEspecial) {
-            StringBuilder errores = new StringBuilder();
-            if (!tieneMayuscula) errores.append("- Debe contener al menos una mayúscula\n");
-            if (!tieneMinuscula) errores.append("- Debe contener al menos una minúscula\n");
-            if (!tieneDigito) errores.append("- Debe contener al menos un dígito\n");
-            if (!tieneCaracterEspecial) errores.append("- Debe contener al menos un carácter especial (!@#$%^&* etc.)\n");
-            return "La contraseña es demasiado débil. Requisitos:\n" + errores.toString();
-        }
-
-        return null; // Null indica que la contraseña es válida
-    }
-
     private boolean tareaExistePorNombre(String nombre){
         for (Tarea tareaExistente : tareas) {
             if (tareaExistente.getNombre().equalsIgnoreCase(nombre)) {
@@ -235,33 +204,6 @@ public class Usuario{
             }
         }
         return false;
-    }
-    
-    private boolean esNombreValido(String nombre){
-        if(nombre==null){
-            return false;
-        }
-        if(nombre.trim().isEmpty()){
-            return false;
-        }
-        if(nombre.length()<3 || nombre.length()>30 ){
-            return false;
-        }
-        return true;
-    }
-    
-    private static boolean correoValido(String correo) {
-        if (correo == null || correo.trim().isEmpty()) {
-            return false;
-        }
-        String regex = "[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}";
-        // [a-zA-Z0-9_]+ UNO O MAS, caracter (letras o numeros o '_')
-        // ([.][a-zA-Z0-9_]+)* CERO O MAS, punto '.' seguido de almenos un caracter 
-        // @ UN simbolo arroba
-        // [a-zA-Z0-9_]+ UNO O MAS, caracter (letras o numeros o '_')
-        // ([.][a-zA-Z0-9_]+)* CERO O MAS, punto '.' seguido de almenos un caracter
-        // [.][a-zA-Z]{2,5} UN punto '.', seguido de DOS A CINCO letras
-        return (correo.matches(regex));
     }
 
     /*

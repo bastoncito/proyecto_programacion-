@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 // Imports de Spring y Java
 import org.springframework.stereotype.Controller;
@@ -30,7 +29,6 @@ import Michaelsoft_Binbows.exceptions.EdicionInvalidaException;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
 import Michaelsoft_Binbows.security.CustomUserDetails;
-import Michaelsoft_Binbows.services.BaseDatos;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,12 +48,10 @@ public class AdminController {
     private UsuarioService usuarioService;
 
     // Dependencias del controlador
-    private final BaseDatos baseDatos;
     private final SeguridadService seguridadService;
 
     // Inyección de dependencias
-    public AdminController(BaseDatos baseDatos, SeguridadService seguridadService) {
-        this.baseDatos = baseDatos;
+    public AdminController(SeguridadService seguridadService) {
         this.seguridadService = seguridadService;
     }
 

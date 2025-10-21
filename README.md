@@ -1,7 +1,17 @@
-# proyecto_programacion-
-Gestor de tareas "Good Time" (nombre provisorio, podría no ser el final)
-
-
-- API Externa: Información del clima
-- API Interna: Puntos o logros por tareas completadas.
-- Programa: Diariamente se consulta el clima (api externa), en base a esto se recomiendan actividades productivas por hacer, si esto se logra se va dando puntaje gracias a la api interna que valora según la dificultad de la actividad. Las personas van juntando puntos, estadísticas que muestran sus avances, su productividad en su día a día.
+# Proyecto de Programación 2025<br>Michaelsoft Binbows<br>"Good Time" - gestor de tareas gamificado
+## Proyecto en sí
+Esencialmente, esta aplicación permitirá a los usuarios agendar tareas y recibir/aceptar sugerencias de tareas basadas en el clima.
+El punto viene en que cada tarea tiene un valor de experiencia, el cual varía según el tiempo estimado, y sirve como recompensa por cumplir con los objetivos que uno se ponga.
+Se busca gamificar el proceso de realizar las tareas que se planteen los usuarios, evitando el farmeo de puntos (mediante límites diarios, tiempo mínimo para completar una tarea, límites por dificultad, etc.), y teniendo los niveles y experiencia como registro de la productividad del usuario. 
+Además, los usuarios podrán ganar logros por realizar acciones específicas, y podrán comparar sus estadísticas con otros mediante rankings.
+## Herramientas utilizadas (hasta el momento)
+Considerar que este proyecto utiliza Gradle para su correcta compilación.
+### Lenguaje 
+El backend del proyecto está codificado principalmente en Java 21, mientras que el frontend utiliza html+css (con la implementación de javascript cuando se necesario).
+### Framework web
+Para "levantar" la página en sí se utiliza el framework de Spring, manejando llamadas a rutas mediante controladores de este.
+### Base de datos
+Para el manejo de los datos de la aplicación, se opta por implementar PostgreSQL. Recordar que, al ser un servicio externo a Gradle, requiere ser configurado aparte del proyecto.
+Para llamadas a la base en Postgre, se utilizan las dependencias de Hibernate y JPA.
+### API Externa
+Se utilizará la API de OpenWeather para recibir la información del clima.
