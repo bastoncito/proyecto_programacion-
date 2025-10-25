@@ -150,33 +150,37 @@
     
     <!--Sección Historial-->
     <div class="container-history">
-        <h2>Historial de tareas</h2>
+        <h2>Historial de Tareas</h2>
+        
         <div class="view-section">
             <div class="param-bar">
-            <span>Nombre</span>
-            <span>Experiencia</span>
-            <span>Fecha Finalización</span>
-        </div>
-
-        <div th:if="${#lists.isEmpty(historialTareas)}" class="history-empty">
-            <p>Aún no has completado ninguna tarea. ¡Manos a la obra!</p>
-        </div>
-
-        <div class="history-list">
-            <!-- Iteramos sobre la lista 'historialTareas' para mostrar las últimas 3 -->
-            <div class="history-row" th:each="tarea, stat : ${historialTareas}" th:if="${stat.index < 3}">
-                <span th:text="${tarea.nombre}">Nombre de la tarea completada</span>
-                <span th:text="${tarea.exp} + ' XP'" class="exp-points">100 XP</span>
-                <!-- Formateamos la fecha de completado -->
-                <span th:text="${#temporals.format(tarea.fechaCompletada, 'dd/MM/yyyy')}">10/10/2025</span>
+                <span>Nombre</span>
+                <span>Experiencia</span>
+                <span>Fecha Finalización</span>
             </div>
-        </div>
-        <!-- El botón "Mostrar Todo" solo aparece si hay más de 3 tareas -->
-        <div class="more-section" th:if="${#lists.size(historialTareas) > 3}">
-            <a href="#" class="btn-show-all">Mostrar Todo</a>
+
+            <!-- Mensaje si no hay tareas completadas -->
+            <div th:if="${#lists.isEmpty(historialTareas)}" class="history-empty">
+                <p>Aún no has completado ninguna tarea. ¡Manos a la obra!</p>
+            </div>
+
+            <!-- Lista de tareas completadas -->
+            <div th:unless="${#lists.isEmpty(historialTareas)}" class="history-list">
+                <div class="history-row" th:each="tarea, stat : ${historialTareas}" th:if="${stat.index < 3}">
+                    <span th:text="${tarea.nombre}">Nombre de la tarea</span>
+                    <span th:text="${tarea.exp} + ' XP'" class="exp-points">100 XP</span>
+                    <span th:text="${#temporals.format(tarea.fechaCompletada, 'dd/MM/yyyy HH:mm')}">10/10/2025 15:30</span>
+                </div>
+            </div>
+
+            <!-- Botón "Mostrar Todo" solo si hay más de 3 tareas -->
+            <div class="more-section" th:if="${#lists.size(historialTareas) > 3}">
+                <a href="#" class="btn-show-all" onclick="return false;">Mostrar Todo</a>
+            </div>
         </div>
     </div>
 
+    <!-- Modal de Tareas -->
     <div class="modal" id="taskModal">
         <div class="modal-content">
             <button class="close-btn" id="closeModal">X</button>
