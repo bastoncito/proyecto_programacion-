@@ -362,6 +362,17 @@ public class Usuario{
         System.out.println("LOG: Tarea '" + nombreOriginal + "' actualizada exitosamente a '" + tareaActualizada.getNombre() + "'.");
     }
 
+    /**
+     * Calcula la experiencia TOTAL ganada sumando todas las tareas completadas
+     * @return La suma de experiencia de todas las tareas completadas
+     */
+    public int getExperienciaTotal() {
+        return tareas.stream()
+            .filter(Tarea::isCompletada)
+            .mapToInt(Tarea::getExp)
+            .sum();
+    }
+
     @Override
     public String toString() {
         int expParaSiguienteNivel = SistemaNiveles.experienciaParaNivel(this.nivelExperiencia + 1);

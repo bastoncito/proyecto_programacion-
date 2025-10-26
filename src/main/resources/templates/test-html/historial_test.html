@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Tareas</title>
+    <link rel="stylesheet" href="/src/main/resources/static/historial_tareas.css">
+</head>
+<body>
+    <!-- Header -->
+    <div class="container-header">
+        <div class="volver-section">
+            <form action="/home" method="get" style="display: inline;">
+                <button type="submit" class="btn-volver">VOLVER</button>
+            </form>
+            <img class="logo" src="/src/main/resources/static/logo_blanco2.png" alt="logo">
+        </div>
+        <div class="perfil-section">
+            <div class="user-lvl">
+                <p class="lvl-numero">25</p>
+                <p class="lvl-texto">Nivel</p>
+            </div>
+            <div class="user-info">
+                <p class="info-nombre">JuanPerez123</p>
+                <p class="info-correo">juan.perez@ejemplo.com</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container-main">
+        <!-- Sección Izquierda: Historial de Tareas -->
+        <div class="container-left">
+            <div class="container-body">
+                <h1 class="titulo-historial">Historial Completo de Tareas</h1>
+                
+                <!-- Mensaje si no hay tareas completadas (comentado para mostrar datos) -->
+                <!-- <div class="history-empty">
+                    <p>Aún no has completado ninguna tarea. ¡Manos a la obra!</p>
+                </div> -->
+
+                <!-- Tabla de historial -->
+                <div class="history-container">
+                    <div class="param-bar">
+                        <span>Nombre de la Tarea</span>
+                        <span>Experiencia</span>
+                        <span>Fecha de Finalización</span>
+                    </div>
+
+                    <div class="history-list">
+                        <!-- Ejemplo de tareas completadas -->
+                        <div class="history-row">
+                            <span>Completar proyecto final</span>
+                            <span class="exp-points">150 XP</span>
+                            <span>25/10/2025 19:24</span>
+                        </div>
+                        <div class="history-row">
+                            <span>Revisar documentación</span>
+                            <span class="exp-points">50 XP</span>
+                            <span>24/10/2025 15:30</span>
+                        </div>
+                        <div class="history-row">
+                            <span>Hacer ejercicios de Java</span>
+                            <span class="exp-points">100 XP</span>
+                            <span>23/10/2025 10:15</span>
+                        </div>
+                        <div class="history-row">
+                            <span>Estudiar para examen</span>
+                            <span class="exp-points">75 XP</span>
+                            <span>22/10/2025 20:45</span>
+                        </div>
+                        <div class="history-row">
+                            <span>Preparar presentación</span>
+                            <span class="exp-points">120 XP</span>
+                            <span>21/10/2025 14:20</span>
+                        </div>
+                        <div class="history-row">
+                            <span>Corregir errores del código</span>
+                            <span class="exp-points">80 XP</span>
+                            <span>20/10/2025 11:00</span>
+                        </div>
+                        <div class="history-row">
+                            <span>Leer capítulo 5</span>
+                            <span class="exp-points">25 XP</span>
+                            <span>19/10/2025 09:30</span>
+                        </div>
+                        <div class="history-row">
+                            <span>Practicar SQL</span>
+                            <span class="exp-points">90 XP</span>
+                            <span>18/10/2025 16:45</span>
+                        </div>
+                    </div>
+
+                    <!-- Estadísticas -->
+                    <div class="stats-section">
+                        <div class="stat-item">
+                            <span class="stat-label">Total de tareas completadas:</span>
+                            <span class="stat-value">8</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Experiencia total ganada:</span>
+                            <span class="stat-value">690 XP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección Derecha: Información -->
+        <div class="container-right">
+            <div class="container-body">
+                <div class="container-description">
+                    <h1>Historial de Tareas</h1>
+                    <p>Aquí puedes ver todas las tareas que has completado hasta ahora. Cada tarea muestra la experiencia ganada y la fecha exacta en que la terminaste. ¡Sigue así y alcanza nuevos niveles!</p>
+                    
+                    <div class="logros-preview">
+                        <h2>🏆 Tus Logros</h2>
+                        <p>Has completado <strong>8</strong> tareas</p>
+                        <p>Nivel actual: <strong>25</strong></p>
+                        <p>Racha actual: <strong>5</strong> días 🔥</p>
+                    </div>
+                </div>
+                <div class="container-img">
+                    <img src="/src/main/resources/static/icon1.png" alt="personaje1">
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

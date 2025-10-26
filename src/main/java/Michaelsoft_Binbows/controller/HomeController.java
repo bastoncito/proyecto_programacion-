@@ -83,6 +83,28 @@ import jakarta.servlet.http.HttpSession;
 
             return "ranking";
         }
+
+        @GetMapping("/historial")
+        public String mostrarHistorial(Model model) {
+            System.out.println("LOG: El método 'mostrarHistorial' ha sido llamado por una petición a /historial.");
+            
+            // Obtener el usuario autenticado
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+            String correo = userDetails.getUsername();
+            
+            // Buscar el usuario con sus tareas cargadas
+            Usuario usuarioActual = usuarioService.buscarPorCorreoConTareas(correo);
+            
+            // Obtener el historial completo de tareas completadas
+            List<Tarea> historialTareas = usuarioActual.getTareasCompletadas();
+            
+            // Pasar datos al modelo
+            model.addAttribute("usuario", usuarioActual);
+            model.addAttribute("historialTareas", historialTareas);
+            
+            return "historial_tareas"; // nombre del archivo HTML sin .html
+        }
     /*   
         @GetMapping("/perfil")
         public String mostrarPerfil(Model model, HttpSession session) {

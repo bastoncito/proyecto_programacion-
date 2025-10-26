@@ -175,7 +175,7 @@
 
             <!-- Botón "Mostrar Todo" solo si hay más de 3 tareas -->
             <div class="more-section" th:if="${#lists.size(historialTareas) > 3}">
-                <a href="#" class="btn-show-all" onclick="return false;">Mostrar Todo</a>
+                <a th:href="@{/historial}" class="btn-show-all">Mostrar Todo</a>
             </div>
         </div>
     </div>
