@@ -14,8 +14,8 @@
 import Michaelsoft_Binbows.entities.Tarea;
 import Michaelsoft_Binbows.entities.Usuario;
 import Michaelsoft_Binbows.security.CustomUserDetails;
-import Michaelsoft_Binbows.services.BaseDatos;
 import Michaelsoft_Binbows.services.UsuarioService;
+import Michaelsoft_Binbows.util.BaseDatos;
 import jakarta.servlet.http.HttpSession;
 
     import java.util.Collections;

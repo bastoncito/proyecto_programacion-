@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
-import Michaelsoft_Binbows.services.Rol;
-import Michaelsoft_Binbows.services.SistemaNiveles;
+import Michaelsoft_Binbows.model.Rol;
+import Michaelsoft_Binbows.util.SistemaNiveles;
 import io.micrometer.common.lang.NonNull;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -56,7 +56,7 @@ public class Usuario{
     private Long id;
 
     
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY) 
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY) 
     private List<Tarea> tareas = new ArrayList<>();
 
     @Transient  //Temporalmente, hasta adaptar Tarea y Logro como entidades

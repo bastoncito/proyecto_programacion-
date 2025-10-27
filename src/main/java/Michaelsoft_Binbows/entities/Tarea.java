@@ -4,8 +4,10 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
-import Michaelsoft_Binbows.services.Dificultad;
+import Michaelsoft_Binbows.util.Dificultad;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -27,6 +29,7 @@ public class Tarea{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id")
+    @JsonIgnore
     private Usuario usuario;
 
     // Constructores
@@ -62,6 +65,10 @@ public class Tarea{
 
     public Usuario getUsuario() {
         return usuario;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public void setUsuario(Usuario usuario) {

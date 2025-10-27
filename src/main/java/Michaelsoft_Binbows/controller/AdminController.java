@@ -14,10 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.servlet.http.HttpSession;
-
-
-// Imports de nuestras propias clases
-import Michaelsoft_Binbows.services.Rol;
 import Michaelsoft_Binbows.services.UsuarioService;
 import Michaelsoft_Binbows.services.SeguridadService;
 import Michaelsoft_Binbows.entities.Tarea;
@@ -28,6 +24,7 @@ import Michaelsoft_Binbows.exceptions.AdminGuardarTareaException;
 import Michaelsoft_Binbows.exceptions.EdicionInvalidaException;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
+import Michaelsoft_Binbows.model.Rol;
 import Michaelsoft_Binbows.security.CustomUserDetails;
 import java.util.Arrays;
 

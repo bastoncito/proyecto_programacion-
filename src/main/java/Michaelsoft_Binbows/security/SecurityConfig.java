@@ -13,8 +13,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**") ) //temporal para probar postman
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/**.css", "/**.png", "/**.jpg", "/login", "/register").permitAll() // public endpoints
+                .requestMatchers("/", "/**.css", "/**.png", "/**.jpg", "/login", "/register", "/api/**").permitAll() // public endpoints
                 .requestMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_MODERADOR")
                 .anyRequest().authenticated() // everything else requires login
             )

@@ -1,4 +1,4 @@
-package Michaelsoft_Binbows.services;
+package Michaelsoft_Binbows.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +9,7 @@ import Michaelsoft_Binbows.entities.Tarea;
 import Michaelsoft_Binbows.entities.Usuario;
 import Michaelsoft_Binbows.exceptions.EdicionInvalidaException;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
+import Michaelsoft_Binbows.model.Rol;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 

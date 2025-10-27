@@ -1,4 +1,4 @@
-package Michaelsoft_Binbows.services;
+package Michaelsoft_Binbows.util;
 
 import java.time.LocalDateTime;
 

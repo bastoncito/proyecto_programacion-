@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.servlet.http.HttpSession;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 import Michaelsoft_Binbows.security.CustomUserDetails;
-import Michaelsoft_Binbows.services.BaseDatos;
+import Michaelsoft_Binbows.util.BaseDatos;
 import Michaelsoft_Binbows.data.UsuarioRepository;
 import Michaelsoft_Binbows.entities.Usuario;
 
