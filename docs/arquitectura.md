@@ -39,5 +39,5 @@
 ├─ entities/ --> las clases que se guardan en la base de datos
 │  ├─ Usuario.java
 │  ├─ Tarea.java
-│  ├─ Rol.java
+│  ├─ Logro.java
 

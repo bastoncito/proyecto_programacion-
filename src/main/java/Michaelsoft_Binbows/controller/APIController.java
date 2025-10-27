@@ -57,7 +57,7 @@ public class APIController {
             "GET/POST /api/usuarios )",
             "GET/PUT/DELETE /api/usuarios/{idUsuario}",
             "GET/POST /api/usuarios/{idUsuario}/tareas",
-            "GET/PUT/DELETE /api/usuarios/{idUsuario}/tareas/{idTarea}",
+            "DELETE /api/usuarios/{idUsuario}/tareas/{idTarea}",
             "PUT /api/usuarios/{idUsuario}/tareas/{idTarea}/completar",
             "PUT /api/usuarios/{idUsuario}/tareas/{idTarea}/actualizar",
             "GET /api/usuarios/{idUsuario}/tareas/completadas",
