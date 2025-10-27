@@ -6,6 +6,7 @@ import Michaelsoft_Binbows.entities.Usuario;
 import Michaelsoft_Binbows.exceptions.EdicionInvalidaException;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
+import Michaelsoft_Binbows.model.Rol;
 import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,32 +51,27 @@ public class UsuarioService {
         if (usuario.getContraseña() == null || usuario.getContraseña().length() < 8) {
             throw new RegistroInvalidoException("La contraseña debe tener al menos 8 caracteres.");
         }
-
-        
-    
-    return usuarioRepository.save(usuario);
-}   
+        return usuarioRepository.save(usuario);
+    }   
 
     public void eliminar(Long id) {
-    System.out.println("LOG: Servicio eliminar llamado con ID: " + id);
-    if (usuarioRepository.existsById(id)) {
-        usuarioRepository.deleteById(id);
-        System.out.println("LOG: Usuario borrado en la base de datos.");
-    } else {
-        System.out.println("LOG: Usuario no existe en la base de datos.");
-        throw new IllegalArgumentException("El usuario no existe.");
+        System.out.println("LOG: Servicio eliminar llamado con ID: " + id);
+        if (usuarioRepository.existsById(id)) {
+            usuarioRepository.deleteById(id);
+            System.out.println("LOG: Usuario borrado en la base de datos.");
+        } else {
+            System.out.println("LOG: Usuario no existe en la base de datos.");
+            throw new IllegalArgumentException("El usuario no existe.");
+        }
     }
-}
 
     public Optional<Usuario> obtenerPorCorreo(String correo) {
-    return usuarioRepository.findByCorreoElectronico(correo);
-}
+        return usuarioRepository.findByCorreoElectronico(correo);
+    }
 
     public boolean existe(Usuario usuario) {
         return usuarioRepository.existsById(usuario.getId());
     }
-
-
 
     // Método para validar el formato del correo electrónico
     private static boolean correoValido(String correo) {

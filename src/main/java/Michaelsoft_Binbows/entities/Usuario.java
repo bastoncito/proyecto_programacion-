@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 import java.util.Comparator;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
-import Michaelsoft_Binbows.services.Rol;
-import Michaelsoft_Binbows.services.SistemaNiveles;
+import Michaelsoft_Binbows.model.Rol;
+import Michaelsoft_Binbows.util.SistemaNiveles;
 import io.micrometer.common.lang.NonNull;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -43,8 +43,8 @@ public class Usuario{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY) 
+    
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY) 
     private List<Tarea> tareas = new ArrayList<>();
 
     @Transient
@@ -149,7 +149,7 @@ public class Usuario{
     public void setContraseña(String contraseña) {
         this.contraseña = contraseña;
     }
-
+1
     /**
      * Devuelve una copia de la lista de logros que el usuario ha desbloqueado.
      * @return Una lista nueva (para evitar alterar la original) de objetos Logro.

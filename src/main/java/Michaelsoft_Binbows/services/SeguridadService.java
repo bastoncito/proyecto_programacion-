@@ -4,6 +4,7 @@ package Michaelsoft_Binbows.services;
 import org.springframework.stereotype.Service;
 
 import Michaelsoft_Binbows.entities.Usuario;
+import Michaelsoft_Binbows.model.Rol;
 
 /**
  * Esta clase contiene la lógica de negocio relacionada con la seguridad y los permisos.
