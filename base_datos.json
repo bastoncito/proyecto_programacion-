@@ -13,22 +13,24 @@
         "nombre": "Estudiar Spring Boot",
         "descripcion": "Completar el capítulo sobre Controladores",
         "exp": 100,
-        "fechaExpiracion": "2025-10-02T20:16"
+        "fechaExpiracion": "2025-10-02T20:16",
+        "completada": false
       },
       {
         "nombre": "Planificar la Semana",
         "descripcion": "Organizar el calendario para los próximos 7 días",
         "exp": 50,
-        "fechaExpiracion": "2025-10-01T20:16"
+        "fechaExpiracion": "2025-10-01T20:16",
+        "completada": false
       },
       {
         "nombre": "Tarea11",
         "descripcion": "Descripcion1",
         "exp": 10,
-        "fechaExpiracion": "2025-10-09T13:57"
+        "fechaExpiracion": "2025-10-09T13:57",
+        "completada": false
       }
     ],
-    "tareasCompletadas": [],
     "logros": []
   },
   {
@@ -45,50 +47,15 @@
         "nombre": "Subir todo al github",
         "descripcion": "le tengo miedo al merge",
         "exp": 150,
-        "fechaExpiracion": "2025-10-11T10:46"
+        "fechaExpiracion": "2025-10-11T10:46",
+        "completada": false
       },
       {
         "nombre": "Nombre válido",
         "descripcion": "Y una descripción válida :)",
         "exp": 10,
-        "fechaExpiracion": "2025-10-09T13:33"
-      }
-    ],
-    "tareasCompletadas": [
-      {
-        "nombre": "Repasar EDO",
-        "descripcion": "Estudiar y avanzar en las guias de EDO",
-        "exp": 150,
-        "fechaExpiracion": "2025-10-11T10:30",
-        "fechaCompletada": "2025-10-06T10:46"
-      },
-      {
-        "nombre": "Probar funcionalidad script",
-        "descripcion": "En formulario Tareas ahora se actualiza",
-        "exp": 50,
-        "fechaExpiracion": "2025-10-09T10:46",
-        "fechaCompletada": "2025-10-06T11:22"
-      },
-      {
-        "nombre": "Probar Tareas nuevas",
-        "descripcion": "verificar que el codigo no se rompio",
-        "exp": 50,
-        "fechaExpiracion": "2025-10-09T10:30",
-        "fechaCompletada": "2025-10-06T11:22"
-      },
-      {
-        "nombre": "Levelear fraudulentamente",
-        "descripcion": "es para testear",
-        "exp": 150,
-        "fechaExpiracion": "2025-10-11T11:23",
-        "fechaCompletada": "2025-10-06T11:23"
-      },
-      {
-        "nombre": "Mas leveleo Fraudulento",
-        "descripcion": "no me pueden banear, soy mod",
-        "exp": 150,
-        "fechaExpiracion": "2025-10-11T11:23",
-        "fechaCompletada": "2025-10-06T11:23"
+        "fechaExpiracion": "2025-10-09T13:33",
+        "completada": false
       }
     ],
     "logros": []
@@ -103,15 +70,6 @@
     "rol": "USUARIO",
     "fechaRegistro": "2025-10-06T00:40",
     "tareas": [],
-    "tareasCompletadas": [
-      {
-        "nombre": "Corregir errores",
-        "descripcion": "Buscar errores en el proyecto y arreglarlos",
-        "exp": 50,
-        "fechaExpiracion": "2025-10-09T02:32",
-        "fechaCompletada": "2025-10-06T02:32"
-      }
-    ],
     "logros": []
   },
   {
@@ -125,15 +83,6 @@
     "fechaRegistro": "2025-10-07T18:52",
     "fechaRacha": "2025-10-08",
     "tareas": [],
-    "tareasCompletadas": [
-      {
-        "nombre": "Tarea de prueba n° ......",
-        "descripcion": "Y otra tarea de prueba más.",
-        "exp": 10,
-        "fechaExpiracion": "2025-10-09T12:18",
-        "fechaCompletada": "2025-10-08T12:18"
-      }
-    ],
     "logros": []
   },
   {
@@ -146,7 +95,6 @@
     "rol": "USUARIO",
     "fechaRegistro": "2025-10-08T13:56",
     "tareas": [],
-    "tareasCompletadas": [],
     "logros": []
   },
   {
@@ -159,7 +107,6 @@
     "rol": "USUARIO",
     "fechaRegistro": "2025-10-12T14:24",
     "tareas": [],
-    "tareasCompletadas": [],
     "logros": []
   },
   {
@@ -172,7 +119,30 @@
     "rol": "USUARIO",
     "fechaRegistro": "2025-10-12T23:36",
     "tareas": [],
-    "tareasCompletadas": [],
+    "logros": []
+  },
+  {
+    "nombreUsuario": "zketsh03",
+    "contraseña": "$2a$10$x/8nZ1B3f3BmOPSE9FC7Ce4oJDJjiRkvZCisDMHl2XmgLQI9wMmCy",
+    "correoElectronico": "zketsh03@gmail.com",
+    "experiencia": 0,
+    "nivelExperiencia": 1,
+    "racha": 0,
+    "rol": "USUARIO",
+    "fechaRegistro": "2025-10-25T19:01",
+    "tareas": [],
+    "logros": []
+  },
+  {
+    "nombreUsuario": "zketsh02",
+    "contraseña": "$2a$10$v8nXBVpqO1JA2SN3I13wfePDN0FLMCogA.EHymEHvrlL6ELZPZORG",
+    "correoElectronico": "zketsh02@gmail.com",
+    "experiencia": 0,
+    "nivelExperiencia": 1,
+    "racha": 0,
+    "rol": "USUARIO",
+    "fechaRegistro": "2025-10-25T19:37",
+    "tareas": [],
     "logros": []
   }
 ]

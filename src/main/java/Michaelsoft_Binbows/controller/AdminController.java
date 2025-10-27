@@ -138,9 +138,11 @@ public class AdminController {
             case "tareas":
                 model.addAttribute("listaDeUsuarios", usuarioService.obtenerTodos());
                 if (correoUsuarioSeleccionado != null) {
-                Usuario usuarioSeleccionado = usuarioService.buscarPorCorreo(correoUsuarioSeleccionado);
-                model.addAttribute("usuarioSeleccionado", usuarioSeleccionado);
-            }
+                    Usuario usuarioSeleccionado = usuarioService.buscarPorCorreoConTareas(correoUsuarioSeleccionado); // ✅ Carga con tareas
+                    model.addAttribute("usuarioSeleccionado", usuarioSeleccionado);
+
+                    model.addAttribute("tareasPendientes", usuarioSeleccionado.getTareasPendientes());
+                }
                 break;
         }
         

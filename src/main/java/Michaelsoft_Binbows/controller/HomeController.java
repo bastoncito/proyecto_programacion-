@@ -49,28 +49,24 @@ import jakarta.servlet.http.HttpSession;
         @GetMapping("/home")
         public String mostrarHome(Model model, HttpSession session) {
             System.out.println("LOG: El método 'mostrarMain' ha sido llamado por una petición a /home.");
+            
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
             String correo = userDetails.getUsername();
+            
             Usuario usuarioActual = usuarioService.buscarPorCorreoConTareas(correo);
             usuarioActual.resetRacha();
-
+            
             model.addAttribute("usuario", usuarioActual);
-
-            // Fuerza la carga de tareas antes de cerrar la sesión de Hibernate
-            List<Tarea> tareas = usuarioActual.getTareas();
-            tareas.size(); // Esto inicializa la colección
-            //List<Tarea> tareas = usuarioActual != null ?usuarioActual.getTareas() : Collections.emptyList();
-            model.addAttribute("tareas", tareas);
-
-            List<Tarea> tareasCompletadas = usuarioActual != null ?usuarioActual.getTareasCompletadas() : Collections.emptyList();
-            tareasCompletadas.sort(Comparator.comparing(Tarea::getFechaCompletada, Comparator.nullsLast(Comparator.reverseOrder())));
-            model.addAttribute("historialTareas", tareasCompletadas);
-
+            
+            // ✅ Tareas PENDIENTES (no completadas)
+            List<Tarea> tareasPendientes = usuarioActual.getTareasPendientes();
+            model.addAttribute("tareas", tareasPendientes);
+            
+            // ✅ Tareas COMPLETADAS (historial)
             List<Tarea> historialTareas = usuarioActual.getTareasCompletadas();
-
             model.addAttribute("historialTareas", historialTareas);
-
+            
             return "home";
         }
 
@@ -86,6 +82,28 @@ import jakarta.servlet.http.HttpSession;
             model.addAttribute("rankingCompletadas", rankingCompletadas != null ? rankingCompletadas : Collections.emptyList());
 
             return "ranking";
+        }
+
+        @GetMapping("/historial")
+        public String mostrarHistorial(Model model) {
+            System.out.println("LOG: El método 'mostrarHistorial' ha sido llamado por una petición a /historial.");
+            
+            // Obtener el usuario autenticado
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+            String correo = userDetails.getUsername();
+            
+            // Buscar el usuario con sus tareas cargadas
+            Usuario usuarioActual = usuarioService.buscarPorCorreoConTareas(correo);
+            
+            // Obtener el historial completo de tareas completadas
+            List<Tarea> historialTareas = usuarioActual.getTareasCompletadas();
+            
+            // Pasar datos al modelo
+            model.addAttribute("usuario", usuarioActual);
+            model.addAttribute("historialTareas", historialTareas);
+            
+            return "historial_tareas"; // nombre del archivo HTML sin .html
         }
     /*   
         @GetMapping("/perfil")
