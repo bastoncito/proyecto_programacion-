@@ -1,6 +1,5 @@
 package Michaelsoft_Binbows.controller;
 
-import Michaelsoft_Binbows.data.UsuarioRepository;
 import Michaelsoft_Binbows.dto.TareaDTO;
 import Michaelsoft_Binbows.dto.UsuarioDTO;
 import Michaelsoft_Binbows.entities.*;
@@ -15,10 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.hibernate.mapping.Index;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.method.P;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 /* 
@@ -35,6 +31,9 @@ import org.springframework.web.bind.annotation.*;
  * NO HAY TAREAS
  * NO HAY TAREAS COMPLETADAS
 */
+
+//USUARIO SE PUEDE CREAR CON EL MISMO NOMBRE SI ES QUE TIENE DISTINTO CORREO ELECTRONICO
+//CORREGIRRRRR
 
 @RestController
 @RequestMapping("/api")
@@ -74,9 +73,14 @@ public class APIController {
 
     //funciona
     @PostMapping("/usuarios")
-    public Usuario crearUsuario(@RequestBody UsuarioDTO usuarioDTO) throws EdicionInvalidaException, RegistroInvalidoException {
+    public ResponseEntity<Object> crearUsuario(@RequestBody UsuarioDTO usuarioDTO) throws EdicionInvalidaException, RegistroInvalidoException {
         Usuario usuario = new Usuario(usuarioDTO.nombreUsuario, usuarioDTO.correoElectronico, usuarioDTO.contrasena);
-        return usuarioService.guardar(usuario);
+        try{
+            usuarioService.guardar(usuario);
+        }catch(Exception e){
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+        return ResponseEntity.status(201).body(usuario);
     }
 
     //funciona
@@ -88,7 +92,7 @@ public class APIController {
     //Provisorio
     //funciona!
     @PutMapping("/usuarios/{idUsuario}")
-    public ResponseEntity<Object> actualizarUsuario(@PathVariable("idUsuario") long idUsuario, @RequestBody UsuarioDTO usuarioDTO) throws EdicionInvalidaException, RegistroInvalidoException {
+    public ResponseEntity<Object> actualizarUsuario(@PathVariable("idUsuario") long idUsuario, @RequestBody UsuarioDTO usuarioDTO){
         Usuario u = usuarioService.obtenerPorId(idUsuario).get();
         if(u == null) return ResponseEntity.status(404).body("Usuario no encontrado");
         try{
@@ -103,8 +107,9 @@ public class APIController {
 
     //funciona
     @DeleteMapping("/usuarios/{idUsuario}")
-    public void eliminarUsuario(@PathVariable("idUsuario") long idUsuario) {
+    public ResponseEntity<Object> eliminarUsuario(@PathVariable("idUsuario") long idUsuario) {
         usuarioService.eliminar(idUsuario);
+        return ResponseEntity.ok().body("Usuario eliminado correctamente");
     }
 
     //funciona
@@ -115,22 +120,25 @@ public class APIController {
 
     //funciona
     @PostMapping("/usuarios/{idUsuario}/tareas")
-    public Tarea crearTareaParaUsuario(@PathVariable("idUsuario") long idUsuario, @RequestBody TareaDTO tareaDTO) throws EdicionInvalidaException, RegistroInvalidoException, TareaInvalidaException {
-        Tarea nuevaTarea = new Tarea(tareaDTO.nombre, tareaDTO.descripcion, tareaDTO.dificultad);
-        return usuarioService.obtenerPorId(idUsuario).map(usuario -> {
+    public ResponseEntity<Object> crearTareaParaUsuario(@PathVariable("idUsuario") long idUsuario, @RequestBody TareaDTO tareaDTO){
+        Usuario usuario = usuarioService.obtenerPorId(idUsuario).get();
+        if(usuario == null){
+            return ResponseEntity.status(404).body("Usuario no encontrado");
+        }
+        try {
+            Tarea nuevaTarea = new Tarea(tareaDTO.nombre, tareaDTO.descripcion, tareaDTO.dificultad);
             nuevaTarea.setUsuario(usuario);
-            try {
-                Tarea tareaGuardada = tareaService.guardar(nuevaTarea);
-                usuario.getTareas().add(tareaGuardada);
-                usuarioService.guardar(usuario);
-                return tareaGuardada;
-            } catch (EdicionInvalidaException | RegistroInvalidoException e) {
-                throw new RuntimeException(e);
-            }
-        }).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            Tarea tareaGuardada = tareaService.guardar(nuevaTarea);
+            usuario.getTareas().add(tareaGuardada);
+            usuarioService.guardar(usuario);
+            return ResponseEntity.status(201).body(tareaGuardada);
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
     }
 
     //funciona
+    //de momento se hace así porque no me funciona tareasCompletadas
     @GetMapping("/usuarios/{idUsuario}/tareas/completadas")
     public List<Tarea> getTareasCompletadasPorUsuario(@PathVariable("idUsuario") long idUsuario) {
         return usuarioService.obtenerPorId(idUsuario).get().getTareas().stream()
@@ -140,55 +148,74 @@ public class APIController {
 
     //funciona
     @GetMapping("/usuarios/{idUsuario}/tareas/{idTarea}")
-    public Tarea getTareaPorNumYUsuario(@PathVariable("idUsuario") long idUsuario, @PathVariable("idTarea") long idTarea) {
-        usuarioService.obtenerPorId(idUsuario).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    public ResponseEntity<Object> getTareaPorNumYUsuario(@PathVariable("idUsuario") long idUsuario, @PathVariable("idTarea") long idTarea) {
+        Usuario usuario = usuarioService.obtenerPorId(idUsuario).get();
+        if(usuario == null) return ResponseEntity.status(404).body("Usuario no encontrado");
         Tarea t = tareaService.obtenerPorId(idTarea).get();
-        if(t == null) throw new RuntimeException("Tarea no encontrada");
-        if(t.getUsuario().getId() != idUsuario) throw new RuntimeException("La tarea no pertenece al usuario especificado");
-        return t;
+        if(t == null) return ResponseEntity.status(404).body("Tarea no encontrada");
+        if(t.getUsuario().getId() != idUsuario) return ResponseEntity.status(400).body("La tarea no pertenece al usuario especificado");
+        return ResponseEntity.ok().body(t);
     }
 
     //funciona
     @PutMapping("/usuarios/{idUsuario}/tareas/{idTarea}/completar")
-    public Tarea completarTarea(@PathVariable("idUsuario") long idUsuario, @PathVariable("idTarea") long idTarea) throws EdicionInvalidaException, RegistroInvalidoException{
-        Usuario u = usuarioService.obtenerPorId(idUsuario).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    public ResponseEntity<Object> completarTarea(@PathVariable("idUsuario") long idUsuario, @PathVariable("idTarea") long idTarea){
+        Usuario u = usuarioService.obtenerPorId(idUsuario).get();
+        if(u == null) return ResponseEntity.status(404).body("Usuario no encontrado");
         Tarea t = tareaService.obtenerPorId(idTarea).get();
-        if(t == null) throw new RuntimeException("Tarea no encontrada");
-        if(t.getUsuario().getId() != idUsuario) throw new RuntimeException("La tarea no pertenece al usuario especificado");
-        if(t.getFechaCompletada() != null) throw new RuntimeException("La tarea ya ha sido completada");
-        usuarioService.completarTarea(u.getCorreoElectronico(), t.getNombre());
-        return t;
+        if(t == null) return ResponseEntity.status(404).body("Tarea no encontrada");
+        if(t.getUsuario().getId() != idUsuario) return ResponseEntity.status(400).body("La tarea no pertenece al usuario especificado");
+        if(t.getFechaCompletada() != null) return ResponseEntity.status(400).body("La tarea ya ha sido completada");
+        try{
+            usuarioService.completarTarea(u.getCorreoElectronico(), t.getNombre());
+        }catch(RegistroInvalidoException e){
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+        return ResponseEntity.ok().body("Tarea completada correctamente");
     }
 
     //funciona
     @PutMapping("/usuarios/{idUsuario}/tareas/{idTarea}/actualizar")
-    public Tarea actualizarTareaPorIdYUsuario(@PathVariable("idUsuario") long idUsuario, @PathVariable("idTarea") long idTarea, @RequestBody TareaDTO tareaDTO) throws EdicionInvalidaException, RegistroInvalidoException, TareaInvalidaException {
-        usuarioService.obtenerPorId(idUsuario).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    public ResponseEntity<Object> actualizarTareaPorIdYUsuario(@PathVariable("idUsuario") long idUsuario, @PathVariable("idTarea") long idTarea, @RequestBody TareaDTO tareaDTO){
+        Usuario u = usuarioService.obtenerPorId(idUsuario).get();
+        if(u == null) return ResponseEntity.status(404).body("Usuario no encontrado");
         Tarea t = tareaService.obtenerPorId(idTarea).get();
-        if(t == null) throw new RuntimeException("Tarea no encontrada");
-        if(t.getUsuario().getId() != idUsuario) throw new RuntimeException("La tarea no pertenece al usuario especificado");
-        if(tareaDTO.nombre != null){
+        if(t == null) return ResponseEntity.status(404).body("Tarea no encontrada");
+        if(t.getUsuario().getId() != idUsuario) return ResponseEntity.status(400).body("La tarea no pertenece al usuario especificado");
+        try{
+            if(tareaDTO.nombre != null){
             t.setNombre(tareaDTO.nombre);
+            }
+            if(tareaDTO.descripcion != null){
+                t.setDescripcion(tareaDTO.descripcion);
+            }
+            if(tareaDTO.dificultad != null){
+                t.setExp(Dificultad.obtenerExpPorDificultad(tareaDTO.dificultad));
+                t.setFechaExpiracion(Dificultad.obtenerDíasPorDificultad(tareaDTO.dificultad));
+            }
+        }catch(Exception e){
+            return ResponseEntity.status(400).body(e.getMessage());
         }
-        if(tareaDTO.descripcion != null){
-            t.setDescripcion(tareaDTO.descripcion);
-        }
-        if(tareaDTO.dificultad != null){
-            t.setExp(Dificultad.obtenerExpPorDificultad(tareaDTO.dificultad));
-            t.setFechaExpiracion(Dificultad.obtenerDíasPorDificultad(tareaDTO.dificultad));
-        }
-        return tareaService.guardar(t);
+        Tarea actualizada = tareaService.guardar(t);
+        return ResponseEntity.ok().body(actualizada);
     }
     
     //funciona
     @DeleteMapping("/usuarios/{idUsuario}/tareas/{idTarea}")
-    public void borrarTareaPorIdYUsuario(@PathVariable("idUsuario") long idUsuario, @PathVariable("idTarea") long idTarea) throws EdicionInvalidaException, RegistroInvalidoException {
-        Usuario u = usuarioService.obtenerPorId(idUsuario).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    public ResponseEntity<Object> borrarTareaPorIdYUsuario(@PathVariable("idUsuario") long idUsuario, @PathVariable("idTarea") long idTarea) throws RegistroInvalidoException {
+        Usuario u = usuarioService.obtenerPorId(idUsuario).get();
+        if(u == null) return ResponseEntity.status(404).body("Usuario no encontrado");
         Tarea t = tareaService.obtenerPorId(idTarea).get();
-        if(t == null) throw new RuntimeException("Tarea no encontrada");
-        if(t.getUsuario().getId() != idUsuario) throw new RuntimeException("La tarea no pertenece al usuario especificado");
-        usuarioService.eliminarTarea(u.getCorreoElectronico(), t.getNombre());
+        if(t == null) return ResponseEntity.status(404).body("Tarea no encontrada");
+        if(t.getUsuario().getId() != idUsuario) return ResponseEntity.status(400).body("La tarea no pertenece al usuario especificado");
+        try{
+            usuarioService.eliminarTarea(u.getCorreoElectronico(), t.getNombre());
+        }catch(RegistroInvalidoException e){
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+
         tareaService.eliminar(idTarea);
+        return ResponseEntity.ok().body("Tarea eliminada correctamente");
     }
     //funciona
     @GetMapping("/tareas")
