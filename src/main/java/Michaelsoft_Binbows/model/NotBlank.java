@@ -1,5 +1,3 @@
 package Michaelsoft_Binbows.model;
 
-public @interface NotBlank {
-
-}
+public @interface NotBlank {}
