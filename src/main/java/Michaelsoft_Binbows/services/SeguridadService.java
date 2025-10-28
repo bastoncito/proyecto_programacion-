@@ -110,4 +110,26 @@ public class SeguridadService {
         // Si no es admin ni moderador, no puede asignar ningún rol.
         return false;
     }
+    /*
+     * Comprueba si un usuario (actor) tiene permiso para gestionar las tareas de otro (objetivo).
+     */
+    public boolean puedeGestionarTareasDe(Usuario actor, Usuario objetivo) {
+        if (actor == null || objetivo == null) {
+            return false;
+        }
+
+        // Regla 1: Un ADMIN puede gestionar las tareas de cualquiera, excepto las de otro ADMIN.
+        if (actor.getRol() == Rol.ADMIN) {
+            return objetivo.getRol() != Rol.ADMIN;
+        }
+
+        // Regla 2: Un MODERADOR puede gestionar las tareas de un USUARIO o las suyas propias.
+        if (actor.getRol() == Rol.MODERADOR) {
+            boolean esElMismoUsuario = actor.getCorreoElectronico().equals(objetivo.getCorreoElectronico());
+            return objetivo.getRol() == Rol.USUARIO || esElMismoUsuario;
+        }
+        
+        // Un USUARIO no puede gestionar tareas de nadie más desde el panel de admin.
+        return false;
+    }
 }

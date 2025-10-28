@@ -149,7 +149,6 @@ public class Usuario{
     public void setContraseña(String contraseña) {
         this.contraseña = contraseña;
     }
-1
     /**
      * Devuelve una copia de la lista de logros que el usuario ha desbloqueado.
      * @return Una lista nueva (para evitar alterar la original) de objetos Logro.
@@ -262,8 +261,9 @@ public class Usuario{
         if(tarea == null){
             throw new RegistroInvalidoException("La tarea '" + nombreTarea + "' no se encuentra en la lista de tareas pendientes de este usuario.");
         }
-
+        
         tareas.remove(tarea);
+        tarea.setUsuario(null);
         System.out.println("La tarea '" + nombreTarea + "' ha sido eliminada. No has ganado puntos.");
     }
     

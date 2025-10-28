@@ -37,6 +37,11 @@
     <!-- Contenido principal (todo lo que está a la derecha) -->
     <div class="main-content">
         
+        <!-- Mensaje exito operaciones -->
+        <div th:if="${success}" class="flash-success">
+            <i class='bx bx-check-circle'></i>
+            <span th:text="${success}"></span>
+        </div>
         <!-- Tarjeta de información del usuario (arriba a la derecha) -->
         <div class="container-info">
             <div class="info-section" th:if="${usuarioActual != null}">

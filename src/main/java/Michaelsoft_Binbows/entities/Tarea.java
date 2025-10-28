@@ -70,10 +70,10 @@ public class Tarea{
 
     public boolean isCompletada() {
         return completada;
-      
+    }
     public Long getId() {
         return id;
-
+    }
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }

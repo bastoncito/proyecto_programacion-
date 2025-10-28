@@ -231,7 +231,7 @@ public class AdminController {
                     System.out.println("SUCCESS: La contraseña fue actualizada exitosamente.");
                 }
                 
-                redirectAttributes.addFlashAttribute("success", "Usuario '" + nuevoNombre + "' actualizado correctamente.");
+                redirectAttributes.addFlashAttribute("success", "Tarea '" + nuevoNombre + "' actualizada correctamente.");
                 System.out.println("SUCCESS: Usuario actualizado exitosamente en la base de datos.");
 
             } catch (IllegalArgumentException | IllegalStateException | RegistroInvalidoException e) {
@@ -256,7 +256,7 @@ public class AdminController {
         }
         
         usuarioService.eliminarPorCorreo(correoAEliminar);
-        redirectAttributes.addFlashAttribute("success", "Usuario '" + objetivo.getNombreUsuario() + "' eliminado.");
+        redirectAttributes.addFlashAttribute("success", "Usuario '" + objetivo.getNombreUsuario() + "' ha sidoeliminado.");
 
         return "redirect:/admin";
     }
@@ -282,20 +282,17 @@ public class AdminController {
         //  Chequeo de seguridad: ¿Tiene el admin permiso para modificar a este usuario?
         //  Se reutiliza la lógica de 'puedeEditar' porque si puede editar al usuario,
         //  también debería poder gestionar sus tareas.
-        if (!seguridadService.puedeEditar(actor, objetivo)) {
+        if (!seguridadService.puedeGestionarTareasDe(actor, objetivo)) {
             System.out.println("WARN: Fallo de seguridad al intentar eliminar tarea. El actor no tiene permisos sobre el objetivo.");
             return "redirect:/acceso-denegado";
         }
 
         //  Si los permisos son correctos, procedemos a eliminar la tarea.
         try {
-            // Necesitaremos un nuevo método en la clase Usuario para esto.
-            objetivo.cancelarTarea(nombreTarea);
+
+            usuarioService.eliminarTarea(correoUsuario, nombreTarea);
             
-            // Guardamos los cambios en la base de datos.
-            usuarioService.guardarEnBD(objetivo);
-            
-            redirectAttributes.addFlashAttribute("success", "Tarea '" + nombreTarea + "' eliminada correctamente.");
+            redirectAttributes.addFlashAttribute("success", "Tarea '" + nombreTarea + "' del usuario '" + objetivo.getNombreUsuario() + "' ha sido eliminada correctamente.");
             System.out.println("LOG: El admin '" + actor.getNombreUsuario() + "' eliminó la tarea '" + nombreTarea + "' del usuario '" + objetivo.getNombreUsuario() + "'.");
 
         } catch (RegistroInvalidoException e) {
