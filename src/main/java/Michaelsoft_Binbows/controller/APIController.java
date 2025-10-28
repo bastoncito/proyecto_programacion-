@@ -81,14 +81,14 @@ public class APIController {
 
     //funciona
     @GetMapping("/usuarios/{idUsuario}")
-    public Optional<Usuario> getUsuarioPorId(@PathVariable long idUsuario) {
+    public Optional<Usuario> getUsuarioPorId(@PathVariable("idUsuario") long idUsuario) {
         return usuarioService.obtenerPorId(idUsuario);
     }
     
     //Provisorio
     //funciona!
     @PutMapping("/usuarios/{idUsuario}")
-    public ResponseEntity<Object> actualizarUsuario(@PathVariable long idUsuario, @RequestBody UsuarioDTO usuarioDTO) throws EdicionInvalidaException, RegistroInvalidoException {
+    public ResponseEntity<Object> actualizarUsuario(@PathVariable("idUsuario") long idUsuario, @RequestBody UsuarioDTO usuarioDTO) throws EdicionInvalidaException, RegistroInvalidoException {
         Usuario u = usuarioService.obtenerPorId(idUsuario).get();
         if(u == null) return ResponseEntity.status(404).body("Usuario no encontrado");
         try{
@@ -103,19 +103,19 @@ public class APIController {
 
     //funciona
     @DeleteMapping("/usuarios/{idUsuario}")
-    public void eliminarUsuario(@PathVariable long idUsuario) {
+    public void eliminarUsuario(@PathVariable("idUsuario") long idUsuario) {
         usuarioService.eliminar(idUsuario);
     }
 
     //funciona
     @GetMapping("/usuarios/{idUsuario}/tareas")
-    public List<Tarea> getTareasPorUsuario(@PathVariable long idUsuario) {
+    public List<Tarea> getTareasPorUsuario(@PathVariable("idUsuario") long idUsuario) {
         return usuarioService.obtenerPorId(idUsuario).map(Usuario::getTareas).orElse(List.of());
     }
 
     //funciona
     @PostMapping("/usuarios/{idUsuario}/tareas")
-    public Tarea crearTareaParaUsuario(@PathVariable long idUsuario, @RequestBody TareaDTO tareaDTO) throws EdicionInvalidaException, RegistroInvalidoException, TareaInvalidaException {
+    public Tarea crearTareaParaUsuario(@PathVariable("idUsuario") long idUsuario, @RequestBody TareaDTO tareaDTO) throws EdicionInvalidaException, RegistroInvalidoException, TareaInvalidaException {
         Tarea nuevaTarea = new Tarea(tareaDTO.nombre, tareaDTO.descripcion, tareaDTO.dificultad);
         return usuarioService.obtenerPorId(idUsuario).map(usuario -> {
             nuevaTarea.setUsuario(usuario);
@@ -132,7 +132,7 @@ public class APIController {
 
     //funciona
     @GetMapping("/usuarios/{idUsuario}/tareas/completadas")
-    public List<Tarea> getTareasCompletadasPorUsuario(@PathVariable long idUsuario) {
+    public List<Tarea> getTareasCompletadasPorUsuario(@PathVariable("idUsuario") long idUsuario) {
         return usuarioService.obtenerPorId(idUsuario).get().getTareas().stream()
                 .filter(tarea -> tarea.getFechaCompletada() != null)
                 .toList();
@@ -140,7 +140,7 @@ public class APIController {
 
     //funciona
     @GetMapping("/usuarios/{idUsuario}/tareas/{idTarea}")
-    public Tarea getTareaPorNumYUsuario(@PathVariable long idUsuario, @PathVariable long idTarea) {
+    public Tarea getTareaPorNumYUsuario(@PathVariable("idUsuario") long idUsuario, @PathVariable("idTarea") long idTarea) {
         usuarioService.obtenerPorId(idUsuario).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         Tarea t = tareaService.obtenerPorId(idTarea).get();
         if(t == null) throw new RuntimeException("Tarea no encontrada");
@@ -150,7 +150,7 @@ public class APIController {
 
     //funciona
     @PutMapping("/usuarios/{idUsuario}/tareas/{idTarea}/completar")
-    public Tarea completarTarea(@PathVariable long idUsuario, @PathVariable long idTarea) throws EdicionInvalidaException, RegistroInvalidoException{
+    public Tarea completarTarea(@PathVariable("idUsuario") long idUsuario, @PathVariable("idTarea") long idTarea) throws EdicionInvalidaException, RegistroInvalidoException{
         Usuario u = usuarioService.obtenerPorId(idUsuario).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         Tarea t = tareaService.obtenerPorId(idTarea).get();
         if(t == null) throw new RuntimeException("Tarea no encontrada");
@@ -162,7 +162,7 @@ public class APIController {
 
     //funciona
     @PutMapping("/usuarios/{idUsuario}/tareas/{idTarea}/actualizar")
-    public Tarea actualizarTareaPorIdYUsuario(@PathVariable long idUsuario, @RequestBody TareaDTO tareaDTO, @PathVariable long idTarea) throws EdicionInvalidaException, RegistroInvalidoException, TareaInvalidaException {
+    public Tarea actualizarTareaPorIdYUsuario(@PathVariable("idUsuario") long idUsuario, @PathVariable("idTarea") long idTarea, @RequestBody TareaDTO tareaDTO) throws EdicionInvalidaException, RegistroInvalidoException, TareaInvalidaException {
         usuarioService.obtenerPorId(idUsuario).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         Tarea t = tareaService.obtenerPorId(idTarea).get();
         if(t == null) throw new RuntimeException("Tarea no encontrada");
@@ -182,7 +182,7 @@ public class APIController {
     
     //funciona
     @DeleteMapping("/usuarios/{idUsuario}/tareas/{idTarea}")
-    public void borrarTareaPorIdYUsuario(@PathVariable long idUsuario, @PathVariable long idTarea) throws EdicionInvalidaException, RegistroInvalidoException {
+    public void borrarTareaPorIdYUsuario(@PathVariable("idUsuario") long idUsuario, @PathVariable("idTarea") long idTarea) throws EdicionInvalidaException, RegistroInvalidoException {
         Usuario u = usuarioService.obtenerPorId(idUsuario).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         Tarea t = tareaService.obtenerPorId(idTarea).get();
         if(t == null) throw new RuntimeException("Tarea no encontrada");
