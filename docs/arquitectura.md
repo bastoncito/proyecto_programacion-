@@ -2,7 +2,7 @@
 ### Dentro de la carpeta src/main/java/Michaelsoft_Binbows...
 
 ```text
-├─ controller/ --> Llamadas a la capa de servicios (validaciones de entradas/solicitudes) + endpoints
+├─ controller/ --> Llamadas a la capa de servicios (validaciones de entradas/solicitudes), endpoints
 │  ├─ TareaController.java 
 │  ├─ AutorizacionController.java
 │  ├─ HomeController.java
@@ -10,7 +10,19 @@
 │  ├─ HomeController.java
 │  ├─ PerfilController.java
 │  ├─ DevController.java
-├─ data/ --> Persistencia de datos y repositorios
+├─ dto/ --> objetos utilizados para transferir datos (especialmente desde solicitudes POST/PUT)
+│  ├─ UsuarioDTO.java 
+│  ├─ TareaDTO.java 
+├─ model/ --> enums, interfaces
+│  ├─ Email.java 
+│  ├─ Id.java 
+│  ├─ NotBlank.java 
+│  ├─ Rol.java 
+├─ util/ --> clases/métodos de utilidad
+│  ├─ Dificultad.java 
+│  ├─ GestorLogros.java 
+│  ├─ SistemaNiveles.java 
+├─ data/ --> Persistencia de datos, repositorios, interacción con base de datos
 │  ├─ PersistenciaJSON.java
 │  ├─ JsonMigrator.java
 │  ├─ LogroRepository.java
@@ -36,7 +48,7 @@
 │  ├─ CustomUserDetails.java
 │  ├─ SecurityConfig.java
 │  ├─ GlobalExceptionHandler.java
-├─ entities/ --> las clases que se guardan en la base de datos
+├─ entities/ --> lo que se guarda en la base de datos
 │  ├─ Usuario.java
 │  ├─ Tarea.java
 │  ├─ Logro.java

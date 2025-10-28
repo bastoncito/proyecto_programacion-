@@ -5,7 +5,6 @@ import Michaelsoft_Binbows.dto.UsuarioDTO;
 import Michaelsoft_Binbows.entities.*;
 import Michaelsoft_Binbows.exceptions.EdicionInvalidaException;
 import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
-import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
 import Michaelsoft_Binbows.services.*;
 import Michaelsoft_Binbows.util.Dificultad;
 
