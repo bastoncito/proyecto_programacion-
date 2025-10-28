@@ -5,7 +5,6 @@ import Michaelsoft_Binbows.entities.Tarea;
 import Michaelsoft_Binbows.entities.Usuario;
 import Michaelsoft_Binbows.security.CustomUserDetails;
 import Michaelsoft_Binbows.services.UsuarioService;
-import Michaelsoft_Binbows.util.BaseDatos;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -25,14 +24,6 @@ import org.springframework.web.bind.annotation.ResponseBody; // Necesario para e
  */
 @Controller // ANOTACIÓN CLAVE: Marca esta clase para que Spring la reconozca como un controlador.
 public class HomeController {
-
-  // Se inyecta la dependencia de BaseDatos, gracias a que BaseDatos es un Spring Bean (@Service).
-  // (Véase BaseDatos.java para más detalles)
-  private final BaseDatos baseDatos;
-
-  public HomeController(BaseDatos baseDatos) {
-    this.baseDatos = baseDatos;
-  }
 
   @Autowired private UsuarioService usuarioService;
 
@@ -77,8 +68,8 @@ public class HomeController {
   public String mostrarRanking(Model model) {
     System.out.println("LOG: El método 'mostrarRanking' ha sido llamado por una petición a /home.");
     // Se crean 2 listas para 2 tipos diferentes de ranking
-    List<Usuario> rankingNivel = baseDatos.getUsuarios();
-    List<Usuario> rankingCompletadas = baseDatos.getUsuarios();
+    List<Usuario> rankingNivel = usuarioService.obtenerTodos();
+    List<Usuario> rankingCompletadas = usuarioService.obtenerTodos();
     rankingNivel.sort(Comparator.comparing(Usuario::getNivelExperiencia).reversed());
     rankingCompletadas.sort(Comparator.comparing(Usuario::getNumeroCompletadas).reversed());
     model.addAttribute(
@@ -86,7 +77,6 @@ public class HomeController {
     model.addAttribute(
         "rankingCompletadas",
         rankingCompletadas != null ? rankingCompletadas : Collections.emptyList());
-
     return "ranking";
   }
 

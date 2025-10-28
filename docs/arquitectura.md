@@ -30,7 +30,6 @@
 │  ├─ UsuarioRepository.java
 │  ├─ JpaRepository.java
 ├─ services/ --> La lógica de la solución en sí, Services de Spring
-│  ├─ BaseDatos.java --> pronto a eliminar
 │  ├─ GestorLogro.java
 │  ├─ Rol.java
 │  ├─ Id.java
