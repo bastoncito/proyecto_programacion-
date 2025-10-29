@@ -1,5 +1,3 @@
 package Michaelsoft_Binbows.data;
 
-public interface JpaRepository<T1, T2> {
-
-}
+public interface JpaRepository<T1, T2> {}
