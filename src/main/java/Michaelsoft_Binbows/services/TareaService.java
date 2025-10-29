@@ -27,8 +27,9 @@ public class TareaService {
 
   @Transactional
   public Tarea crear(TareaDTO tareaDTO, long userId) throws TareaInvalidaException {
+    var usuario = usuarioRepository.findById(userId).get();
     Tarea tarea = new Tarea(tareaDTO.nombre, tareaDTO.descripcion, tareaDTO.dificultad);
-    tarea.setUsuario(usuarioRepository.findById(userId).get());
+    usuario.agregarTarea(tarea); // This will handle duplicate validation and bidirectional relationship
     return guardar(tarea);
   }
 
@@ -45,7 +46,17 @@ public class TareaService {
     return tareaRepository.save(tarea);
   }
 
+  @Transactional
   public void eliminar(Long id) {
-    tareaRepository.deleteById(id);
+    Optional<Tarea> tareaOpt = tareaRepository.findById(id);
+    if (tareaOpt.isPresent()) {
+      Tarea tarea = tareaOpt.get();
+      // Remove the task from the user's list first
+      var usuario = tarea.getUsuario();
+      usuario.getTareas().remove(tarea);
+      usuarioRepository.save(usuario);
+      // Then delete from repository
+      tareaRepository.deleteById(id);
+    }
   }
 }

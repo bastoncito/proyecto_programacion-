@@ -39,4 +39,15 @@ public class Dificultad {
     LocalDateTime ahora = LocalDateTime.now();
     return ahora.plusDays(ID);
   }
+
+  public static String obtenerDificultadPorExp(int exp) {
+    return switch (exp) {
+      case 10 -> "Muy fácil";
+      case 25 -> "Fácil";
+      case 50 -> "Medio";
+      case 100 -> "Difícil";
+      case 150 -> "Muy difícil";
+      default -> throw new IllegalArgumentException("Experiencia no corresponde a ninguna dificultad: " + exp);
+    };
+  }
 }

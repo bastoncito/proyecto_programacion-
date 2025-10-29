@@ -140,11 +140,8 @@ public class APIController {
     if (usuarioOpt.isEmpty()) {
       return ResponseEntity.status(404).body("Usuario no encontrado");
     }
-    Usuario usuario = usuarioOpt.get();
     try {
-      Tarea nuevaTarea = new Tarea(tareaDTO.nombre, tareaDTO.descripcion, tareaDTO.dificultad);
-      usuario.agregarTarea(nuevaTarea);  // This handles the bidirectional relationship
-      usuarioService.guardar(usuario);
+      Tarea nuevaTarea = tareaService.crear(tareaDTO, idUsuario);
       return ResponseEntity.status(201).body(nuevaTarea);
     } catch (Exception e) {
       return ResponseEntity.status(400).body(e.getMessage());
@@ -236,51 +233,47 @@ public class APIController {
       return ResponseEntity.status(400).body("La tarea no pertenece al usuario especificado");
     }
     try {
-      if (tareaDTO.nombre != null) {
-        t.setNombre(tareaDTO.nombre);
+      // Create a new task with the updated values to validate
+      String currentDificultad = tareaDTO.dificultad;
+      if (currentDificultad == null) {
+        // If no difficulty provided, we keep the current one
+        currentDificultad = Dificultad.obtenerDificultadPorExp(t.getExp());
       }
-      if (tareaDTO.descripcion != null) {
-        t.setDescripcion(tareaDTO.descripcion);
-      }
-      if (tareaDTO.dificultad != null) {
-        t.setExp(Dificultad.obtenerExpPorDificultad(tareaDTO.dificultad));
-        t.setFechaExpiracion(Dificultad.obtenerDíasPorDificultad(tareaDTO.dificultad));
-      }
+      
+      Tarea tareaActualizada = new Tarea(
+          tareaDTO.nombre != null ? tareaDTO.nombre : t.getNombre(),
+          tareaDTO.descripcion != null ? tareaDTO.descripcion : t.getDescripcion(),
+          currentDificultad
+      );
+      
+      // Use the existing actualizarTarea method which includes duplicate validation
+      u.actualizarTarea(t.getNombre(), tareaActualizada);
+      return ResponseEntity.ok().body(tareaService.obtenerPorId(idTarea).get());
     } catch (Exception e) {
       return ResponseEntity.status(400).body(e.getMessage());
     }
-    Tarea actualizada = tareaService.guardar(t);
-    return ResponseEntity.ok().body(actualizada);
   }
 
   // funciona
   @DeleteMapping("/usuarios/{idUsuario}/tareas/{idTarea}")
   public ResponseEntity<Object> borrarTareaPorIdYUsuario(
-      @PathVariable("idUsuario") long idUsuario, @PathVariable("idTarea") long idTarea)
-      throws RegistroInvalidoException {
-    Optional<Usuario> usuarioOpt = usuarioService.obtenerPorId(idUsuario);
-    if (usuarioOpt.isEmpty()) {
-      return ResponseEntity.status(404).body("Usuario no encontrado");
-    }
-    Usuario u = usuarioOpt.get();
-
+      @PathVariable("idUsuario") long idUsuario, @PathVariable("idTarea") long idTarea) {
     Optional<Tarea> tareaOpt = tareaService.obtenerPorId(idTarea);
     if (tareaOpt.isEmpty()) {
       return ResponseEntity.status(404).body("Tarea no encontrada");
     }
-    Tarea t = tareaOpt.get();
+    Tarea tarea = tareaOpt.get();
 
-    if (t.getUsuario().getId() != idUsuario) {
+    if (tarea.getUsuario().getId() != idUsuario) {
       return ResponseEntity.status(400).body("La tarea no pertenece al usuario especificado");
     }
+
     try {
-      usuarioService.eliminarTarea(u.getCorreoElectronico(), t.getNombre());
-    } catch (RegistroInvalidoException e) {
+      tareaService.eliminar(idTarea);
+      return ResponseEntity.ok().body("Tarea eliminada correctamente");
+    } catch (Exception e) {
       return ResponseEntity.status(400).body(e.getMessage());
     }
-
-    tareaService.eliminar(idTarea);
-    return ResponseEntity.ok().body("Tarea eliminada correctamente");
   }
 
   // funciona
