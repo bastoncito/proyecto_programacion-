@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -69,14 +70,18 @@ public class APIController {
     return usuarioService.obtenerTodos();
   }
 
-  // funciona
+  @Autowired
+  private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
   @PostMapping("/usuarios")
   public ResponseEntity<Object> crearUsuario(@RequestBody UsuarioDTO usuarioDTO)
       throws EdicionInvalidaException, RegistroInvalidoException {
     Usuario usuario =
         new Usuario(usuarioDTO.nombreUsuario, usuarioDTO.correoElectronico, usuarioDTO.contrasena);
+    // Encriptar la contraseña antes de guardar
+    usuario.setContraseña(passwordEncoder.encode(usuario.getContraseña()));
     try {
-      usuarioService.guardar(usuario);
+      usuarioService.guardarSinValidarContraseña(usuario);
     } catch (Exception e) {
       return ResponseEntity.status(400).body(e.getMessage());
     }
@@ -94,16 +99,20 @@ public class APIController {
   @PutMapping("/usuarios/{idUsuario}")
   public ResponseEntity<Object> actualizarUsuario(
       @PathVariable("idUsuario") long idUsuario, @RequestBody UsuarioDTO usuarioDTO) {
-    Usuario u = usuarioService.obtenerPorId(idUsuario).get();
-    if (u == null) return ResponseEntity.status(404).body("Usuario no encontrado");
+    Optional<Usuario> usuarioOpt = usuarioService.obtenerPorId(idUsuario);
+    if (usuarioOpt.isEmpty()) {
+      return ResponseEntity.status(404).body("Usuario no encontrado");
+    }
+    Usuario u = usuarioOpt.get();
     try {
       usuarioService.actualizarUsuario(
           u.getCorreoElectronico(),
           usuarioDTO.nombreUsuario,
           usuarioDTO.correoElectronico,
           usuarioDTO.rol);
-      usuarioService.actualizarContraseñaUsuario(u.getCorreoElectronico(), usuarioDTO.contrasena);
-      usuarioService.guardar(u);
+      if (usuarioDTO.contrasena != null && !usuarioDTO.contrasena.trim().isEmpty()) {
+        usuarioService.actualizarContraseñaUsuario(u.getCorreoElectronico(), usuarioDTO.contrasena);
+      }
     } catch (Exception e) {
       return ResponseEntity.status(400).body(e.getMessage());
     }
@@ -127,17 +136,16 @@ public class APIController {
   @PostMapping("/usuarios/{idUsuario}/tareas")
   public ResponseEntity<Object> crearTareaParaUsuario(
       @PathVariable("idUsuario") long idUsuario, @RequestBody TareaDTO tareaDTO) {
-    Usuario usuario = usuarioService.obtenerPorId(idUsuario).get();
-    if (usuario == null) {
+    Optional<Usuario> usuarioOpt = usuarioService.obtenerPorId(idUsuario);
+    if (usuarioOpt.isEmpty()) {
       return ResponseEntity.status(404).body("Usuario no encontrado");
     }
+    Usuario usuario = usuarioOpt.get();
     try {
       Tarea nuevaTarea = new Tarea(tareaDTO.nombre, tareaDTO.descripcion, tareaDTO.dificultad);
-      nuevaTarea.setUsuario(usuario);
-      Tarea tareaGuardada = tareaService.guardar(nuevaTarea);
-      usuario.getTareas().add(tareaGuardada);
+      usuario.agregarTarea(nuevaTarea);  // This handles the bidirectional relationship
       usuarioService.guardar(usuario);
-      return ResponseEntity.status(201).body(tareaGuardada);
+      return ResponseEntity.status(201).body(nuevaTarea);
     } catch (Exception e) {
       return ResponseEntity.status(400).body(e.getMessage());
     }
@@ -146,22 +154,33 @@ public class APIController {
   // funciona
   // de momento se hace así porque no me funciona tareasCompletadas
   @GetMapping("/usuarios/{idUsuario}/tareas/completadas")
-  public List<Tarea> getTareasCompletadasPorUsuario(@PathVariable("idUsuario") long idUsuario) {
-    return usuarioService.obtenerPorId(idUsuario).get().getTareas().stream()
+  public ResponseEntity<Object> getTareasCompletadasPorUsuario(@PathVariable("idUsuario") long idUsuario) {
+    Optional<Usuario> usuarioOpt = usuarioService.obtenerPorId(idUsuario);
+    if (usuarioOpt.isEmpty()) {
+      return ResponseEntity.status(404).body("Usuario no encontrado");
+    }
+    List<Tarea> tareasCompletadas = usuarioOpt.get().getTareas().stream()
         .filter(tarea -> tarea.getFechaCompletada() != null)
         .toList();
+    return ResponseEntity.ok().body(tareasCompletadas);
   }
 
   // funciona
   @GetMapping("/usuarios/{idUsuario}/tareas/{idTarea}")
   public ResponseEntity<Object> getTareaPorNumYUsuario(
       @PathVariable("idUsuario") long idUsuario, @PathVariable("idTarea") long idTarea) {
-    Usuario usuario = usuarioService.obtenerPorId(idUsuario).get();
-    if (usuario == null) return ResponseEntity.status(404).body("Usuario no encontrado");
-    Tarea t = tareaService.obtenerPorId(idTarea).get();
-    if (t == null) return ResponseEntity.status(404).body("Tarea no encontrada");
-    if (t.getUsuario().getId() != idUsuario)
+    Optional<Usuario> usuarioOpt = usuarioService.obtenerPorId(idUsuario);
+    if (usuarioOpt.isEmpty()) {
+      return ResponseEntity.status(404).body("Usuario no encontrado");
+    }
+    Optional<Tarea> tareaOpt = tareaService.obtenerPorId(idTarea);
+    if (tareaOpt.isEmpty()) {
+      return ResponseEntity.status(404).body("Tarea no encontrada");
+    }
+    Tarea t = tareaOpt.get();
+    if (t.getUsuario().getId() != idUsuario) {
       return ResponseEntity.status(400).body("La tarea no pertenece al usuario especificado");
+    }
     return ResponseEntity.ok().body(t);
   }
 
@@ -169,14 +188,24 @@ public class APIController {
   @PutMapping("/usuarios/{idUsuario}/tareas/{idTarea}/completar")
   public ResponseEntity<Object> completarTarea(
       @PathVariable("idUsuario") long idUsuario, @PathVariable("idTarea") long idTarea) {
-    Usuario u = usuarioService.obtenerPorId(idUsuario).get();
-    if (u == null) return ResponseEntity.status(404).body("Usuario no encontrado");
-    Tarea t = tareaService.obtenerPorId(idTarea).get();
-    if (t == null) return ResponseEntity.status(404).body("Tarea no encontrada");
-    if (t.getUsuario().getId() != idUsuario)
+    Optional<Usuario> usuarioOpt = usuarioService.obtenerPorId(idUsuario);
+    if (usuarioOpt.isEmpty()) {
+      return ResponseEntity.status(404).body("Usuario no encontrado");
+    }
+    Usuario u = usuarioOpt.get();
+
+    Optional<Tarea> tareaOpt = tareaService.obtenerPorId(idTarea);
+    if (tareaOpt.isEmpty()) {
+      return ResponseEntity.status(404).body("Tarea no encontrada");
+    }
+    Tarea t = tareaOpt.get();
+
+    if (t.getUsuario().getId() != idUsuario) {
       return ResponseEntity.status(400).body("La tarea no pertenece al usuario especificado");
-    if (t.getFechaCompletada() != null)
+    }
+    if (t.getFechaCompletada() != null) {
       return ResponseEntity.status(400).body("La tarea ya ha sido completada");
+    }
     try {
       usuarioService.completarTarea(u.getCorreoElectronico(), t.getNombre());
     } catch (RegistroInvalidoException e) {
@@ -191,12 +220,21 @@ public class APIController {
       @PathVariable("idUsuario") long idUsuario,
       @PathVariable("idTarea") long idTarea,
       @RequestBody TareaDTO tareaDTO) {
-    Usuario u = usuarioService.obtenerPorId(idUsuario).get();
-    if (u == null) return ResponseEntity.status(404).body("Usuario no encontrado");
-    Tarea t = tareaService.obtenerPorId(idTarea).get();
-    if (t == null) return ResponseEntity.status(404).body("Tarea no encontrada");
-    if (t.getUsuario().getId() != idUsuario)
+    Optional<Usuario> usuarioOpt = usuarioService.obtenerPorId(idUsuario);
+    if (usuarioOpt.isEmpty()) {
+      return ResponseEntity.status(404).body("Usuario no encontrado");
+    }
+    Usuario u = usuarioOpt.get();
+
+    Optional<Tarea> tareaOpt = tareaService.obtenerPorId(idTarea);
+    if (tareaOpt.isEmpty()) {
+      return ResponseEntity.status(404).body("Tarea no encontrada");
+    }
+    Tarea t = tareaOpt.get();
+
+    if (t.getUsuario().getId() != idUsuario) {
       return ResponseEntity.status(400).body("La tarea no pertenece al usuario especificado");
+    }
     try {
       if (tareaDTO.nombre != null) {
         t.setNombre(tareaDTO.nombre);
@@ -220,12 +258,21 @@ public class APIController {
   public ResponseEntity<Object> borrarTareaPorIdYUsuario(
       @PathVariable("idUsuario") long idUsuario, @PathVariable("idTarea") long idTarea)
       throws RegistroInvalidoException {
-    Usuario u = usuarioService.obtenerPorId(idUsuario).get();
-    if (u == null) return ResponseEntity.status(404).body("Usuario no encontrado");
-    Tarea t = tareaService.obtenerPorId(idTarea).get();
-    if (t == null) return ResponseEntity.status(404).body("Tarea no encontrada");
-    if (t.getUsuario().getId() != idUsuario)
+    Optional<Usuario> usuarioOpt = usuarioService.obtenerPorId(idUsuario);
+    if (usuarioOpt.isEmpty()) {
+      return ResponseEntity.status(404).body("Usuario no encontrado");
+    }
+    Usuario u = usuarioOpt.get();
+
+    Optional<Tarea> tareaOpt = tareaService.obtenerPorId(idTarea);
+    if (tareaOpt.isEmpty()) {
+      return ResponseEntity.status(404).body("Tarea no encontrada");
+    }
+    Tarea t = tareaOpt.get();
+
+    if (t.getUsuario().getId() != idUsuario) {
       return ResponseEntity.status(400).body("La tarea no pertenece al usuario especificado");
+    }
     try {
       usuarioService.eliminarTarea(u.getCorreoElectronico(), t.getNombre());
     } catch (RegistroInvalidoException e) {
