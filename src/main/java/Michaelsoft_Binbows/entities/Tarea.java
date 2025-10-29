@@ -26,7 +26,6 @@ public class Tarea{
     private int exp;
     private LocalDateTime fechaExpiracion;
     private LocalDateTime fechaCompletada = null;
-    private boolean completada = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id")
@@ -68,9 +67,7 @@ public class Tarea{
         return usuario;
     }
 
-    public boolean isCompletada() {
-        return completada;
-    }
+    
     public Long getId() {
         return id;
     }
@@ -118,10 +115,6 @@ public class Tarea{
     }
     public void setFechaCompletada(LocalDateTime fechaCompletada) {
         this.fechaCompletada = fechaCompletada;
-    }
-    
-    public void setCompletada(boolean completada) {
-        this.completada = completada;
     }
 
     public boolean tareaExistePorNombre(List<Tarea> tareas, Tarea tarea) {

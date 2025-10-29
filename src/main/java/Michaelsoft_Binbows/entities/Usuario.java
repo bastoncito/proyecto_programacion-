@@ -159,33 +159,41 @@ public class Usuario{
 
     /**
      * Devuelve solo las tareas PENDIENTES (no completadas)
+     * La tarea es PENDIENTE si getFechaCompletada() devuelve null.
      * @return Lista de tareas pendientes
      */
     public List<Tarea> getTareasPendientes() {
         return tareas.stream()
-            .filter(t -> !t.isCompletada())
+            // Si la fecha de completado es null, la tarea está PENDIENTE
+            .filter(t -> t.getFechaCompletada() == null) 
             .collect(Collectors.toList());
     }
 
     /**
      * Devuelve solo las tareas COMPLETADAS ordenadas por fecha de completado (más recientes primero)
+     * La tarea es COMPLETADA si getFechaCompletada() NO es null.
      * @return Lista de tareas completadas para el historial
      */
     public List<Tarea> getTareasCompletadas() {
         return tareas.stream()
-            .filter(Tarea::isCompletada)
+            // Si la fecha de completado no es null, la tarea está COMPLETADA
+            .filter(t -> t.getFechaCompletada() != null) 
+            // Las tareas completadas ya no serán null en este punto, 
+            // pero mantenemos el comparador por si acaso, aunque Comparator.nullsLast ya no sería estrictamente necesario.
             .sorted(Comparator.comparing(Tarea::getFechaCompletada, 
-                    Comparator.nullsLast(Comparator.reverseOrder())))
+                    Comparator.nullsLast(Comparator.reverseOrder()))) 
             .collect(Collectors.toList());
     }
 
     /**
      * Devuelve el número de tareas completadas
+     * La tarea es COMPLETADA si getFechaCompletada() NO es null.
      * @return Cantidad de tareas completadas
      */
     public int getNumeroCompletadas() {
         return (int) tareas.stream()
-            .filter(Tarea::isCompletada)
+            // Contamos solo si la fecha de completado no es null
+            .filter(t -> t.getFechaCompletada() != null) 
             .count();
     }
 
@@ -232,27 +240,30 @@ public class Usuario{
      */
     public void completarTarea(String nombreTarea) throws RegistroInvalidoException {
         Tarea tareaACompletar = buscarTareaPorNombre(nombreTarea);
+        
+        //Verificar si la tarea existe
         if (tareaACompletar == null) {
             throw new RegistroInvalidoException("La tarea '" + nombreTarea + "' no se encuentra en la lista de tareas pendientes de este usuario.");
         }
 
-        if (tareaACompletar.isCompletada()) {
+        //Verificar si la tarea ya está completada
+ 
+        if (tareaACompletar.getFechaCompletada() != null) { 
             throw new RegistroInvalidoException("La tarea '" + nombreTarea + "' ya está completada.");
         }
 
-        // Marcar la tarea como completada
-        tareaACompletar.setCompletada(true);
+        //Marcar la tarea como completada, estableciendo la fecha actual
         tareaACompletar.setFechaCompletada(LocalDateTime.now());
 
-        // Verificar la subida de la racha
+        //Verificar la subida de la racha
         aumentarRacha();
 
-        // Añadir la experiencia de la tarea al total del usuario
+        //Añadir la experiencia de la tarea al total del usuario
         this.experiencia += tareaACompletar.getExp();
         System.out.println("¡'" + this.nombreUsuario + "' ha completado la tarea '" + nombreTarea + "' y ha ganado " + tareaACompletar.getExp() + " de experiencia!");
         System.out.println("Experiencia total: " + this.experiencia);
 
-        // Verificar si el usuario ha subido de nivel
+        //Verificar si el usuario ha subido de nivel
         verificarSubidaDeNivel();
     }
 
@@ -323,12 +334,13 @@ public class Usuario{
 
     /**
      * Busca una tarea PENDIENTE por su nombre
+     * Una tarea es PENDIENTE si getFechaCompletada() devuelve null.
      * @param nombre Nombre de la tarea a buscar
      * @return La tarea encontrada o null si no existe
      */
     public Tarea buscarTareaPorNombre(String nombre){
         for(Tarea t : this.tareas){
-            if(!t.isCompletada() && t.getNombre().trim().equals(nombre.trim())){
+            if(t.getFechaCompletada() == null && t.getNombre().trim().equals(nombre.trim())){
                 return t;
             }
         }
@@ -364,11 +376,13 @@ public class Usuario{
 
     /**
      * Calcula la experiencia TOTAL ganada sumando todas las tareas completadas
+     * Una tarea está COMPLETADA si getFechaCompletada() NO es null.
      * @return La suma de experiencia de todas las tareas completadas
      */
     public int getExperienciaTotal() {
         return tareas.stream()
-            .filter(Tarea::isCompletada)
+            // Nueva condición: el filtro busca tareas donde la fecha de completado NO sea null.
+            .filter(t -> t.getFechaCompletada() != null) 
             .mapToInt(Tarea::getExp)
             .sum();
     }
