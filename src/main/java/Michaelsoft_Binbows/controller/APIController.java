@@ -154,7 +154,7 @@ public class APIController {
   @GetMapping("/usuarios/{idUsuario}/tareas/pendientes")
   public ResponseEntity<Object> getTareasPendientesPorUsuario(
       @PathVariable("idUsuario") long idUsuario) {
-    
+
     Optional<Usuario> usuarioOpt = usuarioService.obtenerPorId(idUsuario);
 
     // 1. Comprueba si el usuario existe
@@ -165,7 +165,7 @@ public class APIController {
     Usuario u = usuarioOpt.get();
 
     // 2. Usa el método de la entidad que se encuentra
-    List<Tarea> tareasPendientes = u.getTareasPendientes(); 
+    List<Tarea> tareasPendientes = u.getTareasPendientes();
 
     // 3. Devuelve la lista con un OK
     return ResponseEntity.ok().body(tareasPendientes);
