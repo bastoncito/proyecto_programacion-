@@ -17,9 +17,9 @@ import jakarta.persistence.Transient;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.Comparator;
 
 @Entity
 public class Usuario {
@@ -41,90 +41,89 @@ public class Usuario {
   private LocalDateTime fechaRegistro;
   private LocalDate fechaRacha;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY) 
-    private List<Tarea> tareas = new ArrayList<>();
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  private List<Tarea> tareas = new ArrayList<>();
 
   @Transient private List<Logro> logros = new ArrayList<>();
 
   // Constructor vacío requerido por JPA
   public Usuario() {}
 
-    public Usuario(String nombre_usuario, String correo_electronico, String contraseña) throws RegistroInvalidoException{
-        setNombreUsuario(nombre_usuario);
-        setCorreoElectronico(correo_electronico);
-        setContraseña(contraseña);
-        this.tareas = new ArrayList<>();
-        this.logros = new ArrayList<>();
-        this.experiencia = 0;
-        this.nivelExperiencia = 1;
-        this.racha = 0;
-        this.rol = Rol.USUARIO;
-        this.fechaRegistro = LocalDateTime.now();
-        this.fechaRacha = null;
-    }
+  public Usuario(String nombre_usuario, String correo_electronico, String contraseña)
+      throws RegistroInvalidoException {
+    setNombreUsuario(nombre_usuario);
+    setCorreoElectronico(correo_electronico);
+    setContraseña(contraseña);
+    this.tareas = new ArrayList<>();
+    this.logros = new ArrayList<>();
+    this.experiencia = 0;
+    this.nivelExperiencia = 1;
+    this.racha = 0;
+    this.rol = Rol.USUARIO;
+    this.fechaRegistro = LocalDateTime.now();
+    this.fechaRacha = null;
+  }
 
-    /**
-     * Getters/Setters
-     */
-    public String getNombreUsuario() {
-        return nombreUsuario;
-    }
-    
-    public String getCorreoElectronico() {
-        return correoElectronico;
-    }
-    
-    public String getContraseña() {
-        return contraseña;
-    }
+  /** Getters/Setters */
+  public String getNombreUsuario() {
+    return nombreUsuario;
+  }
 
-    public List<Tarea> getTareas() {
-        return tareas;
-    }
+  public String getCorreoElectronico() {
+    return correoElectronico;
+  }
 
-    public int getNivelExperiencia() {
-        return nivelExperiencia;
-    }
+  public String getContraseña() {
+    return contraseña;
+  }
 
-    public int getExperiencia() {
-        return experiencia;
-    }
+  public List<Tarea> getTareas() {
+    return tareas;
+  }
 
-    public LocalDateTime getFechaRegistro() {
-        return fechaRegistro;
-    }
+  public int getNivelExperiencia() {
+    return nivelExperiencia;
+  }
 
-    public Rol getRol() {
-        return rol;
-    }
+  public int getExperiencia() {
+    return experiencia;
+  }
 
-    public int getRacha(){
-        return racha;
-    }
+  public LocalDateTime getFechaRegistro() {
+    return fechaRegistro;
+  }
 
-    public void setRol(Rol rol) {
-        this.rol = rol;
-    }
+  public Rol getRol() {
+    return rol;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public int getRacha() {
+    return racha;
+  }
 
-    public Long getId() {
-        return id;
-    }
+  public void setRol(Rol rol) {
+    this.rol = rol;
+  }
 
-    public void setExperiencia(int experiencia) {
-        this.experiencia = experiencia;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public void setNivelExperiencia(int nivelExperiencia) {
-        this.nivelExperiencia = nivelExperiencia;
-    }
+  public Long getId() {
+    return id;
+  }
+
+  public void setExperiencia(int experiencia) {
+    this.experiencia = experiencia;
+  }
+
+  public void setNivelExperiencia(int nivelExperiencia) {
+    this.nivelExperiencia = nivelExperiencia;
+  }
 
   public void setRacha(int racha) {
     this.racha = racha;
@@ -134,85 +133,100 @@ public class Usuario {
     this.fechaRegistro = fechaRegistro;
   }
 
-    public void setFechaRacha(LocalDate fechaRacha) {
-        this.fechaRacha = fechaRacha;
-    }
+  public void setFechaRacha(LocalDate fechaRacha) {
+    this.fechaRacha = fechaRacha;
+  }
 
-    public void setNombreUsuario(String nombreUsuario) {
-        this.nombreUsuario = nombreUsuario;
-    }
+  public void setNombreUsuario(String nombreUsuario) {
+    this.nombreUsuario = nombreUsuario;
+  }
 
-    public void setCorreoElectronico(String correoElectronico) {
-        this.correoElectronico = correoElectronico;
-    }
+  public void setCorreoElectronico(String correoElectronico) {
+    this.correoElectronico = correoElectronico;
+  }
 
-    public void setContraseña(String contraseña) {
-        this.contraseña = contraseña;
-    }
-    /**
-     * Devuelve una copia de la lista de logros que el usuario ha desbloqueado.
-     * @return Una lista nueva (para evitar alterar la original) de objetos Logro.
-     */
-    public List<Logro> getLogros() {
-        return new ArrayList<>(this.logros);
-    }
+  public void setContraseña(String contraseña) {
+    this.contraseña = contraseña;
+  }
 
-    /**
-     * Devuelve solo las tareas PENDIENTES (no completadas)
-     * La tarea es PENDIENTE si getFechaCompletada() devuelve null.
-     * @return Lista de tareas pendientes
-     */
-    public List<Tarea> getTareasPendientes() {
-        return tareas.stream()
-            // Si la fecha de completado es null, la tarea está PENDIENTE
-            .filter(t -> t.getFechaCompletada() == null) 
-            .collect(Collectors.toList());
-    }
+  /**
+   * Devuelve una copia de la lista de logros que el usuario ha desbloqueado.
+   *
+   * @return Una lista nueva (para evitar alterar la original) de objetos Logro.
+   */
+  public List<Logro> getLogros() {
+    return new ArrayList<>(this.logros);
+  }
 
-    /**
-     * Devuelve solo las tareas COMPLETADAS ordenadas por fecha de completado (más recientes primero)
-     * La tarea es COMPLETADA si getFechaCompletada() NO es null.
-     * @return Lista de tareas completadas para el historial
-     */
-    public List<Tarea> getTareasCompletadas() {
-        return tareas.stream()
-            // Si la fecha de completado no es null, la tarea está COMPLETADA
-            .filter(t -> t.getFechaCompletada() != null) 
-            // Las tareas completadas ya no serán null en este punto, 
-            // pero mantenemos el comparador por si acaso, aunque Comparator.nullsLast ya no sería estrictamente necesario.
-            .sorted(Comparator.comparing(Tarea::getFechaCompletada, 
-                    Comparator.nullsLast(Comparator.reverseOrder()))) 
-            .collect(Collectors.toList());
-    }
+  /**
+   * Devuelve solo las tareas PENDIENTES (no completadas) La tarea es PENDIENTE si
+   * getFechaCompletada() devuelve null.
+   *
+   * @return Lista de tareas pendientes
+   */
+  public List<Tarea> getTareasPendientes() {
+    return tareas.stream()
+        // Si la fecha de completado es null, la tarea está PENDIENTE
+        .filter(t -> t.getFechaCompletada() == null)
+        .collect(Collectors.toList());
+  }
 
-    /**
-     * Devuelve el número de tareas completadas
-     * La tarea es COMPLETADA si getFechaCompletada() NO es null.
-     * @return Cantidad de tareas completadas
-     */
-    public int getNumeroCompletadas() {
-        return (int) tareas.stream()
+  /**
+   * Devuelve solo las tareas COMPLETADAS ordenadas por fecha de completado (más recientes primero)
+   * La tarea es COMPLETADA si getFechaCompletada() NO es null.
+   *
+   * @return Lista de tareas completadas para el historial
+   */
+  public List<Tarea> getTareasCompletadas() {
+    return tareas.stream()
+        // Si la fecha de completado no es null, la tarea está COMPLETADA
+        .filter(t -> t.getFechaCompletada() != null)
+        // Las tareas completadas ya no serán null en este punto,
+        // pero mantenemos el comparador por si acaso, aunque Comparator.nullsLast ya no sería
+        // estrictamente necesario.
+        .sorted(
+            Comparator.comparing(
+                Tarea::getFechaCompletada, Comparator.nullsLast(Comparator.reverseOrder())))
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * Devuelve el número de tareas completadas La tarea es COMPLETADA si getFechaCompletada() NO es
+   * null.
+   *
+   * @return Cantidad de tareas completadas
+   */
+  public int getNumeroCompletadas() {
+    return (int)
+        tareas.stream()
             // Contamos solo si la fecha de completado no es null
-            .filter(t -> t.getFechaCompletada() != null) 
+            .filter(t -> t.getFechaCompletada() != null)
             .count();
-    }
+  }
 
-    /**
-     * Recibe una Tarea como parámetro y la agrega a la base de datos 
-     * si su nombre, descripción y exp son válidos
-     * @throws TareaInvalidaException si la tarea no es válida
-     */
-    public void agregarTarea(Tarea tarea) throws TareaInvalidaException{
-        if(tareaExistePorNombre(tarea.getNombre())){
-            throw new TareaInvalidaException("Tarea \"" + tarea.getNombre() + "\" ya existente." , tarea.getNombre(), tarea.getDescripcion());
-        }
-        if(tareaExistePorDescripcion(tarea.getDescripcion())){
-            throw new TareaInvalidaException("Tarea con descripción \"" + tarea.getDescripcion() + "\" ya existe.", tarea.getNombre(), tarea.getDescripcion());
-        }
-        tarea.setUsuario(this);
-        tareas.add(tarea);
-        System.out.println("Tarea '" + tarea.getNombre() + "' agregada exitosamente.");
+  /**
+   * Recibe una Tarea como parámetro y la agrega a la base de datos si su nombre, descripción y exp
+   * son válidos
+   *
+   * @throws TareaInvalidaException si la tarea no es válida
+   */
+  public void agregarTarea(Tarea tarea) throws TareaInvalidaException {
+    if (tareaExistePorNombre(tarea.getNombre())) {
+      throw new TareaInvalidaException(
+          "Tarea \"" + tarea.getNombre() + "\" ya existente.",
+          tarea.getNombre(),
+          tarea.getDescripcion());
     }
+    if (tareaExistePorDescripcion(tarea.getDescripcion())) {
+      throw new TareaInvalidaException(
+          "Tarea con descripción \"" + tarea.getDescripcion() + "\" ya existe.",
+          tarea.getNombre(),
+          tarea.getDescripcion());
+    }
+    tarea.setUsuario(this);
+    tareas.add(tarea);
+    System.out.println("Tarea '" + tarea.getNombre() + "' agregada exitosamente.");
+  }
 
   private boolean tareaExistePorNombre(String nombre) {
     for (Tarea tareaExistente : tareas) {
@@ -247,17 +261,17 @@ public class Usuario {
               + "' no se encuentra en la lista de tareas pendientes de este usuario.");
     }
 
-        //Verificar si la tarea ya está completada
- 
-        if (tareaACompletar.getFechaCompletada() != null) { 
-            throw new RegistroInvalidoException("La tarea '" + nombreTarea + "' ya está completada.");
-        }
+    // Verificar si la tarea ya está completada
 
-        //Marcar la tarea como completada, estableciendo la fecha actual
-        tareaACompletar.setFechaCompletada(LocalDateTime.now());
+    if (tareaACompletar.getFechaCompletada() != null) {
+      throw new RegistroInvalidoException("La tarea '" + nombreTarea + "' ya está completada.");
+    }
 
-        //Verificar la subida de la racha
-        aumentarRacha();
+    // Marcar la tarea como completada, estableciendo la fecha actual
+    tareaACompletar.setFechaCompletada(LocalDateTime.now());
+
+    // Verificar la subida de la racha
+    aumentarRacha();
 
     // Añadir la experiencia de la tarea al total del usuario.
     this.experiencia += tareaACompletar.getExp();
@@ -275,23 +289,26 @@ public class Usuario {
     verificarSubidaDeNivel();
   }
 
-    public void cancelarTarea(String nombreTarea) throws RegistroInvalidoException{
-        Tarea tarea = buscarTareaPorNombre(nombreTarea);
-        if(tarea == null){
-            throw new RegistroInvalidoException("La tarea '" + nombreTarea + "' no se encuentra en la lista de tareas pendientes de este usuario.");
-        }
-        
-        tareas.remove(tarea);
-        tarea.setUsuario(null);
-        System.out.println("La tarea '" + nombreTarea + "' ha sido eliminada. No has ganado puntos.");
+  public void cancelarTarea(String nombreTarea) throws RegistroInvalidoException {
+    Tarea tarea = buscarTareaPorNombre(nombreTarea);
+    if (tarea == null) {
+      throw new RegistroInvalidoException(
+          "La tarea '"
+              + nombreTarea
+              + "' no se encuentra en la lista de tareas pendientes de este usuario.");
     }
-    
-    /**
-     * Comprueba si la experiencia total del usuario es suficiente para subir al siguiente nivel.
-     * Utiliza un bucle por si se ganan múltiples niveles a la vez.
-     */
-    private void verificarSubidaDeNivel() {
-        int expSiguienteNivel = SistemaNiveles.experienciaParaNivel(this.nivelExperiencia + 1);
+
+    tareas.remove(tarea);
+    tarea.setUsuario(null);
+    System.out.println("La tarea '" + nombreTarea + "' ha sido eliminada. No has ganado puntos.");
+  }
+
+  /**
+   * Comprueba si la experiencia total del usuario es suficiente para subir al siguiente nivel.
+   * Utiliza un bucle por si se ganan múltiples niveles a la vez.
+   */
+  private void verificarSubidaDeNivel() {
+    int expSiguienteNivel = SistemaNiveles.experienciaParaNivel(this.nivelExperiencia + 1);
 
     // El usuario subira de nivel hasta donde su experiencia le permita
     while (this.experiencia >= expSiguienteNivel) {
@@ -342,20 +359,21 @@ public class Usuario {
     }
   }
 
-    /**
-     * Busca una tarea PENDIENTE por su nombre
-     * Una tarea es PENDIENTE si getFechaCompletada() devuelve null.
-     * @param nombre Nombre de la tarea a buscar
-     * @return La tarea encontrada o null si no existe
-     */
-    public Tarea buscarTareaPorNombre(String nombre){
-        for(Tarea t : this.tareas){
-            if(t.getFechaCompletada() == null && t.getNombre().trim().equals(nombre.trim())){
-                return t;
-            }
-        }
-        return null;
+  /**
+   * Busca una tarea PENDIENTE por su nombre Una tarea es PENDIENTE si getFechaCompletada() devuelve
+   * null.
+   *
+   * @param nombre Nombre de la tarea a buscar
+   * @return La tarea encontrada o null si no existe
+   */
+  public Tarea buscarTareaPorNombre(String nombre) {
+    for (Tarea t : this.tareas) {
+      if (t.getFechaCompletada() == null && t.getNombre().trim().equals(nombre.trim())) {
+        return t;
+      }
     }
+    return null;
+  }
 
   /*
    * Actualiza una tarea existente en la lista de tareas pendientes.
@@ -387,26 +405,32 @@ public class Usuario {
       }
     }
 
-        tareaAActualizar.setNombre(tareaActualizada.getNombre());
-        tareaAActualizar.setDescripcion(tareaActualizada.getDescripcion());
-        tareaAActualizar.setExp(tareaActualizada.getExp());
-        tareaAActualizar.setFechaExpiracion(tareaActualizada.getFechaExpiracion());
-        
-        System.out.println("LOG: Tarea '" + nombreOriginal + "' actualizada exitosamente a '" + tareaActualizada.getNombre() + "'.");
-    }
+    tareaAActualizar.setNombre(tareaActualizada.getNombre());
+    tareaAActualizar.setDescripcion(tareaActualizada.getDescripcion());
+    tareaAActualizar.setExp(tareaActualizada.getExp());
+    tareaAActualizar.setFechaExpiracion(tareaActualizada.getFechaExpiracion());
 
-    /**
-     * Calcula la experiencia TOTAL ganada sumando todas las tareas completadas
-     * Una tarea está COMPLETADA si getFechaCompletada() NO es null.
-     * @return La suma de experiencia de todas las tareas completadas
-     */
-    public int getExperienciaTotal() {
-        return tareas.stream()
-            // Nueva condición: el filtro busca tareas donde la fecha de completado NO sea null.
-            .filter(t -> t.getFechaCompletada() != null) 
-            .mapToInt(Tarea::getExp)
-            .sum();
-    }
+    System.out.println(
+        "LOG: Tarea '"
+            + nombreOriginal
+            + "' actualizada exitosamente a '"
+            + tareaActualizada.getNombre()
+            + "'.");
+  }
+
+  /**
+   * Calcula la experiencia TOTAL ganada sumando todas las tareas completadas Una tarea está
+   * COMPLETADA si getFechaCompletada() NO es null.
+   *
+   * @return La suma de experiencia de todas las tareas completadas
+   */
+  public int getExperienciaTotal() {
+    return tareas.stream()
+        // Nueva condición: el filtro busca tareas donde la fecha de completado NO sea null.
+        .filter(t -> t.getFechaCompletada() != null)
+        .mapToInt(Tarea::getExp)
+        .sum();
+  }
 
   @Override
   public String toString() {
@@ -414,21 +438,21 @@ public class Usuario {
     // guarda)
     int expParaSiguienteNivel = SistemaNiveles.experienciaParaNivel(this.nivelExperiencia + 1);
 
-        return String.format(
-            "<<< Usuario: %s >>>\n" +
-            "Rol: %s\n" +
-            "Nivel: %d\n" +
-            "Experiencia: %d / %d\n" +
-            "Correo: %s\n" +
-            "Tareas Pendientes: %d\n" +
-            "Tareas Completadas: %d",
-            this.nombreUsuario,
-            this.rol,
-            this.nivelExperiencia,
-            this.experiencia,
-            expParaSiguienteNivel,
-            this.correoElectronico,
-            getTareasPendientes().size(),
-            getNumeroCompletadas());
-    }
+    return String.format(
+        "<<< Usuario: %s >>>\n"
+            + "Rol: %s\n"
+            + "Nivel: %d\n"
+            + "Experiencia: %d / %d\n"
+            + "Correo: %s\n"
+            + "Tareas Pendientes: %d\n"
+            + "Tareas Completadas: %d",
+        this.nombreUsuario,
+        this.rol,
+        this.nivelExperiencia,
+        this.experiencia,
+        expParaSiguienteNivel,
+        this.correoElectronico,
+        getTareasPendientes().size(),
+        getNumeroCompletadas());
+  }
 }

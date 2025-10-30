@@ -132,11 +132,13 @@ public class AdminController {
       case "tareas":
         model.addAttribute("listaDeUsuarios", usuarioService.obtenerTodos());
         if (correoUsuarioSeleccionado != null) {
-              Usuario usuarioSeleccionado = usuarioService.buscarPorCorreoConTareas(correoUsuarioSeleccionado); // ✅ Carga con tareas
-              model.addAttribute("usuarioSeleccionado", usuarioSeleccionado);
+          Usuario usuarioSeleccionado =
+              usuarioService.buscarPorCorreoConTareas(
+                  correoUsuarioSeleccionado); // ✅ Carga con tareas
+          model.addAttribute("usuarioSeleccionado", usuarioSeleccionado);
 
-                    model.addAttribute("tareasPendientes", usuarioSeleccionado.getTareasPendientes());
-            }
+          model.addAttribute("tareasPendientes", usuarioSeleccionado.getTareasPendientes());
+        }
         break;
     }
 
@@ -287,21 +289,35 @@ public class AdminController {
     //  Buscamos al usuario al que pertenece la tarea.
     Usuario objetivo = usuarioService.buscarPorCorreo(correoUsuario);
 
-        //  Chequeo de seguridad: ¿Tiene el admin permiso para modificar a este usuario?
-        //  Se reutiliza la lógica de 'puedeEditar' porque si puede editar al usuario,
-        //  también debería poder gestionar sus tareas.
-        if (!seguridadService.puedeGestionarTareasDe(actor, objetivo)) {
-            System.out.println("WARN: Fallo de seguridad al intentar eliminar tarea. El actor no tiene permisos sobre el objetivo.");
-            return "redirect:/acceso-denegado";
-        }
+    //  Chequeo de seguridad: ¿Tiene el admin permiso para modificar a este usuario?
+    //  Se reutiliza la lógica de 'puedeEditar' porque si puede editar al usuario,
+    //  también debería poder gestionar sus tareas.
+    if (!seguridadService.puedeGestionarTareasDe(actor, objetivo)) {
+      System.out.println(
+          "WARN: Fallo de seguridad al intentar eliminar tarea. El actor no tiene permisos sobre el objetivo.");
+      return "redirect:/acceso-denegado";
+    }
 
-        //  Si los permisos son correctos, procedemos a eliminar la tarea.
-        try {
+    //  Si los permisos son correctos, procedemos a eliminar la tarea.
+    try {
 
-            usuarioService.eliminarTarea(correoUsuario, nombreTarea);
-            
-            redirectAttributes.addFlashAttribute("success", "Tarea '" + nombreTarea + "' del usuario '" + objetivo.getNombreUsuario() + "' ha sido eliminada correctamente.");
-            System.out.println("LOG: El admin '" + actor.getNombreUsuario() + "' eliminó la tarea '" + nombreTarea + "' del usuario '" + objetivo.getNombreUsuario() + "'.");
+      usuarioService.eliminarTarea(correoUsuario, nombreTarea);
+
+      redirectAttributes.addFlashAttribute(
+          "success",
+          "Tarea '"
+              + nombreTarea
+              + "' del usuario '"
+              + objetivo.getNombreUsuario()
+              + "' ha sido eliminada correctamente.");
+      System.out.println(
+          "LOG: El admin '"
+              + actor.getNombreUsuario()
+              + "' eliminó la tarea '"
+              + nombreTarea
+              + "' del usuario '"
+              + objetivo.getNombreUsuario()
+              + "'.");
 
     } catch (RegistroInvalidoException e) {
       // Esto pasaría si la tarea no se encuentra, por ejemplo.

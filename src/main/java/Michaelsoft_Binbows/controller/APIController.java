@@ -15,24 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-/*
- * EXCEPCIONES QUE FALTAN
- * FALTA INICIALIZAR ROL Y FECHA DE REGISTRO
- * MOVER TAREAS A COMPLETADAS
- * USUARIO/TAREA NO ENCONTRADA
- * USUARIO YA EXISTE
- * TAREA YA EXISTE
- * TAREA YA COMPLETADA
- * CREDENCIALES ACTUALIZADAS NO VALIDAS
- * NUMERO TAREA FUERA DE RANGO
- * NO HAY USUARIOS
- * NO HAY TAREAS
- * NO HAY TAREAS COMPLETADAS
- */
-
-// USUARIO SE PUEDE CREAR CON EL MISMO NOMBRE SI ES QUE TIENE DISTINTO CORREO ELECTRONICO
-// CORREGIRRRRR
-
 @RestController
 @RequestMapping("/api")
 public class APIController {
@@ -70,12 +52,17 @@ public class APIController {
     return usuarioService.obtenerTodos();
   }
 
-  @Autowired
-  private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+  @Autowired private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
   @PostMapping("/usuarios")
   public ResponseEntity<Object> crearUsuario(@RequestBody UsuarioDTO usuarioDTO)
       throws EdicionInvalidaException, RegistroInvalidoException {
+    String contraseña = usuarioDTO.contrasena;
+    String validacion = usuarioService.validarContrasena(contraseña);
+    if (validacion != null) {
+      return ResponseEntity.status(400).body(validacion);
+    }
+
     Usuario usuario =
         new Usuario(usuarioDTO.nombreUsuario, usuarioDTO.correoElectronico, usuarioDTO.contrasena);
     // Encriptar la contraseña antes de guardar
@@ -149,16 +136,17 @@ public class APIController {
   }
 
   // funciona
-  // de momento se hace así porque no me funciona tareasCompletadas
   @GetMapping("/usuarios/{idUsuario}/tareas/completadas")
-  public ResponseEntity<Object> getTareasCompletadasPorUsuario(@PathVariable("idUsuario") long idUsuario) {
+  public ResponseEntity<Object> getTareasCompletadasPorUsuario(
+      @PathVariable("idUsuario") long idUsuario) {
     Optional<Usuario> usuarioOpt = usuarioService.obtenerPorId(idUsuario);
     if (usuarioOpt.isEmpty()) {
       return ResponseEntity.status(404).body("Usuario no encontrado");
     }
-    List<Tarea> tareasCompletadas = usuarioOpt.get().getTareas().stream()
-        .filter(tarea -> tarea.getFechaCompletada() != null)
-        .toList();
+    List<Tarea> tareasCompletadas =
+        usuarioOpt.get().getTareas().stream()
+            .filter(tarea -> tarea.getFechaCompletada() != null)
+            .toList();
     return ResponseEntity.ok().body(tareasCompletadas);
   }
 
@@ -233,20 +221,16 @@ public class APIController {
       return ResponseEntity.status(400).body("La tarea no pertenece al usuario especificado");
     }
     try {
-      // Create a new task with the updated values to validate
       String currentDificultad = tareaDTO.dificultad;
       if (currentDificultad == null) {
-        // If no difficulty provided, we keep the current one
         currentDificultad = Dificultad.obtenerDificultadPorExp(t.getExp());
       }
-      
-      Tarea tareaActualizada = new Tarea(
-          tareaDTO.nombre != null ? tareaDTO.nombre : t.getNombre(),
-          tareaDTO.descripcion != null ? tareaDTO.descripcion : t.getDescripcion(),
-          currentDificultad
-      );
-      
-      // Use the existing actualizarTarea method which includes duplicate validation
+
+      Tarea tareaActualizada =
+          new Tarea(
+              tareaDTO.nombre != null ? tareaDTO.nombre : t.getNombre(),
+              tareaDTO.descripcion != null ? tareaDTO.descripcion : t.getDescripcion(),
+              currentDificultad);
       u.actualizarTarea(t.getNombre(), tareaActualizada);
       return ResponseEntity.ok().body(tareaService.obtenerPorId(idTarea).get());
     } catch (Exception e) {

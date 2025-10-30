@@ -29,7 +29,8 @@ public class TareaService {
   public Tarea crear(TareaDTO tareaDTO, long userId) throws TareaInvalidaException {
     var usuario = usuarioRepository.findById(userId).get();
     Tarea tarea = new Tarea(tareaDTO.nombre, tareaDTO.descripcion, tareaDTO.dificultad);
-    usuario.agregarTarea(tarea); // This will handle duplicate validation and bidirectional relationship
+    usuario.agregarTarea(
+        tarea); // This will handle duplicate validation and bidirectional relationship
     return guardar(tarea);
   }
 

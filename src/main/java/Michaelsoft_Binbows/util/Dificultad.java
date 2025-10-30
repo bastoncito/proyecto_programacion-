@@ -47,7 +47,8 @@ public class Dificultad {
       case 50 -> "Medio";
       case 100 -> "Difícil";
       case 150 -> "Muy difícil";
-      default -> throw new IllegalArgumentException("Experiencia no corresponde a ninguna dificultad: " + exp);
+      default -> throw new IllegalArgumentException(
+          "Experiencia no corresponde a ninguna dificultad: " + exp);
     };
   }
 }

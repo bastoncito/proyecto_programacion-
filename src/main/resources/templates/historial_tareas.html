@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historial de Tareas</title>
-    <link rel="stylesheet" th:href="@{/historial_tareas.css}">
+    <link rel="stylesheet" th:href="@{styles/historial_tareas.css}">
 </head>
 <body>
     <!-- Header -->
@@ -13,7 +13,7 @@
             <form th:action="@{/home}" method="get" style="display: inline;">
                 <button type="submit" class="btn-volver">VOLVER</button>
             </form>
-            <img class="logo" th:src="@{/logo_blanco2.png}" alt="logo">
+            <img class="logo" th:src="@{images/logo_blanco2.png}" alt="logo">
         </div>
         <div class="perfil-section">
             <div class="user-lvl">
@@ -85,7 +85,7 @@
                     </div>
                 </div>
                 <div class="container-img">
-                    <img th:src="@{/icon1.png}" alt="personaje1">
+                    <img th:src="@{images/icon1.png}" alt="personaje1">
                 </div>
             </div>
         </div>

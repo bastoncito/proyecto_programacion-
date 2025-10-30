@@ -100,35 +100,37 @@ public class SeguridadService {
       return rolAAsignar == Rol.MODERADOR || rolAAsignar == Rol.USUARIO;
     }
 
-        // Un MODERADOR solo puede asignar (o mantener) el rol de USUARIO.
-        // Por seguridad, no permitimos que se asigne el rol de MODERADOR desde el panel.
-        if (actor.getRol() == Rol.MODERADOR) {
-            return rolAAsignar == Rol.USUARIO;
-        }
-        
-        // Si no es admin ni moderador, no puede asignar ningún rol.
-        return false;
+    // Un MODERADOR solo puede asignar (o mantener) el rol de USUARIO.
+    // Por seguridad, no permitimos que se asigne el rol de MODERADOR desde el panel.
+    if (actor.getRol() == Rol.MODERADOR) {
+      return rolAAsignar == Rol.USUARIO;
     }
-    /*
-     * Comprueba si un usuario (actor) tiene permiso para gestionar las tareas de otro (objetivo).
-     */
-    public boolean puedeGestionarTareasDe(Usuario actor, Usuario objetivo) {
-        if (actor == null || objetivo == null) {
-            return false;
-        }
 
-        // Regla 1: Un ADMIN puede gestionar las tareas de cualquiera, excepto las de otro ADMIN.
-        if (actor.getRol() == Rol.ADMIN) {
-            return objetivo.getRol() != Rol.ADMIN;
-        }
+    // Si no es admin ni moderador, no puede asignar ningún rol.
+    return false;
+  }
 
-        // Regla 2: Un MODERADOR puede gestionar las tareas de un USUARIO o las suyas propias.
-        if (actor.getRol() == Rol.MODERADOR) {
-            boolean esElMismoUsuario = actor.getCorreoElectronico().equals(objetivo.getCorreoElectronico());
-            return objetivo.getRol() == Rol.USUARIO || esElMismoUsuario;
-        }
-        
-        // Un USUARIO no puede gestionar tareas de nadie más desde el panel de admin.
-        return false;
+  /*
+   * Comprueba si un usuario (actor) tiene permiso para gestionar las tareas de otro (objetivo).
+   */
+  public boolean puedeGestionarTareasDe(Usuario actor, Usuario objetivo) {
+    if (actor == null || objetivo == null) {
+      return false;
     }
+
+    // Regla 1: Un ADMIN puede gestionar las tareas de cualquiera, excepto las de otro ADMIN.
+    if (actor.getRol() == Rol.ADMIN) {
+      return objetivo.getRol() != Rol.ADMIN;
+    }
+
+    // Regla 2: Un MODERADOR puede gestionar las tareas de un USUARIO o las suyas propias.
+    if (actor.getRol() == Rol.MODERADOR) {
+      boolean esElMismoUsuario =
+          actor.getCorreoElectronico().equals(objetivo.getCorreoElectronico());
+      return objetivo.getRol() == Rol.USUARIO || esElMismoUsuario;
+    }
+
+    // Un USUARIO no puede gestionar tareas de nadie más desde el panel de admin.
+    return false;
+  }
 }

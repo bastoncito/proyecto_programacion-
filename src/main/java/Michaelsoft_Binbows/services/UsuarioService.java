@@ -53,7 +53,7 @@ public class UsuarioService {
     if (usuario.getContraseña() == null || usuario.getContraseña().length() < 8) {
       throw new RegistroInvalidoException("La contraseña debe tener al menos 8 caracteres.");
     }
-    
+
     // Verificar unicidad de nombre de usuario y correo
     if (usuarioRepository.findByNombreUsuario(usuario.getNombreUsuario()).isPresent()) {
       throw new RegistroInvalidoException(
@@ -63,7 +63,7 @@ public class UsuarioService {
       throw new RegistroInvalidoException(
           "El correo electrónico ya está registrado: " + usuario.getCorreoElectronico());
     }
-    
+
     return usuarioRepository.save(usuario);
   }
 
