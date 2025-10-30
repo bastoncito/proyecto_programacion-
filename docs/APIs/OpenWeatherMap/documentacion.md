@@ -22,7 +22,7 @@ La url base de la API es la sigiuente: https://api.openweathermap.org, desde la 
         + limit (se deja en 1)
         + appid (API key)
 ## Implementación
-Para manejar las peticiones desde nuestra aplicación, se utilizan Controllers de Spring (WeatherController y GeocodingController). 
+Para manejar las peticiones desde nuestra aplicación, se utilizan Controllers de Spring (WeatherController y GeocodingController).<br> 
 Se utilizan Services (WeatherService y GeocodingService) para manejar las llamadas a la url de la API. Estos poseen (o reciben desde los Controllers) los parámetros necesarios para este fin, como lo sería la ciudad, API key, etc.
 ## Endpoints actuales
 ### GET
