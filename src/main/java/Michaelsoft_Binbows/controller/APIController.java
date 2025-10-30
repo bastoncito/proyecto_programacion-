@@ -150,6 +150,27 @@ public class APIController {
     return ResponseEntity.ok().body(tareasCompletadas);
   }
 
+  // TEASTEANDO-------------------------------------------------------
+  @GetMapping("/usuarios/{idUsuario}/tareas/pendientes")
+  public ResponseEntity<Object> getTareasPendientesPorUsuario(
+      @PathVariable("idUsuario") long idUsuario) {
+    
+    Optional<Usuario> usuarioOpt = usuarioService.obtenerPorId(idUsuario);
+
+    // 1. Comprueba si el usuario existe
+    if (usuarioOpt.isEmpty()) {
+      return ResponseEntity.status(404).body("Usuario no encontrado");
+    }
+
+    Usuario u = usuarioOpt.get();
+
+    // 2. Usa el método de la entidad que se encuentra
+    List<Tarea> tareasPendientes = u.getTareasPendientes(); 
+
+    // 3. Devuelve la lista con un OK
+    return ResponseEntity.ok().body(tareasPendientes);
+  }
+
   // funciona
   @GetMapping("/usuarios/{idUsuario}/tareas/{idTarea}")
   public ResponseEntity<Object> getTareaPorNumYUsuario(
