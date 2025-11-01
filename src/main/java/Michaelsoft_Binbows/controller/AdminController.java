@@ -10,6 +10,7 @@ import Michaelsoft_Binbows.exceptions.RegistroInvalidoException;
 import Michaelsoft_Binbows.exceptions.TareaInvalidaException;
 import Michaelsoft_Binbows.model.Rol;
 import Michaelsoft_Binbows.security.CustomUserDetails;
+import Michaelsoft_Binbows.services.ConfiguracionService;
 import Michaelsoft_Binbows.services.SeguridadService;
 import Michaelsoft_Binbows.services.UsuarioService;
 import java.util.Arrays;
@@ -44,6 +45,9 @@ public class AdminController {
 
   @Autowired 
   private TemporadaService temporadaService;
+
+  @Autowired 
+  private ConfiguracionService configuracionService;
 
   // Inyección de dependencias
   public AdminController(SeguridadService seguridadService) {
@@ -88,6 +92,8 @@ public class AdminController {
       @RequestParam(name = "correo", required = false) String correoUsuarioSeleccionado,
       @RequestParam(name = "crearTarea", required = false) boolean crearTarea,
       @RequestParam(name = "errorCreacionTarea", required = false) String errorCreacionTarea,
+      @RequestParam(name = "limite", required = false) Integer limite,
+      @RequestParam(name = "mostrarConfig", required = false) boolean mostrarConfig,
       Model model) {
 
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -97,6 +103,15 @@ public class AdminController {
     if (usuarioActual == null
         || (usuarioActual.getRol() != Rol.ADMIN && usuarioActual.getRol() != Rol.MODERADOR)) {
       return "redirect:/403";
+    }
+
+    int limiteActual;
+    if (limite == null) {
+      // Si la URL no trae ?limite=X, buscamos el valor guardado en la BD
+      limiteActual = configuracionService.getLimiteTop();
+    } else {
+      // Si la URL sí trae un límite, usamos ese
+      limiteActual = limite;
     }
 
     // Pasamos la vista actual y el usuario al modelo
@@ -111,6 +126,9 @@ public class AdminController {
     }
     if (crearTarea) {
       model.addAttribute("mostrarModalCrearTarea", true);
+    }
+    if (mostrarConfig) {
+      model.addAttribute("mostrarModalTopConfig", true);
     }
 
     model.addAttribute("listaDeUsuarios", usuarioService.obtenerTodos());
@@ -145,6 +163,13 @@ public class AdminController {
 
           model.addAttribute("tareasPendientes", usuarioSeleccionado.getTareasPendientes());
         }
+        break;
+
+      case "top":
+        List<Usuario> topUsuarios = usuarioService.getTopUsuarios(limiteActual); // Ahora usa el límite
+
+        model.addAttribute("listaTop10", topUsuarios);
+        model.addAttribute("limiteActual", limiteActual);
         break;
     }
 
@@ -527,8 +552,8 @@ public class AdminController {
       redirectAttributes.addFlashAttribute("error", "Error al forzar el reseteo: " + e.getMessage());
     }
         
-    // Vuelve a la vista de admin (la vista 'tareas' es un buen lugar)
-    redirectAttributes.addAttribute("vista", "tareas"); 
+    // Vuelve a la vista de admin (top)
+    redirectAttributes.addAttribute("vista", "top");
     return "redirect:/admin";
   }
     
@@ -536,5 +561,24 @@ public class AdminController {
   @GetMapping("/acceso-denegado")
   public String mostrarAccesoDenegado() {
     return "acceso-denegado";
+  }
+
+  /**
+  * Guarda la nueva configuración del límite del Top en la BD.
+  */
+  @GetMapping("/admin/top/set-limite")
+  public String setLimiteTop(
+          @RequestParam("limite") int limite,
+          RedirectAttributes redirectAttributes) {
+
+      try {
+          configuracionService.setLimiteTop(limite);
+          redirectAttributes.addFlashAttribute("success", "Límite del Top guardado en " + limite + ".");
+      } catch (Exception e) {
+          redirectAttributes.addFlashAttribute("error", "Error al guardar el límite.");
+      }
+
+      // Vuelve a la vista 'top' con el nuevo límite activo
+      return "redirect:/admin?vista=top&limite=" + limite;
   }
 }

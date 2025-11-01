@@ -425,3 +425,33 @@ body {
 .flash-success i {
     font-size: 24px; /* Hacemos el icono un poco más grande */
 }
+
+/* --- Estilos para el Modal de Configuración 'Top' --- */
+.top-n-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Reutilizamos el estilo de 'btn-cancel' pero lo ajustamos 
+  y añadimos un estado 'active' 
+*/
+.top-n-buttons .btn-cancel {
+  text-decoration: none;
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ddd;
+  padding: 8px 16px;
+}
+
+.top-n-buttons .btn-cancel:hover {
+  background-color: #e0e0e0;
+}
+
+/* Este es el estilo para el botón que está seleccionado */
+.top-n-buttons .btn-cancel.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+  font-weight: bold;
+}

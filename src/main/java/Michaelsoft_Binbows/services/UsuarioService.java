@@ -13,6 +13,9 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 
 @Service
 public class UsuarioService {
@@ -297,5 +300,16 @@ public class UsuarioService {
     }
 
     return usuarioRepository.save(usuario);
+  }
+
+  public List<Usuario> getTopUsuarios(int limite) {
+      // Crea un "pedido" para la primera página (página 0) con el tamaño del límite
+      Pageable topN = PageRequest.of(0, limite);
+
+      // Llama al nuevo método del repositorio
+      Page<Usuario> paginaDeUsuarios = usuarioRepository.findByOrderByPuntosLigaDesc(topN);
+
+      // Devuelve la lista de usuarios de esa página
+      return paginaDeUsuarios.getContent();
   }
 }
