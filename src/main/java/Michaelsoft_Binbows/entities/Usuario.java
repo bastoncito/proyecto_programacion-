@@ -40,7 +40,13 @@ public class Usuario {
   private Rol rol;
   private LocalDateTime fechaRegistro;
   private LocalDate fechaRacha;
+  //Testing sistema de ligas y puntos ------------
+  @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
+  private int puntosLiga;
 
+  @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'Bronce'")
+  private String liga;
+  //Fin testing ---------
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -63,6 +69,10 @@ public class Usuario {
     this.experiencia = 0;
     this.nivelExperiencia = 1;
     this.racha = 0;
+    // --- Ligas ---
+    this.puntosLiga = 0;
+    this.liga = "Bronce";
+    // --- FIN Ligas ---
     this.rol = Rol.USUARIO;
     this.fechaRegistro = LocalDateTime.now();
     this.fechaRacha = null;
@@ -117,6 +127,22 @@ public class Usuario {
     return id;
   }
 
+  public int getPuntosLiga() {
+    return puntosLiga;
+  }
+
+  public String getLiga() {
+    return liga;
+  }
+
+  public void setPuntosLiga(int puntosLiga) {
+    this.puntosLiga = puntosLiga;
+  }
+
+  public void setLiga(String liga) {
+    this.liga = liga;
+  }
+
   public void setExperiencia(int experiencia) {
     this.experiencia = experiencia;
   }
@@ -147,6 +173,32 @@ public class Usuario {
 
   public void setContraseña(String contraseña) {
     this.contraseña = contraseña;
+  }
+
+  /**
+   * Resetea los puntos de liga del usuario al inicio de una nueva temporada.
+   */
+  public void resetearPuntosLiga() {
+    this.puntosLiga = 0;
+    this.liga = "Bronce";
+  }
+
+  /**
+   * Actualiza la liga del usuario basado en sus puntosLiga.
+   */
+  private void actualizarLiga() {
+    // Rango de puntos
+    if (this.puntosLiga >= 5000) { 
+      this.liga = "Diamante";
+    } else if (this.puntosLiga >= 3000) { 
+      this.liga = "Platino";
+    } else if (this.puntosLiga >= 1500) { 
+      this.liga = "Oro";
+    } else if (this.puntosLiga >= 500) { 
+      this.liga = "Plata";
+    } else { 
+      this.liga = "Bronce";
+    }
   }
 
   /**
@@ -287,6 +339,16 @@ public class Usuario {
 
     // Llamado al método que verificará si el usuario ha subido de nivel.
     verificarSubidaDeNivel();
+
+    // --- INICIO LÓGICA DE LIGAS ---
+    
+    // 1. Suma al contador de la Temporada (independiente del reseteo de nivel)
+    this.puntosLiga += tareaACompletar.getExp(); 
+    
+    // 2. Actualiza el string de la Liga (Bronce, Plata, etc.)
+    actualizarLiga(); 
+    
+    // --- FIN LÓGICA DE LIGAS ---
   }
 
   public void cancelarTarea(String nombreTarea) throws RegistroInvalidoException {

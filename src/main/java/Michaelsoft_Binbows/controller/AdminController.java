@@ -28,6 +28,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import Michaelsoft_Binbows.services.TemporadaService; // <-- 
+import org.springframework.web.servlet.mvc.support.RedirectAttributes; // <--
+
 /** Controlador para el panel de administración. Maneja la visualización y gestión de usuarios. */
 @Controller
 public class AdminController {
@@ -38,6 +41,9 @@ public class AdminController {
 
   // Dependencias del controlador
   private final SeguridadService seguridadService;
+
+  @Autowired 
+  private TemporadaService temporadaService;
 
   // Inyección de dependencias
   public AdminController(SeguridadService seguridadService) {
@@ -502,6 +508,30 @@ public class AdminController {
     }
   }
 
+  /*
+  * Endpoint para que el Admin fuerce el reseteo de la temporada.
+  * Se puede probar visitando la URL como admin.
+  */
+  @GetMapping("/admin/temporada/reset-manual")
+  public String forzarReseteoTemporada(RedirectAttributes redirectAttributes) {  
+    // Llamamos manualmente a la función de reseteo
+    try {
+      // Esta es la función que pusimos como @Transactional en el TemporadaService
+      temporadaService.forzarReseteoManual();
+            
+      // Si todo sale bien, manda un mensaje de éxito
+      redirectAttributes.addFlashAttribute("success", "¡Reseteo de temporada forzado con éxito! Todos los puntos de liga están en 0.");
+        
+    } catch (Exception e) {
+      // Si algo falla (ej. la base de datos), manda un error
+      redirectAttributes.addFlashAttribute("error", "Error al forzar el reseteo: " + e.getMessage());
+    }
+        
+    // Vuelve a la vista de admin (la vista 'tareas' es un buen lugar)
+    redirectAttributes.addAttribute("vista", "tareas"); 
+    return "redirect:/admin";
+  }
+    
   /** Página de "Acceso Denegado". */
   @GetMapping("/acceso-denegado")
   public String mostrarAccesoDenegado() {
