@@ -178,7 +178,9 @@ body {
     background-color: #333;
     padding: 15px;
     margin: 0;
-    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .top-header h1 {
@@ -192,10 +194,20 @@ body {
 .top-body {
     flex: 1;
     display: flex;
-    justify-content: space-around;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    padding: 20px 10px;
+    padding: 15px 10px;
     gap: 10px;
+}
+
+.top-user-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start; /* Alinea arriba */
+    width: 100%;
+    gap: 10px;
+    flex: 1; /* Ocupa el espacio disponible */
 }
 
 .top-user {
@@ -213,22 +225,6 @@ body {
     margin-bottom: 8px;
 }
 
-.top-user-icon {
-    width: 50px;
-    height: 50px;
-    background-color: #333;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 10px;
-}
-
-.top-user-icon i {
-    font-size: 1.8em;
-    color: white;
-}
-
 .top-user-name {
     font-size: 0.95em;
     font-weight: bold;
@@ -238,6 +234,14 @@ body {
 .top-user-points {
     font-size: 0.85em;
     color: #555;
+}
+
+.top-section .more-section {
+    margin-top: auto;  /* Empuja el botón al fondo del contenedor */
+    padding-top: 10px;
+    width: 100%;
+    text-align: center;
+    border-top: 1px solid #e6b332; /* Línea sutil de separación */
 }
 
 /* Info Section - Usuario */

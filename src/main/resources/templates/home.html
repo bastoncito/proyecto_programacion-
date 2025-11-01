@@ -23,12 +23,28 @@
                 <button class="reto-button">Aceptar Desafío</button>
             </div>
         </div>
-        <div class="top-section">
-            <div class="top-header"><h1>TOP GLOBALES</h1></div>
-            <div class="top-body">
-                <div class="top-user"><div class="top-position">1</div><div class="top-user-icon"><i class='bx bx-user'></i></div><div class="top-user-name">User 1</div><div class="top-user-points">X Puntos</div></div>
-                <div class="top-user"><div class="top-position">2</div><div class="top-user-icon"><i class='bx bx-user'></i></div><div class="top-user-name">User 2</div><div class="top-user-points">Y Puntos</div></div>
-                <div class="top-user"><div class="top-position">3</div><div class="top-user-icon"><i class='bx bx-user'></i></div><div class="top-user-name">User 3</div><div class="top-user-points">Z Puntos</div></div>
+    <div class="top-section">
+            <div class="top-header">
+                <h1>TOP GLOBALES</h1>
+            </div>
+            
+            <div class="top-body"> <div class="top-user-container">
+                    
+                    <div class="top-user" th:each="topUser, stat : ${top3Usuarios}">
+                        <div class="top-position" th:text="${stat.count}">1</div>
+                        <div class="top-user-name" th:text="${topUser.nombreUsuario}">Nombre de Usuario</div>
+                        <div class="top-user-points" th:text="${topUser.puntosLiga} + ' Pts'">0 Pts</div>
+                    </div>
+                </div>
+
+                <div th:if="${#lists.isEmpty(top3Usuarios)}" style="padding: 20px; text-align: center; color: #555;">
+                    <p>Aún no hay ranking este mes.</p>
+                </div>
+                
+                <div class="more-section">
+                    <a th:href="@{/ranking}" class="btn-show-all">Mostrar Todo</a>
+                </div>
+
             </div>
         </div>
     </div>

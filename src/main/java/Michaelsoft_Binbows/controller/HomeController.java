@@ -3,16 +3,20 @@ package Michaelsoft_Binbows.controller;
 import Michaelsoft_Binbows.entities.Tarea;
 import Michaelsoft_Binbows.entities.Usuario;
 import Michaelsoft_Binbows.security.CustomUserDetails;
+import Michaelsoft_Binbows.services.ConfiguracionService;
 import Michaelsoft_Binbows.services.UsuarioService;
 import Michaelsoft_Binbows.services.WeatherService;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +33,9 @@ public class HomeController {
   @Autowired private UsuarioService usuarioService;
   
   @Autowired private WeatherService weatherService;
+
+  @Autowired
+  private ConfiguracionService configuracionService;
 
   @GetMapping("/")
   public String redirigirLogin() {
@@ -78,23 +85,57 @@ public class HomeController {
             model.addAttribute("climaError", "No se pudo obtener el clima. Verifica el nombre de la ciudad en tu perfil.");
         }
     }
-
+    // 1. Pedimos el Top 3 (usando el método que ya creamos en UsuarioService)
+    List<Usuario> top3 = usuarioService.getTopUsuarios(3);
+    
+    // 2. Lo añadimos al modelo para que el HTML lo pueda usar
+    model.addAttribute("top3Usuarios", top3);
     return "home";
   }
 
   @GetMapping("/ranking")
   public String mostrarRanking(Model model) {
-    System.out.println("LOG: El método 'mostrarRanking' ha sido llamado por una petición a /home.");
-    List<Usuario> rankingNivel = usuarioService.obtenerTodos();
-    List<Usuario> rankingCompletadas = usuarioService.obtenerTodos();
-    rankingNivel.sort(Comparator.comparing(Usuario::getNivelExperiencia).reversed());
-    rankingCompletadas.sort(Comparator.comparing(Usuario::getNumeroCompletadas).reversed());
-    model.addAttribute(
-        "rankingNivel", rankingNivel != null ? rankingNivel : Collections.emptyList());
-    model.addAttribute(
-        "rankingCompletadas",
-        rankingCompletadas != null ? rankingCompletadas : Collections.emptyList());
-    return "ranking";
+    System.out.println("LOG: El método 'mostrarRanking' (NUEVO) ha sido llamado.");
+
+    // --- Lógica Nueva ---
+    try {
+        // 1. Obtener el usuario actual (para la tarjeta de perfil)
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        Usuario usuarioActual = usuarioService.buscarPorCorreo(userDetails.getUsername());
+        model.addAttribute("usuarioLogueado", usuarioActual); // <-- Lo pasamos al HTML
+
+        // 2. Obtener el límite del Top (10, 20, etc.) desde la BD
+        int limite = configuracionService.getLimiteTop();
+        
+        // 3. Obtener la lista del ranking (ordenada por puntosLiga)
+        List<Usuario> listaRanking = usuarioService.getTopUsuarios(limite);
+        model.addAttribute("listaRanking", listaRanking);
+
+        // 4. Generar los textos de los meses (para los títulos)
+        LocalDate hoy = LocalDate.now();
+        LocalDate mesPasado = hoy.minusMonths(1);
+        
+        // Capitaliza la primera letra del mes
+        String mesActual = hoy.getMonth().getDisplayName(TextStyle.FULL, new Locale("es", "ES"));
+        String mesActualMayus = mesActual.substring(0, 1).toUpperCase() + mesActual.substring(1);
+        
+        String mesAnterior = mesPasado.getMonth().getDisplayName(TextStyle.FULL, new Locale("es", "ES"));
+        String mesAnteriorMayus = mesAnterior.substring(0, 1).toUpperCase() + mesAnterior.substring(1);
+
+        model.addAttribute("tituloMesActual", mesActualMayus + " " + hoy.getYear());
+        model.addAttribute("tituloMesAnterior", mesAnteriorMayus + " " + mesPasado.getYear());
+
+        // 5. TODO: Lógica para el Salón de la Fama
+        // (Por ahora, enviamos una lista vacía para que el HTML no se rompa)
+        model.addAttribute("hallOfFame", Collections.emptyList());
+
+    } catch (Exception e) {
+        System.err.println("Error al cargar /ranking: " + e.getMessage());
+        // TODO: redirigir a una página de error o al home
+    }
+    
+    return "ranking"; // Devuelve el nuevo ranking.html
   }
 
   @GetMapping("/historial")
