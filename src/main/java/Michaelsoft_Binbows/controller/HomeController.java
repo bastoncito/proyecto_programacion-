@@ -1,31 +1,34 @@
-// Asegúrate de que este paquete coincida exactamente con el de tus otras clases.
 package Michaelsoft_Binbows.controller;
 
 import Michaelsoft_Binbows.entities.Tarea;
 import Michaelsoft_Binbows.entities.Usuario;
 import Michaelsoft_Binbows.security.CustomUserDetails;
 import Michaelsoft_Binbows.services.UsuarioService;
+import Michaelsoft_Binbows.services.WeatherService;
+
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-// --- Imports necesarios de Spring Framework y Java ---
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody; // Necesario para el método de prueba
+import org.springframework.web.bind.annotation.ResponseBody;
 
-/**
- * Esta clase es un Controlador de Spring.v Su responsabilidad es recibir peticiones web del
- * navegador, interactuar con la lógica de negocio (como la clase BaseDatos), y decidir qué vista
- * (archivo HTML) mostrarle al usuario.
- */
-@Controller // ANOTACIÓN CLAVE: Marca esta clase para que Spring la reconozca como un controlador.
+@Controller
 public class HomeController {
 
   @Autowired private UsuarioService usuarioService;
+  
+  @Autowired private WeatherService weatherService;
 
   @GetMapping("/")
   public String redirigirLogin() {
@@ -44,14 +47,37 @@ public class HomeController {
     usuarioActual.resetRacha();
 
     model.addAttribute("usuario", usuarioActual);
+    model.addAttribute("tareas", usuarioActual.getTareasPendientes());
+    model.addAttribute("historialTareas", usuarioActual.getTareasCompletadas());
+    
+    String ciudad = usuarioActual.getCiudad();
+    if (ciudad != null && !ciudad.trim().isEmpty()) {
+        try {
+            String weatherJsonString = weatherService.getWeatherByCity(ciudad);
+            JSONObject weatherJson = new JSONObject(weatherJsonString);
 
-    // ✅ Tareas PENDIENTES (no completadas)
-    List<Tarea> tareasPendientes = usuarioActual.getTareasPendientes();
-    model.addAttribute("tareas", tareasPendientes);
+            Map<String, Object> climaData = new HashMap<>();
+            climaData.put("temperatura", weatherJson.getJSONObject("main").getInt("temp"));
+            climaData.put("descripcion", weatherJson.getJSONArray("weather").getJSONObject(0).getString("description"));
+            climaData.put("humedad", weatherJson.getJSONObject("main").getInt("humidity"));
+            climaData.put("icono", weatherJson.getJSONArray("weather").getJSONObject(0).getString("icon"));
+            long timestamp = weatherJson.getLong("dt");
+            // Seccion zona horaria
+            int timezoneOffset = weatherJson.getInt("timezone");
+            // Convertimos el timestamp UTC a un objeto Instant y le aplicamos el desfase horario
+            Instant instant = Instant.ofEpochSecond(timestamp);
+            ZoneId zoneId = ZoneId.ofOffset("UTC", java.time.ZoneOffset.ofTotalSeconds(timezoneOffset));
+            // Formateamos la hora al formato "HH:mm"
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm").withZone(zoneId);
+            String horaLocal = formatter.format(instant);
 
-    // ✅ Tareas COMPLETADAS (historial)
-    List<Tarea> historialTareas = usuarioActual.getTareasCompletadas();
-    model.addAttribute("historialTareas", historialTareas);
+            climaData.put("hora", horaLocal);
+            model.addAttribute("clima", climaData);
+        } catch (Exception e) {
+            System.err.println("Error al obtener datos del clima para la ciudad '" + ciudad + "': " + e.getMessage());
+            model.addAttribute("climaError", "No se pudo obtener el clima. Verifica el nombre de la ciudad en tu perfil.");
+        }
+    }
 
     return "home";
   }
@@ -59,7 +85,6 @@ public class HomeController {
   @GetMapping("/ranking")
   public String mostrarRanking(Model model) {
     System.out.println("LOG: El método 'mostrarRanking' ha sido llamado por una petición a /home.");
-    // Se crean 2 listas para 2 tipos diferentes de ranking
     List<Usuario> rankingNivel = usuarioService.obtenerTodos();
     List<Usuario> rankingCompletadas = usuarioService.obtenerTodos();
     rankingNivel.sort(Comparator.comparing(Usuario::getNivelExperiencia).reversed());
@@ -77,43 +102,20 @@ public class HomeController {
     System.out.println(
         "LOG: El método 'mostrarHistorial' ha sido llamado por una petición a /historial.");
 
-    // Obtener el usuario autenticado
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
     String correo = userDetails.getUsername();
 
-    // Buscar el usuario con sus tareas cargadas
     Usuario usuarioActual = usuarioService.buscarPorCorreoConTareas(correo);
 
-    // Obtener el historial completo de tareas completadas
     List<Tarea> historialTareas = usuarioActual.getTareasCompletadas();
 
-    // Pasar datos al modelo
     model.addAttribute("usuario", usuarioActual);
     model.addAttribute("historialTareas", historialTareas);
 
-    return "historial_tareas"; // nombre del archivo HTML sin .html
+    return "historial_tareas";
   }
 
-  /*
-      @GetMapping("/perfil")
-      public String mostrarPerfil(Model model, HttpSession session) {
-          System.out.println("LOG: El método 'mostrarPerfil' ha sido llamado por una petición a /perfil.");
-          Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-          CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-          Usuario usuarioActual = userDetails.getUsuario();
-          model.addAttribute("usuario", usuarioActual);
-          model.addAttribute("nombre_usuario", usuarioActual != null ? usuarioActual.getNombreUsuario() : "-");
-
-          return "user-profile";  // ← Este es el cambio crítico
-      }
-  */
-
-  /**
-   * Este es un método de diagnóstico para verificar que el controlador responde. @ResponseBody le
-   * dice a Spring que no busque un archivo HTML, sino que devuelva el texto de este método
-   * directamente como respuesta al navegador.
-   */
   @GetMapping("/hola")
   @ResponseBody
   public String decirHola() {

@@ -32,6 +32,7 @@ dependencies {
 	implementation 'org.postgresql:postgresql:42.7.3'
 	runtimeOnly 'org.postgresql:postgresql'
 	implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
+	implementation 'org.json:json:20240303'
 }
 
 tasks.named('test') {

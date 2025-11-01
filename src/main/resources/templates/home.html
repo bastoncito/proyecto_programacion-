@@ -11,13 +11,11 @@
 <body>
     <!--Pantalla de carga-->
     <div th:replace="~{fragments :: loadingScreen}"></div>
-    <!--Sección Anuncios-->
+
+    <!-- ===== CONTENEDOR SUPERIOR IZQUIERDO (60% ancho) ===== -->
     <div class="container-advertisements">
-        <!--Reto Semanal-->
         <div class="reto-section">
-            <div class="reto-header">
-                <h1>DESAFÍO SEMANAL</h1>
-            </div>
+            <div class="reto-header"><h1>DESAFÍO SEMANAL</h1></div>
             <div class="reto-body">
                 <p>Título</p>
                 <p>Descripción de la tarea semanal...</p>
@@ -25,44 +23,22 @@
                 <button class="reto-button">Aceptar Desafío</button>
             </div>
         </div>
-
-        <!--Clasificación (TOP)-->
         <div class="top-section">
-            <div class="top-header">
-                <h1>TOP GLOBALES</h1>
-            </div>
+            <div class="top-header"><h1>TOP GLOBALES</h1></div>
             <div class="top-body">
-                <div class="top-user">
-                    <div class="top-position">1</div>
-                    <div class="top-user-icon"><i class='bx bx-user'></i></div>
-                    <div class="top-user-name">User 1</div>
-                    <div class="top-user-points">X Puntos</div>
-                </div>
-                <div class="top-user">
-                    <div class="top-position">2</div>
-                    <div class="top-user-icon"><i class='bx bx-user'></i></div>
-                    <div class="top-user-name">User 2</div>
-                    <div class="top-user-points">Y Puntos</div>
-                </div>
-                <div class="top-user">
-                    <div class="top-position">3</div>
-                    <div class="top-user-icon"><i class='bx bx-user'></i></div>
-                    <div class="top-user-name">User 3</div>
-                    <div class="top-user-points">Z Puntos</div>
-                </div>
+                <div class="top-user"><div class="top-position">1</div><div class="top-user-icon"><i class='bx bx-user'></i></div><div class="top-user-name">User 1</div><div class="top-user-points">X Puntos</div></div>
+                <div class="top-user"><div class="top-position">2</div><div class="top-user-icon"><i class='bx bx-user'></i></div><div class="top-user-name">User 2</div><div class="top-user-points">Y Puntos</div></div>
+                <div class="top-user"><div class="top-position">3</div><div class="top-user-icon"><i class='bx bx-user'></i></div><div class="top-user-name">User 3</div><div class="top-user-points">Z Puntos</div></div>
             </div>
         </div>
     </div>
 
-    <!-- Sección Información -->
+    <!-- ===== CONTENEDOR SUPERIOR DERECHO (40% ancho) ===== -->
     <div class="container-info">
         <div class="info-left">
-            <!--Perfil de Usuario-->
             <div class="info-section">
                 <div class="user-profile-top">
-                    <div class="user-top">
-                        <p th:text="${usuario.nivelExperiencia}"></p>
-                    </div>
+                    <div class="user-top"><p th:text="${usuario.nivelExperiencia}"></p></div>
                     <div class="user-info">
                         <strong><p th:text="${usuario.nombreUsuario}" class="username"></p></strong>
                         <p th:text="${usuario.correoElectronico}"></p>
@@ -78,67 +54,55 @@
                     </div>
                 </div>
                 <div class="info-buttons">
-                    <form th:action="@{/perfil}" method="get">
-                        <button type="submit" class="logout">
-                            Ver Perfil
-                        </button>
-                    </form>
+                    <form th:action="@{/perfil}" method="get"><button type="submit" class="logout">Ver Perfil</button></form>
                     <form th:action="@{/logout}" method="post">
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                        <button type="submit" class="borrar" onclick="return confirm('¿Estás seguro de que quieres cerrar la sesión?');">
-                            Cerrar Sesión
-                        </button>
+                        <button type="submit" class="borrar" onclick="return confirm('¿Estás seguro de que quieres cerrar la sesión?');">Cerrar Sesión</button>
                     </form>
                 </div>
-
             </div>
-            <!--Clima-->
             <div class="clima-section">
-                <div class="clima-hora"><p>12:30</p></div>
-                <div class="clima-main-content">
-                    <div class="clima-icon">
-                        <i class='bx bx-cloud-rain'></i>
+                 <div th:if="${clima}">
+                    <div class="clima-hora"><p th:text="${clima.hora}">12:30</p></div>
+                    <div class="clima-main-content">
+                        <div class="clima-icon">
+                            <i th:classappend="${ #strings.startsWith(clima.icono, '01') ? 'bx-sun' : #strings.startsWith(clima.icono, '02') ? 'bx-cloud' : #strings.startsWith(clima.icono, '03') or #strings.startsWith(clima.icono, '04') ? 'bxs-cloud' : #strings.startsWith(clima.icono, '09') or #strings.startsWith(clima.icono, '10') ? 'bx-cloud-rain' : #strings.startsWith(clima.icono, '11') ? 'bx-cloud-lightning' : #strings.startsWith(clima.icono, '13') ? 'bx-cloud-snow' : 'bx-question-mark' }" class='bx'></i>
+                        </div>
+                        <div class="clima-info">
+                            <p th:text="${clima.temperatura} + '°C'">15°C</p>
+                            <p th:text="'Humedad: ' + ${clima.humedad} + '%'">Humedad: 75%</p>
+                        </div>
                     </div>
-                    <div class="clima-info">
-                        <p>15°C</p>
-                        <p>Humedad: 75%</p>
-                    </div>
+                    <div class="clima-status"><h2 th:text="${#strings.capitalize(clima.descripcion)}">Lluvioso</h2></div>
                 </div>
-                <div class="clima-status">
-                    <h2>Lluvioso</h2>
+                <div th:unless="${clima}" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; height: 100%;">
+                    <p th:if="${climaError}" th:text="${climaError}" style="color: red;"></p>
+                    <p th:unless="${climaError}">
+                        <a th:href="@{/perfil}" style="font-weight: bold; color: #333;">Configura tu ciudad</a>
+                         para ver el clima.</p>
                 </div>
             </div>
         </div>
         <div class="info-right">
-            <!--Copas-->
             <div class="copa-section">
                 <p>x Puntos</p>
                 <img th:src="@{/images/copa.png}" alt="copa">
                 <p>x Liga</p>
             </div>
-            <!--Logo-->
             <div class="logo-section">
                 <img th:src="@{/images/logo_negro.png}" alt="logo_negro">
             </div>
         </div>
     </div>
 
-    <!--Sección Tareas-->
+    <!-- ===== CONTENEDOR INFERIOR IZQUIERDO (60% ancho) ===== -->
     <div class="container-task">
-        <!--Tareas Pendientes-->
         <div class="task-section">
-            <div class="task-header">
-                <h1>Tareas Pendientes</h1>
-            </div>
+            <div class="task-header"><h1>Tareas Pendientes</h1></div>
             <div class="task-list">
-                <button class="task-item open-modal"
-                        th:each="tarea, stat : ${tareas}"
-                        th:if="${stat.index < 4}"
+                <button class="task-item open-modal" th:each="tarea, stat : ${tareas}" th:if="${stat.index < 4}"
                         th:text="${tarea.nombre}"
-                        th:attr="data-nombre=${tarea.nombre},
-                        data-descripcion=${tarea.descripcion},
-                        data-experiencia=${tarea.exp},
-                        data-expira=${tarea.fechaExpiracion}">
+                        th:attr="data-nombre=${tarea.nombre}, data-descripcion=${tarea.descripcion}, data-experiencia=${tarea.exp}, data-expira=${#temporals.format(tarea.fechaExpiracion, 'dd/MM/yyyy')}">
                 </button>
                 <p th:if="${#lists.isEmpty(tareas)}">No tienes tareas anotadas.</p>
             </div>
@@ -148,32 +112,25 @@
         </div>
     </div>
     
-    <!--Sección Historial-->
+    <!-- ===== CONTENEDOR INFERIOR DERECHO (40% ancho) ===== -->
     <div class="container-history">
         <h2>Historial de Tareas</h2>
-        
         <div class="view-section">
             <div class="param-bar">
                 <span>Nombre</span>
                 <span>Experiencia</span>
                 <span>Fecha Finalización</span>
             </div>
-
-            <!-- Mensaje si no hay tareas completadas -->
             <div th:if="${#lists.isEmpty(historialTareas)}" class="history-empty">
-                <p>Aún no has completado ninguna tarea. ¡Manos a la obra!</p>
+                <p>Aún no has completado ninguna tarea.</p>
             </div>
-
-            <!-- Lista de tareas completadas -->
             <div th:unless="${#lists.isEmpty(historialTareas)}" class="history-list">
                 <div class="history-row" th:each="tarea, stat : ${historialTareas}" th:if="${stat.index < 3}">
-                    <span th:text="${tarea.nombre}">Nombre de la tarea</span>
-                    <span th:text="${tarea.exp} + ' XP'" class="exp-points">100 XP</span>
-                    <span th:text="${#temporals.format(tarea.fechaCompletada, 'dd/MM/yyyy HH:mm')}">10/10/2025 15:30</span>
+                    <span th:text="${tarea.nombre}"></span>
+                    <span th:text="${tarea.exp} + ' XP'" class="exp-points"></span>
+                    <span th:text="${#temporals.format(tarea.fechaCompletada, 'dd/MM/yyyy HH:mm')}"></span>
                 </div>
             </div>
-
-            <!-- Botón "Mostrar Todo" solo si hay más de 3 tareas -->
             <div class="more-section" th:if="${#lists.size(historialTareas) > 3}">
                 <a th:href="@{/historial}" class="btn-show-all">Mostrar Todo</a>
             </div>
@@ -203,7 +160,7 @@
 
     <script>
         const modal = document.getElementById("taskModal");
-        const openButtons = document.querySelectorAll(".open-modal")
+        const openButtons = document.querySelectorAll(".open-modal");
         const modalTitle = document.getElementById("modalTitle");
         const modalDescription = document.getElementById("modalDescription");
         const modalExp = document.getElementById("modalExp");
@@ -219,13 +176,12 @@
         document.getElementById("deleteButton").addEventListener("click", () => {
             deleteTaskId.value = modalTitle.textContent;
             deleteForm.submit();
-        })
+        });
 
          document.getElementById("completeButton").addEventListener("click", () => {
             completeTaskId.value = modalTitle.textContent;
             completeForm.submit();
-        })
-
+        });
 
         // Show modal with task info
         openButtons.forEach(btn => {
@@ -246,8 +202,6 @@
     <script>
         window.onload = function() {
             const loader = document.getElementById('loader-wrapper');
-            
-            // Simulamos 1.4 segundos
             setTimeout(function() {
                 loader.style.display = 'none';
             }, 1420); 
