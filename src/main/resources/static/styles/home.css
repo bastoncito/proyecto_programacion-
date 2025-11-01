@@ -59,6 +59,8 @@ body {
     padding: 0;
     margin-left: 1vw;
     box-sizing: border-box;
+    position: relative;
+    z-index: 1;
 }
 
 /* Sección Historial - Inferior Derecha (40% altura, 40% ancho) */

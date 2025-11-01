@@ -50,6 +50,8 @@ public class Usuario {
 
   @Transient private List<Logro> logros = new ArrayList<>();
 
+  private String ciudad;
+
   // Constructor vacío requerido por JPA
   public Usuario() {}
 
@@ -149,6 +151,14 @@ public class Usuario {
     this.contraseña = contraseña;
   }
 
+  public String getCiudad() {
+    return ciudad;
+  }
+
+  public void setCiudad(String ciudad) {
+    this.ciudad = ciudad;
+  }
+  
   /**
    * Devuelve una copia de la lista de logros que el usuario ha desbloqueado.
    *

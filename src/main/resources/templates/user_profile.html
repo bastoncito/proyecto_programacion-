@@ -59,6 +59,13 @@
                                placeholder="correo@ejemplo.com"
                                required>
                     </div>
+                    
+                    <div class="form-grupo">
+                        <label for="ciudad">Ciudad</label>
+                        <input type="text" id="ciudad" name="ciudad"
+                            th:value="${usuarioLogueado.ciudad}"
+                            placeholder="Ej: Curico,CL">
+                    </div>
 
                     <button type="submit" class="btn-guardar">GUARDAR CAMBIOS</button>
                 </form>
