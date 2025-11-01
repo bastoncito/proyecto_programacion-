@@ -2,6 +2,9 @@ package Michaelsoft_Binbows.security;
 
 import Michaelsoft_Binbows.entities.Tarea;
 import Michaelsoft_Binbows.exceptions.*;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -74,5 +77,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     return "admin-tarea-form";
+  }
+
+  @ExceptionHandler(WeatherApiException.class)
+    public ResponseEntity<String> handleWeatherApiException(WeatherApiException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"" + ex.getMessage() + "\"}");
   }
 }
