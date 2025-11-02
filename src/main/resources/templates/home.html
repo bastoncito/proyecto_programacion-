@@ -101,9 +101,9 @@
         </div>
         <div class="info-right">
             <div class="copa-section">
-                <p>x Puntos</p>
-                <img th:src="@{/images/copa.png}" alt="copa">
-                <p>x Liga</p>
+                <p>Puntos: <span th:text="${usuario.puntosLiga}">0</span></p>
+                <img th:src="@{'/images/copa-' + ${usuario.liga.toLowerCase().replace(' ', '_')} + '.png'}" alt="Copa Liga">
+                <p>Liga: <span th:text="${usuario.liga}">Bronce</span></p>
             </div>
             <div class="logo-section">
                 <img th:src="@{/images/logo_negro.png}" alt="logo_negro">
