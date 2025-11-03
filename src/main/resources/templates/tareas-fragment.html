@@ -37,18 +37,18 @@
                 <div th:if="${usuarioSeleccionado != null}">
                     <div class="panel-header" th:text="'Tareas de ' + ${usuarioSeleccionado.nombreUsuario}"></div>
                     
-                    <div th:if="${#lists.isEmpty(usuarioSeleccionado.tareas)}">
+                    <div th:if="${#lists.isEmpty(usuarioSeleccionado.tareasPendientes)}"> 
                         <p class="no-tasks-message">Este usuario no tiene tareas pendientes.</p>
                     </div>
                     
-                    <div th:unless="${#lists.isEmpty(usuarioSeleccionado.tareas)}" class="list-box">
+                    <div th:unless="${#lists.isEmpty(usuarioSeleccionado.tareasPendientes)}" class="list-box"> 
                         <div class="param-bar">
                             <span>Tarea</span>
                             <span>Experiencia</span>
                             <span>Fecha Límite</span>
                             <span>Acciones</span>
                         </div>
-                        <div class="user-row" th:each="tarea : ${usuarioSeleccionado.tareas}">
+                        <div class="user-row" th:each="tarea : ${usuarioSeleccionado.tareasPendientes}">
                             <div class="user-cell" th:text="${tarea.nombre}"></div>
                             <div class="user-cell" th:text="${tarea.exp} + ' XP'"></div>
                             <div class="user-cell" th:text="${#temporals.format(tarea.fechaExpiracion, 'dd-MM-yyyy HH:mm')}"></div>

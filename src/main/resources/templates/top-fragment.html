@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+  <div th:fragment="contenidoTopLeaderboard">
+    
+    <div class="section-title">Top 10 Jugadores</div>
+    <div class="section-line"></div>
+
+    <div class="list-box">
+      
+      <div class="param-bar">
+        <span>#</span>       <span>Nombre</span>
+        <span>Puntos</span>
+        <span>Liga</span>
+      </div>
+
+      <div class="user-row" th:each="usuario, stat : ${listaTop10}">
+        <div class="user-cell" th:text="${stat.count}"></div>
+        <div class="user-cell" th:text="${usuario.nombreUsuario}"></div>
+        <div class="user-cell" th:text="${usuario.puntosLiga} + ' Pts'"></div>
+        <div class="user-cell" th:text="${usuario.liga}"></div>
+      </div>
+
+      <div th:if="${listaTop10.isEmpty()}" class="empty-list-message">
+        <p>Aún no hay jugadores en el ranking esta temporada.</p>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

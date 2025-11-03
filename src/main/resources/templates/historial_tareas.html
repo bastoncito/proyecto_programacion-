@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Tareas</title>
+    <link rel="stylesheet" th:href="@{styles/historial_tareas.css}">
+</head>
+<body>
+    <!-- Header -->
+    <div class="container-header">
+        <div class="volver-section">
+            <form th:action="@{/home}" method="get" style="display: inline;">
+                <button type="submit" class="btn-volver">VOLVER</button>
+            </form>
+            <img class="logo" th:src="@{images/logo_blanco2.png}" alt="logo">
+        </div>
+        <div class="perfil-section">
+            <div class="user-lvl">
+                <p class="lvl-numero" th:text="${usuario.nivelExperiencia}">25</p>
+                <p class="lvl-texto">Nivel</p>
+            </div>
+            <div class="user-info">
+                <p class="info-nombre" th:text="${usuario.nombreUsuario}">JuanPerez123</p>
+                <p class="info-correo" th:text="${usuario.correoElectronico}">juan.perez@ejemplo.com</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container-main">
+        <!-- Sección Izquierda: Historial de Tareas -->
+        <div class="container-left">
+            <div class="container-body">
+                <h1 class="titulo-historial">Historial Completo de Tareas</h1>
+                
+                <!-- Mensaje si no hay tareas completadas -->
+                <div th:if="${#lists.isEmpty(historialTareas)}" class="history-empty">
+                    <p>Aún no has completado ninguna tarea. ¡Manos a la obra!</p>
+                </div>
+
+                <!-- Tabla de historial -->
+                <div th:unless="${#lists.isEmpty(historialTareas)}" class="history-container">
+                    <div class="param-bar">
+                        <span>Nombre de la Tarea</span>
+                        <span>Experiencia</span>
+                        <span>Fecha de Finalización</span>
+                    </div>
+
+                    <div class="history-list">
+                        <div class="history-row" th:each="tarea : ${historialTareas}">
+                            <span th:text="${tarea.nombre}">Nombre de la tarea</span>
+                            <span th:text="${tarea.exp} + ' XP'" class="exp-points">100 XP</span>
+                            <span th:text="${#temporals.format(tarea.fechaCompletada, 'dd/MM/yyyy HH:mm')}">10/10/2025 15:30</span>
+                        </div>
+                    </div>
+
+                    <!-- Estadísticas -->
+                    <div class="stats-section">
+                        <div class="stat-item">
+                            <span class="stat-label">Total de tareas completadas:</span>
+                            <span class="stat-value" th:text="${usuario.numeroCompletadas}">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Experiencia total ganada:</span>
+                            <span class="stat-value" th:text="${usuario.experienciaTotal} + ' XP'">0 XP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección Derecha: Información -->
+        <div class="container-right">
+            <div class="container-body">
+                <div class="container-description">
+                    <h1>Historial de Tareas</h1>
+                    <p>Aquí puedes ver todas las tareas que has completado hasta ahora. Cada tarea muestra la experiencia ganada y la fecha exacta en que la terminaste. ¡Sigue así y alcanza nuevos niveles!</p>
+                    
+                    <div class="logros-preview">
+                        <h2>🏆 Tus Logros</h2>
+                        <p>Has completado <strong th:text="${usuario.numeroCompletadas}">0</strong> tareas</p>
+                        <p>Nivel actual: <strong th:text="${usuario.nivelExperiencia}">1</strong></p>
+                        <p>Racha actual: <strong th:text="${usuario.racha}">0</strong> días 🔥</p>
+                    </div>
+                </div>
+                <div class="container-img">
+                    <img th:src="@{images/icon1.png}" alt="personaje1">
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

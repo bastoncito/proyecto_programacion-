@@ -6,9 +6,9 @@
     <title>Panel de Administrador</title>
     
     <!-- CSS y Librerías -->
-    <link rel="stylesheet" th:href="@{/admin.css}">
+    <link rel="stylesheet" th:href="@{/styles/admin.css}">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" th:href="@{/loader.css}">
+    <link rel="stylesheet" th:href="@{/styles/loader.css}">
 </head>
 <body>
     <!--Pantalla de carga-->
@@ -16,14 +16,14 @@
     <!-- Barra lateral izquierda -->
     <div class="container-task-bar">
         <div class="logo-placeholder">
-            <img th:src="@{/logo_negro.png}" style="width:180px; height:auto;" alt="Logo">
+            <img th:src="@{/images/logo_negro.png}" style="width:180px; height:auto;" alt="Logo">
         </div>
 
         <!-- Navegación principal -->
         <ul>
             <li><a th:href="@{/admin(vista='usuarios')}"><i class='bx bxs-group'></i> Usuarios</a></li>
             <li><a th:href="@{/admin(vista='tareas')}"><i class='bx bx-task'></i> Tareas</a></li>
-            <li><a href="#"><i class='bx bxs-bar-chart-alt-2'></i> Top</a></li>
+            <li><a th:href="@{/admin(vista='top')}"><i class='bx bxs-bar-chart-alt-2'></i> Top</a></li>
             <li><a href="#"><i class='bx bxs-trophy'></i> Logros</a></li>
             <li><a th:href="@{/home}"><i class='bx bxs-home'></i> Home</a></li>
         </ul>
@@ -37,6 +37,11 @@
     <!-- Contenido principal (todo lo que está a la derecha) -->
     <div class="main-content">
         
+        <!-- Mensaje exito operaciones -->
+        <div th:if="${success}" class="flash-success">
+            <i class='bx bx-check-circle'></i>
+            <span th:text="${success}"></span>
+        </div>
         <!-- Tarjeta de información del usuario (arriba a la derecha) -->
         <div class="container-info">
             <div class="info-section" th:if="${usuarioActual != null}">
@@ -90,9 +95,13 @@
                         </div>
                     </div>
                 </div>
-                 <!-- Caso 2: Si la vista es 'tareas' -->
+                <!-- Caso 2: Si la vista es 'tareas' -->
                 <div th:case="'tareas'">
                     <div th:replace="~{tareas-fragment :: contenidoTareasMaestroDetalle}"></div>
+                </div>
+                <!-- Case 3: Vista del Top-->
+                <div th:case="'top'">
+                    <div th:replace="~{top-fragment :: contenidoTopLeaderboard}"></div>
                 </div>
                 
                 
@@ -261,10 +270,59 @@
         </div>
     </div>
 
-    <!-- BOTÓN FLOTANTE CREAR USUARIO/TAREA  -->
-    <a th:href="${vistaActual == 'usuarios' ? '/admin?crearUsuario=true' : '/admin?vista=tareas&crearTarea=true'}"
-   th:title="${vistaActual == 'usuarios' ? 'Añadir Nuevo Usuario' : 'Añadir Nueva Tarea'}"
-   class="fab">
+    <div class="modal-overlay" th:if="${mostrarModalTopConfig}">
+      <div class="modal-content">
+        <h2>Configuración del Top</h2>
+        <div class="section-line"></div>
+        
+        <form class="edit-form">
+          <div class="form-group">
+            <label>Mostrar Top:</label>
+            <div class="top-n-buttons">
+                <a th:href="@{/admin/top/set-limite(limite=10)}" 
+                   class="btn-cancel" 
+                   th:classappend="${limiteActual == 10 ? 'active' : ''}">10</a>
+                   
+                <a th:href="@{/admin/top/set-limite(limite=20)}" 
+                   class="btn-cancel" 
+                   th:classappend="${limiteActual == 20 ? 'active' : ''}">20</a>
+                   
+                <a th:href="@{/admin/top/set-limite(limite=30)}" 
+                   class="btn-cancel" 
+                   th:classappend="${limiteActual == 30 ? 'active' : ''}">30</a>
+                   
+                <a th:href="@{/admin/top/set-limite(limite=50)}" 
+                   class="btn-cancel" 
+                   th:classappend="${limiteActual == 50 ? 'active' : ''}">50</a>
+            </div>
+          </div>
+
+          <div class="section-line" style="margin-top: 25px; margin-bottom: 25px;"></div>
+          
+          <div class="form-group">
+            <label>Mantenimiento de Temporada:</label>
+            <a th:href="@{/admin/temporada/reset-manual}"
+               class="btn-delete"
+               onclick="return confirm('¿Estás seguro de que quieres resetear TODOS los puntos de liga a 0?');">
+              <i class='bx bx-error-alt'></i> Forzar Reseteo de Temporada
+            </a>
+          </div>
+
+          <div class="form-actions" style="margin-top: 30px;">
+            <a th:href="@{/admin(vista='top', limite=${limiteActual})}" class="btn-cancel">Cerrar</a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- BOTÓN FLOTANTE CREAR USUARIO/TAREA/TOP  -->
+    <a th:href="${vistaActual == 'usuarios' ? '/admin?crearUsuario=true' : 
+               (vistaActual == 'tareas' ? '/admin?vista=tareas&crearTarea=true' : 
+               '/admin?vista=top&mostrarConfig=true&limite=' + limiteActual)}"
+        th:title="${vistaActual == 'usuarios' ? 'Añadir Nuevo Usuario' : 
+                    (vistaActual == 'tareas' ? 'Añadir Nueva Tarea' : 
+                    'Configurar Top')}"
+        class="fab">
         <i class='bx bx-plus'></i>
     </a>
 

@@ -1,10 +1,10 @@
 # MICHAELSOFT BINBOWS
 
-## Integrantes (y roles iniciales):
-- Hans Reicher (Hans3661): Líder técnico
-- Matías Gómez (gomezdfault): Backend
-- Diego Pezoa (Zketsh01): QA y Documentación
-- Bastián Reyes (bastoncito): Frontend
+## Integrantes (y roles actuales):
+- Hans Reicher (Hans3661): Backend
+- Matías Gómez (gomezdfault): Frontend
+- Diego Pezoa (Zketsh01): Líder técnico
+- Bastián Reyes (bastoncito): QA y Documentación
 
 ## Canales de comunicación: 
 - Whatsapp https://chat.whatsapp.com/CHdNZuRGKp9JEJdOIBzbnU?mode=ac_t (Si el enlace expira, avisar.)

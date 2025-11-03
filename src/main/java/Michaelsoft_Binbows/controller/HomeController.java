@@ -1,109 +1,208 @@
-    // Asegúrate de que este paquete coincida exactamente con el de tus otras clases.
-    package Michaelsoft_Binbows.controller;   
+package Michaelsoft_Binbows.controller;
 
+import Michaelsoft_Binbows.entities.Tarea;
+import Michaelsoft_Binbows.entities.Usuario;
+import Michaelsoft_Binbows.security.CustomUserDetails;
+import Michaelsoft_Binbows.services.ConfiguracionService;
+import Michaelsoft_Binbows.services.TareaService;
+import Michaelsoft_Binbows.services.UsuarioService;
+import Michaelsoft_Binbows.services.WeatherService;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-    import org.springframework.security.core.Authentication;
-    import org.springframework.security.core.context.SecurityContextHolder;
-    // --- Imports necesarios de Spring Framework y Java ---
-    import org.springframework.stereotype.Controller;
-    import org.springframework.ui.Model;
-    import org.springframework.web.bind.annotation.GetMapping;
-    import org.springframework.web.bind.annotation.PostMapping;
-    import org.springframework.web.bind.annotation.ResponseBody; // Necesario para el método de prueba
+@Controller
+public class HomeController {
 
-    import Michaelsoft_Binbows.CustomUserDetails;
-    import Michaelsoft_Binbows.services.BaseDatos;
-    import Michaelsoft_Binbows.services.Tarea;
-    import Michaelsoft_Binbows.services.Usuario;
-    import jakarta.servlet.http.HttpSession;
+  @Autowired private UsuarioService usuarioService;
 
-    import java.util.Collections;
-    import java.util.Comparator;
-    import java.util.List;
+  @Autowired private WeatherService weatherService;
 
-    /**
-     * Esta clase es un Controlador de Spring.v
-     * Su responsabilidad es recibir peticiones web del navegador,
-     * interactuar con la lógica de negocio (como la clase BaseDatos),
-     * y decidir qué vista (archivo HTML) mostrarle al usuario.
-     */
-    @Controller // ANOTACIÓN CLAVE: Marca esta clase para que Spring la reconozca como un controlador.
-    public class HomeController {
+  @Autowired private ConfiguracionService configuracionService;
 
-        // Se inyecta la dependencia de BaseDatos, gracias a que BaseDatos es un Spring Bean (@Service).
-        //(Véase BaseDatos.java para más detalles)
-        private final BaseDatos baseDatos;
-        public HomeController(BaseDatos baseDatos) {
-            this.baseDatos = baseDatos;
-        }
+  @Autowired private TareaService tareaService;
 
-        @GetMapping("/")
-        public String redirigirLogin() {
-            return "redirect:/login";
-        }
+  @GetMapping("/")
+  public String redirigirLogin() {
+    return "redirect:/login";
+  }
 
-        @GetMapping("/home")
-        public String mostrarHome(Model model, HttpSession session) {
-            System.out.println("LOG: El método 'mostrarMain' ha sido llamado por una petición a /home.");
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-            Usuario usuarioActual = userDetails.getUsuario(); 
-            usuarioActual.resetRacha();
+  @GetMapping("/home")
+  public String mostrarHome(Model model) {
+    System.out.println("LOG: El método 'mostrarMain' ha sido llamado por una petición a /home.");
 
-            model.addAttribute("usuario", usuarioActual);
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+    String correo = userDetails.getUsername();
 
-            List<Tarea> tareas = usuarioActual != null ?usuarioActual.getTareas() : Collections.emptyList();
-            model.addAttribute("tareas", tareas);
+    Usuario usuarioActual = usuarioService.buscarPorCorreoConTareas(correo);
+    usuarioActual.resetRacha();
 
-            List<Tarea> tareasCompletadas = usuarioActual != null ?usuarioActual.getTareasCompletadas() : Collections.emptyList();
-            tareasCompletadas.sort(Comparator.comparing(Tarea::getFechaCompletada, Comparator.nullsLast(Comparator.reverseOrder())));
-            model.addAttribute("historialTareas", tareasCompletadas);
+    model.addAttribute("usuario", usuarioActual);
+    model.addAttribute("tareas", usuarioActual.getTareasPendientes());
+    model.addAttribute("historialTareas", usuarioActual.getTareasCompletadas());
 
-            return "home";
-        }
+    String ciudad = usuarioActual.getCiudad();
+    String climaActual = null;
+    if (ciudad != null && !ciudad.trim().isEmpty()) {
+      try {
+        String weatherJsonString = weatherService.getWeatherByCity(ciudad);
+        JSONObject weatherJson = new JSONObject(weatherJsonString);
 
-        @GetMapping("/ranking")
-        public String mostrarRanking(Model model) {
-            System.out.println("LOG: El método 'mostrarRanking' ha sido llamado por una petición a /home.");
-            //Se crean 2 listas para 2 tipos diferentes de ranking
-            List<Usuario> rankingNivel = baseDatos.getUsuarios();
-            List<Usuario> rankingCompletadas = baseDatos.getUsuarios();
-            rankingNivel.sort(Comparator.comparing(Usuario::getNivelExperiencia).reversed());
-            rankingCompletadas.sort(Comparator.comparing(Usuario::getNumeroCompletadas).reversed());
-            model.addAttribute("rankingNivel", rankingNivel != null ? rankingNivel : Collections.emptyList());
-            model.addAttribute("rankingCompletadas", rankingCompletadas != null ? rankingCompletadas : Collections.emptyList());
+        Map<String, Object> climaData = new HashMap<>();
+        climaData.put("temperatura", weatherJson.getJSONObject("main").getInt("temp"));
+        climaData.put(
+            "descripcion",
+            weatherJson.getJSONArray("weather").getJSONObject(0).getString("description"));
+        climaData.put("humedad", weatherJson.getJSONObject("main").getInt("humidity"));
+        climaData.put(
+            "icono", weatherJson.getJSONArray("weather").getJSONObject(0).getString("icon"));
+        long timestamp = weatherJson.getLong("dt");
+        // Seccion zona horaria
+        int timezoneOffset = weatherJson.getInt("timezone");
+        // Convertimos el timestamp UTC a un objeto Instant y le aplicamos el desfase horario
+        Instant instant = Instant.ofEpochSecond(timestamp);
+        ZoneId zoneId = ZoneId.ofOffset("UTC", java.time.ZoneOffset.ofTotalSeconds(timezoneOffset));
+        // Formateamos la hora al formato "HH:mm"
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm").withZone(zoneId);
+        String horaLocal = formatter.format(instant);
 
-            return "ranking";
-        }
-    /*   
-        @GetMapping("/perfil")
-        public String mostrarPerfil(Model model, HttpSession session) {
-            System.out.println("LOG: El método 'mostrarPerfil' ha sido llamado por una petición a /perfil.");
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-            Usuario usuarioActual = userDetails.getUsuario(); 
-            model.addAttribute("usuario", usuarioActual);
-            model.addAttribute("nombre_usuario", usuarioActual != null ? usuarioActual.getNombreUsuario() : "-");
+        climaData.put("hora", horaLocal);
+        model.addAttribute("clima", climaData);
 
-            return "user-profile";  // ← Este es el cambio crítico
-        }
-    */
-
-        /**
-         * Este es un método de diagnóstico para verificar que el controlador responde.
-         * @ResponseBody le dice a Spring que no busque un archivo HTML, sino que devuelva
-         * el texto de este método directamente como respuesta al navegador.
-         */
-        @GetMapping("/hola")
-        @ResponseBody
-        public String decirHola() {
-            System.out.println("LOG: El método de prueba 'decirHola' ha sido llamado por una petición a /hola.");
-            return "<h1>¡Éxito! La respuesta viene del controlador de Java.</h1>";
-        }
-
-        @GetMapping("/403")
-        @ResponseBody
-        public String mostrarError() {
-            return "<title>Error</title><h1>403 - Forbidden</h1><h3>¿No se te está olvidando algo?</h3>";
-        }
+        // ---NUEVO: obtener el clima principal---
+        climaActual =
+            weatherJson
+                .getJSONArray("weather")
+                .getJSONObject(0)
+                .getString("main"); // Ejemplo: "Clear", "Clouds", "Rain"
+      } catch (Exception e) {
+        System.err.println(
+            "Error al obtener datos del clima para la ciudad '" + ciudad + "': " + e.getMessage());
+        model.addAttribute(
+            "climaError",
+            "No se pudo obtener el clima. Verifica el nombre de la ciudad en tu perfil.");
+      }
     }
+
+    // ---NUEVO: recomendar tarea según clima---
+    Tarea tareaRecomendada = null;
+    if (climaActual != null) {
+      String categoriaClima =
+          switch (climaActual) {
+            case "Clear" -> "Soleado";
+            case "Clouds" -> "Nublado";
+            case "Rain", "Drizzle", "Thunderstorm" -> "Lluvia";
+            case "Snow" -> "Nieve";
+            default -> "Soleado";
+          };
+      List<Tarea> recomendadas = tareaService.obtenerTareasRecomendadasPorClima(categoriaClima);
+      if (!recomendadas.isEmpty()) {
+        tareaRecomendada = recomendadas.get(0);
+      }
+    }
+    model.addAttribute("tareaRecomendada", tareaRecomendada);
+
+    // 1. Pedimos el Top 3 (usando el método que ya creamos en UsuarioService)
+    List<Usuario> top3 = usuarioService.getTopUsuarios(3);
+
+    // 2. Lo añadimos al modelo para que el HTML lo pueda usar
+    model.addAttribute("top3Usuarios", top3);
+    return "home";
+  }
+
+  @GetMapping("/ranking")
+  public String mostrarRanking(Model model) {
+    System.out.println("LOG: El método 'mostrarRanking' (NUEVO) ha sido llamado.");
+
+    // --- Lógica Nueva ---
+    try {
+      // 1. Obtener el usuario actual (para la tarjeta de perfil)
+      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+      CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+      Usuario usuarioActual = usuarioService.buscarPorCorreo(userDetails.getUsername());
+      model.addAttribute("usuarioLogueado", usuarioActual); // <-- Lo pasamos al HTML
+
+      // 2. Obtener el límite del Top (10, 20, etc.) desde la BD
+      int limite = configuracionService.getLimiteTop();
+
+      // 3. Obtener la lista del ranking (ordenada por puntosLiga)
+      List<Usuario> listaRanking = usuarioService.getTopUsuarios(limite);
+      model.addAttribute("listaRanking", listaRanking);
+
+      // 4. Generar los textos de los meses (para los títulos)
+      LocalDate hoy = LocalDate.now();
+      LocalDate mesPasado = hoy.minusMonths(1);
+
+      // Capitaliza la primera letra del mes
+      String mesActual = hoy.getMonth().getDisplayName(TextStyle.FULL, new Locale("es", "ES"));
+      String mesActualMayus = mesActual.substring(0, 1).toUpperCase() + mesActual.substring(1);
+
+      String mesAnterior =
+          mesPasado.getMonth().getDisplayName(TextStyle.FULL, new Locale("es", "ES"));
+      String mesAnteriorMayus =
+          mesAnterior.substring(0, 1).toUpperCase() + mesAnterior.substring(1);
+
+      model.addAttribute("tituloMesActual", mesActualMayus + " " + hoy.getYear());
+      model.addAttribute("tituloMesAnterior", mesAnteriorMayus + " " + mesPasado.getYear());
+
+      // 5. TODO: Lógica para el Salón de la Fama
+      // (Por ahora, enviamos una lista vacía para que el HTML no se rompa)
+      model.addAttribute("hallOfFame", Collections.emptyList());
+
+    } catch (Exception e) {
+      System.err.println("Error al cargar /ranking: " + e.getMessage());
+      // TODO: redirigir a una página de error o al home
+    }
+
+    return "ranking"; // Devuelve el nuevo ranking.html
+  }
+
+  @GetMapping("/historial")
+  public String mostrarHistorial(Model model) {
+    System.out.println(
+        "LOG: El método 'mostrarHistorial' ha sido llamado por una petición a /historial.");
+
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+    String correo = userDetails.getUsername();
+
+    Usuario usuarioActual = usuarioService.buscarPorCorreoConTareas(correo);
+
+    List<Tarea> historialTareas = usuarioActual.getTareasCompletadas();
+
+    model.addAttribute("usuario", usuarioActual);
+    model.addAttribute("historialTareas", historialTareas);
+
+    return "historial_tareas";
+  }
+
+  @GetMapping("/hola")
+  @ResponseBody
+  public String decirHola() {
+    System.out.println(
+        "LOG: El método de prueba 'decirHola' ha sido llamado por una petición a /hola.");
+    return "<h1>¡Éxito! La respuesta viene del controlador de Java.</h1>";
+  }
+
+  @GetMapping("/403")
+  @ResponseBody
+  public String mostrarError() {
+    return "<title>Error</title><h1>403 - Forbidden</h1><h3>¿No se te está olvidando algo?</h3>";
+  }
+}

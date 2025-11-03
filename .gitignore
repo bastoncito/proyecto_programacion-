@@ -39,3 +39,5 @@ out/
 # Libraries and JAR files
 *.jar              
 lib/ 
+src/main/java/Michaelsoft_Binbows/Ejecutora.java
+src/main/resources/usuarios.txt

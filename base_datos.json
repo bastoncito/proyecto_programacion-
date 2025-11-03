@@ -1,8 +1,8 @@
 [
   {
     "nombreUsuario": "Admin",
-    "correoElectronico": "admin@michaelsoftBinbows.com",
     "contraseña": "$2a$10$nqpuvP8H3L0j4n.dIM6pt.ayiAFtuSvleHb5FvC8Rkkemgc0t/1UG",
+    "correoElectronico": "admin@michaelsoftBinbows.com",
     "experiencia": 0,
     "nivelExperiencia": 1,
     "racha": 0,
@@ -20,15 +20,20 @@
         "descripcion": "Organizar el calendario para los próximos 7 días",
         "exp": 50,
         "fechaExpiracion": "2025-10-01T20:16"
+      },
+      {
+        "nombre": "Tarea11",
+        "descripcion": "Descripcion1",
+        "exp": 10,
+        "fechaExpiracion": "2025-10-09T13:57"
       }
     ],
-    "tareasCompletadas": [],
     "logros": []
   },
   {
     "nombreUsuario": "Matias Gomez",
-    "correoElectronico": "mgomez22@alumnos.utalca.cl",
     "contraseña": "$2a$10$Hpk2E/oJOvML3BldXuk5x.BDsbyjo3y5WprLDyOA0TC2om.kmCZ3O",
+    "correoElectronico": "mgomez22@alumnos.utalca.cl",
     "experiencia": 40,
     "nivelExperiencia": 4,
     "racha": 0,
@@ -40,100 +45,99 @@
         "descripcion": "le tengo miedo al merge",
         "exp": 150,
         "fechaExpiracion": "2025-10-11T10:46"
-      }
-    ],
-    "tareasCompletadas": [
-      {
-        "nombre": "Repasar EDO",
-        "descripcion": "Estudiar y avanzar en las guias de EDO",
-        "exp": 150,
-        "fechaExpiracion": "2025-10-11T10:30",
-        "fechaCompletada": "2025-10-06T10:46"
       },
       {
-        "nombre": "Probar funcionalidad script",
-        "descripcion": "En formulario Tareas ahora se actualiza",
-        "exp": 50,
-        "fechaExpiracion": "2025-10-09T10:46",
-        "fechaCompletada": "2025-10-06T11:22"
-      },
-      {
-        "nombre": "Probar Tareas nuevas",
-        "descripcion": "verificar que el codigo no se rompio",
-        "exp": 50,
-        "fechaExpiracion": "2025-10-09T10:30",
-        "fechaCompletada": "2025-10-06T11:22"
-      },
-      {
-        "nombre": "Levelear fraudulentamente",
-        "descripcion": "es para testear",
-        "exp": 150,
-        "fechaExpiracion": "2025-10-11T11:23",
-        "fechaCompletada": "2025-10-06T11:23"
-      },
-      {
-        "nombre": "Mas leveleo Fraudulento",
-        "descripcion": "no me pueden banear, soy mod",
-        "exp": 150,
-        "fechaExpiracion": "2025-10-11T11:23",
-        "fechaCompletada": "2025-10-06T11:23"
+        "nombre": "Nombre válido",
+        "descripcion": "Y una descripción válida :)",
+        "exp": 10,
+        "fechaExpiracion": "2025-10-09T13:33"
       }
     ],
     "logros": []
   },
   {
     "nombreUsuario": "zketsh01",
-    "correoElectronico": "dpezoa21@alumnos.utalca.cl",
     "contraseña": "$2a$10$U1KQ0IyCNyuyzmFIaPvjTeM4KynwNA6tKSLwfE57VM/3Otv9G/xme",
+    "correoElectronico": "dpezoa21@alumnos.utalca.cl",
     "experiencia": 50,
     "nivelExperiencia": 1,
     "racha": 0,
     "rol": "USUARIO",
     "fechaRegistro": "2025-10-06T00:40",
     "tareas": [],
-    "tareasCompletadas": [
-      {
-        "nombre": "Corregir errores",
-        "descripcion": "Buscar errores en el proyecto y arreglarlos",
-        "exp": 50,
-        "fechaExpiracion": "2025-10-09T02:32",
-        "fechaCompletada": "2025-10-06T02:32"
-      }
-    ],
     "logros": []
   },
   {
     "nombreUsuario": "Boton",
-    "correoElectronico": "Boton@gmail.com",
     "contraseña": "$2a$10$XK.SlCiPJM6sMW4oJUgukuacBL4m0Nj0wk0XSzhHIwkEyelDvLC2K",
+    "correoElectronico": "Boton@gmail.com",
     "experiencia": 0,
     "nivelExperiencia": 1,
-    "racha": 0,
-    "rol": "USUARIO",
-    "fechaRegistro": "2025-10-06T21:33",
-    "tareas": [
-      {
-        "nombre": "Tarea desde boton",
-        "descripcion": "asignar tarea desde boton",
-        "exp": 150,
-        "fechaExpiracion": "2025-10-11T21:41"
-      }
-    ],
-    "tareasCompletadas": [],
+    "racha": 1,
+    "rol": "MODERADOR",
+    "fechaRegistro": "2025-10-07T18:52",
+    "fechaRacha": "2025-10-08",
+    "tareas": [],
     "logros": []
   },
   {
     "nombreUsuario": "John GoodTime",
-    "correoElectronico": "jgdaman@gmail.com",
     "contraseña": "$2a$10$PFNxwHUvsgi1bFqecx02Kua/CYXI1eV3seFF48NeF40JKY.GIBbkG",
+    "correoElectronico": "jgdaman@gmail.com",
     "experiencia": 0,
     "nivelExperiencia": 1,
     "racha": 0,
-    "rol": "MODERADOR",
-    "fechaRegistro": "2025-10-07T18:52",
-    "fechaRacha": "2025-10-07",
+    "rol": "USUARIO",
+    "fechaRegistro": "2025-10-08T13:56",
     "tareas": [],
-    "tareasCompletadas": [],
+    "logros": []
+  },
+  {
+    "nombreUsuario": "Usuario11",
+    "contraseña": "$2a$10$r5Z.r3JSTidfQQ2qf4.gEOLq2wLNwWQZo67NppQfOerW5b/Pg0O7K",
+    "correoElectronico": "usuario11@gmail.com",
+    "experiencia": 0,
+    "nivelExperiencia": 1,
+    "racha": 0,
+    "rol": "USUARIO",
+    "fechaRegistro": "2025-10-12T14:24",
+    "tareas": [],
+    "logros": []
+  },
+  {
+    "nombreUsuario": "Usuario33",
+    "contraseña": "$2a$10$/NnHZMTynpPPSaOiYg6soeP49XwkyaIWHbhOnJhE2nFB2dpjPMnQy",
+    "correoElectronico": "usuario33@gmail.com",
+    "experiencia": 0,
+    "nivelExperiencia": 1,
+    "racha": 0,
+    "rol": "USUARIO",
+    "fechaRegistro": "2025-10-12T23:36",
+    "tareas": [],
+    "logros": []
+  },
+  {
+    "nombreUsuario": "zketsh03",
+    "contraseña": "$2a$10$x/8nZ1B3f3BmOPSE9FC7Ce4oJDJjiRkvZCisDMHl2XmgLQI9wMmCy",
+    "correoElectronico": "zketsh03@gmail.com",
+    "experiencia": 0,
+    "nivelExperiencia": 1,
+    "racha": 0,
+    "rol": "USUARIO",
+    "fechaRegistro": "2025-10-25T19:01",
+    "tareas": [],
+    "logros": []
+  },
+  {
+    "nombreUsuario": "zketsh02",
+    "contraseña": "$2a$10$v8nXBVpqO1JA2SN3I13wfePDN0FLMCogA.EHymEHvrlL6ELZPZORG",
+    "correoElectronico": "zketsh02@gmail.com",
+    "experiencia": 0,
+    "nivelExperiencia": 1,
+    "racha": 0,
+    "rol": "USUARIO",
+    "fechaRegistro": "2025-10-25T19:37",
+    "tareas": [],
     "logros": []
   }
 ]

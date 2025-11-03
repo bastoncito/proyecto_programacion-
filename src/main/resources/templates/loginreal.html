@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoodTime</title>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/loginreal.css}">
-    <link rel="stylesheet" th:href="@{/loader.css}">
+    <link rel="stylesheet" th:href="@{/styles/loginreal.css}">
+    <link rel="stylesheet" th:href="@{/styles/loader.css}">
 </head>
 <body>
     <div th:replace="~{fragments :: loadingScreen}"></div>
@@ -31,7 +31,7 @@
         </div>
         <!-- Sección del Register -->
         <div class="register-section">
-            <img th:src="@{/logo_negro.png}" alt="logo">
+            <img th:src="@{/images/logo_negro.png}" alt="logo">
             <h2>Bienvenido a Good Time</h2>
             <p id="p1">Cambia horas perdidas por metas cumplidas. Aprende, crea, crece, y desconéctate de lo que no suma.</p>
             <p id="p2">Crea tu cuenta y súmate</p>
