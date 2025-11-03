@@ -1,5 +1,6 @@
 package Michaelsoft_Binbows.services;
 
+import Michaelsoft_Binbows.exceptions.WeatherApiException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -7,13 +8,12 @@ import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import Michaelsoft_Binbows.exceptions.WeatherApiException;
 
 @Service
 public class WeatherService {
 
   private final RestTemplate restTemplate = new RestTemplate();
-  private final String apiKey = "c4d5108dcbf5ea5d68893c0e7f88b8c8"; //API Key de OpenWeatherMap
+  private final String apiKey = "c4d5108dcbf5ea5d68893c0e7f88b8c8"; // API Key de OpenWeatherMap
 
   public String getWeatherByCity(String city) {
     try {
@@ -30,7 +30,7 @@ public class WeatherService {
     }
   }
 
-  //Nuevo metodo para filtrar y mapear los datos principales
+  // Nuevo metodo para filtrar y mapear los datos principales
   public String getFilteredWeatherByCity(String city) {
     try {
       String url =
@@ -48,7 +48,7 @@ public class WeatherService {
       result.put("humedad", json.getJSONObject("main").getInt("humidity"));
       result.put("viento", json.getJSONObject("wind").getDouble("speed"));
 
-      //Hora actual en la ciudad (usando el campo "dt" y "timezone")
+      // Hora actual en la ciudad (usando el campo "dt" y "timezone")
       long timestamp = json.getLong("dt") + json.getInt("timezone");
       String horaActual =
           DateTimeFormatter.ofPattern("HH:mm:ss")
@@ -58,7 +58,8 @@ public class WeatherService {
 
       return result.toString();
     } catch (Exception e) {
-      throw new WeatherApiException("No se pudo obtener el clima filtrado para la ciudad indicada.");
+      throw new WeatherApiException(
+          "No se pudo obtener el clima filtrado para la ciudad indicada.");
     }
   }
 }

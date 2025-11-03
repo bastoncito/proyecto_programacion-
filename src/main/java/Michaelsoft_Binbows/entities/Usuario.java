@@ -40,18 +40,24 @@ public class Usuario {
   private Rol rol;
   private LocalDateTime fechaRegistro;
   private LocalDate fechaRacha;
-  //Testing sistema de ligas y puntos ------------
+
+  // Testing sistema de ligas y puntos ------------
   @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
   private int puntosLiga;
 
   @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'Bronce'")
   private String liga;
-  //Fin testing ---------
+
+  // Fin testing ---------
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+  @OneToMany(
+      mappedBy = "usuario",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY,
+      orphanRemoval = true)
   private List<Tarea> tareas = new ArrayList<>();
 
   @Transient private List<Logro> logros = new ArrayList<>();
@@ -184,29 +190,25 @@ public class Usuario {
   public void setCiudad(String ciudad) {
     this.ciudad = ciudad;
   }
-  
-  /**
-   * Resetea los puntos de liga del usuario al inicio de una nueva temporada.
-   */
+
+  /** Resetea los puntos de liga del usuario al inicio de una nueva temporada. */
   public void resetearPuntosLiga() {
     this.puntosLiga = 0;
     this.liga = "Bronce";
   }
 
-  /**
-   * Actualiza la liga del usuario basado en sus puntosLiga.
-   */
+  /** Actualiza la liga del usuario basado en sus puntosLiga. */
   private void actualizarLiga() {
     // Rango de puntos
-    if (this.puntosLiga >= 5000) { 
+    if (this.puntosLiga >= 5000) {
       this.liga = "Diamante";
-    } else if (this.puntosLiga >= 3000) { 
+    } else if (this.puntosLiga >= 3000) {
       this.liga = "Platino";
-    } else if (this.puntosLiga >= 1500) { 
+    } else if (this.puntosLiga >= 1500) {
       this.liga = "Oro";
-    } else if (this.puntosLiga >= 500) { 
+    } else if (this.puntosLiga >= 500) {
       this.liga = "Plata";
-    } else { 
+    } else {
       this.liga = "Bronce";
     }
   }
@@ -351,13 +353,13 @@ public class Usuario {
     verificarSubidaDeNivel();
 
     // --- INICIO LÓGICA DE LIGAS ---
-    
+
     // 1. Suma al contador de la Temporada (independiente del reseteo de nivel)
-    this.puntosLiga += tareaACompletar.getExp(); 
-    
+    this.puntosLiga += tareaACompletar.getExp();
+
     // 2. Actualiza el string de la Liga (Bronce, Plata, etc.)
-    actualizarLiga(); 
-    
+    actualizarLiga();
+
     // --- FIN LÓGICA DE LIGAS ---
   }
 

@@ -12,6 +12,7 @@ import Michaelsoft_Binbows.model.Rol;
 import Michaelsoft_Binbows.security.CustomUserDetails;
 import Michaelsoft_Binbows.services.ConfiguracionService;
 import Michaelsoft_Binbows.services.SeguridadService;
+import Michaelsoft_Binbows.services.TemporadaService; // <--
 import Michaelsoft_Binbows.services.UsuarioService;
 import java.util.Arrays;
 import java.util.List;
@@ -29,9 +30,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import Michaelsoft_Binbows.services.TemporadaService; // <-- 
-import org.springframework.web.servlet.mvc.support.RedirectAttributes; // <--
-
 /** Controlador para el panel de administración. Maneja la visualización y gestión de usuarios. */
 @Controller
 public class AdminController {
@@ -43,11 +41,9 @@ public class AdminController {
   // Dependencias del controlador
   private final SeguridadService seguridadService;
 
-  @Autowired 
-  private TemporadaService temporadaService;
+  @Autowired private TemporadaService temporadaService;
 
-  @Autowired 
-  private ConfiguracionService configuracionService;
+  @Autowired private ConfiguracionService configuracionService;
 
   // Inyección de dependencias
   public AdminController(SeguridadService seguridadService) {
@@ -166,7 +162,8 @@ public class AdminController {
         break;
 
       case "top":
-        List<Usuario> topUsuarios = usuarioService.getTopUsuarios(limiteActual); // Ahora usa el límite
+        List<Usuario> topUsuarios =
+            usuarioService.getTopUsuarios(limiteActual); // Ahora usa el límite
 
         model.addAttribute("listaTop10", topUsuarios);
         model.addAttribute("limiteActual", limiteActual);
@@ -534,51 +531,51 @@ public class AdminController {
   }
 
   /*
-  * Endpoint para que el Admin fuerce el reseteo de la temporada.
-  * Se puede probar visitando la URL como admin.
-  */
+   * Endpoint para que el Admin fuerce el reseteo de la temporada.
+   * Se puede probar visitando la URL como admin.
+   */
   @GetMapping("/admin/temporada/reset-manual")
-  public String forzarReseteoTemporada(RedirectAttributes redirectAttributes) {  
+  public String forzarReseteoTemporada(RedirectAttributes redirectAttributes) {
     // Llamamos manualmente a la función de reseteo
     try {
       // Esta es la función que pusimos como @Transactional en el TemporadaService
       temporadaService.forzarReseteoManual();
-            
+
       // Si todo sale bien, manda un mensaje de éxito
-      redirectAttributes.addFlashAttribute("success", "¡Reseteo de temporada forzado con éxito! Todos los puntos de liga están en 0.");
-        
+      redirectAttributes.addFlashAttribute(
+          "success",
+          "¡Reseteo de temporada forzado con éxito! Todos los puntos de liga están en 0.");
+
     } catch (Exception e) {
       // Si algo falla (ej. la base de datos), manda un error
-      redirectAttributes.addFlashAttribute("error", "Error al forzar el reseteo: " + e.getMessage());
+      redirectAttributes.addFlashAttribute(
+          "error", "Error al forzar el reseteo: " + e.getMessage());
     }
-        
+
     // Vuelve a la vista de admin (top)
     redirectAttributes.addAttribute("vista", "top");
     return "redirect:/admin";
   }
-    
+
   /** Página de "Acceso Denegado". */
   @GetMapping("/acceso-denegado")
   public String mostrarAccesoDenegado() {
     return "acceso-denegado";
   }
 
-  /**
-  * Guarda la nueva configuración del límite del Top en la BD.
-  */
+  /** Guarda la nueva configuración del límite del Top en la BD. */
   @GetMapping("/admin/top/set-limite")
   public String setLimiteTop(
-          @RequestParam("limite") int limite,
-          RedirectAttributes redirectAttributes) {
+      @RequestParam("limite") int limite, RedirectAttributes redirectAttributes) {
 
-      try {
-          configuracionService.setLimiteTop(limite);
-          redirectAttributes.addFlashAttribute("success", "Límite del Top guardado en " + limite + ".");
-      } catch (Exception e) {
-          redirectAttributes.addFlashAttribute("error", "Error al guardar el límite.");
-      }
+    try {
+      configuracionService.setLimiteTop(limite);
+      redirectAttributes.addFlashAttribute("success", "Límite del Top guardado en " + limite + ".");
+    } catch (Exception e) {
+      redirectAttributes.addFlashAttribute("error", "Error al guardar el límite.");
+    }
 
-      // Vuelve a la vista 'top' con el nuevo límite activo
-      return "redirect:/admin?vista=top&limite=" + limite;
+    // Vuelve a la vista 'top' con el nuevo límite activo
+    return "redirect:/admin?vista=top&limite=" + limite;
   }
 }

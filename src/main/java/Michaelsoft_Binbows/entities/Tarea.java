@@ -83,7 +83,7 @@ public class Tarea {
   }
 
   public void setClimaCompatible(String climaCompatible) {
-      this.climaCompatible = climaCompatible;
+    this.climaCompatible = climaCompatible;
   }
 
   public void setNombre(String nombre) throws TareaInvalidaException {
