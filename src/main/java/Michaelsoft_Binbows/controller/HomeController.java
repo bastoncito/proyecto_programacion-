@@ -4,6 +4,7 @@ import Michaelsoft_Binbows.entities.Tarea;
 import Michaelsoft_Binbows.entities.Usuario;
 import Michaelsoft_Binbows.security.CustomUserDetails;
 import Michaelsoft_Binbows.services.ConfiguracionService;
+import Michaelsoft_Binbows.services.TareaService;
 import Michaelsoft_Binbows.services.UsuarioService;
 import Michaelsoft_Binbows.services.WeatherService;
 
@@ -37,6 +38,9 @@ public class HomeController {
   @Autowired
   private ConfiguracionService configuracionService;
 
+  @Autowired
+  private TareaService tareaService;
+
   @GetMapping("/")
   public String redirigirLogin() {
     return "redirect:/login";
@@ -58,6 +62,7 @@ public class HomeController {
     model.addAttribute("historialTareas", usuarioActual.getTareasCompletadas());
     
     String ciudad = usuarioActual.getCiudad();
+    String climaActual = null;
     if (ciudad != null && !ciudad.trim().isEmpty()) {
         try {
             String weatherJsonString = weatherService.getWeatherByCity(ciudad);
@@ -80,11 +85,32 @@ public class HomeController {
 
             climaData.put("hora", horaLocal);
             model.addAttribute("clima", climaData);
+
+            //---NUEVO: obtener el clima principal---
+            climaActual = weatherJson.getJSONArray("weather").getJSONObject(0).getString("main"); // Ejemplo: "Clear", "Clouds", "Rain"
         } catch (Exception e) {
             System.err.println("Error al obtener datos del clima para la ciudad '" + ciudad + "': " + e.getMessage());
             model.addAttribute("climaError", "No se pudo obtener el clima. Verifica el nombre de la ciudad en tu perfil.");
         }
     }
+
+    //---NUEVO: recomendar tarea según clima---
+    Tarea tareaRecomendada = null;
+    if (climaActual != null) {
+        String categoriaClima = switch (climaActual) {
+            case "Clear" -> "Soleado";
+            case "Clouds" -> "Nublado";
+            case "Rain", "Drizzle", "Thunderstorm" -> "Lluvia";
+            case "Snow" -> "Nieve";
+            default -> "Soleado";
+        };
+        List<Tarea> recomendadas = tareaService.obtenerTareasRecomendadasPorClima(categoriaClima);
+        if (!recomendadas.isEmpty()) {
+            tareaRecomendada = recomendadas.get(0);
+        }
+    }
+    model.addAttribute("tareaRecomendada", tareaRecomendada);
+
     // 1. Pedimos el Top 3 (usando el método que ya creamos en UsuarioService)
     List<Usuario> top3 = usuarioService.getTopUsuarios(3);
     

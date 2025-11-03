@@ -106,7 +106,10 @@
                 <p>Liga: <span th:text="${usuario.liga}">Bronce</span></p>
             </div>
             <div class="logo-section">
-                <img th:src="@{/images/logo_negro.png}" alt="logo_negro">
+                <h2>Tarea Recomendada por el Clima</h2>
+                <p><strong th:text="${tareaRecomendada.nombre}">Nombre</strong></p>
+                <p th:text="${tareaRecomendada.descripcion}">Descripción</p>
+                <p>Clima compatible: <span th:text="${tareaRecomendada.climaCompatible}">Soleado</span></p>
             </div>
         </div>
     </div>

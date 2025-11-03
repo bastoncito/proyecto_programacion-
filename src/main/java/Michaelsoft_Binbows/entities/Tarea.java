@@ -24,6 +24,7 @@ public class Tarea {
   private int exp;
   private LocalDateTime fechaExpiracion;
   private LocalDateTime fechaCompletada = null;
+  private String climaCompatible;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "usuario_id")
@@ -75,6 +76,14 @@ public class Tarea {
 
   public void setUsuario(Usuario usuario) {
     this.usuario = usuario;
+  }
+
+  public String getClimaCompatible() {
+    return climaCompatible;
+  }
+
+  public void setClimaCompatible(String climaCompatible) {
+      this.climaCompatible = climaCompatible;
   }
 
   public void setNombre(String nombre) throws TareaInvalidaException {
