@@ -455,3 +455,15 @@ body {
   border-color: #007bff;
   font-weight: bold;
 }
+
+.form-group-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 2 columnas */
+  gap: 15px; /* Espacio entre los inputs */
+}
+
+/* Opcional: ajustar el tamaño de fuente de los inputs */
+.form-group-grid input[type="number"] {
+  font-size: 1.1em;
+  padding: 8px;
+}

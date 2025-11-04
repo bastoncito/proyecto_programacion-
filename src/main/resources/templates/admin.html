@@ -275,43 +275,73 @@
         <h2>Configuración del Top</h2>
         <div class="section-line"></div>
         
-        <form class="edit-form">
-          <div class="form-group">
-            <label>Mostrar Top:</label>
-            <div class="top-n-buttons">
-                <a th:href="@{/admin/top/set-limite(limite=10)}" 
-                   class="btn-cancel" 
-                   th:classappend="${limiteActual == 10 ? 'active' : ''}">10</a>
-                   
-                <a th:href="@{/admin/top/set-limite(limite=20)}" 
-                   class="btn-cancel" 
-                   th:classappend="${limiteActual == 20 ? 'active' : ''}">20</a>
-                   
-                <a th:href="@{/admin/top/set-limite(limite=30)}" 
-                   class="btn-cancel" 
-                   th:classappend="${limiteActual == 30 ? 'active' : ''}">30</a>
-                   
-                <a th:href="@{/admin/top/set-limite(limite=50)}" 
-                   class="btn-cancel" 
-                   th:classappend="${limiteActual == 50 ? 'active' : ''}">50</a>
+        <div th:if="${errorConfig}" class="alert-error" th:text="${errorConfig}"></div>
+        <div th:if="${success}" class="alert-success" th:text="${success}"></div>
+
+
+        <div class="form-group" style="margin-top: 15px;">
+          <label>Mostrar Top:</label>
+          <div class="top-n-buttons">
+            <a th:href="@{/admin/top/set-limite(limite=10)}" 
+               class="btn-cancel" 
+               th:classappend="${limiteActual == 10 ? 'active' : ''}">10</a>
+            <a th:href="@{/admin/top/set-limite(limite=20)}" 
+               class="btn-cancel" 
+               th:classappend="${limiteActual == 20 ? 'active' : ''}">20</a>
+            <a th:href="@{/admin/top/set-limite(limite=30)}" 
+               class="btn-cancel" 
+               th:classappend="${limiteActual == 30 ? 'active' : ''}">30</a>
+            <a th:href="@{/admin/top/set-limite(limite=50)}" 
+               class="btn-cancel" 
+               th:classappend="${limiteActual == 50 ? 'active' : ''}">50</a>
+          </div>
+        </div>
+
+        <div class="section-line" style="margin-top: 25px; margin-bottom: 25px;"></div>
+
+        <form th:action="@{/admin/ligas/guardar}" method="post" class="edit-form">
+          
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+          <input type="hidden" name="limiteActual" th:value="${limiteActual}" />
+
+          <label>Configuración de Ligas (Bronce es 0 Pts):</label>
+          
+          <div class="form-group-grid"> 
+            <div class="form-group">
+              <label for="limitePlata" style="font-weight: normal; font-size: 0.9em;">Plata &ge;</label>
+              <input type="number" min="1" id="limitePlata" name="limitePlata" th:value="${limitesLiga.LIGA_PLATA}" required>
+            </div>
+            <div class="form-group">
+              <label for="limiteOro" style="font-weight: normal; font-size: 0.9em;">Oro &ge;</label>
+              <input type="number" min="1" id="limiteOro" name="limiteOro" th:value="${limitesLiga.LIGA_ORO}" required>
+            </div>
+            <div class="form-group">
+              <label for="limitePlatino" style="font-weight: normal; font-size: 0.9em;">Platino &ge;</label>
+              <input type="number" min="1" id="limitePlatino" name="limitePlatino" th:value="${limitesLiga.LIGA_PLATINO}" required>
+            </div>
+            <div class="form-group">
+              <label for="limiteDiamante" style="font-weight: normal; font-size: 0.9em;">Diamante &ge;</label>
+              <input type="number" min="1" id="limiteDiamante" name="limiteDiamante" th:value="${limitesLiga.LIGA_DIAMANTE}" required>
             </div>
           </div>
-
-          <div class="section-line" style="margin-top: 25px; margin-bottom: 25px;"></div>
-          
-          <div class="form-group">
-            <label>Mantenimiento de Temporada:</label>
-            <a th:href="@{/admin/temporada/reset-manual}"
-               class="btn-delete"
-               onclick="return confirm('¿Estás seguro de que quieres resetear TODOS los puntos de liga a 0?');">
-              <i class='bx bx-error-alt'></i> Forzar Reseteo de Temporada
-            </a>
-          </div>
-
-          <div class="form-actions" style="margin-top: 30px;">
-            <a th:href="@{/admin(vista='top', limite=${limiteActual})}" class="btn-cancel">Cerrar</a>
-          </div>
+          <button type="submit" class="btn-save" style="margin-top: 15px; width: 100%;">Guardar Límites de Liga</button>
         </form>
+
+        <div class="section-line" style="margin-top: 25px; margin-bottom: 25px;"></div>
+        
+        <div class="form-group">
+          <label>Mantenimiento de Temporada:</label>
+          <a th:href="@{/admin/temporada/reset-manual}"
+             class="btn-delete"
+             onclick="return confirm('¿Estás seguro de que quieres resetear TODOS los puntos de liga a 0?');">
+            <i class='bx bx-error-alt'></i> Forzar Reseteo de Temporada
+          </a>
+        </div>
+
+        <div class="form-actions" style="margin-top: 30px;">
+          <a th:href="@{/admin(vista='top', limite=${limiteActual})}" class="btn-cancel">Cerrar</a>
+        </div>
+
       </div>
     </div>
 

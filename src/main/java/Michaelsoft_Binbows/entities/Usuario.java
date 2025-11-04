@@ -197,22 +197,6 @@ public class Usuario {
     this.liga = "Bronce";
   }
 
-  /** Actualiza la liga del usuario basado en sus puntosLiga. */
-  private void actualizarLiga() {
-    // Rango de puntos
-    if (this.puntosLiga >= 5000) {
-      this.liga = "Diamante";
-    } else if (this.puntosLiga >= 3000) {
-      this.liga = "Platino";
-    } else if (this.puntosLiga >= 1500) {
-      this.liga = "Oro";
-    } else if (this.puntosLiga >= 500) {
-      this.liga = "Plata";
-    } else {
-      this.liga = "Bronce";
-    }
-  }
-
   /**
    * Devuelve una copia de la lista de logros que el usuario ha desbloqueado.
    *
@@ -352,15 +336,9 @@ public class Usuario {
     // Llamado al método que verificará si el usuario ha subido de nivel.
     verificarSubidaDeNivel();
 
-    // --- INICIO LÓGICA DE LIGAS ---
-
     // 1. Suma al contador de la Temporada (independiente del reseteo de nivel)
     this.puntosLiga += tareaACompletar.getExp();
 
-    // 2. Actualiza el string de la Liga (Bronce, Plata, etc.)
-    actualizarLiga();
-
-    // --- FIN LÓGICA DE LIGAS ---
   }
 
   public void cancelarTarea(String nombreTarea) throws RegistroInvalidoException {

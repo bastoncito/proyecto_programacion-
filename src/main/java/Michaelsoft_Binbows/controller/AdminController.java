@@ -12,10 +12,12 @@ import Michaelsoft_Binbows.model.Rol;
 import Michaelsoft_Binbows.security.CustomUserDetails;
 import Michaelsoft_Binbows.services.ConfiguracionService;
 import Michaelsoft_Binbows.services.SeguridadService;
-import Michaelsoft_Binbows.services.TemporadaService; // <--
+import Michaelsoft_Binbows.services.TemporadaService;
 import Michaelsoft_Binbows.services.UsuarioService;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -90,6 +92,7 @@ public class AdminController {
       @RequestParam(name = "errorCreacionTarea", required = false) String errorCreacionTarea,
       @RequestParam(name = "limite", required = false) Integer limite,
       @RequestParam(name = "mostrarConfig", required = false) boolean mostrarConfig,
+      @RequestParam(name = "errorConfig", required = false) String errorConfig,
       Model model) {
 
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -125,6 +128,20 @@ public class AdminController {
     }
     if (mostrarConfig) {
       model.addAttribute("mostrarModalTopConfig", true);
+      
+      // Cargar los límites actuales para rellenar el formulario
+      Map<String, Integer> limitesLiga = new HashMap<>();
+      limitesLiga.put("LIGA_PLATA", configuracionService.getLimiteLiga("LIGA_PLATA", 500));
+      limitesLiga.put("LIGA_ORO", configuracionService.getLimiteLiga("LIGA_ORO", 1500));
+      limitesLiga.put("LIGA_PLATINO", configuracionService.getLimiteLiga("LIGA_PLATINO", 3000));
+      limitesLiga.put("LIGA_DIAMANTE", configuracionService.getLimiteLiga("LIGA_DIAMANTE", 5000));
+      model.addAttribute("limitesLiga", limitesLiga);
+      
+      // Añadir el mensaje de error de validación, si existe
+      if (errorConfig != null) {
+        model.addAttribute("errorConfig", errorConfig);
+      }
+
     }
 
     model.addAttribute("listaDeUsuarios", usuarioService.obtenerTodos());
@@ -577,5 +594,52 @@ public class AdminController {
 
     // Vuelve a la vista 'top' con el nuevo límite activo
     return "redirect:/admin?vista=top&limite=" + limite;
+  }
+
+  /**
+   * Guarda la nueva configuración de límites de Ligas en la BD.
+   * Incluye la validación que pediste Y el recálculo global.
+   */
+  @PostMapping("/admin/ligas/guardar")
+  public String guardarLimitesLigas(
+          @RequestParam("limitePlata") int plata,
+          @RequestParam("limiteOro") int oro,
+          @RequestParam("limitePlatino") int platino,
+          @RequestParam("limiteDiamante") int diamante,
+          @RequestParam("limiteActual") int limiteActual, // Para saber a dónde volver
+          RedirectAttributes redirectAttributes) {
+
+      // --- 1. Validación de Negativos (Bronce es 0) ---
+      if (plata <= 0 || oro <= 0 || platino <= 0 || diamante <= 0) {
+          redirectAttributes.addFlashAttribute("errorConfig", "Error: Los puntos deben ser mayores a 0.");
+          // Redirige de vuelta al modal abierto
+          return "redirect:/admin?vista=top&mostrarConfig=true&limite=" + limiteActual;
+      }
+      
+      // --- 2. Validación de Orden Secuencial ---
+      if (!(plata < oro && oro < platino && platino < diamante)) {
+          redirectAttributes.addFlashAttribute("errorConfig", "Error: El orden de ligas es incorrecto (Plata < Oro < Platino < Diamante).");
+          // Redirige de vuelta al modal abierto
+          return "redirect:/admin?vista=top&mostrarConfig=true&limite=" + limiteActual;
+      }
+      
+      // --- 3. Si todo está OK, guardamos ---
+      try {
+          configuracionService.setLimiteLiga("LIGA_PLATA", plata);
+          configuracionService.setLimiteLiga("LIGA_ORO", oro);
+          configuracionService.setLimiteLiga("LIGA_PLATINO", platino);
+          configuracionService.setLimiteLiga("LIGA_DIAMANTE", diamante);
+
+          // --- 4. ¡RECALCULAMOS TODAS LAS LIGAS DE USUARIOS! ---
+          usuarioService.recalcularLigasGlobal(); 
+          
+      } catch (Exception e) {
+          redirectAttributes.addFlashAttribute("errorConfig", "Error al guardar: " + e.getMessage());
+          return "redirect:/admin?vista=top&mostrarConfig=true&limite=" + limiteActual;
+      }
+
+      // ¡ÉXITO! Redirige a la pestaña "Top"
+      redirectAttributes.addFlashAttribute("success", "Límites de liga actualizados. Todas las ligas han sido recalculadas.");
+      return "redirect:/admin?vista=top&limite=" + limiteActual;
   }
 }
