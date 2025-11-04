@@ -7,6 +7,7 @@ import Michaelsoft_Binbows.services.ConfiguracionService;
 import Michaelsoft_Binbows.services.TareaService;
 import Michaelsoft_Binbows.services.UsuarioService;
 import Michaelsoft_Binbows.services.WeatherService;
+import Michaelsoft_Binbows.util.SistemaNiveles;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -57,6 +58,17 @@ public class HomeController {
     model.addAttribute("tareas", usuarioActual.getTareasPendientes());
     model.addAttribute("historialTareas", usuarioActual.getTareasCompletadas());
 
+    List<Tarea> historialCompleto = usuarioActual.getTareasCompletadas();
+    List<Tarea> historialReciente = historialCompleto.stream().limit(3).toList();
+
+    model.addAttribute("historialReciente", historialReciente); // La lista corta
+    model.addAttribute("totalHistorial", historialCompleto.size()); // El número total
+
+    int expSiguienteNivel = SistemaNiveles.experienciaParaNivel(usuarioActual.getNivelExperiencia() + 1);
+    model.addAttribute("expSiguienteNivel", expSiguienteNivel);
+    
+
+    
     String ciudad = usuarioActual.getCiudad();
     String climaActual = null;
     if (ciudad != null && !ciudad.trim().isEmpty()) {
@@ -66,12 +78,10 @@ public class HomeController {
 
         Map<String, Object> climaData = new HashMap<>();
         climaData.put("temperatura", weatherJson.getJSONObject("main").getInt("temp"));
-        climaData.put(
-            "descripcion",
-            weatherJson.getJSONArray("weather").getJSONObject(0).getString("description"));
+        climaData.put("descripcion",weatherJson.getJSONArray("weather").getJSONObject(0).getString("description"));
         climaData.put("humedad", weatherJson.getJSONObject("main").getInt("humidity"));
-        climaData.put(
-            "icono", weatherJson.getJSONArray("weather").getJSONObject(0).getString("icon"));
+        climaData.put("icono", weatherJson.getJSONArray("weather").getJSONObject(0).getString("icon"));
+
         long timestamp = weatherJson.getLong("dt");
         // Seccion zona horaria
         int timezoneOffset = weatherJson.getInt("timezone");
@@ -123,6 +133,8 @@ public class HomeController {
 
     // 2. Lo añadimos al modelo para que el HTML lo pueda usar
     model.addAttribute("top3Usuarios", top3);
+    model.addAttribute("activePage", "home");
+
     return "home";
   }
 
@@ -169,27 +181,8 @@ public class HomeController {
       System.err.println("Error al cargar /ranking: " + e.getMessage());
       // TODO: redirigir a una página de error o al home
     }
-
+    model.addAttribute("activePage", "ranking");
     return "ranking"; // Devuelve el nuevo ranking.html
-  }
-
-  @GetMapping("/historial")
-  public String mostrarHistorial(Model model) {
-    System.out.println(
-        "LOG: El método 'mostrarHistorial' ha sido llamado por una petición a /historial.");
-
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-    String correo = userDetails.getUsername();
-
-    Usuario usuarioActual = usuarioService.buscarPorCorreoConTareas(correo);
-
-    List<Tarea> historialTareas = usuarioActual.getTareasCompletadas();
-
-    model.addAttribute("usuario", usuarioActual);
-    model.addAttribute("historialTareas", historialTareas);
-
-    return "historial_tareas";
   }
 
   @GetMapping("/hola")

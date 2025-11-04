@@ -186,6 +186,7 @@ public class AdminController {
       model.addAttribute("errorCreacionTarea", errorCreacionTarea);
     }
 
+    model.addAttribute("activePage", "admin");
     return "admin";
   }
 

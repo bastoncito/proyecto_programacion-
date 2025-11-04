@@ -1,4 +1,14 @@
-/* Reset básico */
+/* ======================================================== */
+/*   ESTILOS RESPONSIVOS PARA LOGIN (MOBILE-FIRST)    */
+/* ======================================================== */
+
+/* --- Configuración Global --- */
+:root {
+    --color-principal: #FFC839;
+    --color-oscuro: #333;
+    --color-blanco: #fff;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -6,197 +16,192 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Fondo general */
 body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     background-image: url('/images/fondo.png');
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
+    padding: 20px;
 }
 
-/* Contenedor centrado */
+/* --- ESTILOS MOBILE-FIRST (Por defecto) --- */
+
 .container {
-    display: flex;
-    background: #fff;
+    width: 100%;
+    max-width: 400px;
+    background: var(--color-blanco);
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-    width: 900px;
-    height: 500px;
     border-radius: 25px;
     overflow: hidden;
 }
 
-/* ===== SECCIÓN DEL LOGIN ===== */
 .login-section {
-    flex: 1;
-    background-color: #fff;
-    padding: 50px 40px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    border-radius: 25px 0 0 25px;
-    position: relative;
+    padding: 40px 30px;
 }
 
 .login-section h1 {
-    color: #333;
+    color: var(--color-oscuro);
     font-size: 24px;
     margin-bottom: 30px;
     text-align: center;
     font-weight: 600;
 }
 
-/* Formulario */
 .login-section form {
     display: flex;
     flex-direction: column;
-    gap: 5px;
 }
 
 .login-section label {
     color: #666;
     font-size: 14px;
-    margin-bottom: 5px;
-    margin-left: 5px;
-    font-weight: 500;
+    margin-bottom: 8px;
 }
 
-/* Contenedor para input + icono */
-.login-section form {
+.input-container {
     position: relative;
+    margin-bottom: 20px;
 }
 
 .login-section input {
     width: 100%;
     padding: 12px 40px 12px 15px;
-    margin-bottom: 20px;
     border: none;
     border-radius: 8px;
     background-color: #f0f0f0;
     font-size: 14px;
     outline: none;
-    color: #333;
+    color: var(--color-oscuro);
 }
 
-.login-section input::placeholder {
-    color: #999;
-}
-
-/* Iconos de Boxicons */
-.login-section form i {
+.input-container i {
     position: absolute;
+    top: 50%;
     right: 15px;
+    transform: translateY(-50%);
     color: #666;
     font-size: 18px;
-    pointer-events: none;
 }
 
-.login-section form i.bxs-user {
-    top: 37px;
-}
-
-.login-section form i.bxs-lock-alt {
-    top: 127px
-}
-
-/* Enlace de contraseña olvidada */
-.login-section a {
-    color: #666;
-    text-decoration: none;
-    font-size: 12px;
+.login-error {
+    color: red;
     text-align: center;
-    margin-bottom: 25px;
-    transition: color 0.3s;
+    font-size: 14px;
+    margin-bottom: 15px;
 }
 
-.login-section a:hover {
-    color: #333;
-    text-decoration: underline;
-}
-
-/* Botón de login */
-.login-section button {
+.login-section button[type="submit"] {
     width: 100%;
     padding: 12px;
-    background-color: #FFC839;
+    background-color: var(--color-principal);
     border: none;
     border-radius: 25px;
-    color: #333;
+    color: var(--color-oscuro);
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.3s;
+    margin-top: 10px;
 }
-
-.login-section button:hover {
+.login-section button[type="submit"]:hover {
     background-color: #e6b332;
 }
 
-/* ===== SECCIÓN DEL REGISTER ===== */
-.register-section {
-    flex: 1;
-    background-color: #FFC839;
-    padding: 50px 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+.register-link-mobile {
+    display: block; /* Visible por defecto en móvil */
     text-align: center;
-    border-radius: 25px 25px 25px 25px;
-    position: relative;
-}
-
-.register-section h2 {
-    color: #333;
-    font-size: 22px;
-    margin-top: 25px;
-    margin-bottom: 25px;
-    font-weight: 700;
-    line-height: 1.3;
-}
-
-.register-section #p1 {
-    display: block;
-    color: #444;
-    font-size: 16px;
-    line-height: 1.5;
-    margin-bottom: 15px;
-    max-width: 330px;
-}
-
-.register-section #p2 {
-    display: block;
-    color: #333;
-    font-size: 16px;
-    margin-bottom: 25px;
-    font-weight: 600;
-}
-
-/* Botón de registro */
-.btn-login {
-    padding: 12px 30px;
-    background-color: #333;
-    color: white;
-    border: none;
-    border-radius: 25px;
     font-size: 14px;
+    margin-top: 20px;
+    color: #666;
+}
+.register-link-mobile a {
+    color: var(--color-oscuro);
     font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-bottom: 10px;
+    text-decoration: none;
+}
+.register-link-mobile a:hover {
+    text-decoration: underline;
 }
 
-.btn-login:hover {
-    background-color: #555;
+/* 
+ *  LA CLAVE DEL MOBILE-FIRST:
+ *  Por defecto, en pantallas pequeñas, la sección amarilla de registro está OCULTA.
+*/
+.register-section {
+    display: none;
 }
 
-/* Logo */
-.register-section img {
-    width: auto;
-    height: 200px;
-    object-fit: contain;
-    margin-top: 10px;
+/* ===================================================================== */
+/* --- ESTILOS PARA ESCRITORIO (Se activan en pantallas grandes) --- */
+/* ===================================================================== */
+
+@media (min-width: 920px) {
+    
+    /* En escritorio, el contenedor principal usa flexbox para crear las 2 columnas */
+    .container {
+        display: flex;
+        flex-direction: row; /* Horizontal */
+        width: 900px;
+        max-width: 900px;
+        height: 500px;
+    }
+
+    /* Cada sección (login y registro) ocupa la mitad del espacio */
+    .login-section,
+    .register-section {
+        flex: 1; 
+    }
+    
+    .login-section {
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* Centra el formulario verticalmente */
+    }
+
+    /* 
+     *  LA CLAVE PARA ESCRITORIO:
+     *  Sobreescribimos el 'display: none' y hacemos que la sección amarilla
+     *  reaparezca como un contenedor flex.
+    */
+    .register-section {
+        display: flex; 
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        background-color: var(--color-principal);
+        padding: 40px;
+    }
+
+    /* Estilos del contenido de la sección amarilla */
+    .register-section img { width: auto; height: 150px; margin-bottom: 20px; }
+    .register-section h2 { color: var(--color-oscuro); font-size: 22px; margin-bottom: 15px; }
+    .register-section p { color: #444; font-size: 14px; line-height: 1.5; max-width: 330px; }
+    .register-section #p2 { font-weight: 600; margin-top: 15px; }
+    
+    .btn-register {
+        padding: 12px 30px;
+        background-color: var(--color-oscuro);
+        color: var(--color-blanco);
+        border: none;
+        border-radius: 25px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin-top: 25px;
+        text-decoration: none;
+    }
+    .btn-register:hover {
+        background-color: #555;
+    }
+
+    /* Finalmente, ocultamos el enlace de texto "Regístrate aquí" 
+       porque ya tenemos el gran panel amarillo para eso. */
+    .register-link-mobile {
+        display: none;
+    }
 }

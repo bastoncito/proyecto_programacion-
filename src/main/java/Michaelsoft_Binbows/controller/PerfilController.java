@@ -38,6 +38,7 @@ public class PerfilController {
     }
 
     model.addAttribute("usuarioLogueado", usuarioActual);
+    model.addAttribute("activePage", "perfil");
     return "user_profile";
   }
 
