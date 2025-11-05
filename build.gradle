@@ -2,7 +2,12 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.5'
 	id 'io.spring.dependency-management' version '1.1.7'
+	//spotless estandariza el formato del código
     id 'com.diffplug.spotless' version '6.21.0'
+	//errorprone detecta posibles bugs en tiempo de compilación
+	id 'net.ltgt.errorprone' version '3.1.0'
+	//checkstyle aplica reglas de estilo
+	id 'checkstyle'
 }
 
 group = 'Michaelsoft_Binbows'
@@ -33,22 +38,46 @@ dependencies {
 	runtimeOnly 'org.postgresql:postgresql'
 	implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
 	implementation 'org.json:json:20240303'
+	errorprone "com.google.errorprone:error_prone_core:2.31.0"
+    compileOnly "com.google.errorprone:error_prone_annotations:2.31.0"
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
 
-tasks.withType(JavaCompile) {
-    options.compilerArgs += "-parameters"
+tasks.withType(JavaCompile).configureEach {
+	options.compilerArgs += "-parameters"
+	if(options.hasProperty("errorprone")){
+		options.errorprone.enabled = true
+    	options.errorprone.disableWarningsInGeneratedCode = true
+	}
 }
 
 spotless {
 	java {
 		googleJavaFormat('1.17.0')
+		removeUnusedImports()
+		trimTrailingWhitespace()
 		target 'src/**/*.java'
 		endWithNewline()
         encoding 'UTF-8'
         lineEndings 'UNIX'
 	}
 }
+
+checkstyle {
+    toolVersion = '10.20.0'
+    configFile = file("$projectDir/config/checkstyle/checkstyle.xml")
+}
+
+tasks.withType(Checkstyle) {
+    reports {
+        xml.required = false
+        html.required = true
+        html.outputLocation = file("$buildDir/reports/checkstyle/checkstyle.html")
+    }
+}
+
+
+

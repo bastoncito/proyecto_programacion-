@@ -149,14 +149,14 @@
                 <div class="section-line" style="margin-top: 15px; margin-bottom: 15px;"></div>
             
                 <div class="form-group">
-                    <label for="nuevaContraseña">Nueva Contraseña (Opcional)</label>
+                    <label for="nuevaContrasena">Nueva Contrasena (Opcional)</label>
                     <!-- 'type="password"' para que el texto no sea visible. -->
-                    <input type="password" id="nuevaContraseña" name="nuevaContraseña" placeholder="Dejar en blanco para no cambiar">
+                    <input type="password" id="nuevaContrasena" name="nuevaContrasena" placeholder="Dejar en blanco para no cambiar">
                 </div>
 
                 <div class="form-group">
-                    <label for="confirmarContraseña">Confirmar Nueva Contraseña</label>
-                    <input type="password" id="confirmarContraseña" name="confirmarContraseña" placeholder="Repetir la nueva contraseña">
+                    <label for="confirmarContrasena">Confirmar Nueva Contrasena</label>
+                    <input type="password" id="confirmarContrasena" name="confirmarContrasena" placeholder="Repetir la nueva contrasena">
                 </div>
 
                 <!-- Mensaje de error del servidor, si lo hay (usando addFlashAttribute) -->
@@ -191,8 +191,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="nuevaContraseña">Contraseña</label>
-                    <input type="password" id="nuevaContraseña" name="contraseña" required>
+                    <label for="nuevaContrasena">Contrasena</label>
+                    <input type="password" id="nuevaContrasena" name="contrasena" required>
                 </div>
                 
                 <div class="form-group">
@@ -332,7 +332,7 @@
         const loader = document.getElementById('loader-wrapper');
 
         //  Comprobamos el sessionStorage del navegador.
-        //  sessionStorage es un almacén que dura mientras la pestaña está abierta.
+        //  sessionStorage es un almacén que dura mientras la pestana está abierta.
         //  Buscamos una "bandera" que nos diga si ya hemos mostrado el loader en esta sesión.
         if (sessionStorage.getItem('adminLoaderShown') === 'true') {
         
@@ -348,7 +348,7 @@
             //  Aquí es donde mostramos el loader y luego lo ocultamos.
             window.addEventListener('load', function() {
                 if (loader) {
-                    //  Usamos un pequeño setTimeout para asegurarnos de que el loader sea visible
+                    //  Usamos un pequeno setTimeout para asegurarnos de que el loader sea visible
                     //  al menos un instante y no un simple parpadeo si la carga es muy rápida.
                     setTimeout(function() {
                         loader.style.display = 'none';
