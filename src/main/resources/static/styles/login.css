@@ -1,21 +1,23 @@
 /* ======================================================== */
-/*   ESTILOS RESPONSIVOS PARA LOGIN (MOBILE-FIRST)    */
+/*   LOGIN (Mobile First)                                   */
 /* ======================================================== */
 
-/* --- Configuración Global --- */
+/* --- Paleta de colores --- */
 :root {
     --color-principal: #FFC839;
     --color-oscuro: #333;
     --color-blanco: #fff;
 }
 
+/* --- Reseteo global y fuente --- */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Poppins', Arial, sans-serif;
 }
 
+/* --- Fondo y centrado general --- */
 body {
     display: flex;
     justify-content: center;
@@ -27,8 +29,7 @@ body {
     padding: 20px;
 }
 
-/* --- ESTILOS MOBILE-FIRST (Por defecto) --- */
-
+/* --- Contenedor principal (móvil) --- */
 .container {
     width: 100%;
     max-width: 400px;
@@ -38,6 +39,7 @@ body {
     overflow: hidden;
 }
 
+/* --- Sección del formulario --- */
 .login-section {
     padding: 40px 30px;
 }
@@ -47,7 +49,7 @@ body {
     font-size: 24px;
     margin-bottom: 30px;
     text-align: center;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 .login-section form {
@@ -61,6 +63,7 @@ body {
     margin-bottom: 8px;
 }
 
+/* Contenedor para el input y su icono */
 .input-container {
     position: relative;
     margin-bottom: 20px;
@@ -86,6 +89,7 @@ body {
     font-size: 18px;
 }
 
+/* --- Clases de estado y botones --- */
 .login-error {
     color: red;
     text-align: center;
@@ -110,8 +114,9 @@ body {
     background-color: #e6b332;
 }
 
+/* Enlace de registro solo para móvil */
 .register-link-mobile {
-    display: block; /* Visible por defecto en móvil */
+    display: block;
     text-align: center;
     font-size: 14px;
     margin-top: 20px;
@@ -126,30 +131,27 @@ body {
     text-decoration: underline;
 }
 
-/* 
- *  LA CLAVE DEL MOBILE-FIRST:
- *  Por defecto, en pantallas pequeñas, la sección amarilla de registro está OCULTA.
-*/
+/* Por defecto, el panel de registro está oculto en móvil. */
 .register-section {
     display: none;
 }
 
 /* ===================================================================== */
-/* --- ESTILOS PARA ESCRITORIO (Se activan en pantallas grandes) --- */
+/*   ESTILOS PARA ESCRITORIO (A partir de 920px)                     */
 /* ===================================================================== */
 
 @media (min-width: 920px) {
     
-    /* En escritorio, el contenedor principal usa flexbox para crear las 2 columnas */
+    /* Layout de 2 columnas para el contenedor principal */
     .container {
         display: flex;
-        flex-direction: row; /* Horizontal */
+        flex-direction: row;
         width: 900px;
         max-width: 900px;
         height: 500px;
     }
 
-    /* Cada sección (login y registro) ocupa la mitad del espacio */
+    /* Ambas secciones ocupan la mitad */
     .login-section,
     .register-section {
         flex: 1; 
@@ -158,14 +160,10 @@ body {
     .login-section {
         display: flex;
         flex-direction: column;
-        justify-content: center; /* Centra el formulario verticalmente */
+        justify-content: center; /* Centra el formulario */
     }
 
-    /* 
-     *  LA CLAVE PARA ESCRITORIO:
-     *  Sobreescribimos el 'display: none' y hacemos que la sección amarilla
-     *  reaparezca como un contenedor flex.
-    */
+    /* Mostramos el panel de registro en escritorio */
     .register-section {
         display: flex; 
         flex-direction: column;
@@ -176,7 +174,7 @@ body {
         padding: 40px;
     }
 
-    /* Estilos del contenido de la sección amarilla */
+    /* Estilos para el contenido del panel de registro */
     .register-section img { width: auto; height: 150px; margin-bottom: 20px; }
     .register-section h2 { color: var(--color-oscuro); font-size: 22px; margin-bottom: 15px; }
     .register-section p { color: #444; font-size: 14px; line-height: 1.5; max-width: 330px; }
@@ -199,8 +197,7 @@ body {
         background-color: #555;
     }
 
-    /* Finalmente, ocultamos el enlace de texto "Regístrate aquí" 
-       porque ya tenemos el gran panel amarillo para eso. */
+    /* Ocultamos el enlace de texto de registro, ya que ahora tenemos el panel. */
     .register-link-mobile {
         display: none;
     }
