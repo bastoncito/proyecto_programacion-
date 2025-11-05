@@ -11,14 +11,14 @@
 + /api/usuarios/{idUsuario}/tareas: añade nueva tarea a un usuario
 ### PUT
 + /api/usuarios/{idUsuario}: actualiza a un usuario
-+ /api/usuarios/{idUsuario}/tareas/{idTarea}/completar: maraca una tarea como completada
++ /api/usuarios/{idUsuario}/tareas/{idTarea}/completar: marca una tarea como completada
 + /api/usuarios/{idUsuario}/tareas/{idTarea}/actualizar: actualiza una tarea
 ### DELETE
 + /api/usuarios/{idUsuario}: borra un usuario
 + /api/usuarios/{idUsuario}/tareas/{idTarea}: borra una tarea
 
+Para métodos POST y PUT se utilizan objetos DTO para Usuario y Tarea, los cuales se ingresan se escriben en JSON de la siguiente manera:
 ```text
-Para métodos POST y PUT se utilizan objetos DTO para Usuario y Tarea, los cuales se escriben en Postman de la siguiente manera
 {
     "nombreUsuario": "",
     "contrasena": "",

@@ -13,7 +13,6 @@ import org.springframework.web.client.RestTemplate;
 public class WeatherService {
 
   private final RestTemplate restTemplate = new RestTemplate();
-  private final String apiKey = "c4d5108dcbf5ea5d68893c0e7f88b8c8"; // API Key de OpenWeatherMap
 
   public String getWeatherByCity(String city) {
     try {
@@ -21,7 +20,7 @@ public class WeatherService {
           "https://api.openweathermap.org/data/2.5/weather?q="
               + city
               + "&appid="
-              + apiKey
+              + System.getProperty("OWM_API_KEY")
               + "&units=metric&lang=es";
       ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
       return response.getBody();
@@ -37,7 +36,7 @@ public class WeatherService {
           "https://api.openweathermap.org/data/2.5/weather?q="
               + city
               + "&appid="
-              + apiKey
+              + System.getProperty("OWM_API_KEY")
               + "&units=metric&lang=es";
       ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
       JSONObject json = new JSONObject(response.getBody());

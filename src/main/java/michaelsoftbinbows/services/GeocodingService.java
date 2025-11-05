@@ -8,11 +8,13 @@ import org.springframework.web.client.RestTemplate;
 public class GeocodingService {
 
   private final RestTemplate restTemplate = new RestTemplate();
-  private final String apiKey = "c4d5108dcbf5ea5d68893c0e7f88b8c8"; // API Key de OpenWeatherMap
 
   public String getCoordinatesByCity(String city) {
     String url =
-        "https://api.openweathermap.org/geo/1.0/direct?q=" + city + "&limit=1&appid=" + apiKey;
+        "https://api.openweathermap.org/geo/1.0/direct?q="
+            + city
+            + "&limit=1&appid="
+            + System.getProperty("OWM_API_KEY");
     ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
     return response.getBody();
   }
@@ -24,7 +26,7 @@ public class GeocodingService {
             + "&lon="
             + lon
             + "&limit=1&appid="
-            + apiKey;
+            + System.getProperty("OWM_API_KEY");
     ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
     return response.getBody();
   }

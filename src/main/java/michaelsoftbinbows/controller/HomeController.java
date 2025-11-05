@@ -146,7 +146,7 @@ public class HomeController {
       model.addAttribute("listaRanking", listaRanking);
 
       // 4. Generar los textos de los meses (para los títulos)
-      LocalDate hoy = LocalDate.now();
+      LocalDate hoy = LocalDate.now(ZoneId.systemDefault());
       LocalDate mesPasado = hoy.minusMonths(1);
 
       // Capitaliza la primera letra del mes
