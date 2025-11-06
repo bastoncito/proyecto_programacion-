@@ -3,7 +3,7 @@
 Esta API proporciona información climática según la ciudad que se desee, cosa esencial para una de las funciones de este proyecto: la recomendación de tareas según el clima actual.
 ## Información
 La url base de la API es la sigiuente: https://api.openweathermap.org, desde la cual llamaremos a sus endpoints relevantes.
-### Endpoints 
+### Endpoints relevantes
 + data/2.5/weather
     + Parámetros:
         + q (Ciudad y país en formato ISO, ej: Curico,CL)
@@ -22,8 +22,9 @@ La url base de la API es la sigiuente: https://api.openweathermap.org, desde la 
         + limit (se deja en 1)
         + appid (API key)
 ## Implementación
+Se utiliza el plan gratuito de la API, con un límite de 1000 llamadas diarias y 60 por minuto.<br>
 Para manejar las peticiones desde nuestra aplicación, se utilizan Controllers de Spring (WeatherController y GeocodingController).<br> 
-Se utilizan Services (WeatherService y GeocodingService) para manejar las llamadas a la url de la API. Estos poseen (o reciben desde los Controllers) los parámetros necesarios para este fin, como lo sería la ciudad, API key, etc.
+Se utilizan Services (WeatherService y GeocodingService) para manejar las llamadas a la url de la API. Estos poseen (o reciben) los parámetros necesarios para este fin, como lo sería la ciudad, API key, etc, y son llamados desde los Controllers de la página web para mostrar el clima en el apartado de "Home".
 ## Endpoints actuales
 ### GET
 + api/geocoding/city<br>Va al endpoint de geo/1.0/direct
