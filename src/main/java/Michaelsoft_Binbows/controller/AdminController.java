@@ -36,18 +36,58 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class AdminController {
 
-  @Autowired private PasswordEncoder passwordEncoder;
-  @Autowired private UsuarioService usuarioService;
-  @Autowired private SeguridadService seguridadService;
-  @Autowired private TemporadaService temporadaService;
-  @Autowired private ConfiguracionService configuracionService;
+  // --- Inyección de Dependencias ---
+  // Spring se encarga de instanciar y proporcionar estos servicios al controlador.
 
+  @Autowired private PasswordEncoder passwordEncoder; // Para encriptar contraseñas.
+  @Autowired private UsuarioService usuarioService; // Lógica de negocio para usuarios.
+  @Autowired private SeguridadService seguridadService; // Reglas de permisos y roles.
+  @Autowired private TemporadaService temporadaService; // Lógica para el reseteo de temporadas.
+  @Autowired private ConfiguracionService configuracionService; // Para ajustes del sistema como el límite del Top.
+
+  /**
+   * Método de ayuda para registrar un nuevo usuario con la contraseña ya encriptada.
+   * Centraliza la lógica de encriptación antes de guardar.
+   *
+   * @param usuario El objeto Usuario a registrar.
+   * @throws RegistroInvalidoException si los datos del usuario no son válidos (ej. correo duplicado).
+   */
   public void registrarUsuario(Usuario usuario) throws RegistroInvalidoException {
+    // Se encripta la contraseña del usuario antes de guardarla en la base de datos.
     String encodedPassword = passwordEncoder.encode(usuario.getContraseña());
     usuario.setContraseña(encodedPassword);
     usuarioService.guardarEnBD(usuario);
   }
 
+  /**
+   * Método principal que maneja todas las peticiones GET a /admin.
+   * Actúa como un enrutador central para las diferentes vistas del panel (Usuarios, Tareas, Top)
+   * y gestiona la lógica para mostrar los modales de edición y creación.
+   *
+   * RESPONSABILIDADES:
+   *
+   * - Seguridad: Verifica que el usuario logueado tenga rol de ADMIN o MODERADOR.
+   * - Enrutamiento de Vistas: Usa el parámetro 'vista' para decidir qué sección mostrar.
+   * - Gestión de Modales: Lee los parámetros de la URL (ej. 'editarUsuarioCorreo', 'crearUsuario')
+   *   para determinar si se debe mostrar un modal.
+   * - Carga de Datos: Prepara y añade al Model todos los datos necesarios para la plantilla de Thymeleaf.
+   *
+   * @param vistaActual El nombre de la vista a mostrar ('usuarios', 'tareas', 'top').
+   * @param correoAEditar Correo del usuario para el cual se debe abrir el modal de edición.
+   * @param crearUsuario Activa el modal de creación de usuario si es 'true'.
+   * @param error Mensaje de error opcional pasado por RedirectAttributes.
+   * @param correoUsuarioSeleccionado Correo del usuario que se muestra en la vista de 'Tareas'.
+   * @param crearTarea Activa el modal para añadir una nueva tarea si es 'true'.
+   * @param errorCreacionTarea Mensaje de error específico para el modal de creación de tareas.
+   * @param nombreTareaParaEditar Nombre de la tarea para la cual se debe abrir el modal de edición.
+   * @param correoUsuarioParaEditar Correo del propietario de la tarea a editar.
+   * @param limite Define cuántos usuarios mostrar en la vista 'Top'.
+   * @param mostrarConfig Activa el modal de configuración del Top si es 'true'.
+   * @param preselectedUserEmail El correo del usuario seleccionado al estar en la seccion de agregar tarea.
+   * @param errorConfig Mensaje de error para la configuración de ligas.
+   * @param model Objeto Model de Spring para pasar atributos a la vista.
+   * @return El nombre de la plantilla a renderizar ("admin").
+   */
   @GetMapping("/admin")
   public String mostrarPanelAdmin(
       @RequestParam(name = "vista", required = false, defaultValue = "usuarios") String vistaActual,
@@ -61,18 +101,21 @@ public class AdminController {
       @RequestParam(name = "editarTareaUsuario", required = false) String correoUsuarioParaEditar,
       @RequestParam(name = "limite", required = false) Integer limite,
       @RequestParam(name = "mostrarConfig", required = false) boolean mostrarConfig,
-      @RequestParam(name = "preselectUser", required = false) String preselectedUserEmail, // Tu cambio
-      @RequestParam(name = "errorConfig", required = false) String errorConfig, // Cambio entrante
+      @RequestParam(name = "preselectUser", required = false) String preselectedUserEmail,
+      @RequestParam(name = "errorConfig", required = false) String errorConfig,
       Model model) {
 
+    // Se obtiene el usuario que está actualmente logueado para verificar sus permisos.
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     Usuario usuarioActual = ((CustomUserDetails) auth.getPrincipal()).getUsuario();
 
+    // Primera barrera de seguridad: si el usuario no tiene el rol adecuado, se le redirige.
     if (usuarioActual.getRol() != Rol.ADMIN && usuarioActual.getRol() != Rol.MODERADOR) {
       System.err.println("WARN: Intento de acceso no autorizado a /admin por usuario: " + usuarioActual.getNombreUsuario());
       return "redirect:/acceso-denegado";
     }
 
+    // Se añaden al modelo los datos comunes que todas las vistas del panel necesitan.
     model.addAttribute("vistaActual", vistaActual);
     model.addAttribute("usuarioActual", usuarioActual);
     model.addAttribute("seguridadService", seguridadService);
@@ -81,6 +124,8 @@ public class AdminController {
     if (error != null && !error.isEmpty()) model.addAttribute("error", error);
     if (errorCreacionTarea != null && !errorCreacionTarea.isEmpty()) model.addAttribute("errorCreacionTarea", errorCreacionTarea);
 
+    // --- Lógica para activar los modales (ventanas emergentes) ---
+
     if (crearUsuario) {
         System.out.println("Log: Se ha solicitado abrir el modal para crear un nuevo usuario.");
         model.addAttribute("mostrarModalCrear", true);
@@ -88,14 +133,14 @@ public class AdminController {
     if (crearTarea) {
         System.out.println("Log: Se ha solicitado abrir el modal para crear una nueva tarea.");
         model.addAttribute("mostrarModalCrearTarea", true);
-        if (preselectedUserEmail != null) { // Tu lógica
+        if (preselectedUserEmail != null) {
           model.addAttribute("preselectedUserEmail", preselectedUserEmail);
         }
     }
     if (mostrarConfig) {
+        System.out.println("Log: Se ha solicitado abrir el modal para mostrar configuraciones de top.");
         model.addAttribute("mostrarModalTopConfig", true);
         
-        // Cargar los límites actuales para rellenar el formulario (lógica entrante)
         Map<String, Integer> limitesLiga = new HashMap<>();
         limitesLiga.put("LIGA_PLATA", configuracionService.getLimiteLiga("LIGA_PLATA", 500));
         limitesLiga.put("LIGA_ORO", configuracionService.getLimiteLiga("LIGA_ORO", 1500));
@@ -103,7 +148,7 @@ public class AdminController {
         limitesLiga.put("LIGA_DIAMANTE", configuracionService.getLimiteLiga("LIGA_DIAMANTE", 5000));
         model.addAttribute("limitesLiga", limitesLiga);
         
-        if (errorConfig != null) { // Lógica entrante
+        if (errorConfig != null) {
           model.addAttribute("errorConfig", errorConfig);
         }
     }
@@ -128,6 +173,7 @@ public class AdminController {
         }
     }
 
+    // --- Carga de datos específicos para cada vista ---
     switch (vistaActual) {
       case "tareas":
         System.out.println("DEBUG: Cargando datos para la vista 'tareas'.");
@@ -147,6 +193,18 @@ public class AdminController {
     return "admin";
   }
   
+  /**
+   * Procesa el formulario para guardar los cambios de un usuario editado.
+   *
+   * @param nuevoNombre El nuevo nombre de usuario.
+   * @param correoOriginal El correo original del usuario, para identificarlo en la BD.
+   * @param nuevoCorreo El nuevo correo electrónico.
+   * @param nuevoRol El nuevo rol asignado.
+   * @param nuevaContraseña La nueva contraseña (opcional).
+   * @param confirmarContraseña Confirmación de la nueva contraseña.
+   * @param redirectAttributes Permite enviar mensajes (feedback) a la vista después de una redirección.
+   * @return Una redirección a la página de administración.
+   */
   @PostMapping("/admin/guardar")
   public String guardarUsuarioEditado(
       @RequestParam("nombreUsuario") String nuevoNombre,
@@ -200,6 +258,13 @@ public class AdminController {
     return "redirect:/admin";
   }
 
+   /**
+   * Maneja la solicitud para eliminar un usuario del sistema.
+   *
+   * @param correoAEliminar El correo del usuario a eliminar.
+   * @param redirectAttributes Para enviar mensajes de feedback a la vista.
+   * @return Redirección al panel de administración.
+   */
   @GetMapping("/admin/eliminar")
   public String eliminarUsuario(@RequestParam("correo") String correoAEliminar, RedirectAttributes redirectAttributes) {
     Usuario actor = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsuario();
@@ -223,6 +288,14 @@ public class AdminController {
     return "redirect:/admin";
   }
 
+  /**
+   * Maneja la eliminación de una tarea específica de un usuario.
+   *
+   * @param correoUsuario El correo del dueño de la tarea.
+   * @param nombreTarea El nombre de la tarea a eliminar.
+   * @param redirectAttributes Para enviar mensajes de feedback.
+   * @return Redirección a la vista de tareas del usuario correspondiente.
+   */
   @GetMapping("/admin/tareas/eliminar")
   public String eliminarTareaDeUsuario(
       @RequestParam("correoUsuario") String correoUsuario,
@@ -250,6 +323,11 @@ public class AdminController {
     return "redirect:/admin";
   }
 
+  /**
+   * Procesa la edición de una tarea existente desde el panel de administración.
+   *
+   * @return Redirección a la vista de tareas.
+   */
   @PostMapping("/admin/tareas/guardar")
   public String guardarTareaEditada(
       @RequestParam("correoUsuario") String correoUsuario,
@@ -273,6 +351,11 @@ public class AdminController {
     return "redirect:/admin";
   }
   
+  /**
+   * Procesa el formulario para crear un nuevo usuario desde el panel de admin.
+   *
+   * @return Redirección al panel de administración.
+   */
   @PostMapping("/admin/crear")
   public String crearNuevoUsuario(
       @RequestParam("nombreUsuario") String nombre,
@@ -302,6 +385,11 @@ public class AdminController {
     return "redirect:/admin";
   }
 
+   /**
+   * Procesa el formulario para añadir una nueva tarea a un usuario específico.
+   *
+   * @return Redirección a la vista de tareas.
+   */
   @PostMapping("/admin/tareas/crear")
   public String crearNuevaTarea(
       @RequestParam("correoUsuario") String correoUsuario,
@@ -329,6 +417,12 @@ public class AdminController {
     return "redirect:/admin";
   }
 
+  /**
+   * Endpoint para forzar un reseteo manual de la temporada (puntos de liga).
+   * Solo accesible por administradores.
+   *
+   * @return Redirección a la vista de Top.
+   */
   @GetMapping("/admin/temporada/reset-manual")
   public String forzarReseteoTemporada(RedirectAttributes redirectAttributes) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -345,6 +439,12 @@ public class AdminController {
     return "redirect:/admin?vista=top";
   }
 
+  /**
+   * Endpoint para establecer el número de usuarios a mostrar en la tabla del Top.
+   *
+   * @param limite El número de usuarios a mostrar.
+   * @return Redirección a la vista de Top con el límite actualizado.
+   */
   @GetMapping("/admin/top/set-limite")
   public String setLimiteTop(@RequestParam("limite") int limite, RedirectAttributes redirectAttributes) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -360,11 +460,20 @@ public class AdminController {
     return "redirect:/admin?vista=top&limite=" + limite;
   }
   
+  /**
+   * Muestra la página de acceso denegado personalizada.
+   *
+   * @return El nombre de la plantilla "acceso-denegado".
+   */
   @GetMapping("/acceso-denegado")
   public String mostrarAccesoDenegado() {
     return "acceso-denegado";
   }
 
+  /**
+   * Guarda la nueva configuración de límites de Ligas en la BD.
+   * Incluye la validación y el recálculo global.
+   */
   @PostMapping("/admin/ligas/guardar")
   public String guardarLimitesLigas(
           @RequestParam("limitePlata") int plata,

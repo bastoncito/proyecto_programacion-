@@ -133,15 +133,12 @@
     <!-- =================================================================== -->
 
     <!-- Modal para Editar Usuario -->
-    <!-- Se muestra solo si el controlador ha añadido el objeto 'usuarioParaEditar' al modelo. -->
     <div class="modal-overlay" th:if="${usuarioParaEditar != null}">
         <div class="modal-content">
             <h2>Editar Usuario</h2>
             <div class="section-line"></div>
             <form th:action="@{/admin/guardar}" method="post" class="edit-form">
-                <!-- Token CSRF para protección contra ataques Cross-Site Request Forgery -->
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                <!-- Campo oculto para enviar el correo original, necesario para identificar al usuario en el backend -->
                 <input type="hidden" name="correoElectronicoOriginal" th:value="${usuarioParaEditar.correoElectronico}">
                 
                 <div class="form-group">
@@ -155,7 +152,6 @@
                 <div class="form-group">
                     <label for="rol">Rol del Usuario</label>
                     <select id="rol" name="rol" required size="4">
-                        <!-- Itera sobre los roles que el admin puede asignar y preselecciona el rol actual del usuario -->
                         <option th:each="rolValue : ${rolesDisponibles}"
                                 th:value="${rolValue}"
                                 th:text="${rolValue}"
@@ -171,7 +167,6 @@
                     <label for="confirmarContraseña">Confirmar Nueva Contraseña</label>
                     <input type="password" id="confirmarContraseña" name="confirmarContraseña" placeholder="Repetir la nueva contraseña">
                 </div>
-                <!-- Muestra un mensaje de error si el controlador lo envía -->
                 <div th:if="${error}" class="alert-error" th:text="${error}"></div>
                 <div class="form-actions">
                     <a th:href="@{/admin}" class="btn-cancel">Cerrar</a>
@@ -182,7 +177,6 @@
     </div>
 
     <!-- Modal para Editar Tarea -->
-    <!-- Se muestra si el controlador envía 'tareaParaEditar' y 'usuarioDeLaTarea' -->
     <div class="modal-overlay" th:if="${tareaParaEditar != null}">
         <div class="modal-content">
             <h2>Editar Tarea de <span th:text="${usuarioDeLaTarea.nombreUsuario}"></span></h2>
@@ -202,7 +196,6 @@
                 <div class="form-group">
                     <label for="editDificultadTarea">Dificultad</label>
                     <select id="editDificultadTarea" name="dificultad" required size="4">
-                        <!-- Preselecciona la dificultad basándose en los puntos de experiencia (exp) de la tarea -->
                         <option value="Muy fácil" th:selected="${tareaParaEditar.exp == 10}">Muy fácil</option>
                         <option value="Fácil" th:selected="${tareaParaEditar.exp == 25}">Fácil</option>
                         <option value="Medio" th:selected="${tareaParaEditar.exp == 50}">Intermedio</option>
@@ -220,7 +213,6 @@
     </div>
     
     <!-- Modal para Crear Nuevo Usuario -->
-    <!-- Se muestra si el controlador envía el atributo booleano 'mostrarModalCrear' como true -->
     <div class="modal-overlay" th:if="${mostrarModalCrear}">
         <div class="modal-content">
             <h2>Crear Nuevo Usuario</h2>
@@ -264,10 +256,6 @@
                 <div class="form-group">
                     <label for="usuarioParaTarea">Asignar a Usuario:</label>
                     <select id="usuarioParaTarea" name="correoUsuario" required size="4">
-                        <!-- 
-                          Crea una opción por cada usuario en 'listaDeUsuarios'.
-                          'th:selected' preselecciona al usuario si su correo coincide con 'preselectedUserEmail'.
-                        -->
                         <option th:each="u : ${listaDeUsuarios}" 
                                 th:value="${u.correoElectronico}" 
                                 th:text="${u.nombreUsuario}"
@@ -305,33 +293,78 @@
     
     <!-- Modal para Configuración del Top -->
     <div class="modal-overlay" th:if="${mostrarModalTopConfig}">
-        <div class="modal-content">
-            <h2>Configuración del Top</h2>
-            <div class="section-line"></div>
-            <form class="edit-form">
-                <div class="form-group">
-                    <label>Mostrar Top:</label>
-                    <div class="top-n-buttons">
-                        <!-- Enlaces que recargan la página con un nuevo límite -->
-                        <a th:href="@{/admin/top/set-limite(limite=10)}" class="btn-cancel" th:classappend="${limiteActual == 10 ? 'active' : ''}">10</a>
-                        <a th:href="@{/admin/top/set-limite(limite=20)}" class="btn-cancel" th:classappend="${limiteActual == 20 ? 'active' : ''}">20</a>
-                        <a th:href="@{/admin/top/set-limite(limite=30)}" class="btn-cancel" th:classappend="${limiteActual == 30 ? 'active' : ''}">30</a>
-                        <a th:href="@{/admin/top/set-limite(limite=50)}" class="btn-cancel" th:classappend="${limiteActual == 50 ? 'active' : ''}">50</a>
-                    </div>
-                </div>
-                <div class="section-line" style="margin-top: 25px; margin-bottom: 25px;"></div>
-                <div class="form-group">
-                    <label>Mantenimiento de Temporada:</label>
-                    <!-- Botón para forzar el reseteo de puntos de liga -->
-                    <a th:href="@{/admin/temporada/reset-manual}" class="btn-delete" onclick="return confirm('¿Estás seguro de que quieres resetear TODOS los puntos de liga a 0?');">
-                        <i class='bx bx-error-alt'></i> Forzar Reseteo de Temporada
-                    </a>
-                </div>
-                <div class="form-actions" style="margin-top: 30px;">
-                    <a th:href="@{/admin(vista='top', limite=${limiteActual})}" class="btn-cancel">Cerrar</a>
-                </div>
-            </form>
+      <div class="modal-content">
+        <h2>Configuración del Top</h2>
+        <div class="section-line"></div>
+        
+        <div th:if="${errorConfig}" class="alert-error" th:text="${errorConfig}"></div>
+        <div th:if="${success}" class="alert-success" th:text="${success}"></div>
+
+
+        <div class="form-group" style="margin-top: 15px;">
+          <label>Mostrar Top:</label>
+          <div class="top-n-buttons">
+            <a th:href="@{/admin/top/set-limite(limite=10)}" 
+               class="btn-cancel" 
+               th:classappend="${limiteActual == 10 ? 'active' : ''}">10</a>
+            <a th:href="@{/admin/top/set-limite(limite=20)}" 
+               class="btn-cancel" 
+               th:classappend="${limiteActual == 20 ? 'active' : ''}">20</a>
+            <a th:href="@{/admin/top/set-limite(limite=30)}" 
+               class="btn-cancel" 
+               th:classappend="${limiteActual == 30 ? 'active' : ''}">30</a>
+            <a th:href="@{/admin/top/set-limite(limite=50)}" 
+               class="btn-cancel" 
+               th:classappend="${limiteActual == 50 ? 'active' : ''}">50</a>
+          </div>
         </div>
+
+        <div class="section-line" style="margin-top: 25px; margin-bottom: 25px;"></div>
+
+        <form th:action="@{/admin/ligas/guardar}" method="post" class="edit-form">
+          
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+          <input type="hidden" name="limiteActual" th:value="${limiteActual}" />
+
+          <label>Configuración de Ligas (Bronce es 0 Pts):</label>
+          
+          <div class="form-group-grid"> 
+            <div class="form-group">
+              <label for="limitePlata" style="font-weight: normal; font-size: 0.9em;">Plata &ge;</label>
+              <input type="number" min="1" id="limitePlata" name="limitePlata" th:value="${limitesLiga.LIGA_PLATA}" required>
+            </div>
+            <div class="form-group">
+              <label for="limiteOro" style="font-weight: normal; font-size: 0.9em;">Oro &ge;</label>
+              <input type="number" min="1" id="limiteOro" name="limiteOro" th:value="${limitesLiga.LIGA_ORO}" required>
+            </div>
+            <div class="form-group">
+              <label for="limitePlatino" style="font-weight: normal; font-size: 0.9em;">Platino &ge;</label>
+              <input type="number" min="1" id="limitePlatino" name="limitePlatino" th:value="${limitesLiga.LIGA_PLATINO}" required>
+            </div>
+            <div class="form-group">
+              <label for="limiteDiamante" style="font-weight: normal; font-size: 0.9em;">Diamante &ge;</label>
+              <input type="number" min="1" id="limiteDiamante" name="limiteDiamante" th:value="${limitesLiga.LIGA_DIAMANTE}" required>
+            </div>
+          </div>
+          <button type="submit" class="btn-save" style="margin-top: 15px; width: 100%;">Guardar Límites de Liga</button>
+        </form>
+
+        <div class="section-line" style="margin-top: 25px; margin-bottom: 25px;"></div>
+        
+        <div class="form-group">
+          <label>Mantenimiento de Temporada:</label>
+          <a th:href="@{/admin/temporada/reset-manual}"
+             class="btn-delete"
+             onclick="return confirm('¿Estás seguro de que quieres resetear TODOS los puntos de liga a 0?');">
+            <i class='bx bx-error-alt'></i> Forzar Reseteo de Temporada
+          </a>
+        </div>
+
+        <div class="form-actions" style="margin-top: 30px;">
+          <a th:href="@{/admin(vista='top', limite=${limiteActual})}" class="btn-cancel">Cerrar</a>
+        </div>
+
+      </div>
     </div>
 
     <!-- 
