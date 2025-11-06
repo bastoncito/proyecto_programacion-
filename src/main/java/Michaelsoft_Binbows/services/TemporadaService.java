@@ -2,16 +2,26 @@ package Michaelsoft_Binbows.services;
 
 import Michaelsoft_Binbows.data.UsuarioRepository;
 import Michaelsoft_Binbows.entities.Usuario;
+import Michaelsoft_Binbows.entities.SalonFama;
+import Michaelsoft_Binbows.data.SalonFamaRepository;
 import jakarta.transaction.Transactional;
+
+import java.time.LocalDate;
+import java.time.format.TextStyle;
 import java.util.List;
+import java.util.Locale;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class TemporadaService {
 
   @Autowired private UsuarioRepository usuarioRepository;
+
+  @Autowired private SalonFamaRepository salonFamaRepository;
 
   /**
    * El reseteo automático. El 'cron' está puesto para ejecutarse a las 00:00 del día 1 de cada mes.
@@ -22,6 +32,34 @@ public class TemporadaService {
   @Scheduled(cron = "0 0 0 1 * ?")
   public void gestionarReseteoTemporada() {
     System.out.println("--- INICIANDO RESETEO DE TEMPORADA AUTOMÁTICO ---");
+
+    // Borramos a los ganadores del mes.
+    salonFamaRepository.deleteAll(); 
+    
+    // Buscamos a los 3 mejores jugadores de ESTA temporada
+    List<Usuario> ganadores = usuarioRepository.findTop3ByOrderByPuntosLigaDesc();
+
+    // Generamos el nombre del mes que ACABA de terminar (ej. "Octubre 2025")
+    LocalDate mesPasado = LocalDate.now().minusMonths(1);
+    // Locale("es", "ES") es para que ponga "Octubre" y no "October"
+    String temporadaNombre = mesPasado.getMonth().getDisplayName(TextStyle.FULL, new Locale("es", "ES"));
+    // Capitalizar: "octubre" -> "Octubre"
+    temporadaNombre = temporadaNombre.substring(0, 1).toUpperCase() + temporadaNombre.substring(1) + " " + mesPasado.getYear();
+
+    // Guardamos a los 3 ganadores en la nueva tabla 'SalonFama'
+    int puesto = 1;
+    for (Usuario ganador : ganadores) {
+        SalonFama registro = new SalonFama(
+            puesto,
+            temporadaNombre,
+            ganador.getNombreUsuario(),
+            ganador.getPuntosLiga(), // Sus puntos de este mes
+            ganador.getLiga()
+        );
+        salonFamaRepository.save(registro);
+        puesto++;
+    }
+    System.out.println("--- SALÓN DE LA FAMA GUARDADO (" + ganadores.size() + " jugadores) ---");
 
     // 1. Buscamos a TODOS los usuarios
     List<Usuario> todosLosUsuarios = usuarioRepository.findAll();

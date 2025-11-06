@@ -1,5 +1,7 @@
 package Michaelsoft_Binbows.controller;
 
+import Michaelsoft_Binbows.data.SalonFamaRepository; // Cambio entrante
+import Michaelsoft_Binbows.entities.SalonFama; // Cambio entrante
 import Michaelsoft_Binbows.entities.Tarea;
 import Michaelsoft_Binbows.entities.Usuario;
 import Michaelsoft_Binbows.security.CustomUserDetails;
@@ -7,13 +9,12 @@ import Michaelsoft_Binbows.services.ConfiguracionService;
 import Michaelsoft_Binbows.services.TareaService;
 import Michaelsoft_Binbows.services.UsuarioService;
 import Michaelsoft_Binbows.services.WeatherService;
-import Michaelsoft_Binbows.util.SistemaNiveles;
+import Michaelsoft_Binbows.util.SistemaNiveles; // Tu cambio
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -31,12 +32,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class HomeController {
 
   @Autowired private UsuarioService usuarioService;
-
   @Autowired private WeatherService weatherService;
-
   @Autowired private ConfiguracionService configuracionService;
-
   @Autowired private TareaService tareaService;
+  @Autowired private SalonFamaRepository salonFamaRepository; // Cambio entrante
 
   @GetMapping("/")
   public String redirigirLogin() {
@@ -60,13 +59,12 @@ public class HomeController {
     List<Tarea> historialCompleto = usuarioActual.getTareasCompletadas();
     List<Tarea> historialReciente = historialCompleto.stream().limit(3).toList();
 
-    model.addAttribute("historialReciente", historialReciente); // La lista corta
-    model.addAttribute("totalHistorial", historialCompleto.size()); // El número total
+    model.addAttribute("historialReciente", historialReciente);
+    model.addAttribute("totalHistorial", historialCompleto.size());
 
+    // Tu lógica se mantiene intacta
     int expSiguienteNivel = SistemaNiveles.experienciaParaNivel(usuarioActual.getNivelExperiencia() + 1);
     model.addAttribute("expSiguienteNivel", expSiguienteNivel);
-    
-
     
     String ciudad = usuarioActual.getCiudad();
     String climaActual = null;
@@ -82,24 +80,20 @@ public class HomeController {
         climaData.put("icono", weatherJson.getJSONArray("weather").getJSONObject(0).getString("icon"));
 
         long timestamp = weatherJson.getLong("dt");
-        // Seccion zona horaria
         int timezoneOffset = weatherJson.getInt("timezone");
-        // Convertimos el timestamp UTC a un objeto Instant y le aplicamos el desfase horario
         Instant instant = Instant.ofEpochSecond(timestamp);
         ZoneId zoneId = ZoneId.ofOffset("UTC", java.time.ZoneOffset.ofTotalSeconds(timezoneOffset));
-        // Formateamos la hora al formato "HH:mm"
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm").withZone(zoneId);
         String horaLocal = formatter.format(instant);
 
         climaData.put("hora", horaLocal);
         model.addAttribute("clima", climaData);
 
-        // ---NUEVO: obtener el clima principal---
         climaActual =
             weatherJson
                 .getJSONArray("weather")
                 .getJSONObject(0)
-                .getString("main"); // Ejemplo: "Clear", "Clouds", "Rain"
+                .getString("main");
       } catch (Exception e) {
         System.err.println(
             "Error al obtener datos del clima para la ciudad '" + ciudad + "': " + e.getMessage());
@@ -109,7 +103,6 @@ public class HomeController {
       }
     }
 
-    // ---NUEVO: recomendar tarea según clima---
     Tarea tareaRecomendada = null;
     if (climaActual != null) {
       String categoriaClima =
@@ -127,10 +120,8 @@ public class HomeController {
     }
     model.addAttribute("tareaRecomendada", tareaRecomendada);
 
-    // 1. Pedimos el Top 3 (usando el método que ya creamos en UsuarioService)
     List<Usuario> top3 = usuarioService.getTopUsuarios(3);
 
-    // 2. Lo añadimos al modelo para que el HTML lo pueda usar
     model.addAttribute("top3Usuarios", top3);
     model.addAttribute("activePage", "home");
 
@@ -141,26 +132,19 @@ public class HomeController {
   public String mostrarRanking(Model model) {
     System.out.println("LOG: El método 'mostrarRanking' (NUEVO) ha sido llamado.");
 
-    // --- Lógica Nueva ---
     try {
-      // 1. Obtener el usuario actual (para la tarjeta de perfil)
       Authentication auth = SecurityContextHolder.getContext().getAuthentication();
       CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
       Usuario usuarioActual = usuarioService.buscarPorCorreo(userDetails.getUsername());
-      model.addAttribute("usuarioLogueado", usuarioActual); // <-- Lo pasamos al HTML
+      model.addAttribute("usuarioLogueado", usuarioActual);
 
-      // 2. Obtener el límite del Top (10, 20, etc.) desde la BD
       int limite = configuracionService.getLimiteTop();
-
-      // 3. Obtener la lista del ranking (ordenada por puntosLiga)
       List<Usuario> listaRanking = usuarioService.getTopUsuarios(limite);
       model.addAttribute("listaRanking", listaRanking);
 
-      // 4. Generar los textos de los meses (para los títulos)
       LocalDate hoy = LocalDate.now();
       LocalDate mesPasado = hoy.minusMonths(1);
 
-      // Capitaliza la primera letra del mes
       String mesActual = hoy.getMonth().getDisplayName(TextStyle.FULL, new Locale("es", "ES"));
       String mesActualMayus = mesActual.substring(0, 1).toUpperCase() + mesActual.substring(1);
 
@@ -172,16 +156,15 @@ public class HomeController {
       model.addAttribute("tituloMesActual", mesActualMayus + " " + hoy.getYear());
       model.addAttribute("tituloMesAnterior", mesAnteriorMayus + " " + mesPasado.getYear());
 
-      // 5. TODO: Lógica para el Salón de la Fama
-      // (Por ahora, enviamos una lista vacía para que el HTML no se rompa)
-      model.addAttribute("hallOfFame", Collections.emptyList());
+      // La lógica del Salón de la Fama se mantiene
+      List<SalonFama> hallOfFame = salonFamaRepository.findAllByOrderByPuestoAsc();
+      model.addAttribute("hallOfFame", hallOfFame);
 
     } catch (Exception e) {
       System.err.println("Error al cargar /ranking: " + e.getMessage());
-      // TODO: redirigir a una página de error o al home
     }
     model.addAttribute("activePage", "ranking");
-    return "ranking"; // Devuelve el nuevo ranking.html
+    return "ranking";
   }
 
   @GetMapping("/hola")
