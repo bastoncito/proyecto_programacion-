@@ -11,6 +11,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+/**
+ * Servicio personalizado para cargar los detalles del usuario para Spring Security.
+ * Implementa UserDetailsService para buscar usuarios por nombre de usuario o correo.
+ */
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
@@ -24,7 +28,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     if (usuario == null) {
       usuario = usuarioRepository.findByCorreoElectronico(usernameOrEmail).orElse(null);
     }
-    if (usuario == null) throw new UsernameNotFoundException("User not found: " + usernameOrEmail);
+    if (usuario == null) {
+      throw new UsernameNotFoundException("User not found: " + usernameOrEmail);
+    }
     return new CustomUserDetails(usuario);
   }
 }

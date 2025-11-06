@@ -4,6 +4,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import java.util.Locale;
 
+/**
+ * Entidad que representa un Logro (Achievement) que un usuario puede desbloquear.
+ * Contiene la definición del logro y la recompensa de experiencia.
+ */
 @Entity
 public class Logro {
   @Id private String id; // Usamos el ID como clave primaria
@@ -14,17 +18,8 @@ public class Logro {
   private int experienciaRecompensa;
 
   /**
-   * Constructor de la clase Logro. Valida todos los parámetros antes de crear el objeto. Si alguna
-   * validación falla, lanza una excepción para prevenir la creación de un objeto en estado
-   * inválido.
-   *
-   * @param id El identificador único del logro
-   * @param nombre El nombre visible para el usuario (ej. "¡Primeros Pasos!").
-   * @param descripcion La explicación de cómo se obtiene el logro.
-   * @param experienciaRecompensa La cantidad de EXP que otorga el logro (puede ser 0).
-   */
-
-  // Constructor vacío requerido por JPA
+   * Constructor vacío requerido por JPA.
+   */
   public Logro() {
     this.id = "";
     this.nombre = "";
@@ -32,6 +27,16 @@ public class Logro {
     this.experienciaRecompensa = 0;
   }
 
+  /**
+   * Constructor de la clase Logro. Valida todos los parámetros antes de crear el objeto. Si alguna
+   * validación falla, lanza una excepción para prevenir la creación de un objeto en estado
+   * inválido.
+   *
+   * @param id El identificador único del logro (sin espacios, se convertirá a mayúsculas).
+   * @param nombre El nombre visible para el usuario (ej. "¡Primeros Pasos!").
+   * @param descripcion La explicación de cómo se obtiene el logro.
+   * @param experienciaRecompensa La cantidad de EXP que otorga el logro (puede ser 0).
+   */
   public Logro(String id, String nombre, String descripcion, int experienciaRecompensa) {
 
     // Validacion de ID: sin espacios y en mayúsculas (por convención).

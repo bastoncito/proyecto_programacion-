@@ -1,4 +1,4 @@
-package Michaelsoft_Binbows.demo;
+package michaelsoftbinbows.demo;
 
 // import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

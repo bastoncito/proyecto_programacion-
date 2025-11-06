@@ -65,7 +65,7 @@ public class PerfilController {
       usuarioActual.setCorreoElectronico(nuevoCorreo);
       usuarioActual.setCiudad(nuevaCiudad);
 
-      usuarioService.guardarEnBD(usuarioActual);
+      usuarioService.guardarEnBd(usuarioActual);
 
       model.addAttribute("exitoInfo", "Información actualizada correctamente.");
 
@@ -117,7 +117,7 @@ public class PerfilController {
       }
 
       usuarioActual.setContrasena(passwordEncoder.encode(contrasenaNueva));
-      usuarioService.guardarEnBD(usuarioActual);
+      usuarioService.guardarEnBd(usuarioActual);
       model.addAttribute("exitoPassword", "Contrasena actualizada correctamente.");
 
     } catch (Exception e) {

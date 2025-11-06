@@ -85,7 +85,7 @@ public class TareaController {
     // Usuario usuarioActual = userDetails.getUsuario();
 
     Tarea nuevaTarea = new Tarea(nombre, descripcion, dificultad);
-    usuarioService.agregarTareaAUsuario(correo, nuevaTarea);
+    usuarioService.agregarTareaAusuario(correo, nuevaTarea);
     // usuarioService.guardarEnBD(usuarioActual); //Guarda el usuario y sus tareas en la base de
     // datos
 

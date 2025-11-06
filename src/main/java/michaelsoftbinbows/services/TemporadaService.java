@@ -8,6 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+/**
+ * Servicio encargado de gestionar la lógica de las temporadas,
+ * incluyendo el reseteo automático mensual de puntos de liga.
+ */
 @Service
 public class TemporadaService {
 

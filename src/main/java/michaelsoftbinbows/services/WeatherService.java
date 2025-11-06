@@ -9,11 +9,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * Servicio para interactuar con la API de OpenWeatherMap.
+ * Proporciona métodos para obtener el clima por ciudad.
+ */
 @Service
 public class WeatherService {
 
   private final RestTemplate restTemplate = new RestTemplate();
 
+  /**
+   * Obtiene la respuesta JSON cruda del clima para una ciudad.
+   *
+   * @param city El nombre de la ciudad a consultar.
+   * @return El JSON (como String) completo de la API.
+   * @throws WeatherApiException Si no se puede obtener el clima.
+   */
   public String getWeatherByCity(String city) {
     try {
       String url =
@@ -29,7 +40,13 @@ public class WeatherService {
     }
   }
 
-  // Nuevo metodo para filtrar y mapear los datos principales
+  /**
+   * Obtiene los datos del clima filtrados (temperatura, clima, hora) para una ciudad.
+   *
+   * @param city El nombre de la ciudad a consultar.
+   * @return Un JSON (como String) filtrado con los datos clave.
+   * @throws WeatherApiException Si no se puede obtener o parsear el clima.
+   */
   public String getFilteredWeatherByCity(String city) {
     try {
       String url =
