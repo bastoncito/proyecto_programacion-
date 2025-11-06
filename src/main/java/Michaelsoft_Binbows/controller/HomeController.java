@@ -52,7 +52,6 @@ public class HomeController {
     String correo = userDetails.getUsername();
 
     Usuario usuarioActual = usuarioService.buscarPorCorreoConTareas(correo);
-    usuarioActual.resetRacha();
 
     model.addAttribute("usuario", usuarioActual);
     model.addAttribute("tareas", usuarioActual.getTareasPendientes());

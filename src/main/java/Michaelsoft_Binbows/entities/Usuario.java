@@ -16,6 +16,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -334,8 +335,8 @@ public class Usuario {
     // Marcar la tarea como completada, estableciendo la fecha actual
     tareaACompletar.setFechaCompletada(LocalDateTime.now());
 
-    // Verificar la subida de la racha
-    aumentarRacha();
+    // Verifica y actualiza la subida de la racha
+    actualizarRacha();
 
     // Añadir la experiencia de la tarea al total del usuario.
     this.experiencia += tareaACompletar.getExp();
@@ -399,38 +400,6 @@ public class Usuario {
    */
   private void comprobarYDesbloquearLogros() {
     // por hacer
-  }
-
-  public void resetRacha() {
-    LocalDate hoy = LocalDate.now();
-    if (fechaRacha == null) {
-      return; // no hacer nada. aplica para usuarios nuevos.
-    }
-    if (fechaRacha.plusDays(1).isBefore(hoy)) {
-      racha = 0; // resetear racha si la última tarea se completo hace más de un día
-    }
-  }
-
-  public void aumentarRacha() {
-    LocalDate hoy = LocalDate.now();
-    if (fechaRacha == null || hoy.isAfter(fechaRacha)) {
-      fechaRacha = hoy; // si es la primera tarea completada por el usuario
-      racha++;
-    }
-  }
-
-  public void cuentarrachas() {
-    LocalDate hoy = LocalDate.now();
-    if (fechaRacha == null) {
-      return; // no hacer nada
-    }
-    if (fechaRacha.plusDays(1).isBefore(hoy)) {
-      racha = 0; // resetear racha si la última tarea se completo hace más de un día
-      fechaRacha = hoy;
-    } else if (hoy.isAfter(fechaRacha)) {
-      fechaRacha = hoy;
-      racha++;
-    }
   }
 
   /**
@@ -506,6 +475,40 @@ public class Usuario {
         .sum();
   }
 
+  /**
+ * Método unificado y robusto para actualizar la racha del usuario.
+ * Se encarga de incrementar, reiniciar o mantener la racha según la fecha.
+ * Debe ser llamado cada vez que se completa una tarea.
+ */
+public void actualizarRacha() {
+  LocalDate hoy = LocalDate.now();
+  LocalDate fechaUltimaRacha = this.fechaRacha; // Usamos el nombre de tu campo
+
+  // CASO 1: Es la primera tarea que el usuario completa en su vida.
+  if (fechaUltimaRacha == null) {
+    this.racha = 1;
+  } else {
+      // Calculamos los días de diferencia entre la última vez y hoy.
+      long diasDiferencia = ChronoUnit.DAYS.between(fechaUltimaRacha, hoy);
+
+      // CASO 2: Completó otra tarea hoy. La racha no cambia.
+      if (diasDiferencia == 0) {
+      // No se hace nada, la racha ya se contó para hoy.
+      System.out.println("Racha diaria ya registrada. No se incrementa.");
+      return; // Salimos del método para no actualizar la fecha innecesariamente
+      }
+      // CASO 3: La última tarea fue ayer. ¡La racha continúa!
+      else if (diasDiferencia == 1) {
+        this.racha++; // Incrementamos la racha existente
+      }
+      // CASO 4: La racha se rompió (pasó más de 1 día). Se reinicia a 1.
+      else {
+        this.racha = 1;
+      }
+    }
+    //Actualizamos la fecha de la racha a hoy.
+    this.fechaRacha = hoy;
+  }
   @Override
   public String toString() {
     // Calculamos la experiencia para el proximo nivel para mostrarla (ya que el usuario no la

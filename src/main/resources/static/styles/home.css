@@ -177,6 +177,15 @@ body {
     font-size: 1.2em;
     font-weight: 700; 
 }
+/* ESTILO PARA LA RACHA INACTIVA (APAGADA) */
+.streak-display.inactive .bxs-hot {
+    color: #adb5bd; /* Un gris neutro y suave, puedes usar var(--color-texto-secundario) si prefieres */
+}
+
+/* Cambiar el color del número a gris */
+.streak-display.inactive .streak-number {
+    color: #adb5bd;
+}
 
 /* Estilos generales para los botones "Ver Perfil" y "Cerrar Sesión". */
 .profile-actions button { 
