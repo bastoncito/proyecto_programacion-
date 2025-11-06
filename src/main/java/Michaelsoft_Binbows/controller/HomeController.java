@@ -7,6 +7,8 @@ import Michaelsoft_Binbows.services.ConfiguracionService;
 import Michaelsoft_Binbows.services.TareaService;
 import Michaelsoft_Binbows.services.UsuarioService;
 import Michaelsoft_Binbows.services.WeatherService;
+import Michaelsoft_Binbows.entities.SalonFama;
+import Michaelsoft_Binbows.data.SalonFamaRepository;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -36,6 +38,8 @@ public class HomeController {
   @Autowired private ConfiguracionService configuracionService;
 
   @Autowired private TareaService tareaService;
+
+  @Autowired private SalonFamaRepository salonFamaRepository;
 
   @GetMapping("/")
   public String redirigirLogin() {
@@ -162,8 +166,8 @@ public class HomeController {
       model.addAttribute("tituloMesAnterior", mesAnteriorMayus + " " + mesPasado.getYear());
 
       // 5. TODO: Lógica para el Salón de la Fama
-      // (Por ahora, enviamos una lista vacía para que el HTML no se rompa)
-      model.addAttribute("hallOfFame", Collections.emptyList());
+      List<SalonFama> hallOfFame = salonFamaRepository.findAllByOrderByPuestoAsc();
+      model.addAttribute("hallOfFame", hallOfFame);
 
     } catch (Exception e) {
       System.err.println("Error al cargar /ranking: " + e.getMessage());

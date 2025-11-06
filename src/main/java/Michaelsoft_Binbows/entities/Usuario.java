@@ -41,14 +41,15 @@ public class Usuario {
   private LocalDateTime fechaRegistro;
   private LocalDate fechaRacha;
 
-  // Testing sistema de ligas y puntos ------------
   @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
   private int puntosLiga;
 
   @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'Bronce'")
   private String liga;
 
-  // Fin testing ---------
+  @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
+  private int puntosMesPasado;
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -77,10 +78,9 @@ public class Usuario {
     this.experiencia = 0;
     this.nivelExperiencia = 1;
     this.racha = 0;
-    // --- Ligas ---
     this.puntosLiga = 0;
     this.liga = "Bronce";
-    // --- FIN Ligas ---
+    this.puntosMesPasado = 0;
     this.rol = Rol.USUARIO;
     this.fechaRegistro = LocalDateTime.now();
     this.fechaRacha = null;
@@ -143,6 +143,10 @@ public class Usuario {
     return liga;
   }
 
+  public int getPuntosMesPasado() {
+    return puntosMesPasado;
+  }
+
   public void setPuntosLiga(int puntosLiga) {
     this.puntosLiga = puntosLiga;
   }
@@ -191,8 +195,13 @@ public class Usuario {
     this.ciudad = ciudad;
   }
 
+  public void setPuntosMesPasado(int puntosMesPasado) {
+    this.puntosMesPasado = puntosMesPasado;
+  }
+
   /** Resetea los puntos de liga del usuario al inicio de una nueva temporada. */
   public void resetearPuntosLiga() {
+    this.puntosMesPasado = this.puntosLiga;
     this.puntosLiga = 0;
     this.liga = "Bronce";
   }
