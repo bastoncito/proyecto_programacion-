@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+/** Controller para el apartado de login/registro. */
 @Controller
 public class AutorizacionController {
 
@@ -20,7 +21,12 @@ public class AutorizacionController {
 
   @Autowired private michaelsoftbinbows.services.UsuarioService usuarioService;
 
-  // Guarda los usuarios nuevos con contrasenas encriptadas
+  /**
+   * Guarda usuarios con contraseñas encriptadas.
+   *
+   * @param usuario usuario a guardar
+   * @throws RegistroInvalidoException si el usuario a guardar no es válido
+   */
   public void registrarUsuario(Usuario usuario) throws RegistroInvalidoException {
     String encodedPassword = passwordEncoder.encode(usuario.getContrasena());
     usuario.setContrasena(encodedPassword);
@@ -28,7 +34,12 @@ public class AutorizacionController {
     usuarioService.guardarSinValidarContrasena(usuario);
   }
 
-  // Métodos para registro
+  /**
+   * Muestra la pantalla de registro.
+   *
+   * @param model modelo para añadir atributos
+   * @return template de register
+   */
   @GetMapping("/register")
   public String mostrarRegister(Model model) {
     System.out.println(
@@ -36,6 +47,17 @@ public class AutorizacionController {
     return "register";
   }
 
+  /**
+   * Procesa el registro de un nuevo usuario.
+   *
+   * @param username nombre del usuario nuevo
+   * @param email correo nuevo
+   * @param password contraseña del usuario nuevo
+   * @param passwordConfirm confirmación de la contraseña
+   * @param model modelo para añadir atributos
+   * @return redirect a home o template de register
+   * @throws RegistroInvalidoException si el usuario a registrar no es válido
+   */
   @PostMapping("/register")
   public String procesarRegister(
       @RequestParam("usuario") String username,
@@ -64,6 +86,13 @@ public class AutorizacionController {
     return "redirect:/home";
   }
 
+  /**
+   * Muestra la pantalla de login.
+   *
+   * @param error mensaje de error si es que hace falta
+   * @param model modelo para añadir atributos
+   * @return template de login
+   */
   @GetMapping("/login")
   public String mostrarLogin(
       @RequestParam(value = "error", required = false) String error, Model model) {
@@ -75,6 +104,13 @@ public class AutorizacionController {
     return "loginreal";
   }
 
+  /**
+   * Procesa el login.
+   *
+   * @param email correo del usuario logueado
+   * @param password contraseña del usuario
+   * @return redirect al home
+   */
   @PostMapping("/login")
   public String login(@RequestParam String email, @RequestParam String password) {
     return "redirect:/home";

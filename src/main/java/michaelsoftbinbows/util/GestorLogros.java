@@ -8,8 +8,8 @@ import michaelsoftbinbows.entities.Logro;
 import michaelsoftbinbows.entities.Usuario;
 
 /**
- * Clase de utilidad para gestionar la lógica y la definición de los Logros.
- * Mantiene una lista estática de todos los logros disponibles en el sistema.
+ * Clase de utilidad para gestionar la lógica y la definición de los Logros. Mantiene una lista
+ * estática de todos los logros disponibles en el sistema.
  */
 public class GestorLogros {
 

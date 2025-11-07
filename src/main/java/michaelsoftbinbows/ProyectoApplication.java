@@ -4,12 +4,18 @@ import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-// import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration; esto
-// era para customizar la página de error
-
+/**
+ * Punto de entrada para la aplicación en sí
+ *
+ * <p>Se cargan los parámetros para el funcionamiento de la base de datos desde un archivo .env.
+ */
 @SpringBootApplication
 public class ProyectoApplication {
-
+  /**
+   * Este método pone en marcha la aplicación.
+   *
+   * @param args argumentos recibidos desde compilador
+   */
   public static void main(String[] args) {
     Dotenv dotenv = Dotenv.configure().filename(".env.application").load();
     System.setProperty("DB_HOST", dotenv.get("DB_HOST"));

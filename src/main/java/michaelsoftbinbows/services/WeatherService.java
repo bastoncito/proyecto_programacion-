@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * Servicio para interactuar con la API de OpenWeatherMap.
- * Proporciona métodos para obtener el clima por ciudad.
+ * Servicio para interactuar con la API de OpenWeatherMap. Proporciona métodos para obtener el clima
+ * por ciudad.
  */
 @Service
 public class WeatherService {

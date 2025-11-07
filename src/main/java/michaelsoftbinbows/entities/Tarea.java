@@ -16,8 +16,8 @@ import michaelsoftbinbows.exceptions.TareaInvalidaException;
 import michaelsoftbinbows.util.Dificultad;
 
 /**
- * Entidad que representa una Tarea.
- * Contiene la lógica de negocio y las validaciones para una tarea.
+ * Entidad que representa una Tarea. Contiene la lógica de negocio y las validaciones para una
+ * tarea.
  */
 @Entity
 public class Tarea {
@@ -40,9 +40,8 @@ public class Tarea {
 
   // Constructores
   /**
-   * Constructor vacío requerido por JPA y otros frameworks.
-   * Es requerido por Spring y Thymeleaf para poder instanciar objetos
-   * de esta clase sin argumentos.
+   * Constructor vacío requerido por JPA y otros frameworks. Es requerido por Spring y Thymeleaf
+   * para poder instanciar objetos de esta clase sin argumentos.
    */
   public Tarea() {
     // Este constructor se deja vacío a propósito.
@@ -214,8 +213,8 @@ public class Tarea {
   }
 
   /**
-   * Comprueba si una tarea ya existe en una lista,
-   * basándose en la descripción (ignorando mayúsculas).
+   * Comprueba si una tarea ya existe en una lista, basándose en la descripción (ignorando
+   * mayúsculas).
    *
    * @param tareas La lista de tareas donde buscar.
    * @param tarea La tarea a comprobar.

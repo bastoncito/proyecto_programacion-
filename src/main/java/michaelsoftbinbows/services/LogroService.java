@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * Servicio para gestionar la lógica de negocio de los Logros.
- * Proporciona métodos CRUD para interactuar con el repositorio de logros.
+ * Servicio para gestionar la lógica de negocio de los Logros. Proporciona métodos CRUD para
+ * interactuar con el repositorio de logros.
  */
 @Service
 public class LogroService {

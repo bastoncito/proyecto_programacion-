@@ -12,8 +12,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 /**
- * Servicio personalizado para cargar los detalles del usuario para Spring Security.
- * Implementa UserDetailsService para buscar usuarios por nombre de usuario o correo.
+ * Servicio personalizado para cargar los detalles del usuario para Spring Security. Implementa
+ * UserDetailsService para buscar usuarios por nombre de usuario o correo.
  */
 @Service
 public class CustomUserDetailsService implements UserDetailsService {

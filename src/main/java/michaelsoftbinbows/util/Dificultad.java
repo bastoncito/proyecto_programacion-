@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 /**
- * Clase de utilidad para gestionar la lógica relacionada con la dificultad de las tareas,
- * como la experiencia (exp) que otorgan o las fechas de expiración.
+ * Clase de utilidad para gestionar la lógica relacionada con la dificultad de las tareas, como la
+ * experiencia (exp) que otorgan o las fechas de expiración.
  */
 public class Dificultad {
   /*

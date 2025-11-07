@@ -97,7 +97,7 @@ public class TareaController {
     String correo = userDetails.getUsername();
 
     Tarea nuevaTarea = new Tarea(nombre, descripcion, dificultad);
-    usuarioService.agregarTareaAUsuario(correo, nuevaTarea);
+    usuarioService.agregarTareaAusuario(correo, nuevaTarea);
 
     // Usamos RedirectAttributes para que el mensaje de éxito se vea en /home
     redirectAttributes.addFlashAttribute("mensaje", "¡Tarea agregada con éxito!");

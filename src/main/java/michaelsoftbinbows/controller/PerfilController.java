@@ -13,17 +13,32 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+/** Controller para el apartado de perfil. */
 @Controller
 public class PerfilController {
 
   private final UsuarioService usuarioService;
   private final PasswordEncoder passwordEncoder;
 
+  /**
+   * Constructor de clase.
+   *
+   * <p>Inyecta los servicios y objetos necesarios para su funcionamiento.
+   *
+   * @param usuarioService Service para acciones de Usuario
+   * @param passwordEncoder encriptador de contraseñas BCrypt
+   */
   public PerfilController(UsuarioService usuarioService, PasswordEncoder passwordEncoder) {
     this.usuarioService = usuarioService;
     this.passwordEncoder = passwordEncoder;
   }
 
+  /**
+   * Muestra el perfil de usuario.
+   *
+   * @param model modelo para añadir atributos a la página
+   * @return template de perfil
+   */
   @GetMapping("/perfil")
   public String mostrarPerfil(Model model) {
     System.out.println("LOG: Método 'mostrarPerfil' llamado.");
@@ -41,6 +56,15 @@ public class PerfilController {
     return "user_profile";
   }
 
+  /**
+   * Procesa intentos de actualización de usuario desde su perfil.
+   *
+   * @param nuevoUsuario nuevo nombre de usuario
+   * @param nuevoCorreo nuevo correo
+   * @param nuevaCiudad nueva ciudad
+   * @param model modelo para añadir atributos a la página
+   * @return template de perfil
+   */
   @PostMapping("/perfil/actualizar")
   public String actualizarPerfil(
       @RequestParam("usuario") String nuevoUsuario,
@@ -85,6 +109,15 @@ public class PerfilController {
     return "user_profile";
   }
 
+  /**
+   * Procesa intentos de cambio de contraseña desde perfil.
+   *
+   * @param contrasenaActual contraseña actual del usuario
+   * @param contrasenaNueva contraseña nueva del usuario
+   * @param contrasenaRepetida confirmación de la contraseña nueva
+   * @param model modelo para añadir atributos a la página
+   * @return template de perfil
+   */
   @PostMapping("/perfil/cambiar-contrasena")
   public String cambiarContrasena(
       @RequestParam("contrasenaActual") String contrasenaActual,
@@ -128,6 +161,12 @@ public class PerfilController {
     return "user_profile";
   }
 
+  /**
+   * Elimina la cuenta del usuario.
+   *
+   * @param session sesión HTTP
+   * @return redirect al login (logout) o a perfil si hay un error
+   */
   @PostMapping("/perfil/borrar-cuenta")
   public String borrarCuenta(HttpSession session) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();

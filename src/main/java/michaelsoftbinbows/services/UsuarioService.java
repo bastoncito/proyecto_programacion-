@@ -18,8 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
- * Servicio para la lógica de negocio principal relacionada con los Usuarios.
- * Gestiona la creación, validación, actualización y eliminación de usuarios.
+ * Servicio para la lógica de negocio principal relacionada con los Usuarios. Gestiona la creación,
+ * validación, actualización y eliminación de usuarios.
  */
 @Service
 public class UsuarioService {

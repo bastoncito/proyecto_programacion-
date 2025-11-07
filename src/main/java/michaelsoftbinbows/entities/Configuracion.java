@@ -4,8 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
 /**
- * Entidad que representa un par clave-valor de configuración en la base de datos.
- * Se utiliza para almacenar ajustes globales de la aplicación.
+ * Entidad que representa un par clave-valor de configuración en la base de datos. Se utiliza para
+ * almacenar ajustes globales de la aplicación.
  */
 @Entity
 public class Configuracion {
@@ -15,9 +15,7 @@ public class Configuracion {
   private String valor;
 
   // Constructores, Getters y Setters
-  /**
-   * Constructor vacío requerido por JPA.
-   */
+  /** Constructor vacío requerido por JPA. */
   public Configuracion() {
     // Constructor vacío
   }

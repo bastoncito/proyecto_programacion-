@@ -23,8 +23,8 @@ import michaelsoftbinbows.model.Rol;
 import michaelsoftbinbows.util.SistemaNiveles;
 
 /**
- * Entidad que representa a un Usuario en el sistema.
- * Almacena información de perfil, estado de juego (EXP, nivel) y sus tareas.
+ * Entidad que representa a un Usuario en el sistema. Almacena información de perfil, estado de
+ * juego (EXP, nivel) y sus tareas.
  */
 @Entity
 public class Usuario {
@@ -72,9 +72,7 @@ public class Usuario {
 
   private String ciudad;
 
-  /**
-   * Constructor vacío requerido por JPA.
-   */
+  /** Constructor vacío requerido por JPA. */
   public Usuario() {
     // Constructor vacío
   }
@@ -243,8 +241,8 @@ public class Usuario {
   }
 
   /**
-   * Devuelve solo las tareas PENDIENTES (no completadas).
-   * La tarea es PENDIENTE si getFechaCompletada() devuelve null.
+   * Devuelve solo las tareas PENDIENTES (no completadas). La tarea es PENDIENTE si
+   * getFechaCompletada() devuelve null.
    *
    * @return Lista de tareas pendientes.
    */
@@ -275,8 +273,8 @@ public class Usuario {
   }
 
   /**
-   * Devuelve el número de tareas completadas.
-   * La tarea es COMPLETADA si getFechaCompletada() NO es null.
+   * Devuelve el número de tareas completadas. La tarea es COMPLETADA si getFechaCompletada() NO es
+   * null.
    *
    * @return Cantidad de tareas completadas.
    */
@@ -331,8 +329,8 @@ public class Usuario {
   }
 
   /**
-   * Marca una tarea como completada, la mueve a la lista de tareas completadas,
-   * añade la experiencia al usuario y verifica si sube de nivel.
+   * Marca una tarea como completada, la mueve a la lista de tareas completadas, añade la
+   * experiencia al usuario y verifica si sube de nivel.
    *
    * @param nombreTarea El nombre de la tarea a completar.
    * @throws RegistroInvalidoException Si la tarea no se encuentra o ya está completada.
@@ -431,9 +429,7 @@ public class Usuario {
     // por hacer
   }
 
-  /**
-   * Resetea la racha del usuario a 0 si la última tarea se completó hace más de un día.
-   */
+  /** Resetea la racha del usuario a 0 si la última tarea se completó hace más de un día. */
   public void resetRacha() {
     LocalDate hoy = LocalDate.now(ZoneId.systemDefault());
     if (fechaRacha == null) {
@@ -444,9 +440,7 @@ public class Usuario {
     }
   }
 
-  /**
-   * Aumenta la racha del usuario si la tarea completada es en un nuevo día.
-   */
+  /** Aumenta la racha del usuario si la tarea completada es en un nuevo día. */
   public void aumentarRacha() {
     LocalDate hoy = LocalDate.now(ZoneId.systemDefault());
     if (fechaRacha == null || hoy.isAfter(fechaRacha)) {
@@ -455,9 +449,7 @@ public class Usuario {
     }
   }
 
-  /**
-   * Lógica completa de gestión de rachas (reseteo e incremento).
-   */
+  /** Lógica completa de gestión de rachas (reseteo e incremento). */
   public void cuentarrachas() {
     LocalDate hoy = LocalDate.now(ZoneId.systemDefault());
     if (fechaRacha == null) {
@@ -473,8 +465,8 @@ public class Usuario {
   }
 
   /**
-   * Busca una tarea PENDIENTE por su nombre.
-   * Una tarea es PENDIENTE si getFechaCompletada() devuelve null.
+   * Busca una tarea PENDIENTE por su nombre. Una tarea es PENDIENTE si getFechaCompletada()
+   * devuelve null.
    *
    * @param nombre Nombre de la tarea a buscar.
    * @return La tarea encontrada o null si no existe.
@@ -489,16 +481,16 @@ public class Usuario {
   }
 
   /**
-  * Actualiza una tarea existente en la lista de tareas pendientes.
-  * Busca la tarea por su nombre original y reemplaza sus datos con los de la tarea actualizada.
-  *
-  * @param nombreOriginal El nombre actual de la tarea que se quiere modificar.
-  * @param tareaActualizada Un objeto Tarea con los nuevos datos (nombre, descripción, etc.).
-  * @throws RegistroInvalidoException Si la tarea original no se encuentra o si el nuevo nombre
-    ya está en uso por otra tarea.
-  * @throws TareaInvalidaException Si los datos de la tarea actualizada son inválidos
-    (lanzado por los setters).
-  */
+   * Actualiza una tarea existente en la lista de tareas pendientes. Busca la tarea por su nombre
+   * original y reemplaza sus datos con los de la tarea actualizada.
+   *
+   * @param nombreOriginal El nombre actual de la tarea que se quiere modificar.
+   * @param tareaActualizada Un objeto Tarea con los nuevos datos (nombre, descripción, etc.).
+   * @throws RegistroInvalidoException Si la tarea original no se encuentra o si el nuevo nombre ya
+   *     está en uso por otra tarea.
+   * @throws TareaInvalidaException Si los datos de la tarea actualizada son inválidos (lanzado por
+   *     los setters).
+   */
   public void actualizarTarea(String nombreOriginal, Tarea tareaActualizada)
       throws RegistroInvalidoException, TareaInvalidaException {
     // Buscamos la tarea que queremos actualizar.
@@ -534,8 +526,8 @@ public class Usuario {
   }
 
   /**
-   * Calcula la experiencia TOTAL ganada sumando todas las tareas completadas.
-   * Una tarea está COMPLETADA si getFechaCompletada() NO es null.
+   * Calcula la experiencia TOTAL ganada sumando todas las tareas completadas. Una tarea está
+   * COMPLETADA si getFechaCompletada() NO es null.
    *
    * @return La suma de experiencia de todas las tareas completadas.
    */
@@ -554,20 +546,20 @@ public class Usuario {
     int expParaSiguienteNivel = SistemaNiveles.experienciaParaNivel(this.nivelExperiencia + 1);
 
     return String.format(
-      "<<< Usuario: %s >>>\n"
-          + "Rol: %s\n"
-          + "Nivel: %d\n"
-          + "Experiencia: %d / %d\n"
-          + "Correo: %s\n"
-          + "Tareas Pendientes: %d\n"
-          + "Tareas Completadas: %d",
-      this.nombreUsuario,
-      this.rol,
-      this.nivelExperiencia,
-      this.experiencia,
-      expParaSiguienteNivel,
-      this.correoElectronico,
-      getTareasPendientes().size(),
-      getNumeroCompletadas());
+        "<<< Usuario: %s >>>\n"
+            + "Rol: %s\n"
+            + "Nivel: %d\n"
+            + "Experiencia: %d / %d\n"
+            + "Correo: %s\n"
+            + "Tareas Pendientes: %d\n"
+            + "Tareas Completadas: %d",
+        this.nombreUsuario,
+        this.rol,
+        this.nivelExperiencia,
+        this.experiencia,
+        expParaSiguienteNivel,
+        this.correoElectronico,
+        getTareasPendientes().size(),
+        getNumeroCompletadas());
   }
 }

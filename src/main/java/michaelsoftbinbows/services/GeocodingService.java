@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * Servicio para interactuar con la API de Geocoding de OpenWeatherMap.
- * Permite obtener coordenadas a partir de una ciudad y viceversa.
+ * Servicio para interactuar con la API de Geocoding de OpenWeatherMap. Permite obtener coordenadas
+ * a partir de una ciudad y viceversa.
  */
 @Service
 public class GeocodingService {

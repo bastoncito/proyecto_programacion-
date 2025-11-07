@@ -5,8 +5,8 @@ import jakarta.persistence.Id;
 import java.util.Locale;
 
 /**
- * Entidad que representa un Logro (Achievement) que un usuario puede desbloquear.
- * Contiene la definición del logro y la recompensa de experiencia.
+ * Entidad que representa un Logro (Achievement) que un usuario puede desbloquear. Contiene la
+ * definición del logro y la recompensa de experiencia.
  */
 @Entity
 public class Logro {
@@ -17,9 +17,7 @@ public class Logro {
   private String descripcion;
   private int experienciaRecompensa;
 
-  /**
-   * Constructor vacío requerido por JPA.
-   */
+  /**    * Constructor vacío requerido por JPA.     */
   public Logro() {
     this.id = "";
     this.nombre = "";

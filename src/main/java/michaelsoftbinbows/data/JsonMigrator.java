@@ -15,6 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+/**
+ * Lógica para migrar datos desde un JSON a la base de datos en PostgreSQL
+ *
+ * <p>Se ejecuta cada vez que se echa a andar la aplicación.
+ *
+ * <p>Si la base de datos ya contiene información, no hace nada.
+ */
 @Component
 public class JsonMigrator implements CommandLineRunner {
 

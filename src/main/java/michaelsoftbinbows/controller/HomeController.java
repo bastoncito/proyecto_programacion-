@@ -26,6 +26,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+/** Controller para el apartado del home/pantalla principal. */
 @Controller
 public class HomeController {
 
@@ -37,11 +38,22 @@ public class HomeController {
 
   @Autowired private TareaService tareaService;
 
+  /**
+   * Redirige al login si se entra a la dirección.
+   *
+   * @return redirect a login
+   */
   @GetMapping("/")
   public String redirigirLogin() {
     return "redirect:/login";
   }
 
+  /**
+   * Muestra la pantalla principal del usuario.
+   *
+   * @param model modelo para añadir atributos a la página
+   * @return template de home
+   */
   @GetMapping("/home")
   public String mostrarHome(Model model) {
     System.out.println("LOG: El método 'mostrarMain' ha sido llamado por una petición a /home.");
@@ -126,6 +138,12 @@ public class HomeController {
     return "home";
   }
 
+  /**
+   * Muestra el ranking/top de usuarios.
+   *
+   * @param model modelo para añadir atributos a página
+   * @return template de ranking
+   */
   @GetMapping("/ranking")
   public String mostrarRanking(Model model) {
     System.out.println("LOG: El método 'mostrarRanking' (NUEVO) ha sido llamado.");
@@ -174,6 +192,12 @@ public class HomeController {
     return "ranking"; // Devuelve el nuevo ranking.html
   }
 
+  /**
+   * Muestra el historial de tareas completadas del usuario.
+   *
+   * @param model modelo para añadir atributos a página
+   * @return template de historial
+   */
   @GetMapping("/historial")
   public String mostrarHistorial(Model model) {
     System.out.println(
@@ -193,14 +217,11 @@ public class HomeController {
     return "historial_tareas";
   }
 
-  @GetMapping("/hola")
-  @ResponseBody
-  public String decirHola() {
-    System.out.println(
-        "LOG: El método de prueba 'decirHola' ha sido llamado por una petición a /hola.");
-    return "<h1>¡Éxito! La respuesta viene del controlador de Java.</h1>";
-  }
-
+  /**
+   * Página de forbidden/403.
+   *
+   * @return responsebody para el error
+   */
   @GetMapping("/403")
   @ResponseBody
   public String mostrarError() {

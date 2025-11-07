@@ -13,9 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
-  * Servicio para gestionar la lógica de negocio de las Tareas.
-  * Proporciona métodos CRUD y lógica para Tareas recomendadas.
-  */
+ * Servicio para gestionar la lógica de negocio de las Tareas. Proporciona métodos CRUD y lógica
+ * para Tareas recomendadas.
+ */
 @Service
 public class TareaService {
 
@@ -23,49 +23,49 @@ public class TareaService {
   @Autowired private UsuarioRepository usuarioRepository;
 
   /**
-    * Obtiene todas las tareas de la base de datos.
-    *
-    * @return Lista de todas las tareas.
-    */
+   * Obtiene todas las tareas de la base de datos.
+   *
+   * @return Lista de todas las tareas.
+   */
   public List<Tarea> obtenerTodas() {
     return tareaRepository.findAll();
   }
 
   /**
-    * Obtiene una tarea específica por su ID.
-    *
-    * @param id El ID de la tarea.
-    * @return Un Optional con la tarea si se encuentra.
-    */
+   * Obtiene una tarea específica por su ID.
+   *
+   * @param id El ID de la tarea.
+   * @return Un Optional con la tarea si se encuentra.
+   */
   public Optional<Tarea> obtenerPorId(Long id) {
     return tareaRepository.findById(id);
   }
 
   /**
-    * Crea una nueva tarea y la asocia a un usuario.
-    *
-    * @param tareaDto DTO con la información de la nueva tarea.
-    * @param userId ID del usuario al que se asociará la tarea.
-    * @return La tarea creada y guardada.
-    * @throws TareaInvalidaException si la tarea no es válida.
-    */
+   * Crea una nueva tarea y la asocia a un usuario.
+   *
+   * @param tareaDto DTO con la información de la nueva tarea.
+   * @param userId ID del usuario al que se asociará la tarea.
+   * @return La tarea creada y guardada.
+   * @throws TareaInvalidaException si la tarea no es válida.
+   */
   @Transactional
   public Tarea crear(TareaDto tareaDto, long userId) throws TareaInvalidaException {
     var usuario = usuarioRepository.findById(userId).get();
     Tarea tarea = new Tarea(tareaDto.nombre, tareaDto.descripcion, tareaDto.dificultad);
     // This will handle duplicate validation and bidirectional relationship
-    usuario.agregarTarea(tarea); 
+    usuario.agregarTarea(tarea);
     return guardar(tarea);
   }
 
   /**
-    * Actualiza una tarea existente.
-    *
-    * @param id El ID de la tarea a actualizar.
-    * @param tareaDto DTO con la nueva información.
-    * @return La tarea actualizada.
-    * @throws TareaInvalidaException si los nuevos datos no son válidos.
-    */
+   * Actualiza una tarea existente.
+   *
+   * @param id El ID de la tarea a actualizar.
+   * @param tareaDto DTO con la nueva información.
+   * @return La tarea actualizada.
+   * @throws TareaInvalidaException si los nuevos datos no son válidos.
+   */
   @Transactional
   public Tarea actualizar(Long id, TareaDto tareaDto) throws TareaInvalidaException {
     Tarea tarea = tareaRepository.findById(id).get();
@@ -76,20 +76,20 @@ public class TareaService {
   }
 
   /**
-    * Guarda una entidad Tarea en la base de datos.
-    *
-    * @param tarea La tarea a guardar.
-    * @return La tarea guardada.
-    */
+   * Guarda una entidad Tarea en la base de datos.
+   *
+   * @param tarea La tarea a guardar.
+   * @return La tarea guardada.
+   */
   public Tarea guardar(Tarea tarea) {
     return tareaRepository.save(tarea);
   }
 
   /**
-    * Elimina una tarea por su ID, asegurando la desvinculación con el usuario.
-    *
-    * @param id El ID de la tarea a eliminar.
-    */
+   * Elimina una tarea por su ID, asegurando la desvinculación con el usuario.
+   *
+   * @param id El ID de la tarea a eliminar.
+   */
   @Transactional
   public void eliminar(Long id) {
     Optional<Tarea> tareaOpt = tareaRepository.findById(id);
@@ -115,11 +115,11 @@ public class TareaService {
   }
 
   /**
-    * Obtiene una lista de tareas base recomendadas según el clima.
-    *
-    * @param clima El clima actual (ej. "Soleado", "Lluvia").
-    * @return Una lista de tareas compatibles con ese clima.
-    */
+   * Obtiene una lista de tareas base recomendadas según el clima.
+   *
+   * @param clima El clima actual (ej. "Soleado", "Lluvia").
+   * @return Una lista de tareas compatibles con ese clima.
+   */
   public List<Tarea> obtenerTareasRecomendadasPorClima(String clima) {
     List<Tarea> base = new ArrayList<>();
     Tarea t1 = crearTareaBase("Salir a trotar", "Haz ejercicio al aire libre", "Medio", "Soleado");

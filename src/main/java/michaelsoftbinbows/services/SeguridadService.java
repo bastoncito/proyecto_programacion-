@@ -5,21 +5,20 @@ import michaelsoftbinbows.model.Rol;
 import org.springframework.stereotype.Service;
 
 /**
- * Esta clase contiene la lógica de negocio relacionada con la seguridad
- * y los permisos. Al marcarla como @Service, le decimos a Spring que
- * gestione su ciclo de vida.
+ * Esta clase contiene la lógica de negocio relacionada con la seguridad y los permisos. Al marcarla
+ * como @Service, le decimos a Spring que gestione su ciclo de vida.
  */
 @Service
 public class SeguridadService {
 
   /**
-    * Comprueba si un usuario (actor) tiene permiso para editar a otro usuario (objetivo)
-    * basándose en la jerarquía de roles.
-    *
-    * @param actor El usuario que intenta realizar la acción (quien está logueado).
-    * @param objetivo El usuario que va a ser editado.
-    * @return true si el actor tiene permiso, false en caso contrario.
-    */
+   * Comprueba si un usuario (actor) tiene permiso para editar a otro usuario (objetivo) basándose
+   * en la jerarquía de roles.
+   *
+   * @param actor El usuario que intenta realizar la acción (quien está logueado).
+   * @param objetivo El usuario que va a ser editado.
+   * @return true si el actor tiene permiso, false en caso contrario.
+   */
   public boolean puedeEditar(Usuario actor, Usuario objetivo) {
     // Regla básica: nadie puede realizar acciones si falta información.
     if (actor == null || objetivo == null) {
@@ -47,12 +46,12 @@ public class SeguridadService {
   }
 
   /**
-    * Comprueba si un usuario (actor) tiene permiso para eliminar a otro (objetivo).
-    *
-    * @param actor El usuario que intenta realizar la acción.
-    * @param objetivo El usuario que va a ser eliminado.
-    * @return true si el actor tiene permiso, false en caso contrario.
-    */
+   * Comprueba si un usuario (actor) tiene permiso para eliminar a otro (objetivo).
+   *
+   * @param actor El usuario que intenta realizar la acción.
+   * @param objetivo El usuario que va a ser eliminado.
+   * @return true si el actor tiene permiso, false en caso contrario.
+   */
   public boolean puedeEliminar(Usuario actor, Usuario objetivo) {
     // Reglas de seguridad básicas que no cambian
     if (actor == null || objetivo == null) {
@@ -82,13 +81,13 @@ public class SeguridadService {
   }
 
   /**
-    * Comprueba si un usuario (actor) tiene permiso para ASIGNAR un rol específico.
-    * Esta es la regla de negocio principal para la promoción y degradación de usuarios.
-    *
-    * @param actor El usuario que realiza la acción (ej. el admin logueado).
-    * @param rolAasignar El rol que se intenta asignar al usuario objetivo.
-    * @return true si el actor tiene permiso para asignar ese rol, false en caso contrario.
-    */
+   * Comprueba si un usuario (actor) tiene permiso para ASIGNAR un rol específico. Esta es la regla
+   * de negocio principal para la promoción y degradación de usuarios.
+   *
+   * @param actor El usuario que realiza la acción (ej. el admin logueado).
+   * @param rolAasignar El rol que se intenta asignar al usuario objetivo.
+   * @return true si el actor tiene permiso para asignar ese rol, false en caso contrario.
+   */
   public boolean puedeAsignarRol(Usuario actor, Rol rolAasignar) {
     // Verificación básica de seguridad.
     if (actor == null || rolAasignar == null) {
@@ -112,12 +111,12 @@ public class SeguridadService {
   }
 
   /**
-    * Comprueba si un usuario (actor) tiene permiso para gestionar las tareas de otro (objetivo).
-    *
-    * @param actor El usuario que intenta realizar la acción.
-    * @param objetivo El usuario cuyas tareas se van a gestionar.
-    * @return true si el actor tiene permiso, false en caso contrario.
-    */
+   * Comprueba si un usuario (actor) tiene permiso para gestionar las tareas de otro (objetivo).
+   *
+   * @param actor El usuario que intenta realizar la acción.
+   * @param objetivo El usuario cuyas tareas se van a gestionar.
+   * @return true si el actor tiene permiso, false en caso contrario.
+   */
   public boolean puedeGestionarTareasDe(Usuario actor, Usuario objetivo) {
     if (actor == null || objetivo == null) {
       return false;

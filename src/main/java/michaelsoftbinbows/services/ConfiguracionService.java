@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
-* Servicio para gestionar la configuración global de la aplicación.
-* Maneja parámetros como el límite de la liga.
-*/
+ * Servicio para gestionar la configuración global de la aplicación. Maneja parámetros como el
+ * límite de la liga.
+ */
 @Service
 public class ConfiguracionService {
 
