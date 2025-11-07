@@ -17,19 +17,42 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+/**
+ * Servicio para la lógica de negocio principal relacionada con los Usuarios.
+ * Gestiona la creación, validación, actualización y eliminación de usuarios.
+ */
 @Service
 public class UsuarioService {
 
   @Autowired private UsuarioRepository usuarioRepository;
 
+  /**
+   * Obtiene una lista de todos los usuarios registrados.
+   *
+   * @return Lista de todos los usuarios.
+   */
   public List<Usuario> obtenerTodos() {
     return usuarioRepository.findAll();
   }
 
+  /**
+   * Obtiene un usuario por su ID.
+   *
+   * @param id El ID del usuario.
+   * @return Un Optional con el usuario si existe.
+   */
   public Optional<Usuario> obtenerPorId(Long id) {
     return usuarioRepository.findById(id);
   }
 
+  /**
+   * Guarda un nuevo usuario, validando todos sus campos.
+   *
+   * @param usuario El usuario a guardar.
+   * @return El usuario guardado.
+   * @throws EdicionInvalidaException Si el nombre de usuario es inválido.
+   * @throws RegistroInvalidoException Si la contraseña, nombre o correo ya existen o son inválidos.
+   */
   public Usuario guardar(Usuario usuario)
       throws EdicionInvalidaException, RegistroInvalidoException {
     // Validación nombre de usuario
@@ -41,7 +64,7 @@ public class UsuarioService {
           "Nombre de usuario no válido: " + usuario.getNombreUsuario());
     }
     // Validación correo electrónico
-    if (usuario.getCorreoElectronico() == null || !correoValido(usuario.getCorreoElectronico())) {
+    if (usuario.getCorreoElectronico() == null || !correoValdo(usuario.getCorreoElectronico())) {
       throw new IllegalArgumentException(
           "Correo electrónico no válido: " + usuario.getCorreoElectronico());
     }
@@ -70,6 +93,12 @@ public class UsuarioService {
     return usuarioRepository.save(usuario);
   }
 
+  /**
+   * Elimina un usuario por su ID.
+   *
+   * @param id El ID del usuario a eliminar.
+   * @throws IllegalArgumentException si el usuario no existe.
+   */
   public void eliminar(Long id) {
     System.out.println("LOG: Servicio eliminar llamado con ID: " + id);
     if (usuarioRepository.existsById(id)) {
@@ -81,16 +110,28 @@ public class UsuarioService {
     }
   }
 
+  /**
+   * Obtiene un usuario por su correo electrónico.
+   *
+   * @param correo El correo del usuario.
+   * @return Un Optional con el usuario si existe.
+   */
   public Optional<Usuario> obtenerPorCorreo(String correo) {
     return usuarioRepository.findByCorreoElectronico(correo);
   }
 
+  /**
+   * Comprueba si un usuario ya existe en la base de datos por su ID.
+   *
+   * @param usuario El usuario a comprobar.
+   * @return true si existe, false si no.
+   */
   public boolean existe(Usuario usuario) {
     return usuarioRepository.existsById(usuario.getId());
   }
 
   // Método para validar el formato del correo electrónico
-  private static boolean correoValido(String correo) {
+  private static boolean correoValdo(String correo) {
     if (correo == null || correo.trim().isEmpty()) {
       return false;
     }
@@ -105,16 +146,23 @@ public class UsuarioService {
     return correo.matches(regex);
   }
 
-  // Método para validar la contrasena
+  /**
+   * Valida la fortaleza de una contraseña.
+   *
+   * @param contrasena La contraseña a validar.
+   * @return null si la contraseña es válida, o un String con el mensaje de error si no lo es.
+   */
   public String validarContrasena(String contrasena) {
     if (contrasena == null || contrasena.trim().isEmpty()) {
       return "La contrasena no puede estar vacía";
     }
 
+    // ARREGLO: 'if' debe usar llaves
     if (contrasena.length() < 8) {
       return "La contrasena debe tener al menos 8 caracteres";
     }
 
+    // ARREGLO: 'if' debe usar llaves
     if (contrasena.contains(" ")) {
       return "La contrasena no puede contener espacios";
     }
@@ -127,24 +175,52 @@ public class UsuarioService {
 
     if (!tieneMayuscula || !tieneMinuscula || !tieneDigito || !tieneCaracterEspecial) {
       StringBuilder errores = new StringBuilder();
-      if (!tieneMayuscula) errores.append("- Debe contener al menos una mayúscula\n");
-      if (!tieneMinuscula) errores.append("- Debe contener al menos una minúscula\n");
-      if (!tieneDigito) errores.append("- Debe contener al menos un dígito\n");
-      if (!tieneCaracterEspecial)
+      // ARREGLO: 'if' debe usar llaves
+      if (!tieneMayuscula) {
+        errores.append("- Debe contener al menos una mayúscula\n");
+      }
+      // ARREGLO: 'if' debe usar llaves
+      if (!tieneMinuscula) {
+        errores.append("- Debe contener al menos una minúscula\n");
+      }
+      if (!tieneDigito) {
+        errores.append("- Debe contener al menos un dígito\n");
+      }
+      if (!tieneCaracterEspecial) {
         errores.append("- Debe contener al menos un carácter especial (!@#$%^&* etc.)\n");
+      }
       return "La contrasena es demasiado débil. Requisitos:\n" + errores.toString();
     }
     return null; // Contrasena válida
   }
 
+  /**
+   * Busca un usuario por correo electrónico.
+   *
+   * @param correo El correo del usuario.
+   * @return El Usuario o null si no se encuentra.
+   */
   public Usuario buscarPorCorreo(String correo) {
     return usuarioRepository.findByCorreoElectronico(correo).orElse(null);
   }
 
+  /**
+   * Cuenta el número total de usuarios registrados.
+   *
+   * @return El total de usuarios (long).
+   */
   public long contarUsuarios() {
     return usuarioRepository.count();
   }
 
+  /**
+   * Guarda un usuario sin validar la contraseña (útil para admin cuando la contraseña ya está
+   * hasheada).
+   *
+   * @param usuario El usuario a guardar.
+   * @return El usuario guardado.
+   * @throws RegistroInvalidoException Si el nombre de usuario o correo son inválidos o ya existen.
+   */
   public Usuario guardarSinValidarContrasena(Usuario usuario) throws RegistroInvalidoException {
     // Valida nombre y correo, pero NO la contrasena (ya está hasheada)
     if (usuario.getNombreUsuario() == null
@@ -154,7 +230,7 @@ public class UsuarioService {
       throw new IllegalArgumentException(
           "Nombre de usuario no válido: " + usuario.getNombreUsuario());
     }
-    if (usuario.getCorreoElectronico() == null || !correoValido(usuario.getCorreoElectronico())) {
+    if (usuario.getCorreoElectronico() == null || !correoValdo(usuario.getCorreoElectronico())) {
       throw new IllegalArgumentException(
           "Correo electrónico no válido: " + usuario.getCorreoElectronico());
     }
@@ -170,13 +246,28 @@ public class UsuarioService {
     return usuarioRepository.save(usuario);
   }
 
-  public void guardarEnBD(Usuario usuario) throws RegistroInvalidoException {
+  /**
+   * Guarda una entidad Usuario directamente en la base de datos (BD).
+   *
+   * @param usuario El usuario a guardar.
+   * @throws RegistroInvalidoException Si el correo es nulo o vacío.
+   */
+  public void guardarEnBd(Usuario usuario) throws RegistroInvalidoException {
     if (usuario.getCorreoElectronico() == null || usuario.getCorreoElectronico().isEmpty()) {
       throw new RegistroInvalidoException("Correo electrónico no válido");
     }
     usuarioRepository.save(usuario);
   }
 
+  /**
+   * Actualiza los datos de un usuario (nombre, correo, rol) desde el panel de admin.
+   *
+   * @param correoOriginal El correo actual del usuario (para buscarlo).
+   * @param nuevoNombre El nuevo nombre de usuario.
+   * @param nuevoCorreo El nuevo correo electrónico.
+   * @param nuevoRol El nuevo rol a asignar.
+   * @throws RegistroInvalidoException Si los nuevos datos son inválidos.
+   */
   public void actualizarUsuario(
       String correoOriginal, String nuevoNombre, String nuevoCorreo, Rol nuevoRol)
       throws RegistroInvalidoException {
@@ -191,7 +282,7 @@ public class UsuarioService {
         || nuevoNombre.length() > 30) {
       throw new IllegalArgumentException("Nombre de usuario no válido: " + nuevoNombre);
     }
-    if (nuevoCorreo == null || !correoValido(nuevoCorreo)) {
+    if (nuevoCorreo == null || !correoValdo(nuevoCorreo)) {
       throw new IllegalArgumentException("Correo electrónico no válido: " + nuevoCorreo);
     }
     usuario.setNombreUsuario(nuevoNombre);
@@ -200,6 +291,13 @@ public class UsuarioService {
     usuarioRepository.save(usuario);
   }
 
+  /**
+   * Actualiza la contraseña de un usuario desde el panel de admin.
+   *
+   * @param correo El correo del usuario a modificar.
+   * @param nuevaContrasena La nueva contraseña (en texto plano, se hasheará aquí).
+   * @throws RegistroInvalidoException Si la nueva contraseña no es válida.
+   */
   public void actualizarContrasenaUsuario(String correo, String nuevaContrasena)
       throws RegistroInvalidoException {
     Usuario usuario = buscarPorCorreo(correo);
@@ -217,8 +315,13 @@ public class UsuarioService {
     usuarioRepository.save(usuario);
   }
 
-  public void eliminarPorCorreo(String correoAEliminar) {
-    Usuario usuario = buscarPorCorreo(correoAEliminar);
+  /**
+   * Elimina un usuario usando su correo electrónico.
+   *
+   * @param correoAeliminar El correo del usuario a eliminar. // <-- ARREGLO: Renombrado
+   */
+  public void eliminarPorCorreo(String correoAeliminar) { // <-- ARREGLO: Renombrado
+    Usuario usuario = buscarPorCorreo(correoAeliminar); // <-- ARREGLO: Renombrado
     if (usuario == null) {
       throw new IllegalArgumentException("No se encontró el usuario con el correo proporcionado.");
     }
@@ -226,6 +329,12 @@ public class UsuarioService {
   }
 
   // Metodos para manejar las tareas de los usuarios
+  /**
+   * Busca un usuario por correo y fuerza la carga de su lista de tareas.
+   *
+   * @param correo El correo del usuario.
+   * @return El Usuario con sus tareas cargadas, o null.
+   */
   @Transactional
   public Usuario buscarPorCorreoConTareas(String correo) {
     Usuario usuario = usuarioRepository.findByCorreoElectronico(correo).orElse(null);
@@ -235,8 +344,15 @@ public class UsuarioService {
     return usuario;
   }
 
+  /**
+   * Agrega una nueva tarea a un usuario específico por su correo.
+   *
+   * @param correo El correo del usuario.
+   * @param tarea La tarea a agregar.
+   * @throws TareaInvalidaException Si la tarea ya existe en la lista del usuario.
+   */
   @Transactional
-  public void agregarTareaAUsuario(String correo, Tarea tarea) throws TareaInvalidaException {
+  public void agregarTareaAusuario(String correo, Tarea tarea) throws TareaInvalidaException {
     Usuario usuario =
         usuarioRepository
             .findByCorreoElectronico(correo)
@@ -245,6 +361,13 @@ public class UsuarioService {
     usuarioRepository.save(usuario);
   }
 
+  /**
+   * Marca una tarea de un usuario como completada.
+   *
+   * @param correo El correo del usuario.
+   * @param nombreTarea El nombre de la tarea a completar.
+   * @throws RegistroInvalidoException Si la tarea no se encuentra o ya está completada.
+   */
   @Transactional
   public void completarTarea(String correo, String nombreTarea) throws RegistroInvalidoException {
     Usuario usuario =
@@ -255,6 +378,13 @@ public class UsuarioService {
     usuarioRepository.save(usuario);
   }
 
+  /**
+   * Elimina una tarea pendiente de la lista de un usuario.
+   *
+   * @param correo El correo del usuario.
+   * @param nombreTarea El nombre de la tarea a eliminar.
+   * @throws RegistroInvalidoException Si la tarea no se encuentra.
+   */
   @Transactional
   public void eliminarTarea(String correo, String nombreTarea) throws RegistroInvalidoException {
     Usuario usuario =
@@ -265,6 +395,14 @@ public class UsuarioService {
     usuarioRepository.save(usuario);
   }
 
+  /**
+   * Guarda un usuario y se asegura de que sus tareas asociadas también se persistan.
+   *
+   * @param usuario El usuario a guardar.
+   * @return El usuario guardado.
+   * @throws EdicionInvalidaException Si el nombre es inválido.
+   * @throws RegistroInvalidoException Si la contraseña o correo son inválidos.
+   */
   @Transactional
   public Usuario guardarConTareas(Usuario usuario)
       throws EdicionInvalidaException, RegistroInvalidoException {
@@ -276,7 +414,7 @@ public class UsuarioService {
       throw new IllegalArgumentException(
           "Nombre de usuario no válido: " + usuario.getNombreUsuario());
     }
-    if (usuario.getCorreoElectronico() == null || !correoValido(usuario.getCorreoElectronico())) {
+    if (usuario.getCorreoElectronico() == null || !correoValdo(usuario.getCorreoElectronico())) {
       throw new IllegalArgumentException(
           "Correo electrónico no válido: " + usuario.getCorreoElectronico());
     }
@@ -302,6 +440,12 @@ public class UsuarioService {
     return usuarioRepository.save(usuario);
   }
 
+  /**
+   * Obtiene una lista paginada de usuarios ordenada por sus puntos de liga.
+   *
+   * @param limite El número de usuarios a incluir en el "top".
+   * @return Una lista de usuarios del top.
+   */
   public List<Usuario> getTopUsuarios(int limite) {
     // Crea un "pedido" para la primera página (página 0) con el tamano del límite
     Pageable topN = PageRequest.of(0, limite);

@@ -63,7 +63,7 @@ public class AdminController {
   public void registrarUsuario(Usuario usuario) throws RegistroInvalidoException {
     String encodedPassword = passwordEncoder.encode(usuario.getContrasena());
     usuario.setContrasena(encodedPassword);
-    usuarioService.guardarEnBD(usuario);
+    usuarioService.guardarEnBd(usuario);
   }
 
   /**
@@ -472,7 +472,7 @@ public class AdminController {
       usuario.actualizarTarea(nombreOriginal, tareaActualizada);
 
       //  Si la actualización fue exitosa, guardamos el estado completo de la base de datos.
-      usuarioService.guardarEnBD(usuario);
+      usuarioService.guardarEnBd(usuario);
 
       //  Preparamos un mensaje de éxito para mostrar después de la redirección.
       redirectAttributes.addFlashAttribute("success", "Tarea actualizada correctamente.");
@@ -594,7 +594,7 @@ public class AdminController {
       usuario.agregarTarea(nuevaTarea);
 
       // Guardamos los cambios
-      usuarioService.guardarEnBD(usuario);
+      usuarioService.guardarEnBd(usuario);
 
       redirectAttributes.addFlashAttribute(
           "success",

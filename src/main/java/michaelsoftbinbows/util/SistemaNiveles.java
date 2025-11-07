@@ -1,10 +1,18 @@
 package michaelsoftbinbows.util;
 
+/**
+ * Clase de utilidad que maneja la lógica de cálculo de experiencia (EXP)
+ * necesaria para subir de nivel.
+ */
 public class SistemaNiveles {
-  /*
-   * Recibe el nivel que se desea alcanzar
-   * Devuelve la experiencia necesaria para llegar a ese nivel
-   * Dependiendo del nivel la experiencia necesaria es mayor (primeros niveles se subiran rapido, despues se llegara a un punto mas lento)
+  
+  /**
+   * Recibe el nivel que se desea alcanzar y devuelve la experiencia necesaria para ello.
+   * La fórmula cambia para que los primeros niveles sean más rápidos
+   * y los niveles posteriores requieran más esfuerzo.
+   *
+   * @param nivelObjetivo El nivel que se desea alcanzar.
+   * @return La cantidad de experiencia (EXP) necesaria para ese nivel.
    */
   public static int experienciaParaNivel(int nivelObjetivo) {
     if (nivelObjetivo <= 15) {
