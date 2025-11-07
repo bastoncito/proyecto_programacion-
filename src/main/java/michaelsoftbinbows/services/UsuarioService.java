@@ -16,7 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import Michaelsoft_Binbows.services.ConfiguracionService;
 
 /**
  * Servicio para la lógica de negocio principal relacionada con los Usuarios. Gestiona la creación,
@@ -462,11 +461,11 @@ public class UsuarioService {
   }
 
   /**
-   * Calcula y actualiza la liga de un usuario basándose en sus puntosLiga.
-   * Esta lógica ahora usa valores dinámicos del ConfiguracionService.
+   * Calcula y actualiza la liga de un usuario basándose en sus puntosLiga. Esta lógica ahora usa
+   * valores dinámicos del ConfiguracionService.
    */
   private void actualizarLigaDelUsuario(Usuario usuario) {
-    
+
     // 1. Obtenemos los límites de la base de datos.
     // (Estos métodos 'getLimiteLiga' los crearemos en ConfiguracionService)
     // Usamos valores por defecto (500, 1500...) por si aún no están en la BD.
@@ -489,44 +488,42 @@ public class UsuarioService {
     } else if (puntos >= limitePlata) {
       nuevaLiga = "Plata";
     }
-    
+
     // 4. Actualizamos el objeto Usuario
     usuario.setLiga(nuevaLiga);
   }
 
-  /**
-   * RECALCULA LA LIGA para TODOS los usuarios de la base de datos.
-   */
+  /** RECALCULA LA LIGA para TODOS los usuarios de la base de datos. */
   @Transactional
   public void recalcularLigasGlobal() {
     System.out.println("LOG: Iniciando recálculo global de ligas...");
-    
+
     // 1. Obtenemos los límites (¡solo los leemos una vez!)
     int limitePlata = configuracionService.getLimiteLiga("LIGA_PLATA", 500);
     int limiteOro = configuracionService.getLimiteLiga("LIGA_ORO", 1500);
     int limitePlatino = configuracionService.getLimiteLiga("LIGA_PLATINO", 3000);
     int limiteDiamante = configuracionService.getLimiteLiga("LIGA_DIAMANTE", 5000);
-    
+
     // 2. Buscamos a TODOS los usuarios
     List<Usuario> todosLosUsuarios = usuarioRepository.findAll();
 
     // 3. Iteramos y recalculamos
     for (Usuario usuario : todosLosUsuarios) {
-        int puntos = usuario.getPuntosLiga();
-        String nuevaLiga = "Bronce";
+      int puntos = usuario.getPuntosLiga();
+      String nuevaLiga = "Bronce";
 
-        if (puntos >= limiteDiamante) {
-          nuevaLiga = "Diamante";
-        } else if (puntos >= limitePlatino) {
-          nuevaLiga = "Platino";
-        } else if (puntos >= limiteOro) {
-          nuevaLiga = "Oro";
-        } else if (puntos >= limitePlata) {
-          nuevaLiga = "Plata";
-        }
-        
-        // Asignamos la nueva liga al usuario
-        usuario.setLiga(nuevaLiga);
+      if (puntos >= limiteDiamante) {
+        nuevaLiga = "Diamante";
+      } else if (puntos >= limitePlatino) {
+        nuevaLiga = "Platino";
+      } else if (puntos >= limiteOro) {
+        nuevaLiga = "Oro";
+      } else if (puntos >= limitePlata) {
+        nuevaLiga = "Plata";
+      }
+
+      // Asignamos la nueva liga al usuario
+      usuario.setLiga(nuevaLiga);
     }
 
     // 4. Guardamos TODOS los cambios en la base de datos

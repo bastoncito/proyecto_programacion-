@@ -368,7 +368,7 @@ public class Usuario {
     verificarSubidaDeNivel();
 
     // 1. Suma al contador de la Temporada (independiente del reseteo de nivel)
-    this.puntosLiga += tareaACompletar.getExp();
+    this.puntosLiga += tareaAcompletar.getExp();
   }
 
   /**
@@ -415,6 +415,7 @@ public class Usuario {
   private void comprobarYdesbloquearLogros() {
     // por hacer
   }
+
   /**
    * Busca una tarea PENDIENTE por su nombre. Una tarea es PENDIENTE si getFechaCompletada()
    * devuelve null.
@@ -491,26 +492,26 @@ public class Usuario {
   }
 
   /**
- * Método unificado y robusto para actualizar la racha del usuario.
- * Se encarga de incrementar, reiniciar o mantener la racha según la fecha.
- * Debe ser llamado cada vez que se completa una tarea.
- */
-public void actualizarRacha() {
-  LocalDate hoy = LocalDate.now();
-  LocalDate fechaUltimaRacha = this.fechaRacha; // Usamos el nombre de tu campo
+   * Método unificado y robusto para actualizar la racha del usuario. Se encarga de incrementar,
+   * reiniciar o mantener la racha según la fecha. Debe ser llamado cada vez que se completa una
+   * tarea.
+   */
+  public void actualizarRacha() {
+    LocalDate hoy = LocalDate.now();
+    LocalDate fechaUltimaRacha = this.fechaRacha; // Usamos el nombre de tu campo
 
-  // CASO 1: Es la primera tarea que el usuario completa en su vida.
-  if (fechaUltimaRacha == null) {
-    this.racha = 1;
-  } else {
+    // CASO 1: Es la primera tarea que el usuario completa en su vida.
+    if (fechaUltimaRacha == null) {
+      this.racha = 1;
+    } else {
       // Calculamos los días de diferencia entre la última vez y hoy.
       long diasDiferencia = ChronoUnit.DAYS.between(fechaUltimaRacha, hoy);
 
       // CASO 2: Completó otra tarea hoy. La racha no cambia.
       if (diasDiferencia == 0) {
-      // No se hace nada, la racha ya se contó para hoy.
-      System.out.println("Racha diaria ya registrada. No se incrementa.");
-      return; // Salimos del método para no actualizar la fecha innecesariamente
+        // No se hace nada, la racha ya se contó para hoy.
+        System.out.println("Racha diaria ya registrada. No se incrementa.");
+        return; // Salimos del método para no actualizar la fecha innecesariamente
       }
       // CASO 3: La última tarea fue ayer. ¡La racha continúa!
       else if (diasDiferencia == 1) {
@@ -521,9 +522,10 @@ public void actualizarRacha() {
         this.racha = 1;
       }
     }
-    //Actualizamos la fecha de la racha a hoy.
+    // Actualizamos la fecha de la racha a hoy.
     this.fechaRacha = hoy;
   }
+
   @Override
   public String toString() {
     // Calculamos la experiencia para el proximo nivel para mostrarla (ya que el usuario no la

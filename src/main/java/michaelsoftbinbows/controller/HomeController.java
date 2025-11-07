@@ -1,8 +1,5 @@
 package michaelsoftbinbows.controller;
 
-import michaelsoftbinbows.data.SalonFamaRepository;
-import michaelsoftbinbows.entities.SalonFama;
-import michaelsoftbinbows.util.SistemaNiveles;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -12,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import michaelsoftbinbows.data.SalonFamaRepository;
+import michaelsoftbinbows.entities.SalonFama;
 import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.entities.Usuario;
 import michaelsoftbinbows.security.CustomUserDetails;
@@ -19,6 +18,7 @@ import michaelsoftbinbows.services.ConfiguracionService;
 import michaelsoftbinbows.services.TareaService;
 import michaelsoftbinbows.services.UsuarioService;
 import michaelsoftbinbows.services.WeatherService;
+import michaelsoftbinbows.util.SistemaNiveles;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -74,9 +74,10 @@ public class HomeController {
     model.addAttribute("historialReciente", historialReciente); // La lista corta
     model.addAttribute("totalHistorial", historialCompleto.size()); // El número total
 
-    int expSiguienteNivel = SistemaNiveles.experienciaParaNivel(usuarioActual.getNivelExperiencia() + 1);
+    int expSiguienteNivel =
+        SistemaNiveles.experienciaParaNivel(usuarioActual.getNivelExperiencia() + 1);
     model.addAttribute("expSiguienteNivel", expSiguienteNivel);
-    
+
     String ciudad = usuarioActual.getCiudad();
     String climaActual = null;
     if (ciudad != null && !ciudad.trim().isEmpty()) {
@@ -86,9 +87,12 @@ public class HomeController {
 
         Map<String, Object> climaData = new HashMap<>();
         climaData.put("temperatura", weatherJson.getJSONObject("main").getInt("temp"));
-        climaData.put("descripcion",weatherJson.getJSONArray("weather").getJSONObject(0).getString("description"));
+        climaData.put(
+            "descripcion",
+            weatherJson.getJSONArray("weather").getJSONObject(0).getString("description"));
         climaData.put("humedad", weatherJson.getJSONObject("main").getInt("humidity"));
-        climaData.put("icono", weatherJson.getJSONArray("weather").getJSONObject(0).getString("icon"));
+        climaData.put(
+            "icono", weatherJson.getJSONArray("weather").getJSONObject(0).getString("icon"));
 
         long timestamp = weatherJson.getLong("dt");
         // Seccion zona horaria

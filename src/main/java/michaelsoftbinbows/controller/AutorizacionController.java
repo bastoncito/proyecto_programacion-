@@ -98,21 +98,9 @@ public class AutorizacionController {
       @RequestParam(value = "error", required = false) String error, Model model) {
     System.out.println("LOG: El método 'mostrarLogin' ha sido llamado por una petición a /login.");
     if (error != null) {
-      System.out.println("LOG: Error al hacer login");
+      System.out.println("LOG: " + error);
       model.addAttribute("error", "Credenciales inválidas");
     }
     return "login";
-  }
-
-  /**
-   * Procesa el login.
-   *
-   * @param email correo del usuario logueado
-   * @param password contraseña del usuario
-   * @return redirect al home
-   */
-  @PostMapping("/login")
-  public String login(@RequestParam String email, @RequestParam String password) {
-    return "redirect:/home";
   }
 }
