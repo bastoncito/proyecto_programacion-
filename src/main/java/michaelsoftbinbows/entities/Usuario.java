@@ -13,6 +13,7 @@ import jakarta.persistence.Transient;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -49,14 +50,15 @@ public class Usuario {
   private LocalDateTime fechaRegistro;
   private LocalDate fechaRacha;
 
-  // Testing sistema de ligas y puntos ------------
   @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
   private int puntosLiga;
 
   @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'Bronce'")
   private String liga;
 
-  // Fin testing ---------
+  @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
+  private int puntosMesPasado;
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -95,10 +97,9 @@ public class Usuario {
     this.experiencia = 0;
     this.nivelExperiencia = 1;
     this.racha = 0;
-    // --- Ligas ---
     this.puntosLiga = 0;
     this.liga = "Bronce";
-    // --- FIN Ligas ---
+    this.puntosMesPasado = 0;
     this.rol = Rol.USUARIO;
     this.fechaRegistro = LocalDateTime.now(ZoneId.systemDefault());
     this.fechaRacha = null;
@@ -161,6 +162,10 @@ public class Usuario {
     return liga;
   }
 
+  public int getPuntosMesPasado() {
+    return puntosMesPasado;
+  }
+
   public void setPuntosLiga(int puntosLiga) {
     this.puntosLiga = puntosLiga;
   }
@@ -209,26 +214,15 @@ public class Usuario {
     this.ciudad = ciudad;
   }
 
-  /** Resetea los puntos de liga del usuario al inicio de una nueva temporada. */
-  public void resetearPuntosLiga() {
-    this.puntosLiga = 0;
-    this.liga = "Bronce";
+  public void setPuntosMesPasado(int puntosMesPasado) {
+    this.puntosMesPasado = puntosMesPasado;
   }
 
-  /** Actualiza la liga del usuario basado en sus puntosLiga. */
-  private void actualizarLiga() {
-    // Rango de puntos
-    if (this.puntosLiga >= 5000) {
-      this.liga = "Diamante";
-    } else if (this.puntosLiga >= 3000) {
-      this.liga = "Platino";
-    } else if (this.puntosLiga >= 1500) {
-      this.liga = "Oro";
-    } else if (this.puntosLiga >= 500) {
-      this.liga = "Plata";
-    } else {
-      this.liga = "Bronce";
-    }
+  /** Resetea los puntos de liga del usuario al inicio de una nueva temporada. */
+  public void resetearPuntosLiga() {
+    this.puntosMesPasado = this.puntosLiga;
+    this.puntosLiga = 0;
+    this.liga = "Bronce";
   }
 
   /**
@@ -355,8 +349,8 @@ public class Usuario {
     // Marcar la tarea como completada, estableciendo la fecha actual
     tareaAcompletar.setFechaCompletada(LocalDateTime.now(ZoneId.systemDefault()));
 
-    // Verificar la subida de la racha
-    aumentarRacha();
+    // Verifica y actualiza la subida de la racha
+    actualizarRacha();
 
     // Anadir la experiencia de la tarea al total del usuario.
     this.experiencia += tareaAcompletar.getExp();
@@ -373,15 +367,8 @@ public class Usuario {
     // Llamado al método que verificará si el usuario ha subido de nivel.
     verificarSubidaDeNivel();
 
-    // --- INICIO LÓGICA DE LIGAS ---
-
     // 1. Suma al contador de la Temporada (independiente del reseteo de nivel)
-    this.puntosLiga += tareaAcompletar.getExp();
-
-    // 2. Actualiza el string de la Liga (Bronce, Plata, etc.)
-    actualizarLiga();
-
-    // --- FIN LÓGICA DE LIGAS ---
+    this.puntosLiga += tareaACompletar.getExp();
   }
 
   /**
@@ -428,42 +415,6 @@ public class Usuario {
   private void comprobarYdesbloquearLogros() {
     // por hacer
   }
-
-  /** Resetea la racha del usuario a 0 si la última tarea se completó hace más de un día. */
-  public void resetRacha() {
-    LocalDate hoy = LocalDate.now(ZoneId.systemDefault());
-    if (fechaRacha == null) {
-      return; // no hacer nada. aplica para usuarios nuevos.
-    }
-    if (fechaRacha.plusDays(1).isBefore(hoy)) {
-      racha = 0; // resetear racha si la última tarea se completo hace más de un día
-    }
-  }
-
-  /** Aumenta la racha del usuario si la tarea completada es en un nuevo día. */
-  public void aumentarRacha() {
-    LocalDate hoy = LocalDate.now(ZoneId.systemDefault());
-    if (fechaRacha == null || hoy.isAfter(fechaRacha)) {
-      fechaRacha = hoy; // si es la primera tarea completada por el usuario
-      racha++;
-    }
-  }
-
-  /** Lógica completa de gestión de rachas (reseteo e incremento). */
-  public void cuentarrachas() {
-    LocalDate hoy = LocalDate.now(ZoneId.systemDefault());
-    if (fechaRacha == null) {
-      return; // no hacer nada
-    }
-    if (fechaRacha.plusDays(1).isBefore(hoy)) {
-      racha = 0; // resetear racha si la última tarea se completo hace más de un día
-      fechaRacha = hoy;
-    } else if (hoy.isAfter(fechaRacha)) {
-      fechaRacha = hoy;
-      racha++;
-    }
-  }
-
   /**
    * Busca una tarea PENDIENTE por su nombre. Una tarea es PENDIENTE si getFechaCompletada()
    * devuelve null.
@@ -539,6 +490,40 @@ public class Usuario {
         .sum();
   }
 
+  /**
+ * Método unificado y robusto para actualizar la racha del usuario.
+ * Se encarga de incrementar, reiniciar o mantener la racha según la fecha.
+ * Debe ser llamado cada vez que se completa una tarea.
+ */
+public void actualizarRacha() {
+  LocalDate hoy = LocalDate.now();
+  LocalDate fechaUltimaRacha = this.fechaRacha; // Usamos el nombre de tu campo
+
+  // CASO 1: Es la primera tarea que el usuario completa en su vida.
+  if (fechaUltimaRacha == null) {
+    this.racha = 1;
+  } else {
+      // Calculamos los días de diferencia entre la última vez y hoy.
+      long diasDiferencia = ChronoUnit.DAYS.between(fechaUltimaRacha, hoy);
+
+      // CASO 2: Completó otra tarea hoy. La racha no cambia.
+      if (diasDiferencia == 0) {
+      // No se hace nada, la racha ya se contó para hoy.
+      System.out.println("Racha diaria ya registrada. No se incrementa.");
+      return; // Salimos del método para no actualizar la fecha innecesariamente
+      }
+      // CASO 3: La última tarea fue ayer. ¡La racha continúa!
+      else if (diasDiferencia == 1) {
+        this.racha++; // Incrementamos la racha existente
+      }
+      // CASO 4: La racha se rompió (pasó más de 1 día). Se reinicia a 1.
+      else {
+        this.racha = 1;
+      }
+    }
+    //Actualizamos la fecha de la racha a hoy.
+    this.fechaRacha = hoy;
+  }
   @Override
   public String toString() {
     // Calculamos la experiencia para el proximo nivel para mostrarla (ya que el usuario no la

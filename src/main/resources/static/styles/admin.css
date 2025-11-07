@@ -1,431 +1,313 @@
-/* -------------------------- */
-/* Estilos Generales          */
-/* -------------------------- */
+/* =================================================================== */
+/* 1. CONFIGURACIÓN GLOBAL Y PALETA DE COLORES                         */
+/* =================================================================== */
+
+/* 
+  Aquí definimos nuestras "variables" de CSS.
+  Si queremos cambiar el color principal de la web, solo lo modificamos aquí y se actualiza
+  en todos lados.
+*/
+:root {
+    /* Colores principales de la marca */
+    --color-principal: #FFC839;       /* El amarillo característico */
+    --color-principal-hover: #e6b332; /* Un tono más oscuro para efectos hover */
+    
+    /* Tonos básicos */
+    --color-oscuro: #212529;           /* Un negro no tan intenso para textos */
+    --color-blanco: #fff;
+    --color-claro: #f5f5f5;           /* Gris muy suave para el fondo general */
+    --color-bordes-sutiles: #eef2f5;   /* Para líneas y fondos de ítems */
+
+    /* Colores de texto */
+    --color-texto-principal: var(--color-oscuro);
+    --color-texto-secundario: #868e96; /* Gris para textos menos importantes */
+
+    /* Colores de acción */
+    --color-rojo-peligro: #d9534f;   /* Para botones de "Eliminar" */
+
+    /* Efectos visuales reutilizables */
+    --sombra-suave: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra para dar profundidad a las tarjetas */
+    --border-radius-suave: 12px;                  /* Bordes redondeados para un look moderno */
+}
+
+/* Estilos base para todo el documento */
 body {
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
+    font-family: 'Poppins', sans-serif, Arial; /* Una fuente moderna y legible */
+    background-color: var(--color-claro);     /* Usamos el color de fondo que definimos arriba */
+    padding-bottom: 80px; /* Dejamos espacio abajo para la barra de navegación en móviles */
 }
 
-/* -------------------------- */
-/* Barra Lateral (Sidebar)    */
-/* -------------------------- */
-.container-task-bar {
-    position: fixed;
-    top: 0;          /* La pegamos a la parte superior */
-    left: 0;         /* La pegamos a la izquierda */
-    height: 100vh;
-    box-sizing: border-box; 
-    width: 15%;
-    min-width: 200px;
-    background-color: #FFC839;
-    color: #333;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 20px 0;
-    box-sizing: border-box;
-}
+/* =================================================================== */
+/* 2. LAYOUT MOBILE-FIRST (Así se ve en pantallas pequeñas)            */
+/* =================================================================== */
 
-.logo-placeholder {
-    padding: 0 20px; 
-    margin-bottom: 30px; /* Espacio debajo del logo */
-}
-.container-task-bar ul {
-    list-style: none; 
-    padding: 0;
-    margin: 0;
-    width: 100%;
-}
+/* Contenedor principal: en móvil, los elementos se apilan uno sobre otro. */
+.admin-container { display: flex; flex-direction: column; width: 100%; }
+.main-content { margin-left: 0; padding: 15px; box-sizing: border-box; width: 100%; }
 
-.container-task-bar li { 
-    margin: 5px 0;
-}
-.container-task-bar a {
-    text-decoration: none;
-    color: #333; 
-    font-weight: 600; 
-    font-size: 20px;
+/* Tarjeta de información del admin (arriba del todo) */
+.container-info { position: static; width: auto; margin-bottom: 20px; }
+.info-section { 
     display: flex; 
-    align-items: center;
-    padding-left: 20px; 
-    gap: 12px;
-    padding: 15px 20px;
-    border-radius: 8px;
-    transition: background-color 0.2s ease-in-out;  
-    margin: 0 10px;
+    justify-content: space-between; 
+    align-items: center; 
+    background-color: var(--color-blanco); 
+    border-radius: var(--border-radius-suave); 
+    padding: 15px 20px; 
+    box-shadow: var(--sombra-suave); 
 }
+.user-info { font-size: 14px; font-weight: 500; }
+.user-info p { margin: 4px 0; }
+.user-avatar { width: 50px; height: 50px; background-color: #ccc; border-radius: 50%; flex-shrink: 0; }
 
-.container-task-bar a:hover {
-    background-color: #e6b332; /* Un tono de amarillo más oscuro, para el contraste */
+/* Contenedor del área de trabajo principal */
+.container-work { width: 100%; margin-top: 0; }
+.section-title { font-size: 24px; font-weight: bold; margin-bottom: 10px; }
+.section-line { width: 100%; height: 2px; background-color: #ddd; margin-bottom: 20px; }
+
+/* --- Navegación por Pestañas (exclusiva para Móvil) --- */
+.admin-tabs { 
+    display: flex; 
+    background-color: var(--color-blanco); 
+    border-radius: var(--border-radius-suave); 
+    box-shadow: var(--sombra-suave); 
+    margin-bottom: 20px; 
+    overflow: hidden; 
 }
-.container-task-bar i { font-size: 22px; }
-
-/* --- ESTILOS PARA EL BOTÓN DE CERRAR SESIÓN --- */
-/* Contenedor del botón */
-.sidebar-logout {
-    margin-bottom: 20px;
-}
-
-/* El botón en sí */
-.container-task-bar button {
-    margin: 0 10px;
-    width: calc(100% - 20px); /* Ocupa el 100% del ancho MENOS el margen total (10px + 10px) */
-    display: block; /* Asegura que respete el margen y el ancho */
-    background-color: #d9534f;
-    color: white;
-    text-align: center;
-    border: none;
-    font-size: 20px;
+.admin-tabs a { 
+    flex: 1; /* Cada pestaña ocupa el mismo espacio */
+    text-align: center; 
+    padding: 15px 5px; 
+    text-decoration: none; 
+    color: var(--color-texto-secundario); 
     font-weight: 600; 
-    padding: 10px 0;
-    border-radius: 8px; 
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
-    box-sizing: border-box;
+    font-size: 14px; 
+    border-bottom: 3px solid transparent; /* Borde oculto que aparecerá en la pestaña activa */
+    transition: all 0.2s ease-in-out; 
+    white-space: nowrap; /* Evita que el texto se parta en dos líneas */
+}
+.admin-tabs a:hover { background-color: #f8f9fa; }
+/* La pestaña activa tiene un color diferente y un borde inferior visible */
+.admin-tabs a.active { 
+    color: var(--color-texto-principal); 
+    border-bottom-color: var(--color-principal); 
 }
 
-/* Efecto hover */
-.container-task-bar button:hover {
-    background-color: #c9302c;
+/* --- Visibilidad de la navegación --- */
+/* Por defecto (móvil), la barra lateral está oculta y las pestañas visibles. */
+.container-task-bar { display: none; }
+.admin-tabs { display: flex; }
+
+/* --- Tablas Responsivas --- */
+.list-box { 
+    background-color: var(--color-blanco); 
+    border-radius: var(--border-radius-suave); 
+    box-shadow: var(--sombra-suave); 
+    width: 100%; 
+    overflow-x: auto; /* Permite hacer scroll horizontal si la tabla no cabe */
 }
 
-/* -------------------------- */
-/* Contenido Principal (Derecha) */
-/* -------------------------- */
-.main-content {
-    margin-left: 15%;
-    min-width: calc(100% - 200px);
-
-    padding: 20px 30px;
-    box-sizing: border-box;
-    height: auto;
-    min-height: 100vh
-}
-
-/* Tarjeta de info de usuario (arriba a la derecha) */
-.container-info {
-    position: absolute; /* Lo sacamos del flujo normal */
-    top: 20px;
-    right: 30px;
-    width: 350px;
-}
-
-.info-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: white;
-    border-radius: 12px;
-    padding: 15px 20px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-.user-info { font-size: 14px; }
-.user-avatar { width: 60px; height: 60px; background-color: #ccc; border-radius: 50%; }
-
-/* -------------------------- */
-/* Zona de Trabajo / Tabla    */
-/* -------------------------- */
-.container-work {
-    width: 100%;
-    margin-top: 100px; 
-}
-
-.section-title { font-size: 32px; font-weight: bold; margin-bottom: 10px; }
-.section-line { width: 100%; height: 3px; background-color: #ccc; margin-bottom: 20px; }
-
-/* Contenedor de la tabla */
-.list-box {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    overflow: hidden;
-}
-
-/* Estructura de la tabla (cabecera y filas) */
-.param-bar, .user-row {
-    display: grid;
-    /* Columnas: Nombre, Correo, Rol, Nivel, Acciones */
-    grid-template-columns: 1.5fr 2.5fr 1fr 0.5fr 1fr; 
-    align-items: center;
-    padding: 12px 20px;
-    gap: 15px;
+/* 
+  Forzamos al contenido a comportarse como una tabla.
+  Esto asegura que, aunque haya scroll, las celdas no se desalineen.
+*/
+.list-box-content {
+    min-width: 700px;  /* Ancho mínimo para que la tabla no se comprima demasiado */
+    display: table;    /* Fuerza a que se comporte como una <table> */
+    width: 100%;       /* Ocupa todo el ancho disponible dentro del contenedor con scroll */
 }
 
 /* Cabecera de la tabla */
 .param-bar {
-    background-color: #343a40;
-    color: white;
+    background-color: var(--color-oscuro);
+    color: var(--color-blanco);
     font-weight: 600;
-    font-size: 14px;
-    text-transform: uppercase;
-}
-
-/* Filas de datos de la tabla */
-.user-row {
-    border-top: 1px solid #f0f0f0;
-    font-size: 15px;
-}
-.user-row:hover { background-color: #f8f9fa; }
-
-/* Celdas individuales */
-.user-cell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.user-cell.actions { display: flex; gap: 8px; }
-
-/* Mensaje para lista vacía */
-.empty-list-message { text-align: center; padding: 20px; }
-
-/* Botones de acción */
-.btn-edit, .btn-delete {
-    padding: 5px 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    cursor: pointer;
-    background-color: white;
-    font-size: 14px;
-}
-.btn-edit:hover { background-color: #e2e6ea; }
-.btn-delete { border-color: #dc3545; color: #dc3545; }
-.btn-delete:hover { background-color: #dc3545; color: white; }
-.modal-overlay {
-    position: fixed; /* Se queda fijo en la pantalla */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* Fondo semitransparente */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000; /* Asegura que esté por encima de todo */
-}
-
-.modal-content {
-    background-color: white;
-    padding: 25px 30px;
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    width: 100%;
-    max-width: 500px; /* Ancho máximo del modal */
-}
-
-.modal-content h2 {
-    margin-top: 0;
-    margin-bottom: 10px;
-}
-
-.edit-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-}
-
-.form-group label {
-    font-weight: 600;
-    margin-bottom: 5px;
-    font-size: 14px;
-}
-
-.form-group input, .form-group select {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 16px;
-}
-
-.form-group input:disabled {
-    background-color: #e9ecef;
-    cursor: not-allowed;
-}
-
-.form-group small {
     font-size: 12px;
-    color: #6c757d;
-    margin-top: 3px;
+    text-transform: uppercase;
+    position: sticky; /* Se queda fija arriba al hacer scroll vertical */
+    left: 0;
+    z-index: 1;
 }
 
-.form-actions {
-    display: flex;
-    justify-content: flex-end; /* Alinea los botones a la derecha */
-    gap: 10px;
-    margin-top: 20px;
+/* Filas y celdas de la tabla */
+.user-row { border-top: 1px solid var(--color-bordes-sutiles); font-size: 15px; display: table-row-group; }
+.user-cell { 
+    overflow: hidden;               /* Oculta el texto que se desborda */
+    text-overflow: ellipsis;        /* Muestra "..." si el texto es muy largo */
+    white-space: nowrap;            /* Evita que el texto salte de línea */
+    display: table-cell;            /* Se comporta como un <td> */
+    vertical-align: middle; 
+    padding: 12px 10px; 
+}
+.empty-list-message { text-align: center; padding: 20px; color: #888; grid-column: 1 / -1; }
+/* Estilo específico para la celda de acciones (botones) */
+.user-cell.actions { display: flex; gap: 8px; justify-content: flex-start; }
+
+
+/* --- Grilla para Tabla de USUARIOS --- */
+/*
+  Aunque usamos `display: table`, aquí usamos `grid` para definir el tamaño de las columnas
+  de forma más flexible y moderna.
+*/
+.param-bar, .user-row {
+    display: grid; 
+    grid-template-columns: minmax(120px, 1.5fr) minmax(200px, 2.5fr) minmax(100px, 1fr) minmax(60px, 0.5fr) minmax(160px, 1fr);
+    align-items: center; 
+    padding: 12px 20px; 
+    gap: 15px;
+    display: table-row; /* Mantenemos la consistencia de tabla */
 }
 
-.btn-save, .btn-cancel {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    font-size: 14px;
-    text-align: center;
+/* --- Grilla para Tabla de TOP --- */
+/* Sobrescribimos las columnas para la tabla de Top, que tiene una estructura diferente. */
+.top-view-grid { grid-template-columns: 0.5fr 2.5fr 1.5fr 1fr !important; }
+
+/* --- Vista Maestro-Detalle (para la sección de Tareas) --- */
+.maestro-detalle-container { display: flex; flex-direction: column; gap: 15px; height: auto; }
+.panel-maestro, .panel-detalle { flex: 1; min-height: 300px; }
+.panel-maestro { border: 1px solid #ddd; border-radius: var(--border-radius-suave); background-color: var(--color-blanco); display: flex; flex-direction: column; overflow: hidden; }
+.panel-detalle { border: 1px solid #ddd; border-radius: var(--border-radius-suave); background-color: var(--color-blanco); }
+.panel-header { font-size: 16px; font-weight: 600; padding: 15px 20px; border-bottom: 1px solid var(--color-bordes-sutiles); background-color: #f8f9fa; flex-shrink: 0; }
+.user-list { list-style: none; padding: 0; margin: 0; overflow-y: auto; }
+.user-list a { display: block; padding: 15px 20px; text-decoration: none; color: var(--color-texto-principal); border-bottom: 1px solid var(--color-bordes-sutiles); transition: background-color 0.2s; font-weight: 500; }
+.user-list a:last-child { border-bottom: none; }
+.user-list a:hover { background-color: #f0f0f0; }
+.user-list a.active { background-color: var(--color-principal); font-weight: 700; color: var(--color-oscuro); }
+.placeholder-detalle { display: flex; height: 100%; justify-content: center; align-items: center; flex-direction: column; color: #6c757d; font-size: 1.2rem; text-align: center; padding: 20px; }
+.placeholder-detalle i { font-size: 3rem; margin-bottom: 10px; }
+
+/* --- Grilla para Tabla de TAREAS --- */
+/* Columnas específicas para la tabla de tareas dentro del panel de detalle. */
+.panel-detalle .list-box-content { min-width: 700px; }
+.panel-detalle .param-bar, .panel-detalle .user-row {
+    grid-template-columns: 2fr 1fr minmax(150px, 1.5fr) minmax(160px, 1fr) !important;
 }
 
-.btn-save {
-    background-color: #28a745; /* Verde */
-    color: white;
+/* --- Navbar Inferior --- */
+.bottom-nav { 
+    position: fixed; 
+    bottom: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 60px; 
+    background-color: #ffffff; 
+    display: flex; 
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1); 
+    z-index: 1000; /* Se asegura de que esté por encima de casi todo */
 }
-.btn-save:hover { background-color: #218838; }
+.bottom-nav a { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: #999; height: 100%; }
+.bottom-nav a i { font-size: 24px; margin-bottom: 2px; }
+.bottom-nav a span { font-size: 12px; font-weight: 500; }
+.bottom-nav a.active { color: var(--color-oscuro); font-weight: 700; }
 
-.btn-cancel {
-    background-color: #6c757d; /* Gris */
-    color: white;
-}
-.btn-cancel:hover { background-color: #5a6268; }
-
-.alert-error {
-    color: #721c24;
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-    padding: 10px;
-    border-radius: 6px;
-    margin-top: 10px;
-}
-.alert-success {
-    color: #155724;
-    background-color: #d4edda;
-    border-color: #c3e6cb;
-    padding: 10px;
-    border-radius: 6px;
-    margin-top: 10px;
-}
-.maestro-detalle-container {
-    display: flex;
-    gap: 20px;
-    height: 75vh; /* Ocupa una buena parte de la altura de la pantalla */
-}
-
-/* Panel izquierdo (lista de usuarios) */
-.panel-maestro {
-    flex: 0 0 250px; /* Base de 250px, no crece, no se encoge */
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    border: 1px solid #e9ecef;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Panel derecho (detalles de las tareas) */
-.panel-detalle {
-    flex-grow: 1; /* Ocupa el resto del espacio */
-    background-color: white;
-    border-radius: 8px;
-    border: 1px solid #e9ecef;
-    padding: 20px;
+/* =================================================================== */
+/* 4. LAYOUT DE ESCRITORIO (cuando la pantalla es ancha)               */
+/* =================================================================== */
+@media (min-width: 1024px) {
+    /* Transformamos el layout a una grilla de 2 columnas */
+    .admin-container { display: grid; grid-template-columns: 250px 1fr; height: 100vh; }
+    .main-content { padding: 20px 30px; height: 100%; overflow-y: auto; }
+    
+    /* Movemos la info del admin a la esquina superior derecha */
+    .container-info { position: absolute; top: 20px; right: 30px; width: auto; max-width: 400px; }
+    .container-work { margin-top: 100px; }
+    .section-title { font-size: 32px; }
+    
+    /* Hacemos visible la barra lateral y ocultamos las pestañas de móvil */
+    .container-task-bar { display: flex; flex-direction: column; justify-content: space-between; background-color: var(--color-principal); padding: 20px 0; height: 100vh; position: sticky; top: 0; width: 100%; }
+    .admin-tabs { display: none; }
+    
+    /* Estilos para la navegación de la barra lateral */
+    .container-task-bar ul { list-style: none; padding: 0; margin: 0; width: 100%; }
+    .container-task-bar a { text-decoration: none; color: var(--color-oscuro); font-weight: 600; font-size: 18px; display: flex; align-items: center; padding: 15px 20px; border-radius: 8px; margin: 5px 10px; gap: 12px; }
+    .container-task-bar a:hover { background-color: var(--color-principal-hover); }
+    .container-task-bar i { font-size: 22px; }
+    
+    /* Ajustamos la vista maestro-detalle para que sea horizontal */
+    .maestro-detalle-container { flex-direction: row; gap: 20px; height: 75vh; }
+    .panel-maestro { flex: 0 0 250px; } /* Ancho fijo para la lista de usuarios */
+    .panel-detalle { flex-grow: 1; padding: 20px; } /* El panel de tareas ocupa el resto */
 }
 
-.panel-header {
-    font-size: 18px;
-    font-weight: 600;
-    padding: 15px 20px;
-    border-bottom: 1px solid #e9ecef;
-    background-color: #f8f9fa;
+/* =================================================================== */
+/* 5. ESTILOS ADICIONALES (Modales, botones, FAB, etc.)                */
+/* =================================================================== */
+
+/* Botones de acción en las tablas */
+.btn-edit, .btn-delete { padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 14px; text-decoration: none; white-space: nowrap; }
+.btn-edit { border: 1px solid #ccc; background-color: white; color: #333; }
+.btn-edit:hover { background-color: #e2e6ea; }
+.btn-delete { border: 1px solid var(--color-rojo-peligro); color: var(--color-rojo-peligro); background-color: white; }
+.btn-delete:hover { background-color: var(--color-rojo-peligro); color: white; }
+
+/* El fondo oscuro semitransparente que cubre todo al abrir un modal */
+.modal-overlay { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background-color: rgba(0, 0, 0, 0.6); 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    /* Un z-index más alto para que siempre esté sobre la navbar. */
+    z-index: 2000;
 }
 
-.user-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    overflow-y: auto; /* Scroll si hay muchos usuarios */
+/* El contenido del modal (la ventana blanca) */
+.modal-content { 
+    background-color: white; 
+    padding: 25px 30px; 
+    border-radius: var(--border-radius-suave); 
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
+    width: 90%; 
+    max-width: 500px; 
 }
 
-.user-list a {
-    display: block;
-    padding: 12px 20px;
-    text-decoration: none;
-    color: #333;
-    border-bottom: 1px solid #e9ecef;
-    transition: background-color 0.2s;
-}
+/* Estilos para los formularios dentro de los modales */
+.edit-form, .form-group { display: flex; flex-direction: column; } 
+.edit-form { gap: 15px; } 
+.modal-content h2 { margin-top: 0; margin-bottom: 10px; }
+.form-group label { font-weight: 600; margin-bottom: 5px; font-size: 14px; }
+.form-group input, .form-group select { padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; }
+.form-group select[size] { padding: 0; background-color: #f8f9fa; }
+.form-group select[size] option { padding: 10px; cursor: pointer; }
+.form-group select[size] option:checked { background-color: var(--color-principal); color: var(--color-oscuro); font-weight: 600; }
+.form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
 
-.user-list a:hover {
-    background-color: #e2e6ea;
-}
+/* Botones dentro del modal (Guardar, Cancelar) */
+.btn-save, .btn-cancel { padding: 10px 20px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; text-decoration: none; font-size: 14px; text-align: center; }
+.btn-save { background-color: #28a745; color: white; } .btn-save:hover { background-color: #218838; }
+.btn-cancel { background-color: #6c757d; color: white; } .btn-cancel:hover { background-color: #5a6268; }
 
-/* Estilo para el usuario actualmente seleccionado */
-.user-list a.active {
-    background-color: #FFC839; /* El color amarillo de tu marca */
-    color: #333;
-    font-weight: bold;
-}
+/* Mensajes de error y éxito */
+.alert-error { color: #721c24; background-color: #f8d7da; padding: 10px; border-radius: 6px; margin-top: 10px; }
+.flash-success { display: flex; align-items: center; gap: 10px; background-color: #d4edda; color: #155724; padding: 15px 20px; border: 1px solid #c3e6cb; border-radius: 8px; font-size: 16px; font-weight: 600; margin-bottom: 20px; }
+.flash-success i { font-size: 24px; }
 
-/* Mensaje cuando no hay usuario seleccionado */
-.placeholder-detalle {
-    display: flex;
-    height: 100%;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    color: #6c757d;
-    font-size: 1.2rem;
+/* Botón flotante de acción (FAB) */
+.fab { 
+    position: fixed; 
+    bottom: 80px; 
+    right: 20px; 
+    width: 60px; 
+    height: 60px; 
+    background-color: var(--color-principal); 
+    color: var(--color-oscuro); 
+    border-radius: 50%; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    font-size: 32px; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+    text-decoration: none; 
+    z-index: 999; 
 }
-.placeholder-detalle i {
-    font-size: 3rem;
-    margin-bottom: 10px;
-}
-
-.task-param-bar {
-    grid-template-columns: 2fr 1fr 1.5fr; /* Nombre, EXP, Fecha */
-}
-.panel-detalle .param-bar {
-    grid-template-columns: 2fr 1fr 1.5fr 1fr; /* Tarea, Exp, Fecha, Acciones */
-}
-.panel-detalle .user-row {
-    grid-template-columns: 2fr 1fr 1.5fr 1fr;
-}
-.fab {
-    position: fixed; /* Lo saca del flujo normal y lo posiciona relativo a la ventana */
-    bottom: 30px;    /* 30px desde la parte inferior */
-    right: 30px;     /* 30px desde la parte derecha */
-    width: 60px;     /* Ancho fijo */
-    height: 60px;    /* Altura fija */
-    background-color: #FFC839; 
-    color: #333;      /* Color del icono '+' */
-    border-radius: 50%; /* Lo hace perfectamente redondo */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 32px; /* Tamaño del icono '+' */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Una sombra sutil para darle profundidad */
-    text-decoration: none; /* Quita el subrayado del enlace */
-    transition: all 0.3s ease; /* Una transición suave para los efectos */
-    z-index: 999; /* Asegura que esté por encima de otros elementos */
-}
-
-/* Efecto al pasar el ratón por encima: se agranda un poco y la sombra es más pronunciada */
-.fab:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-    background-color: #e6b332; /* Un amarillo un poco más oscuro */
-}
-/* Estilos notificacion operacion exitosa */
-.flash-success {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background-color: #d4edda; /* Un verde claro y suave */
-    color: #155724;             /* Un verde oscuro para el texto */
-    padding: 15px 20px;
-    border: 1px solid #c3e6cb;  /* Un borde verde un poco más oscuro */
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    margin-top: 80px; /* Espacio para que no se superponga con la info de usuario */
-    margin-bottom: 20px;
-}
-
-.flash-success i {
-    font-size: 24px; /* Hacemos el icono un poco más grande */
-}
-
+.fab:hover { transform: scale(1.1); background-color: var(--color-principal-hover); }
+@media(min-width: 1024px){ .fab { bottom: 80px; } }
 /* --- Estilos para el Modal de Configuración 'Top' --- */
 .top-n-buttons {
   display: flex;
@@ -433,9 +315,6 @@ body {
   margin-top: 10px;
 }
 
-/* Reutilizamos el estilo de 'btn-cancel' pero lo ajustamos 
-  y añadimos un estado 'active' 
-*/
 .top-n-buttons .btn-cancel {
   text-decoration: none;
   background-color: #f0f0f0;
@@ -448,10 +327,28 @@ body {
   background-color: #e0e0e0;
 }
 
-/* Este es el estilo para el botón que está seleccionado */
 .top-n-buttons .btn-cancel.active {
   background-color: #007bff;
   color: white;
   border-color: #007bff;
   font-weight: bold;
+}
+
+.form-group-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.form-group-grid input[type="number"] {
+  font-size: 1.1em;
+  padding: 8px;
+}
+.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    padding: 10px;
+    border-radius: 6px;
+    margin-top: 10px;
 }

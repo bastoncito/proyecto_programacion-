@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -74,19 +74,25 @@
                     
                     <div class="hall-of-fame">
                         <h2 th:text="'🏆 Ganadores de ' + ${tituloMesAnterior}">🏆 Ganadores de Octubre 2025</h2>
-                        
+    
                         <div th:if="${#lists.isEmpty(hallOfFame)}">
                             <p style="text-align: center; padding: 20px; color: #777;">
                                 Aún no hay datos de la temporada anterior.
                             </p>
                         </div>
                         
-                        <div class="winner-box gold" th:if="${!#lists.isEmpty(hallOfFame)}" th:object="${hallOfFame[0]}">
-                            <span>🥇 1er Lugar</span>
-                            <span class="winner-name" th:text="*{nombreUsuario}">Matias Gomez</span>
-                            <span class="winner-points" th:text="*{puntosLiga} + ' Pts'">12800 Pts</span>
+                        <div th:each="ganador : ${hallOfFame}" 
+                            th:classappend="${ganador.puesto == 1 ? 'gold' : (ganador.puesto == 2 ? 'silver' : 'bronze')}"
+                            class="winner-box">
+
+                            <span th:text="${ganador.puesto == 1 ? '🥇 1er Lugar' : 
+                                        (ganador.puesto == 2 ? '🥈 2do Lugar' : '🥉 3er Lugar')}">
+                                ...
+                            </span>
+                            <span class="winner-name" th:text="${ganador.nombreUsuario}">Nombre Ganador</span>
+                            <span class="winner-points" th:text="${ganador.puntos} + ' Pts'">0 Pts</span>
                         </div>
-                        </div>
+                    </div>
 
                     <div class="personal-stats">
                         <h2>Tu Progreso Actual</h2>
@@ -101,12 +107,15 @@
                             </strong>
                         </p>
                         <p>Tus Puntos: <strong th:text="${usuarioLogueado.puntosLiga} + ' Pts'">1800 Pts</strong></p>
-                        <p>Mejor Puesto (Mes Anterior): <strong>#?</strong></p>
+                        <p>Puntaje (Mes Anterior): 
+                            <strong th:text="${usuarioLogueado.puntosMesPasado} + ' Pts'">0 Pts</strong>
+                        </p>
                     </div>
 
                 </div>
             </div>
         </div>
     </div>
+    <div th:replace="~{fragments :: navbar}"></div>
 </body>
 </html>

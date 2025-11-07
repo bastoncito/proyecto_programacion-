@@ -1,11 +1,13 @@
 package michaelsoftbinbows.controller;
 
+import michaelsoftbinbows.data.SalonFamaRepository;
+import michaelsoftbinbows.entities.SalonFama;
+import michaelsoftbinbows.util.SistemaNiveles;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -31,12 +33,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class HomeController {
 
   @Autowired private UsuarioService usuarioService;
-
   @Autowired private WeatherService weatherService;
-
   @Autowired private ConfiguracionService configuracionService;
-
   @Autowired private TareaService tareaService;
+  @Autowired private SalonFamaRepository salonFamaRepository;
 
   /**
    * Redirige al login si se entra a la dirección.
@@ -63,12 +63,20 @@ public class HomeController {
     String correo = userDetails.getUsername();
 
     Usuario usuarioActual = usuarioService.buscarPorCorreoConTareas(correo);
-    usuarioActual.resetRacha();
 
     model.addAttribute("usuario", usuarioActual);
     model.addAttribute("tareas", usuarioActual.getTareasPendientes());
     model.addAttribute("historialTareas", usuarioActual.getTareasCompletadas());
 
+    List<Tarea> historialCompleto = usuarioActual.getTareasCompletadas();
+    List<Tarea> historialReciente = historialCompleto.stream().limit(3).toList();
+
+    model.addAttribute("historialReciente", historialReciente); // La lista corta
+    model.addAttribute("totalHistorial", historialCompleto.size()); // El número total
+
+    int expSiguienteNivel = SistemaNiveles.experienciaParaNivel(usuarioActual.getNivelExperiencia() + 1);
+    model.addAttribute("expSiguienteNivel", expSiguienteNivel);
+    
     String ciudad = usuarioActual.getCiudad();
     String climaActual = null;
     if (ciudad != null && !ciudad.trim().isEmpty()) {
@@ -78,12 +86,10 @@ public class HomeController {
 
         Map<String, Object> climaData = new HashMap<>();
         climaData.put("temperatura", weatherJson.getJSONObject("main").getInt("temp"));
-        climaData.put(
-            "descripcion",
-            weatherJson.getJSONArray("weather").getJSONObject(0).getString("description"));
+        climaData.put("descripcion",weatherJson.getJSONArray("weather").getJSONObject(0).getString("description"));
         climaData.put("humedad", weatherJson.getJSONObject("main").getInt("humidity"));
-        climaData.put(
-            "icono", weatherJson.getJSONArray("weather").getJSONObject(0).getString("icon"));
+        climaData.put("icono", weatherJson.getJSONArray("weather").getJSONObject(0).getString("icon"));
+
         long timestamp = weatherJson.getLong("dt");
         // Seccion zona horaria
         int timezoneOffset = weatherJson.getInt("timezone");
@@ -97,7 +103,7 @@ public class HomeController {
         climaData.put("hora", horaLocal);
         model.addAttribute("clima", climaData);
 
-        // ---NUEVO: obtener el clima principal---
+        // Obtener el clima principal
         climaActual =
             weatherJson
                 .getJSONArray("weather")
@@ -112,7 +118,7 @@ public class HomeController {
       }
     }
 
-    // ---NUEVO: recomendar tarea según clima---
+    // Recomendar tarea según clima
     Tarea tareaRecomendada = null;
     if (climaActual != null) {
       String categoriaClima =
@@ -130,11 +136,13 @@ public class HomeController {
     }
     model.addAttribute("tareaRecomendada", tareaRecomendada);
 
-    // 1. Pedimos el Top 3 (usando el método que ya creamos en UsuarioService)
+    // 1. Pedimos el Top 3 (usando el método de UsuarioService)
     List<Usuario> top3 = usuarioService.getTopUsuarios(3);
 
     // 2. Lo anadimos al modelo para que el HTML lo pueda usar
     model.addAttribute("top3Usuarios", top3);
+    model.addAttribute("activePage", "home");
+
     return "home";
   }
 
@@ -148,13 +156,12 @@ public class HomeController {
   public String mostrarRanking(Model model) {
     System.out.println("LOG: El método 'mostrarRanking' (NUEVO) ha sido llamado.");
 
-    // --- Lógica Nueva ---
     try {
       // 1. Obtener el usuario actual (para la tarjeta de perfil)
       Authentication auth = SecurityContextHolder.getContext().getAuthentication();
       CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
       Usuario usuarioActual = usuarioService.buscarPorCorreo(userDetails.getUsername());
-      model.addAttribute("usuarioLogueado", usuarioActual); // <-- Lo pasamos al HTML
+      model.addAttribute("usuarioLogueado", usuarioActual); // Lo pasamos al HTML
 
       // 2. Obtener el límite del Top (10, 20, etc.) desde la BD
       int limite = configuracionService.getLimiteTop();
@@ -180,41 +187,16 @@ public class HomeController {
       model.addAttribute("tituloMesActual", mesActualMayus + " " + hoy.getYear());
       model.addAttribute("tituloMesAnterior", mesAnteriorMayus + " " + mesPasado.getYear());
 
-      // 5. TODO: Lógica para el Salón de la Fama
-      // (Por ahora, enviamos una lista vacía para que el HTML no se rompa)
-      model.addAttribute("hallOfFame", Collections.emptyList());
+      // 5. Lógica para el Salón de la Fama
+      List<SalonFama> hallOfFame = salonFamaRepository.findAllByOrderByPuestoAsc();
+      model.addAttribute("hallOfFame", hallOfFame);
 
     } catch (Exception e) {
       System.err.println("Error al cargar /ranking: " + e.getMessage());
       // TODO: redirigir a una página de error o al home
     }
-
+    model.addAttribute("activePage", "ranking");
     return "ranking"; // Devuelve el nuevo ranking.html
-  }
-
-  /**
-   * Muestra el historial de tareas completadas del usuario.
-   *
-   * @param model modelo para añadir atributos a página
-   * @return template de historial
-   */
-  @GetMapping("/historial")
-  public String mostrarHistorial(Model model) {
-    System.out.println(
-        "LOG: El método 'mostrarHistorial' ha sido llamado por una petición a /historial.");
-
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-    String correo = userDetails.getUsername();
-
-    Usuario usuarioActual = usuarioService.buscarPorCorreoConTareas(correo);
-
-    List<Tarea> historialTareas = usuarioActual.getTareasCompletadas();
-
-    model.addAttribute("usuario", usuarioActual);
-    model.addAttribute("historialTareas", historialTareas);
-
-    return "historial_tareas";
   }
 
   /**

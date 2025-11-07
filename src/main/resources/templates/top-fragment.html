@@ -1,33 +1,41 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <body>
-
+  <!-- Fragmento para la vista del Top de Jugadores -->
   <div th:fragment="contenidoTopLeaderboard">
-    
-    <div class="section-title">Top 10 Jugadores</div>
+    <!-- Título de la sección -->
+    <div class="section-title">Top Jugadores</div>
     <div class="section-line"></div>
 
+    <!-- Contenedor de la tabla -->
     <div class="list-box">
-      
-      <div class="param-bar">
-        <span>#</span>       <span>Nombre</span>
-        <span>Puntos</span>
-        <span>Liga</span>
-      </div>
+      <div class="list-box-content">
+        <!-- Cabecera de la tabla -->
+        <div class="param-bar top-view-grid">
+          <div class="user-cell">#</div>
+          <div class="user-cell">Nombre</div>
+          <div class="user-cell">Puntos</div>
+          <div class="user-cell">Liga</div>
+        </div>
 
-      <div class="user-row" th:each="usuario, stat : ${listaTop10}">
-        <div class="user-cell" th:text="${stat.count}"></div>
-        <div class="user-cell" th:text="${usuario.nombreUsuario}"></div>
-        <div class="user-cell" th:text="${usuario.puntosLiga} + ' Pts'"></div>
-        <div class="user-cell" th:text="${usuario.liga}"></div>
-      </div>
+        <!-- 
+          Iterar sobre los usuarios del Top. 
+          La variable 'stat' nos da información extra sobre el bucle, como la posición (stat.count).
+        -->
+        <div class="user-row top-view-grid" th:each="usuario, stat : ${listaTop10}">
+          <!-- Datos de cada jugador -->
+          <div class="user-cell" th:text="${stat.count}"></div>
+          <div class="user-cell" th:text="${usuario.nombreUsuario}"></div>
+          <div class="user-cell" th:text="${usuario.puntosLiga} + ' Pts'"></div>
+          <div class="user-cell" th:text="${usuario.liga}"></div>
+        </div>
 
-      <div th:if="${listaTop10.isEmpty()}" class="empty-list-message">
-        <p>Aún no hay jugadores en el ranking esta temporada.</p>
+        <!-- Mensaje si la lista de jugadores está vacía -->
+        <div th:if="${#lists.isEmpty(listaTop10)}" class="empty-list-message">
+          <p>Aún no hay jugadores en el ranking esta temporada.</p>
+        </div>
       </div>
     </div>
-
   </div>
-
 </body>
 </html>

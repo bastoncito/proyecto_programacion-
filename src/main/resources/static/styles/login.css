@@ -1,0 +1,204 @@
+/* ======================================================== */
+/*   LOGIN (Mobile First)                                   */
+/* ======================================================== */
+
+/* --- Paleta de colores --- */
+:root {
+    --color-principal: #FFC839;
+    --color-oscuro: #333;
+    --color-blanco: #fff;
+}
+
+/* --- Reseteo global y fuente --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', Arial, sans-serif;
+}
+
+/* --- Fondo y centrado general --- */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-image: url('/images/fondo.png');
+    background-size: cover;
+    background-position: center;
+    padding: 20px;
+}
+
+/* --- Contenedor principal (móvil) --- */
+.container {
+    width: 100%;
+    max-width: 400px;
+    background: var(--color-blanco);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    border-radius: 25px;
+    overflow: hidden;
+}
+
+/* --- Sección del formulario --- */
+.login-section {
+    padding: 40px 30px;
+}
+
+.login-section h1 {
+    color: var(--color-oscuro);
+    font-size: 24px;
+    margin-bottom: 30px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.login-section form {
+    display: flex;
+    flex-direction: column;
+}
+
+.login-section label {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+/* Contenedor para el input y su icono */
+.input-container {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.login-section input {
+    width: 100%;
+    padding: 12px 40px 12px 15px;
+    border: none;
+    border-radius: 8px;
+    background-color: #f0f0f0;
+    font-size: 14px;
+    outline: none;
+    color: var(--color-oscuro);
+}
+
+.input-container i {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    color: #666;
+    font-size: 18px;
+}
+
+/* --- Clases de estado y botones --- */
+.login-error {
+    color: red;
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.login-section button[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--color-principal);
+    border: none;
+    border-radius: 25px;
+    color: var(--color-oscuro);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+}
+.login-section button[type="submit"]:hover {
+    background-color: #e6b332;
+}
+
+/* Enlace de registro solo para móvil */
+.register-link-mobile {
+    display: block;
+    text-align: center;
+    font-size: 14px;
+    margin-top: 20px;
+    color: #666;
+}
+.register-link-mobile a {
+    color: var(--color-oscuro);
+    font-weight: 600;
+    text-decoration: none;
+}
+.register-link-mobile a:hover {
+    text-decoration: underline;
+}
+
+/* Por defecto, el panel de registro está oculto en móvil. */
+.register-section {
+    display: none;
+}
+
+/* ===================================================================== */
+/*   ESTILOS PARA ESCRITORIO (A partir de 920px)                     */
+/* ===================================================================== */
+
+@media (min-width: 920px) {
+    
+    /* Layout de 2 columnas para el contenedor principal */
+    .container {
+        display: flex;
+        flex-direction: row;
+        width: 900px;
+        max-width: 900px;
+        height: 500px;
+    }
+
+    /* Ambas secciones ocupan la mitad */
+    .login-section,
+    .register-section {
+        flex: 1; 
+    }
+    
+    .login-section {
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* Centra el formulario */
+    }
+
+    /* Mostramos el panel de registro en escritorio */
+    .register-section {
+        display: flex; 
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        background-color: var(--color-principal);
+        padding: 40px;
+    }
+
+    /* Estilos para el contenido del panel de registro */
+    .register-section img { width: auto; height: 150px; margin-bottom: 20px; }
+    .register-section h2 { color: var(--color-oscuro); font-size: 22px; margin-bottom: 15px; }
+    .register-section p { color: #444; font-size: 14px; line-height: 1.5; max-width: 330px; }
+    .register-section #p2 { font-weight: 600; margin-top: 15px; }
+    
+    .btn-register {
+        padding: 12px 30px;
+        background-color: var(--color-oscuro);
+        color: var(--color-blanco);
+        border: none;
+        border-radius: 25px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin-top: 25px;
+        text-decoration: none;
+    }
+    .btn-register:hover {
+        background-color: #555;
+    }
+
+    /* Ocultamos el enlace de texto de registro, ya que ahora tenemos el panel. */
+    .register-link-mobile {
+        display: none;
+    }
+}

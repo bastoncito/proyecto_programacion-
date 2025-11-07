@@ -101,7 +101,7 @@ public class AutorizacionController {
       System.out.println("LOG: Error al hacer login");
       model.addAttribute("error", "Credenciales inválidas");
     }
-    return "loginreal";
+    return "login";
   }
 
   /**
