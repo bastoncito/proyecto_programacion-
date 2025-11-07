@@ -7,9 +7,20 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * Configuración de Spring Security. Refuerza el flujo correcto de la página, evitando que un
+ * usuario pueda acceder a pantallas sin autenticarse.
+ */
 @Configuration
 public class SecurityConfig {
-
+  /**
+   * Configuración de seguridad para login y logout Obliga al usuario a seguir el flujo de pantallas
+   * que deseamos.
+   *
+   * @param http petición http
+   * @return objeto http o null
+   * @throws Exception si es que hay un error al construir http
+   */
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.csrf(csrf -> csrf.ignoringRequestMatchers("/api/**")) // temporal para probar postman
@@ -51,6 +62,11 @@ public class SecurityConfig {
     return http.build();
   }
 
+  /**
+   * Método que devuleve un encriptador de contraseñas BCrypt.
+   *
+   * @return objeto BCryptPasswordEncoder
+   */
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();

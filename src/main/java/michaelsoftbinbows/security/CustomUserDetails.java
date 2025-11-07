@@ -7,8 +7,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+/** Contenedor para detalles de usuario autenticado. Utilizado por Spring Security. */
 public class CustomUserDetails implements UserDetails {
-
+  /** Usuario que se va a autenticar. */
   private final Usuario usuario;
 
   public CustomUserDetails(Usuario usuario) {

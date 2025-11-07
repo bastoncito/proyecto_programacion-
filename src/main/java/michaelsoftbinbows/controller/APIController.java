@@ -6,27 +6,52 @@ import java.util.Map;
 import java.util.Optional;
 import michaelsoftbinbows.dto.TareaDto;
 import michaelsoftbinbows.dto.UsuarioDto;
-import michaelsoftbinbows.entities.*;
-import michaelsoftbinbows.exceptions.EdicionInvalidaException;
+import michaelsoftbinbows.entities.Tarea;
+import michaelsoftbinbows.entities.Usuario;
 import michaelsoftbinbows.exceptions.RegistroInvalidoException;
-import michaelsoftbinbows.services.*;
+import michaelsoftbinbows.services.TareaService;
+import michaelsoftbinbows.services.UsuarioService;
 import michaelsoftbinbows.util.Dificultad;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controlador para funcionamiento de API REST.
+ *
+ * <p>Debería ser posible acceder a todo el CRUD desde aquí.
+ */
 @RestController
 @RequestMapping("/api")
-public class APIController {
+public class ApiController {
   private final UsuarioService usuarioService;
   private final TareaService tareaService;
 
-  public APIController(UsuarioService usuarioService, TareaService tareaService) {
+  /**
+   * Constructor de clase.
+   *
+   * <p>Inyecta los servicios necesarios para funcionamiento.
+   *
+   * @param usuarioService para manejar acciones de Usuario
+   * @param tareaService para manejar acciones de Tarea
+   */
+  public ApiController(UsuarioService usuarioService, TareaService tareaService) {
     this.usuarioService = usuarioService;
     this.tareaService = tareaService;
   }
 
-  // funciona
+  /**
+   * Muestra info. de la API, con todos los endpoints disponibles.
+   *
+   * @return información API
+   */
   @GetMapping
   public Map<String, Object> apiRoot() {
     Map<String, Object> info = new LinkedHashMap<>();
@@ -46,7 +71,11 @@ public class APIController {
     return info;
   }
 
-  // funciona
+  /**
+   * Permite ver a todos los usuarios registrados.
+   *
+   * @return lista de usuarios
+   */
   @GetMapping("/usuarios")
   public List<Usuario> getUsuarios() {
     return usuarioService.obtenerTodos();
@@ -54,17 +83,24 @@ public class APIController {
 
   @Autowired private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
+  /**
+   * Permite crear a un usuario nuevo.
+   *
+   * @param usuarioDto DTO para recibir datos nuevos desde Postman
+   * @return estado de la acción (ok con usuario nuevo/error)
+   * @throws RegistroInvalidoException si el usuario no es válido
+   */
   @PostMapping("/usuarios")
-  public ResponseEntity<Object> crearUsuario(@RequestBody UsuarioDto usuarioDTO)
-      throws EdicionInvalidaException, RegistroInvalidoException {
-    String contrasena = usuarioDTO.contrasena;
+  public ResponseEntity<Object> crearUsuario(@RequestBody UsuarioDto usuarioDto)
+      throws RegistroInvalidoException {
+    String contrasena = usuarioDto.contrasena;
     String validacion = usuarioService.validarContrasena(contrasena);
     if (validacion != null) {
       return ResponseEntity.status(400).body(validacion);
     }
 
     Usuario usuario =
-        new Usuario(usuarioDTO.nombreUsuario, usuarioDTO.correoElectronico, usuarioDTO.contrasena);
+        new Usuario(usuarioDto.nombreUsuario, usuarioDto.correoElectronico, usuarioDto.contrasena);
     // Encriptar la contrasena antes de guardar
     usuario.setContrasena(passwordEncoder.encode(usuario.getContrasena()));
     try {
@@ -75,17 +111,27 @@ public class APIController {
     return ResponseEntity.status(201).body(usuario);
   }
 
-  // funciona
+  /**
+   * Permite ver los datos de un usuario.
+   *
+   * @param idUsuario usuario en sí
+   * @return datos de usuario
+   */
   @GetMapping("/usuarios/{idUsuario}")
-  public Optional<Usuario> getUsuarioPorId(@PathVariable("idUsuario") long idUsuario) {
+  public Optional<Usuario> getUsuario(@PathVariable("idUsuario") long idUsuario) {
     return usuarioService.obtenerPorId(idUsuario);
   }
 
-  // Provisorio
-  // funciona!
+  /**
+   * Actualiza la información de un usuario.
+   *
+   * @param idUsuario usuario a actualizar
+   * @param usuarioDto DTO para recibir datos actualizados desde Postman
+   * @return estado de la acción (ok/error)
+   */
   @PutMapping("/usuarios/{idUsuario}")
   public ResponseEntity<Object> actualizarUsuario(
-      @PathVariable("idUsuario") long idUsuario, @RequestBody UsuarioDto usuarioDTO) {
+      @PathVariable("idUsuario") long idUsuario, @RequestBody UsuarioDto usuarioDto) {
     Optional<Usuario> usuarioOpt = usuarioService.obtenerPorId(idUsuario);
     if (usuarioOpt.isEmpty()) {
       return ResponseEntity.status(404).body("Usuario no encontrado");
@@ -94,11 +140,11 @@ public class APIController {
     try {
       usuarioService.actualizarUsuario(
           u.getCorreoElectronico(),
-          usuarioDTO.nombreUsuario,
-          usuarioDTO.correoElectronico,
-          usuarioDTO.rol);
-      if (usuarioDTO.contrasena != null && !usuarioDTO.contrasena.trim().isEmpty()) {
-        usuarioService.actualizarContrasenaUsuario(u.getCorreoElectronico(), usuarioDTO.contrasena);
+          usuarioDto.nombreUsuario,
+          usuarioDto.correoElectronico,
+          usuarioDto.rol);
+      if (usuarioDto.contrasena != null && !usuarioDto.contrasena.trim().isEmpty()) {
+        usuarioService.actualizarContrasenaUsuario(u.getCorreoElectronico(), usuarioDto.contrasena);
       }
     } catch (Exception e) {
       return ResponseEntity.status(400).body(e.getMessage());
@@ -106,39 +152,59 @@ public class APIController {
     return ResponseEntity.ok().body("Usuario actualizado correctamente");
   }
 
-  // funciona
+  /**
+   * Elimina a un usuario.
+   *
+   * @param idUsuario usuario a eliminar
+   * @return estado de la acción (ok/error)
+   */
   @DeleteMapping("/usuarios/{idUsuario}")
   public ResponseEntity<Object> eliminarUsuario(@PathVariable("idUsuario") long idUsuario) {
     usuarioService.eliminar(idUsuario);
     return ResponseEntity.ok().body("Usuario eliminado correctamente");
   }
 
-  // funciona
+  /**
+   * Permite ver todas las tareas de un usuario.
+   *
+   * @param idUsuario usuario en sí
+   * @return estado de la acción (ok/error)
+   */
   @GetMapping("/usuarios/{idUsuario}/tareas")
-  public List<Tarea> getTareasPorUsuario(@PathVariable("idUsuario") long idUsuario) {
+  public List<Tarea> tareasUsuario(@PathVariable("idUsuario") long idUsuario) {
     return usuarioService.obtenerPorId(idUsuario).map(Usuario::getTareas).orElse(List.of());
   }
 
-  // funciona
+  /**
+   * Crea una nueva tarea para un usuario.
+   *
+   * @param idUsuario usuario que recibirá la tarea
+   * @param tareaDto DTO para obtener datos de tarea desde Postman
+   * @return estado de la acción (ok/error)
+   */
   @PostMapping("/usuarios/{idUsuario}/tareas")
-  public ResponseEntity<Object> crearTareaParaUsuario(
-      @PathVariable("idUsuario") long idUsuario, @RequestBody TareaDto tareaDTO) {
+  public ResponseEntity<Object> crearTarea(
+      @PathVariable("idUsuario") long idUsuario, @RequestBody TareaDto tareaDto) {
     Optional<Usuario> usuarioOpt = usuarioService.obtenerPorId(idUsuario);
     if (usuarioOpt.isEmpty()) {
       return ResponseEntity.status(404).body("Usuario no encontrado");
     }
     try {
-      Tarea nuevaTarea = tareaService.crear(tareaDTO, idUsuario);
+      Tarea nuevaTarea = tareaService.crear(tareaDto, idUsuario);
       return ResponseEntity.status(201).body(nuevaTarea);
     } catch (Exception e) {
       return ResponseEntity.status(400).body(e.getMessage());
     }
   }
 
-  // funciona
+  /**
+   * Permite ver las tareas completadas de un usuario.
+   *
+   * @param idUsuario usuario en sí
+   * @return estado de la acción (ok con lista/error)
+   */
   @GetMapping("/usuarios/{idUsuario}/tareas/completadas")
-  public ResponseEntity<Object> getTareasCompletadasPorUsuario(
-      @PathVariable("idUsuario") long idUsuario) {
+  public ResponseEntity<Object> getCompletadas(@PathVariable("idUsuario") long idUsuario) {
     Optional<Usuario> usuarioOpt = usuarioService.obtenerPorId(idUsuario);
     if (usuarioOpt.isEmpty()) {
       return ResponseEntity.status(404).body("Usuario no encontrado");
@@ -150,10 +216,14 @@ public class APIController {
     return ResponseEntity.ok().body(tareasCompletadas);
   }
 
-  // TEASTEANDO-------------------------------------------------------
+  /**
+   * Permite ver las tareas pendientes de un usuario.
+   *
+   * @param idUsuario usuario en sí
+   * @return estado de la acción (ok con lista/error)
+   */
   @GetMapping("/usuarios/{idUsuario}/tareas/pendientes")
-  public ResponseEntity<Object> getTareasPendientesPorUsuario(
-      @PathVariable("idUsuario") long idUsuario) {
+  public ResponseEntity<Object> getPendientes(@PathVariable("idUsuario") long idUsuario) {
 
     Optional<Usuario> usuarioOpt = usuarioService.obtenerPorId(idUsuario);
 
@@ -171,9 +241,15 @@ public class APIController {
     return ResponseEntity.ok().body(tareasPendientes);
   }
 
-  // funciona
+  /**
+   * Permite ver los datos de una tarea específica.
+   *
+   * @param idUsuario usuario al que pertenece
+   * @param idTarea tarea en sí
+   * @return estado de la acción (ok con tarea/error)
+   */
   @GetMapping("/usuarios/{idUsuario}/tareas/{idTarea}")
-  public ResponseEntity<Object> getTareaPorNumYUsuario(
+  public ResponseEntity<Object> getTarea(
       @PathVariable("idUsuario") long idUsuario, @PathVariable("idTarea") long idTarea) {
     Optional<Usuario> usuarioOpt = usuarioService.obtenerPorId(idUsuario);
     if (usuarioOpt.isEmpty()) {
@@ -190,7 +266,13 @@ public class APIController {
     return ResponseEntity.ok().body(t);
   }
 
-  // funciona
+  /**
+   * Marca una tarea como completada.
+   *
+   * @param idUsuario usuario al que pertenece
+   * @param idTarea tarea a completar
+   * @return estado de la acción (ok/error)
+   */
   @PutMapping("/usuarios/{idUsuario}/tareas/{idTarea}/completar")
   public ResponseEntity<Object> completarTarea(
       @PathVariable("idUsuario") long idUsuario, @PathVariable("idTarea") long idTarea) {
@@ -220,12 +302,19 @@ public class APIController {
     return ResponseEntity.ok().body("Tarea completada correctamente");
   }
 
-  // funciona
+  /**
+   * Actualiza los datos de una tarea específica.
+   *
+   * @param idUsuario usuario al que pertenece la tarea
+   * @param idTarea tarea a actualizar
+   * @param tareaDto DTO para pasar datos actualizados desde Postman
+   * @return estado de la acción (ok/error)
+   */
   @PutMapping("/usuarios/{idUsuario}/tareas/{idTarea}/actualizar")
-  public ResponseEntity<Object> actualizarTareaPorIdYUsuario(
+  public ResponseEntity<Object> actualizarTarea(
       @PathVariable("idUsuario") long idUsuario,
       @PathVariable("idTarea") long idTarea,
-      @RequestBody TareaDto tareaDTO) {
+      @RequestBody TareaDto tareaDto) {
     Optional<Usuario> usuarioOpt = usuarioService.obtenerPorId(idUsuario);
     if (usuarioOpt.isEmpty()) {
       return ResponseEntity.status(404).body("Usuario no encontrado");
@@ -242,15 +331,15 @@ public class APIController {
       return ResponseEntity.status(400).body("La tarea no pertenece al usuario especificado");
     }
     try {
-      String currentDificultad = tareaDTO.dificultad;
+      String currentDificultad = tareaDto.dificultad;
       if (currentDificultad == null) {
         currentDificultad = Dificultad.obtenerDificultadPorExp(t.getExp());
       }
 
       Tarea tareaActualizada =
           new Tarea(
-              tareaDTO.nombre != null ? tareaDTO.nombre : t.getNombre(),
-              tareaDTO.descripcion != null ? tareaDTO.descripcion : t.getDescripcion(),
+              tareaDto.nombre != null ? tareaDto.nombre : t.getNombre(),
+              tareaDto.descripcion != null ? tareaDto.descripcion : t.getDescripcion(),
               currentDificultad);
       u.actualizarTarea(t.getNombre(), tareaActualizada);
       return ResponseEntity.ok().body(tareaService.obtenerPorId(idTarea).get());
@@ -259,9 +348,15 @@ public class APIController {
     }
   }
 
-  // funciona
+  /**
+   * Borra una tarea específica.
+   *
+   * @param idUsuario usuario al que pertenece la tarea
+   * @param idTarea tarea en sí
+   * @return estado de la acción (ok/error)
+   */
   @DeleteMapping("/usuarios/{idUsuario}/tareas/{idTarea}")
-  public ResponseEntity<Object> borrarTareaPorIdYUsuario(
+  public ResponseEntity<Object> borrarTarea(
       @PathVariable("idUsuario") long idUsuario, @PathVariable("idTarea") long idTarea) {
     Optional<Tarea> tareaOpt = tareaService.obtenerPorId(idTarea);
     if (tareaOpt.isEmpty()) {
@@ -281,7 +376,11 @@ public class APIController {
     }
   }
 
-  // funciona
+  /**
+   * Para obtener todas las tareas registradas.
+   *
+   * @return lista de tareas
+   */
   @GetMapping("/tareas")
   public List<Tarea> getTareas() {
     return tareaService.obtenerTodas();

@@ -4,7 +4,7 @@ import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.exceptions.RegistroInvalidoException;
 import michaelsoftbinbows.exceptions.TareaInvalidaException;
 import michaelsoftbinbows.security.CustomUserDetails;
-import michaelsoftbinbows.services.*;
+import michaelsoftbinbows.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,47 +15,55 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+/** Controlador para vistas referentes a tareas. */
 @Controller
 public class TareaController {
-  // Se inyecta la dependencia de BaseDatos, gracias a que BaseDatos es un Spring Bean (@Service).
-  /*private final BaseDatos baseDatos;
-  public TareaController(BaseDatos baseDatos) {
-      this.baseDatos = baseDatos;
-  }*/
 
   @Autowired private UsuarioService usuarioService;
 
+  /**
+   * Elimina una tarea específica de un usuario.
+   *
+   * @param model modelo para añadir atributos
+   * @param nombreTarea nombre de tarea a eliminar
+   * @return redirect al home
+   * @throws RegistroInvalidoException si la tarea no se puede eliminar
+   */
   @PostMapping("/eliminar-tarea")
   public String eliminarTarea(Model model, @RequestParam("nombreTarea") String nombreTarea)
       throws RegistroInvalidoException {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
     String correo = userDetails.getUsername();
-    /*Usuario usuarioActual = userDetails.getUsuario();
-    usuarioActual.cancelarTarea(nombreTarea);
-    usuarioService.guardarEnBD(usuarioActual); //Guarda el usuario y sus tareas en la base de datos*/
-
     usuarioService.eliminarTarea(correo, nombreTarea);
-
     return "redirect:/home";
   }
 
+  /**
+   * Marca una tarea de un usuario como completada.
+   *
+   * @param model modelo para añadir atributos
+   * @param nombreTarea nombre de la tarea a completar
+   * @return redirect al home
+   * @throws RegistroInvalidoException si la tarea no se puede completar
+   */
   @PostMapping("/completar-tarea")
   public String completarTarea(Model model, @RequestParam("nombreTarea") String nombreTarea)
       throws RegistroInvalidoException {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-    /*Usuario usuarioActual = userDetails.getUsuario();
-    usuarioActual.completarTarea(nombreTarea);*/
     String correo = userDetails.getUsername();
 
     usuarioService.completarTarea(correo, nombreTarea);
-    // usuarioService.guardarEnBD(usuarioActual); // Guarda el usuario y sus tareas en la base de
-    // datos
     return "redirect:/home";
   }
 
-  /** Muestra el formulario para que el usuario cree una nueva tarea. */
+  /**
+   * Muestra el formulario para que el usuario cree una nueva tarea.
+   *
+   * @param model modelo para añadir atributos
+   * @return template para tarea nueva
+   */
   @GetMapping("/nueva-tarea")
   public String mostrarFormularioNuevaTarea(Model model) {
     // No es estrictamente necesario pasar un objeto Tarea vacío,
@@ -67,8 +75,13 @@ public class TareaController {
   /**
    * Procesa la creación de una nueva tarea para el usuario actual.
    *
-   * @throws TareaInvalidaException
-   * @throws RegistroInvalidoException
+   * @param nombre nombre de la tarea nueva
+   * @param descripcion descripcion de la tarea nueva
+   * @param dificultad dificultad de la tarea nueva
+   * @param model modelo para añadir atributos
+   * @param redirectAttributes atributos para redirect (mensajes de éxito)
+   * @return template para tarea nueva
+   * @throws TareaInvalidaException si la tarea no es válida
    */
   @PostMapping("/nueva-tarea")
   public String procesarNuevaTarea(
@@ -77,50 +90,17 @@ public class TareaController {
       @RequestParam("dificultad") String dificultad,
       Model model,
       RedirectAttributes redirectAttributes)
-      throws TareaInvalidaException, RegistroInvalidoException {
+      throws TareaInvalidaException {
 
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
     String correo = userDetails.getUsername();
-    // Usuario usuarioActual = userDetails.getUsuario();
 
     Tarea nuevaTarea = new Tarea(nombre, descripcion, dificultad);
     usuarioService.agregarTareaAUsuario(correo, nuevaTarea);
-    // usuarioService.guardarEnBD(usuarioActual); //Guarda el usuario y sus tareas en la base de
-    // datos
 
     // Usamos RedirectAttributes para que el mensaje de éxito se vea en /home
     redirectAttributes.addFlashAttribute("mensaje", "¡Tarea agregada con éxito!");
     return "tarea-nueva";
   }
-  /*
-  @GetMapping("/tareas/historial")
-  public String mostrarHistorialTTareas(Model model, HttpSession session) {
-      if(session.getAttribute("usuarioActual") == null){
-          return "redirect:/error";
-      }
-      Usuario usuarioActual = (Usuario) session.getAttribute("usuarioActual");
-      model.addAttribute("nombre_usuario", usuarioActual != null ? usuarioActual.getNombreUsuario() : "-");
-
-      return "";
-  }
-      |*/
-
-  /*
-  @GetMapping("/tareas")
-  public String mostrarTareas(Model model, HttpSession session) {
-      if(session.getAttribute("usuarioActual") == null){
-          return "redirect:/error";
-      }
-      @GetMapping("/eliminar")
-
-      System.out.println("LOG: El método 'mostrarTareas' ha sido llamado por una petición a /tareas.");
-      Usuario usuarioActual = (Usuario) session.getAttribute("usuarioActual");
-      List<Tarea> tareas = usuarioActual != null ?usuarioActual.getTareas() : Collections.emptyList();
-      model.addAttribute("tareas",  tareas);
-
-      return "tareas";
-  }
-  */
-
 }

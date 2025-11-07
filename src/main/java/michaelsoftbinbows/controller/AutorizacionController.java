@@ -64,9 +64,6 @@ public class AutorizacionController {
     return "redirect:/home";
   }
 
-  /*
-   * Por temas de Spring Security, este es la única excepción que no puedo manejar dentro de GlobalExceptionHandler
-   */
   @GetMapping("/login")
   public String mostrarLogin(
       @RequestParam(value = "error", required = false) String error, Model model) {

@@ -266,12 +266,7 @@
              value="GenericWhitespace ''{0}'' is not preceded with whitespace."/>
     </module>
     <module name="Indentation">
-      <property name="basicOffset" value="2"/>
-      <property name="braceAdjustment" value="2"/>
-      <property name="caseIndent" value="2"/>
-      <property name="throwsIndent" value="4"/>
-      <property name="lineWrappingIndentation" value="4"/>
-      <property name="arrayInitIndent" value="2"/>
+      <property name="severity" value="ignore"/>
     </module>
     <!-- Suppression for block code until we find a way to detect them properly
          until https://github.com/checkstyle/checkstyle/issues/15769 -->
@@ -343,7 +338,7 @@
                value="^@return the *|^This method returns |^A [{]@code [a-zA-Z0-9]+[}]( is a )"/>
     </module>
     <module name="JavadocParagraph">
-      <property name="allowNewlineParagraph" value="false"/>
+      <property name="severity" value="ignore"/>
     </module>
     <module name="RequireEmptyLineBeforeBlockTagGroup"/>
     <module name="AtclauseOrder">

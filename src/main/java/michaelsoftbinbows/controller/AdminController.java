@@ -45,44 +45,61 @@ public class AdminController {
 
   @Autowired private ConfiguracionService configuracionService;
 
-  // Inyección de dependencias
+  /**
+   * Constructor de clase, inyecta el servicio de SeguridadService.
+   *
+   * @param seguridadService servicio de Spring para revisar permisos de edición
+   */
   public AdminController(SeguridadService seguridadService) {
     this.seguridadService = seguridadService;
   }
 
+  /**
+   * Registra a un usuario en la base de datos, encriptando su contraseña.
+   *
+   * @param usuario usuario nuevo
+   * @throws RegistroInvalidoException si se produce un error al guardar
+   */
   public void registrarUsuario(Usuario usuario) throws RegistroInvalidoException {
     String encodedPassword = passwordEncoder.encode(usuario.getContrasena());
     usuario.setContrasena(encodedPassword);
     usuarioService.guardarEnBD(usuario);
   }
 
-  /*
+  /**
    * Muestra la página principal del panel de administración.
    *
-   * Este método actúa como el controlador central para todas las vistas dentro del panel de admin.
-   * Utiliza el parámetro 'vista' para determinar qué contenido dinámico (fragmento de Thymeleaf)
-   * debe cargarse en la plantilla principal.
+   * <p>Este método actúa como el controlador central para todas las vistas dentro del panel de
+   * admin. Utiliza el parámetro 'vista' para determinar qué contenido dinámico (fragmento de
+   * Thymeleaf) debe cargarse en la plantilla principal.
    *
-   * Realiza las siguientes acciones:
-   * 1. Valida que el usuario en sesión sea un ADMIN o un MODERADOR. Si no, redirige al login.
-   * 2. Carga los datos necesarios para la vista solicitada (ej. lista de usuarios para la vista 'usuarios').
-   * 3. Prepara una lista de roles que el usuario actual tiene permitido asignar, para poblar los formularios de edición.
-   * 4. Maneja la lógica para abrir el modal de edición de un usuario si se proporciona el parámetro 'editarUsuarioCorreo'.
-   * 5. Pasa todos los datos necesarios al modelo para que la plantilla 'admin.html' los pueda renderizar.
+   * <p>Realiza las siguientes acciones: 1. Valida que el usuario en sesión sea un ADMIN o un
+   * MODERADOR. Si no, redirige al login. 2. Carga los datos necesarios para la vista solicitada
+   * (ej. lista de usuarios para la vista 'usuarios'). 3. Prepara una lista de roles que el usuario
+   * actual tiene permitido asignar, para poblar los formularios de edición. 4. Maneja la lógica
+   * para abrir el modal de edición de un usuario si se proporciona el parámetro
+   * 'editarUsuarioCorreo'. 5. Pasa todos los datos necesarios al modelo para que la plantilla
+   * 'admin.html' los pueda renderizar.
    *
-   * @param vistaActual El nombre de la vista a mostrar (ej. "usuarios", "tareas").
-   *                    Viene de la URL como un parámetro '?vista=...'. Por defecto es "usuarios".
-   * @param correoAEditar (Opcional) El correo del usuario cuyo modal de edición se debe mostrar.
-   * @param error (Opcional) Un mensaje de error proveniente de una redirección (ej. un fallo al guardar).
+   * @param vistaActual El nombre de la vista a mostrar (ej. "usuarios", "tareas"). Viene de la URL
+   *     como un parámetro '?vista=...'. Por defecto es "usuarios".
+   * @param correoEditado (Opcional) El correo del usuario cuyo modal de edición se debe mostrar.
+   * @param crearUsuario si se está creando un usuario o no
+   * @param error (Opcional) Un mensaje de error proveniente de una redirección (ej. un fallo al
+   *     guardar).
+   * @param correoUsuarioSeleccionado correo del usuario que se está editando
+   * @param crearTarea si se está creando una tarea
+   * @param errorCreacionTarea error en la creación de una tarea
+   * @param limite limite del top de usuarios
+   * @param mostrarConfig si se debe mostrar la configuración
    * @param model El objeto Model de Spring, usado para pasar atributos a la vista de Thymeleaf.
-   * @param session La sesión HTTP actual, para obtener el usuario que ha iniciado sesión.
    * @return El nombre de la plantilla principal a renderizar ("admin").
    */
   @GetMapping("/admin")
   public String mostrarPanelAdmin(
       // Anadimos el parámetro "vista" para la navegación
       @RequestParam(name = "vista", required = false, defaultValue = "usuarios") String vistaActual,
-      @RequestParam(name = "editarUsuarioCorreo", required = false) String correoAEditar,
+      @RequestParam(name = "editarUsuarioCorreo", required = false) String correoEditado,
       @RequestParam(name = "crearUsuario", required = false) boolean crearUsuario,
       @RequestParam(name = "error", required = false) String error,
       @RequestParam(name = "correo", required = false) String correoUsuarioSeleccionado,
@@ -168,13 +185,15 @@ public class AdminController {
         model.addAttribute("listaTop10", topUsuarios);
         model.addAttribute("limiteActual", limiteActual);
         break;
+
+      default:
     }
 
     // Si se pulsa boton editar
-    if (correoAEditar != null) {
-      Usuario usuarioAEditar = usuarioService.buscarPorCorreo(correoAEditar);
-      if (usuarioAEditar != null && seguridadService.puedeEditar(usuarioActual, usuarioAEditar)) {
-        model.addAttribute("usuarioParaEditar", usuarioAEditar);
+    if (correoEditado != null) {
+      Usuario usuarioEditado = usuarioService.buscarPorCorreo(correoEditado);
+      if (usuarioEditado != null && seguridadService.puedeEditar(usuarioActual, usuarioEditado)) {
+        model.addAttribute("usuarioParaEditar", usuarioEditado);
       }
     }
 
@@ -189,8 +208,18 @@ public class AdminController {
     return "admin";
   }
 
-  /*
+  /**
    * Procesa el guardado de los cambios de un usuario desde el modal, con logging detallado.
+   *
+   * @param nuevoNombre nombre de usuario editado
+   * @param correoOriginal correo original del usuario
+   * @param nuevoCorreo correo tras ser editado
+   * @param nuevoRol rol tras ser editado
+   * @param nuevaContrasena contraseña tras ser editado
+   * @param confirmarContrasena confirmación de la contraseña
+   * @param redirectAttributes atributos para redirect
+   * @return redirección a admin
+   * @throws EdicionInvalidaException si el usuario editado no es válido
    */
   @PostMapping("/admin/guardar")
   public String guardarUsuarioEditado(
@@ -278,30 +307,42 @@ public class AdminController {
     return "redirect:/admin";
   }
 
-  /** Elimina un usuario. */
+  /**
+   * Elimina a un usuario.
+   *
+   * @param correoEliminado correo de usuario a eliminar
+   * @param redirectAttributes atributos para redirect
+   * @return redirección a admin/403
+   */
   @GetMapping("/admin/eliminar")
   public String eliminarUsuario(
-      @RequestParam("correo") String correoAEliminar, RedirectAttributes redirectAttributes) {
+      @RequestParam("correo") String correoEliminado, RedirectAttributes redirectAttributes) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
     Usuario actor = userDetails.getUsuario();
-    Usuario objetivo = usuarioService.buscarPorCorreo(correoAEliminar);
+    Usuario objetivo = usuarioService.buscarPorCorreo(correoEliminado);
 
     // Chequeo de seguridad en el servidor
     if (!seguridadService.puedeEliminar(actor, objetivo)) {
       return "redirect:/acceso-denegado";
     }
 
-    usuarioService.eliminarPorCorreo(correoAEliminar);
+    usuarioService.eliminarPorCorreo(correoEliminado);
     redirectAttributes.addFlashAttribute(
         "success", "Usuario '" + objetivo.getNombreUsuario() + "' eliminado.");
 
     return "redirect:/admin";
   }
 
-  /*
+  /**
    * Elimina una tarea específica de un usuario.
-   * Se invoca desde la vista de tareas del panel de administración.
+   *
+   * <p>Se invoca desde la vista de tareas del panel de administración.
+   *
+   * @param correoUsuario correo del usuario al que pertenece tarea
+   * @param nombreTarea nombre de la tarea a eliminar
+   * @param redirectAttributes atributos para redirect
+   * @return recirect a admin/403
    */
   @GetMapping("/admin/tareas/eliminar")
   public String eliminarTareaDeUsuario(
@@ -322,7 +363,7 @@ public class AdminController {
     //  también debería poder gestionar sus tareas.
     if (!seguridadService.puedeGestionarTareasDe(actor, objetivo)) {
       System.out.println(
-          "WARN: Fallo de seguridad al intentar eliminar tarea. El actor no tiene permisos sobre el objetivo.");
+          "WARN: Fallo al eliminar tarea. El actor no tiene permisos sobre el objetivo.");
       return "redirect:/acceso-denegado";
     }
 
@@ -359,9 +400,10 @@ public class AdminController {
     return "redirect:/admin";
   }
 
-  /*
+  /**
    * Muestra el formulario para que un administrador edite la tarea de un usuario.
-   * Este método se activa cuando se hace clic en el botón "Editar" de la tabla de tareas.
+   *
+   * <p>Este método se activa cuando se hace clic en el botón "Editar" de la tabla de tareas.
    *
    * @param correoUsuario El correo del usuario propietario de la tarea.
    * @param nombreTarea El nombre de la tarea a editar.
@@ -395,11 +437,18 @@ public class AdminController {
     return "admin-tarea-form";
   }
 
-  /*
+  /**
    * Procesa y guarda los cambios de una tarea editada por un administrador.
-   * Este método se activa cuando se envía el formulario desde 'admin-tarea-form.html'.
    *
+   * <p>Este método se activa cuando se envía el formulario desde 'admin-tarea-form.html'.
+   *
+   * @param correoUsuario correo del usuario
+   * @param nombreOriginal nombre tarea original
+   * @param nuevoNombre nombre nuevo de tarea
+   * @param nuevaDescripcion descripcion de tarea nueva
+   * @param nuevaDificultad dificultad de tarea nueva
    * @return Una redirección a la vista de tareas del usuario afectado.
+   * @throws AdminGuardarTareaException si la tarea guardada no es válida
    */
   @PostMapping("/admin/tareas/guardar")
   public String guardarTareaEditada(
@@ -438,18 +487,39 @@ public class AdminController {
     }
   }
 
+  /**
+   * Muestra pantalla para crear usuario desde admin.
+   *
+   * @return responsebody
+   */
   @GetMapping("/admin/usuarios/nuevo")
   @ResponseBody // Usamos ResponseBody para no tener que crear un HTML todavía
   public String mostrarFormularioNuevoUsuario() {
-    return "<h1>Formulario para crear un nuevo usuario (en construcción)</h1>";
+    return "<h1>Formulario de Admin para crear un nuevo usuario</h1>";
   }
 
+  /**
+   * Pantalla de tarea nueva admin.
+   *
+   * @return responsebody
+   */
   @GetMapping("/admin/tareas/nuevo")
   @ResponseBody
   public String mostrarFormularioNuevaTarea() {
-    return "<h1>Formulario para que el admin cree una nueva tarea para un usuario (en construcción)</h1>";
+    return "<h1>Formulario de Admin para crear nueva tarea</h1>";
   }
 
+  /**
+   * Crea un usuario nuevo.
+   *
+   * @param nombre nombre del usuario nuevo
+   * @param correo correo del usuario nuevo
+   * @param contrasena contraseña del usuario nueevo
+   * @param rol rol del usuario a crear
+   * @param redirectAttributes atributos para redirect
+   * @return redirect admin
+   * @throws AdminCrearUsuarioException si el usuario nuevo es inválido
+   */
   @PostMapping("/admin/crear")
   public String crearNuevoUsuario(
       @RequestParam("nombreUsuario") String nombre,
@@ -488,6 +558,17 @@ public class AdminController {
     return "redirect:/admin";
   }
 
+  /**
+   * Crea nueva Tarea para un Usuario.
+   *
+   * @param correoUsuario correo del usuario al q se le asigna la tarea
+   * @param nombre nombre tarea nueva
+   * @param descripcion descripcion tarea nueva
+   * @param dificultad dificultad tarea nuevo
+   * @param redirectAttributes atributos para redirect
+   * @return redirect admin
+   * @throws AdminCrearTareaException si la tarea es inválida
+   */
   @PostMapping("/admin/tareas/crear")
   public String crearNuevaTarea(
       @RequestParam("correoUsuario") String correoUsuario,
@@ -495,7 +576,7 @@ public class AdminController {
       @RequestParam("descripcion") String descripcion,
       @RequestParam("dificultad") String dificultad,
       RedirectAttributes redirectAttributes)
-      throws AdminCrearTareaException, RegistroInvalidoException {
+      throws AdminCrearTareaException {
 
     Usuario usuario = usuarioService.buscarPorCorreo(correoUsuario);
     if (usuario == null) {
@@ -524,15 +605,19 @@ public class AdminController {
       redirectAttributes.addAttribute("correo", correoUsuario);
       return "redirect:/admin";
 
-    } catch (TareaInvalidaException e) {
+    } catch (TareaInvalidaException | RegistroInvalidoException e) {
       // Si hay un error de validación (nombre duplicado, etc.)
       throw new AdminCrearTareaException(e.getMessage());
     }
   }
 
-  /*
+  /**
    * Endpoint para que el Admin fuerce el reseteo de la temporada.
-   * Se puede probar visitando la URL como admin.
+   *
+   * <p>Se puede probar visitando la URL como admin.
+   *
+   * @param redirectAttributes atributos para redirect
+   * @return redirect admin
    */
   @GetMapping("/admin/temporada/reset-manual")
   public String forzarReseteoTemporada(RedirectAttributes redirectAttributes) {
@@ -557,13 +642,23 @@ public class AdminController {
     return "redirect:/admin";
   }
 
-  /** Página de "Acceso Denegado". */
+  /**
+   * Página de error 403.
+   *
+   * @return nombre del template de la página
+   */
   @GetMapping("/acceso-denegado")
   public String mostrarAccesoDenegado() {
     return "acceso-denegado";
   }
 
-  /** Guarda la nueva configuración del límite del Top en la BD. */
+  /**
+   * Guarda la nueva configuración del límite del Top en la BD.
+   *
+   * @param limite limite establecido para el top
+   * @param redirectAttributes atributos para redirect
+   * @return redirect
+   */
   @GetMapping("/admin/top/set-limite")
   public String setLimiteTop(
       @RequestParam("limite") int limite, RedirectAttributes redirectAttributes) {
