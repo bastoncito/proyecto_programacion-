@@ -19,7 +19,7 @@
 <body>
     <!-- 
       Incluimos el fragmento de la pantalla de carga.
-      Esto mantiene el código de la animación en un archivo separado y reutilizable.
+      Esto mantiene el código de la animación en un archivo separado y reutilizable.ñ
     -->
     <div th:replace="~{fragments :: loadingScreen}"></div>
 
@@ -160,12 +160,12 @@
                 </div>
                 <div class="section-line" style="margin-top: 15px; margin-bottom: 15px;"></div>
                 <div class="form-group">
-                    <label for="nuevaContraseña">Nueva Contraseña (Opcional)</label>
-                    <input type="password" id="nuevaContraseña" name="nuevaContraseña" placeholder="Dejar en blanco para no cambiar">
+                    <label for="nuevaContrasena">Nueva Contrasena (Opcional)</label>
+                    <input type="password" id="nuevaContrasena" name="nuevaContrasena" placeholder="Dejar en blanco para no cambiar">
                 </div>
                 <div class="form-group">
-                    <label for="confirmarContraseña">Confirmar Nueva Contraseña</label>
-                    <input type="password" id="confirmarContraseña" name="confirmarContraseña" placeholder="Repetir la nueva contraseña">
+                    <label for="confirmarContrasena">Confirmar Nueva Contrasena</label>
+                    <input type="password" id="confirmarContrasena" name="confirmarContrasena" placeholder="Repetir la nueva contrasena">
                 </div>
                 <div th:if="${error}" class="alert-error" th:text="${error}"></div>
                 <div class="form-actions">

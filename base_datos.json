@@ -1,7 +1,7 @@
 [
   {
     "nombreUsuario": "Admin",
-    "contraseña": "$2a$10$nqpuvP8H3L0j4n.dIM6pt.ayiAFtuSvleHb5FvC8Rkkemgc0t/1UG",
+    "contrasena": "$2a$10$nqpuvP8H3L0j4n.dIM6pt.ayiAFtuSvleHb5FvC8Rkkemgc0t/1UG",
     "correoElectronico": "admin@michaelsoftBinbows.com",
     "experiencia": 0,
     "nivelExperiencia": 1,
@@ -32,7 +32,7 @@
   },
   {
     "nombreUsuario": "Matias Gomez",
-    "contraseña": "$2a$10$Hpk2E/oJOvML3BldXuk5x.BDsbyjo3y5WprLDyOA0TC2om.kmCZ3O",
+    "contrasena": "$2a$10$Hpk2E/oJOvML3BldXuk5x.BDsbyjo3y5WprLDyOA0TC2om.kmCZ3O",
     "correoElectronico": "mgomez22@alumnos.utalca.cl",
     "experiencia": 40,
     "nivelExperiencia": 4,
@@ -57,7 +57,7 @@
   },
   {
     "nombreUsuario": "zketsh01",
-    "contraseña": "$2a$10$U1KQ0IyCNyuyzmFIaPvjTeM4KynwNA6tKSLwfE57VM/3Otv9G/xme",
+    "contrasena": "$2a$10$U1KQ0IyCNyuyzmFIaPvjTeM4KynwNA6tKSLwfE57VM/3Otv9G/xme",
     "correoElectronico": "dpezoa21@alumnos.utalca.cl",
     "experiencia": 50,
     "nivelExperiencia": 1,
@@ -69,7 +69,7 @@
   },
   {
     "nombreUsuario": "Boton",
-    "contraseña": "$2a$10$XK.SlCiPJM6sMW4oJUgukuacBL4m0Nj0wk0XSzhHIwkEyelDvLC2K",
+    "contrasena": "$2a$10$XK.SlCiPJM6sMW4oJUgukuacBL4m0Nj0wk0XSzhHIwkEyelDvLC2K",
     "correoElectronico": "Boton@gmail.com",
     "experiencia": 0,
     "nivelExperiencia": 1,
@@ -82,7 +82,7 @@
   },
   {
     "nombreUsuario": "John GoodTime",
-    "contraseña": "$2a$10$PFNxwHUvsgi1bFqecx02Kua/CYXI1eV3seFF48NeF40JKY.GIBbkG",
+    "contrasena": "$2a$10$PFNxwHUvsgi1bFqecx02Kua/CYXI1eV3seFF48NeF40JKY.GIBbkG",
     "correoElectronico": "jgdaman@gmail.com",
     "experiencia": 0,
     "nivelExperiencia": 1,
@@ -94,7 +94,7 @@
   },
   {
     "nombreUsuario": "Usuario11",
-    "contraseña": "$2a$10$r5Z.r3JSTidfQQ2qf4.gEOLq2wLNwWQZo67NppQfOerW5b/Pg0O7K",
+    "contrasena": "$2a$10$r5Z.r3JSTidfQQ2qf4.gEOLq2wLNwWQZo67NppQfOerW5b/Pg0O7K",
     "correoElectronico": "usuario11@gmail.com",
     "experiencia": 0,
     "nivelExperiencia": 1,
@@ -106,7 +106,7 @@
   },
   {
     "nombreUsuario": "Usuario33",
-    "contraseña": "$2a$10$/NnHZMTynpPPSaOiYg6soeP49XwkyaIWHbhOnJhE2nFB2dpjPMnQy",
+    "contrasena": "$2a$10$/NnHZMTynpPPSaOiYg6soeP49XwkyaIWHbhOnJhE2nFB2dpjPMnQy",
     "correoElectronico": "usuario33@gmail.com",
     "experiencia": 0,
     "nivelExperiencia": 1,
@@ -118,7 +118,7 @@
   },
   {
     "nombreUsuario": "zketsh03",
-    "contraseña": "$2a$10$x/8nZ1B3f3BmOPSE9FC7Ce4oJDJjiRkvZCisDMHl2XmgLQI9wMmCy",
+    "contrasena": "$2a$10$x/8nZ1B3f3BmOPSE9FC7Ce4oJDJjiRkvZCisDMHl2XmgLQI9wMmCy",
     "correoElectronico": "zketsh03@gmail.com",
     "experiencia": 0,
     "nivelExperiencia": 1,
@@ -130,7 +130,7 @@
   },
   {
     "nombreUsuario": "zketsh02",
-    "contraseña": "$2a$10$v8nXBVpqO1JA2SN3I13wfePDN0FLMCogA.EHymEHvrlL6ELZPZORG",
+    "contrasena": "$2a$10$v8nXBVpqO1JA2SN3I13wfePDN0FLMCogA.EHymEHvrlL6ELZPZORG",
     "correoElectronico": "zketsh02@gmail.com",
     "experiencia": 0,
     "nivelExperiencia": 1,

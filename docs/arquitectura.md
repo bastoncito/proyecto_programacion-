@@ -1,5 +1,5 @@
 ## Estructura del proyecto
-### Dentro de la carpeta src/main/java/Michaelsoft_Binbows...
+### Dentro de la carpeta src/main/java/michaelsoftbinbows...
 
 ```text
 ├─ controller/ --> Llamadas a la capa de servicios (validaciones de entradas/solicitudes), endpoints
@@ -7,12 +7,15 @@
 │  ├─ AutorizacionController.java
 │  ├─ HomeController.java
 │  ├─ AdminController.java
-│  ├─ HomeController.java
 │  ├─ PerfilController.java
 │  ├─ DevController.java
+│  ├─ WeatherController.java
+│  ├─ GeocodingController.java
+│  ├─ APIController.java
+│  ├─ LogroController.java
 ├─ dto/ --> objetos utilizados para transferir datos (especialmente desde solicitudes POST/PUT)
-│  ├─ UsuarioDTO.java 
-│  ├─ TareaDTO.java 
+│  ├─ UsuarioDto.java 
+│  ├─ TareaDto.java 
 ├─ model/ --> enums, interfaces
 │  ├─ Email.java 
 │  ├─ Id.java 
@@ -23,23 +26,22 @@
 │  ├─ GestorLogros.java 
 │  ├─ SistemaNiveles.java 
 ├─ data/ --> Persistencia de datos, repositorios, interacción con base de datos
-│  ├─ PersistenciaJSON.java
 │  ├─ JsonMigrator.java
 │  ├─ LogroRepository.java
 │  ├─ TareaRepository.java
 │  ├─ UsuarioRepository.java
 │  ├─ JpaRepository.java
+│  ├─ ConfiguracionRepository.java
 ├─ services/ --> La lógica de la solución en sí, Services de Spring
-│  ├─ GestorLogro.java
-│  ├─ Rol.java
-│  ├─ Id.java
-│  ├─ Email.java
-│  ├─ Dificultad.java
-│  ├─ NotBlank.java
 │  ├─ UsuarioService.java
+│  ├─ ConfiguracionService.java
 │  ├─ TareaService.java
 │  ├─ LogroService.java
+│  ├─ TemporadaService.java
 │  ├─ SeguridadService.java
+│  ├─ UsuarioTareaService.java
+│  ├─ WeatherService.java
+│  ├─ GeocodingService.java
 │  ├─ CustomUserDetailsService.java
 ├─ exceptions/ --> excepciones/errores personalizados
 │  ├─ (...)
