@@ -1,154 +1,213 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html
+  lang="es"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Historial y Resúmenes</title>
-    
-    <link rel="stylesheet" th:href="@{/styles/historial_tareas.css}">
-    <link rel="stylesheet" th:href="@{/styles/navbar.css}">
-    
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
+
+    <link rel="stylesheet" th:href="@{/styles/historial_tareas.css}" />
+    <link rel="stylesheet" th:href="@{/styles/navbar.css}" />
+
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
     <main class="grid-container">
-        <!-- Columna izquierda para escritorio -->
-        <div class="left-column">
-            <!-- Tarjeta de Historial Completo -->
-            <section class="card history-card">
-                <div class="card-header">
-                    <h1>Historial Completo</h1>
+      <!-- Columna izquierda para escritorio -->
+      <div class="left-column">
+        <!-- Tarjeta de Historial Completo -->
+        <section class="card history-card">
+          <div class="card-header">
+            <h1>Historial Completo</h1>
+          </div>
+          <div class="card-body">
+            <div
+              th:if="${#lists.isEmpty(historialTareas)}"
+              class="history-empty"
+            >
+              <i class="bx bx-ghost"></i>
+              <p>
+                Aún no has completado ninguna tarea. ¡El historial está vacío!
+              </p>
+            </div>
+            <div
+              th:unless="${#lists.isEmpty(historialTareas)}"
+              class="history-list-container"
+            >
+              <div class="param-bar">
+                <span>Tarea</span>
+                <span>Experiencia</span>
+                <span>Fecha de Finalización</span>
+              </div>
+              <div class="history-list">
+                <div class="history-row" th:each="tarea : ${historialTareas}">
+                  <span th:text="${tarea.nombre}">Nombre de la tarea</span>
+                  <span class="exp-points" th:text="'+' + ${tarea.exp} + ' XP'"
+                    >+100 XP</span
+                  >
+                  <span
+                    th:text="${#temporals.format(tarea.fechaCompletada, 'dd/MM/yyyy HH:mm')}"
+                    >10/10/2025 15:30</span
+                  >
                 </div>
-                <div class="card-body">
-                    <div th:if="${#lists.isEmpty(historialTareas)}" class="history-empty">
-                        <i class='bx bx-ghost'></i>
-                        <p>Aún no has completado ninguna tarea. ¡El historial está vacío!</p>
-                    </div>
-                    <div th:unless="${#lists.isEmpty(historialTareas)}" class="history-list-container">
-                        <div class="param-bar">
-                            <span>Tarea</span>
-                            <span>Experiencia</span>
-                            <span>Fecha de Finalización</span>
-                        </div>
-                        <div class="history-list">
-                            <div class="history-row" th:each="tarea : ${historialTareas}">
-                                <span th:text="${tarea.nombre}">Nombre de la tarea</span>
-                                <span class="exp-points" th:text="'+' + ${tarea.exp} + ' XP'">+100 XP</span>
-                                <span th:text="${#temporals.format(tarea.fechaCompletada, 'dd/MM/yyyy HH:mm')}">10/10/2025 15:30</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+              </div>
+            </div>
+          </div>
+        </section>
 
-            <!-- Tarjeta de Resúmenes -->
-            <section class="card summaries-card">
-                <div class="card-header">
-                    <h1>Resúmenes</h1>
-                    <div class="historial-tabs">
-                        <a href="javascript:void(0);" id="tab-semanal" class="active" onclick="mostrarResumen('semanal')">Semanal</a>
-                        <a href="javascript:void(0);" id="tab-mensual" onclick="mostrarResumen('mensual')">Mensual</a>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div id="resumen-semanal">
-                        <div class="summary-placeholder">
-                            <i class='bx bxs-bar-chart-alt-2'></i>
-                            <h2>Resumen Gráfico Semanal</h2>
-                            <p>Próximamente: Un gráfico con las tareas completadas en los últimos 7 días.</p>
-                        </div>
-                    </div>
-                    <div id="resumen-mensual" style="display: none;">
-                        <div class="summary-placeholder">
-                            <i class='bx bxs-calendar'></i>
-                            <h2>Resumen Gráfico Mensual</h2>
-                            <p>Próximamente: Un gráfico detallado con tu productividad a lo largo de todo el mes.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
+        <!-- Tarjeta de Resúmenes -->
+        <section class="card summaries-card">
+          <div class="card-header">
+            <h1>Resúmenes</h1>
+            <div class="historial-tabs">
+              <a
+                href="javascript:void(0);"
+                id="tab-semanal"
+                class="active"
+                onclick="mostrarResumen('semanal')"
+                >Semanal</a
+              >
+              <a
+                href="javascript:void(0);"
+                id="tab-mensual"
+                onclick="mostrarResumen('mensual')"
+                >Mensual</a
+              >
+            </div>
+          </div>
+          <div class="card-body">
+            <div id="resumen-semanal">
+              <div class="summary-placeholder">
+                <i class="bx bxs-bar-chart-alt-2"></i>
+                <h2>Resumen Gráfico Semanal</h2>
+                <p>
+                  Próximamente: Un gráfico con las tareas completadas en los
+                  últimos 7 días.
+                </p>
+              </div>
+            </div>
+            <div id="resumen-mensual" style="display: none">
+              <div class="summary-placeholder">
+                <i class="bx bxs-calendar"></i>
+                <h2>Resumen Gráfico Mensual</h2>
+                <p>
+                  Próximamente: Un gráfico detallado con tu productividad a lo
+                  largo de todo el mes.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
 
-        <!-- Columna derecha para escritorio -->
-        <div class="right-column">
-            <!-- Tarjeta de Bienvenida (En móvil aparece primero, en escritorio arriba a la derecha) -->
-            <section class="card welcome-card">
-                <div class="card-header">
-                    <h1>Bienvenido al Historial</h1>
-                </div>
-                <div class="card-body">
-                    <div class="welcome-content">
-                        <div class="welcome-text">
-                            <p>Este es tu centro de productividad. Aquí puedes revisar cada tarea que has completado y analizar tus estadísticas.</p>
-                            <p>¡Sigue así y alcanza nuevos niveles!</p>
-                        </div>
-                        <div class="welcome-image">
-                            <img th:src="@{/images/icon1.png}" alt="Ilustración de personaje">
-                        </div>
-                    </div>
-                </div>
-            </section>
+      <!-- Columna derecha para escritorio -->
+      <div class="right-column">
+        <!-- Tarjeta de Bienvenida (En móvil aparece primero, en escritorio arriba a la derecha) -->
+        <section class="card welcome-card">
+          <div class="card-header">
+            <h1>Bienvenido al Historial</h1>
+          </div>
+          <div class="card-body">
+            <div class="welcome-content">
+              <div class="welcome-text">
+                <p>
+                  Este es tu centro de productividad. Aquí puedes revisar cada
+                  tarea que has completado y analizar tus estadísticas.
+                </p>
+                <p>¡Sigue así y alcanza nuevos niveles!</p>
+              </div>
+              <div class="welcome-image">
+                <img
+                  th:src="@{/images/icon1.png}"
+                  alt="Ilustración de personaje"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
 
-            <!-- Tarjeta de Estadísticas (En móvil aparece al final, en escritorio abajo de bienvenida) -->
-            <aside class="card stats-card">
-                <div class="card-header">
-                    <h2>Tus Estadísticas</h2>
-                </div>
-                <div class="card-body">
-                    <div class="stat-item">
-                        <div class="stat-icon-wrapper"><i class='bx bxs-trophy'></i></div>
-                        <div class="stat-text">
-                            <span class="stat-label">Tareas Completadas</span>
-                            <span class="stat-value" th:text="${usuario.numeroCompletadas}">0</span>
-                        </div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-icon-wrapper"><i class='bx bxs-star'></i></div>
-                        <div class="stat-text">
-                            <span class="stat-label">Experiencia Total</span>
-                            <span class="stat-value stat-value-xp" th:text="${usuario.experienciaTotal} + ' XP'">0 XP</span>
-                        </div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-icon-wrapper"><i class='bx bxs-chevrons-up'></i></div>
-                        <div class="stat-text">
-                            <span class="stat-label">Nivel Actual</span>
-                            <span class="stat-value" th:text="${usuario.nivelExperiencia}">1</span>
-                        </div>
-                    </div>
-                    <div class="stat-item" th:classappend="${usuario.racha == 0 ? 'inactive' : ''}">
-                        <div class="stat-icon-wrapper"><i class='bx bxs-hot'></i></div>
-                        <div class="stat-text">
-                            <span class="stat-label">Racha de Días</span>
-                            <span class="stat-value" th:text="${usuario.racha}">0</span>
-                        </div>
-                    </div>
-                </div>
-            </aside>
-        </div>
+        <!-- Tarjeta de Estadísticas (En móvil aparece al final, en escritorio abajo de bienvenida) -->
+        <aside class="card stats-card">
+          <div class="card-header">
+            <h2>Tus Estadísticas</h2>
+          </div>
+          <div class="card-body">
+            <div class="stat-item">
+              <div class="stat-icon-wrapper"><i class="bx bxs-trophy"></i></div>
+              <div class="stat-text">
+                <span class="stat-label">Tareas Completadas</span>
+                <span class="stat-value" th:text="${usuario.numeroCompletadas}"
+                  >0</span
+                >
+              </div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-icon-wrapper"><i class="bx bxs-star"></i></div>
+              <div class="stat-text">
+                <span class="stat-label">Experiencia Total</span>
+                <span
+                  class="stat-value stat-value-xp"
+                  th:text="${usuario.experienciaTotal} + ' XP'"
+                  >0 XP</span
+                >
+              </div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-icon-wrapper">
+                <i class="bx bxs-chevrons-up"></i>
+              </div>
+              <div class="stat-text">
+                <span class="stat-label">Nivel Actual</span>
+                <span class="stat-value" th:text="${usuario.nivelExperiencia}"
+                  >1</span
+                >
+              </div>
+            </div>
+            <div
+              class="stat-item"
+              th:classappend="${usuario.racha == 0 ? 'inactive' : ''}"
+            >
+              <div class="stat-icon-wrapper"><i class="bx bxs-hot"></i></div>
+              <div class="stat-text">
+                <span class="stat-label">Racha de Días</span>
+                <span class="stat-value" th:text="${usuario.racha}">0</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
     </main>
-    
+
     <div th:replace="~{fragments :: navbar}"></div>
 
     <!-- Script para que los resumenes semanales puedan cambiar entre semana y mensual -->
     <!-- Posiblemente se cambiara para cuando tengamos esa feat -->
     <script>
-        function mostrarResumen(vista) {
-            document.getElementById('resumen-semanal').style.display = 'none';
-            document.getElementById('resumen-mensual').style.display = 'none';
-            document.getElementById('tab-semanal').classList.remove('active');
-            document.getElementById('tab-mensual').classList.remove('active');
-            if (vista === 'semanal') {
-                document.getElementById('resumen-semanal').style.display = 'block';
-                document.getElementById('tab-semanal').classList.add('active');
-            } else if (vista === 'mensual') {
-                document.getElementById('resumen-mensual').style.display = 'block';
-                document.getElementById('tab-mensual').classList.add('active');
-            }
+      function mostrarResumen(vista) {
+        document.getElementById("resumen-semanal").style.display = "none";
+        document.getElementById("resumen-mensual").style.display = "none";
+        document.getElementById("tab-semanal").classList.remove("active");
+        document.getElementById("tab-mensual").classList.remove("active");
+        if (vista === "semanal") {
+          document.getElementById("resumen-semanal").style.display = "block";
+          document.getElementById("tab-semanal").classList.add("active");
+        } else if (vista === "mensual") {
+          document.getElementById("resumen-mensual").style.display = "block";
+          document.getElementById("tab-mensual").classList.add("active");
         }
+      }
     </script>
-</body>
+  </body>
 </html>

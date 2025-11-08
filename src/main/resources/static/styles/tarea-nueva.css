@@ -1,152 +1,146 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 /* Fondo general */
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color:#333;
-
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #333;
 }
 
 /* Contenedor centrado */
 .container {
-    display: flex;
-    background: #fff;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-    width: 900px;
-    height: 700px;
-    border-radius: 25px;
-    overflow: hidden;
+  display: flex;
+  background: #fff;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  width: 900px;
+  height: 700px;
+  border-radius: 25px;
+  overflow: hidden;
 }
 
-.creation-section{
-    flex: 1;
-    background-color: #fff;
-    padding: 50px 40px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    border-radius: 25px 0 0 25px;
-    position: relative;
+.creation-section {
+  flex: 1;
+  background-color: #fff;
+  padding: 50px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 25px 0 0 25px;
+  position: relative;
 }
 
 .creation-section h1 {
-    color: #333;
-    font-size: 24px;
-    margin-bottom: 30px;
-    text-align: center;
-    font-weight: 600;
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: 600;
 }
 
-.creation-section form{
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+.creation-section form {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .creation-section label {
-    color: #666;
-    font-size: 16px;
-    margin-bottom: 5px;
-    margin-left: 5px;
-    font-weight: bold;
+  color: #666;
+  font-size: 16px;
+  margin-bottom: 5px;
+  margin-left: 5px;
+  font-weight: bold;
 }
 
-
-
 .result-box {
-    color: #666;
-    font-size: 16px;
-    margin-top: 15px;
-    margin-bottom: 45px;
-    margin-left: 5px;
-    font-weight: 500;
-    text-align: center;
-    font-weight: bold;
+  color: #666;
+  font-size: 16px;
+  margin-top: 15px;
+  margin-bottom: 45px;
+  margin-left: 5px;
+  font-weight: 500;
+  text-align: center;
+  font-weight: bold;
 }
 
 /* Contenedor para cada input con icono */
 .input-container {
-    position: relative;
-    margin-bottom: 20px;
+  position: relative;
+  margin-bottom: 20px;
 }
 
 .creation-section input {
-    width: 100%;
-    padding: 12px 40px 12px 15px;
-    border: none;
-    border-radius: 8px;
-    background-color: #f0f0f0;
-    font-size: 14px;
-    outline: none;
-    color: #333;
+  width: 100%;
+  padding: 12px 40px 12px 15px;
+  border: none;
+  border-radius: 8px;
+  background-color: #f0f0f0;
+  font-size: 14px;
+  outline: none;
+  color: #333;
 }
 
 .creation-section input::placeholder {
-    color: #999;
+  color: #999;
 }
 
 /* Iconos de Boxicons - posicionados relativos a cada input */
 .input-container i {
-    position: absolute;
-    right: 10px;
-    top: 12px;
-    color: #666;
-    font-size: 18px;
-    pointer-events: none;
+  position: absolute;
+  right: 10px;
+  top: 12px;
+  color: #666;
+  font-size: 18px;
+  pointer-events: none;
 }
 
 select {
-    font-size: 16px;
-    padding: 8px;
-    color: #222;
-    background: #fff;
-
-  
+  font-size: 16px;
+  padding: 8px;
+  color: #222;
+  background: #fff;
 }
 
 select option {
-    font-size: 16px;
-    padding: 8px;
-    color: #222;
-    background: #fff;
+  font-size: 16px;
+  padding: 8px;
+  color: #222;
+  background: #fff;
 }
 
-
 .creation-section a {
-    color: #666;
-    text-decoration: none;
-    font-size: 14px;
-    text-align: center;
-    margin-bottom: 25px;
-    transition: color 0.3s;
+  color: #666;
+  text-decoration: none;
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 25px;
+  transition: color 0.3s;
 }
 
 .creation-section a:hover {
-    color: #333;
-    text-decoration: underline;
+  color: #333;
+  text-decoration: underline;
 }
 
 .creation-section button {
-    width: 100%;
-    padding: 12px;
-    background-color: #FFC839;
-    border: none;
-    border-radius: 25px;
-    color: #333;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s;
+  width: 100%;
+  padding: 12px;
+  background-color: #ffc839;
+  border: none;
+  border-radius: 25px;
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .creation-section button:hover {
-    background-color: #e6b332;
+  background-color: #e6b332;
 }

@@ -1,85 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/styles/tareas.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/styles/tareas.css" />
     <title>Tareas</title>
-</head>
-<body>
+  </head>
+  <body>
     <header>
-        <h1>Tareas activas</h1>
+      <h1>Tareas activas</h1>
     </header>
 
     <div class="task-list">
-        <!-- Loop through tasks -->
-        <div class="task-item"
-            th:each="tarea, stat : ${tareas}">
-        
-            <!-- Task title -->
-            <h3 th:text="${tarea.nombre}"></h3>
-        
-            <!-- Task meta info -->
-            <p>
-                Vale <span class="exp" th:text="${tarea.exp} + ' XP'"></span> |
-                Expira en <span class="expire" th:text="${#temporals.format(tarea.fechaExpiracion, 'yyyy-MM-dd')}"></span>
-            </p>
+      <!-- Loop through tasks -->
+      <div class="task-item" th:each="tarea, stat : ${tareas}">
+        <!-- Task title -->
+        <h3 th:text="${tarea.nombre}"></h3>
 
-            <!-- Buttons -->
-            <button class="view-btn"
-                    th:attr="data-nombre=${tarea.nombre},
+        <!-- Task meta info -->
+        <p>
+          Vale <span class="exp" th:text="${tarea.exp} + ' XP'"></span> | Expira
+          en
+          <span
+            class="expire"
+            th:text="${#temporals.format(tarea.fechaExpiracion, 'yyyy-MM-dd')}"
+          ></span>
+        </p>
+
+        <!-- Buttons -->
+        <button
+          class="view-btn"
+          th:attr="data-nombre=${tarea.nombre},
                             data-descripcion=${tarea.descripcion},
                             data-experiencia=${tarea.exp},
-                            data-expira=${#temporals.format(tarea.fechaExpiracion, 'yyyy-MM-dd')}">
-                Ver
-            </button>
+                            data-expira=${#temporals.format(tarea.fechaExpiracion, 'yyyy-MM-dd')}"
+        >
+          Ver
+        </button>
 
-            <!-- Delete with form (calls backend endpoint) -->
-            <form th:action="@{/tareas/{id}/delete(id=${tarea.id})}" method="post" style="display:inline;">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                <button type="submit" class="delete-btn">Borrar</button>
-            </form>
-        </div>
+        <!-- Delete with form (calls backend endpoint) -->
+        <form
+          th:action="@{/tareas/{id}/delete(id=${tarea.id})}"
+          method="post"
+          style="display: inline"
+        >
+          <input
+            type="hidden"
+            th:name="${_csrf.parameterName}"
+            th:value="${_csrf.token}"
+          />
+          <button type="submit" class="delete-btn">Borrar</button>
+        </form>
+      </div>
 
-    <!-- Empty list message -->
-        <p th:if="${#lists.isEmpty(tareas)}">No tienes tareas anotadas.</p>
-        <a th:href="@{/tareas/nueva}" class="add-task-btn">Añadir nueva tarea</a>
+      <!-- Empty list message -->
+      <p th:if="${#lists.isEmpty(tareas)}">No tienes tareas anotadas.</p>
+      <a th:href="@{/tareas/nueva}" class="add-task-btn">Añadir nueva tarea</a>
     </div>
 
     <!-- Modal -->
     <div class="modal" id="taskModal">
-        <div class="modal-content">
-            <button class="close-btn" id="closeModal">Cerrar</button>
-            <h2 id="modalTitle"></h2>
-            <p><strong>Descripcion:</strong> <span id="modalDescription"></span></p>
-            <p><strong>Vale:</strong> <span id="modalExp"></span></p>
-            <p><strong>Expira:</strong> <span id="modalExpire"></span></p>
-        </div>
+      <div class="modal-content">
+        <button class="close-btn" id="closeModal">Cerrar</button>
+        <h2 id="modalTitle"></h2>
+        <p><strong>Descripcion:</strong> <span id="modalDescription"></span></p>
+        <p><strong>Vale:</strong> <span id="modalExp"></span></p>
+        <p><strong>Expira:</strong> <span id="modalExpire"></span></p>
+      </div>
     </div>
-    
+
     <script>
-        const modal = document.getElementById("taskModal");
-        const modalTitle = document.getElementById("modalTitle");
-        const modalDescription = document.getElementById("modalDescription");
-        const modalExp = document.getElementById("modalExp");
-        const modalExpire = document.getElementById("modalExpire");
-        const closeModal = document.getElementById("closeModal");
+      const modal = document.getElementById("taskModal");
+      const modalTitle = document.getElementById("modalTitle");
+      const modalDescription = document.getElementById("modalDescription");
+      const modalExp = document.getElementById("modalExp");
+      const modalExpire = document.getElementById("modalExpire");
+      const closeModal = document.getElementById("closeModal");
 
-        // Show modal with task info
-        document.querySelectorAll(".view-btn").forEach(btn => {
-            btn.addEventListener("click", () => {
-                modalTitle.textContent = btn.dataset.nombre;
-                modalDescription.textContent = btn.dataset.descripcion;
-                modalExp.textContent = btn.dataset.experiencia + " XP";
-                modalExpire.textContent = btn.dataset.expira;
-                modal.style.display = "flex";
-            });
+      // Show modal with task info
+      document.querySelectorAll(".view-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          modalTitle.textContent = btn.dataset.nombre;
+          modalDescription.textContent = btn.dataset.descripcion;
+          modalExp.textContent = btn.dataset.experiencia + " XP";
+          modalExpire.textContent = btn.dataset.expira;
+          modal.style.display = "flex";
         });
+      });
 
-        // Close modal
-        closeModal.addEventListener("click", () => {
-            modal.style.display = "none";
-        });
+      // Close modal
+      closeModal.addEventListener("click", () => {
+        modal.style.display = "none";
+      });
     </script>
-</body>
+  </body>
 </html>

@@ -6,40 +6,46 @@
    para todos los colores, sombras y bordes. Si queremos cambiar el color
    principal de la app, solo lo cambiamos aquí y se actualiza en todos lados. */
 :root {
-    /* Paleta de colores principal */
-    --color-principal: #FFC839; /* El amarillo característico de la marca */
-    --color-principal-hover: #e6b332; /* Un tono más oscuro para cuando pasas el mouse */
-    --color-oscuro: #212529; /* Un negro suave para textos y fondos */
-    --color-blanco: #fff;
-    --color-claro: #f5f5f5; /* Un gris muy claro para el fondo general de la página */
-    --color-bordes-sutiles: #eef2f5; /* Un color suave para bordes y fondos de ítems */
+  /* Paleta de colores principal */
+  --color-principal: #ffc839; /* El amarillo característico de la marca */
+  --color-principal-hover: #e6b332; /* Un tono más oscuro para cuando pasas el mouse */
+  --color-oscuro: #212529; /* Un negro suave para textos y fondos */
+  --color-blanco: #fff;
+  --color-claro: #f5f5f5; /* Un gris muy claro para el fondo general de la página */
+  --color-bordes-sutiles: #eef2f5; /* Un color suave para bordes y fondos de ítems */
 
-    /* Paleta de colores para textos */
-    --color-texto-principal: var(--color-oscuro);
-    --color-texto-secundario: #868e96; /* Un gris para textos menos importantes */
-    --color-texto-claro: rgba(255, 255, 255, 0.9);
+  /* Paleta de colores para textos */
+  --color-texto-principal: var(--color-oscuro);
+  --color-texto-secundario: #868e96; /* Un gris para textos menos importantes */
+  --color-texto-claro: rgba(255, 255, 255, 0.9);
 
-    /* Colores de acento para elementos específicos */
-    --color-acento-clima: #3498db; /* Un azul para el ícono del clima */
-    --color-rojo-accion-suave: #e74c3c; /* Un rojo para botones de "peligro" como Cerrar Sesión */
+  /* Colores de acento para elementos específicos */
+  --color-acento-clima: #3498db; /* Un azul para el ícono del clima */
+  --color-rojo-accion-suave: #e74c3c; /* Un rojo para botones de "peligro" como Cerrar Sesión */
 
-    /* Variables de estilo para reutilizar */
-    --sombra-suave: 0 4px 12px rgba(0, 0, 0, 0.08); /* Una sombra sutil para dar profundidad a las tarjetas */
-    --border-radius-suave: 12px; /* Bordes redondeados consistentes */
-    --transicion-suave: all 0.3s ease; /* Para que las animaciones (como los hover) sean fluidas */
+  /* Variables de estilo para reutilizar */
+  --sombra-suave: 0 4px 12px rgba(0, 0, 0, 0.08); /* Una sombra sutil para dar profundidad a las tarjetas */
+  --border-radius-suave: 12px; /* Bordes redondeados consistentes */
+  --transicion-suave: all 0.3s ease; /* Para que las animaciones (como los hover) sean fluidas */
 }
 
 /* El selector universal (*). Lo usamos para resetear los estilos por defecto
    del navegador, asegurando que no haya márgenes o paddings inesperados. */
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 /* Estilos base para toda la página. */
-body { 
-    font-family: 'Poppins', sans-serif; /* Una fuente moderna y legible */
-    background-color: var(--color-claro); /* Usamos nuestro color de fondo definido arriba */
-    color: var(--color-texto-principal); /* Color de texto por defecto */
-    min-height: 100vh; /* Asegura que el cuerpo ocupe al menos toda la altura de la pantalla */
-    padding-bottom: 80px; /* Dejamos espacio abajo para la barra de navegación en móviles */
+body {
+  font-family: "Poppins", sans-serif; /* Una fuente moderna y legible */
+  background-color: var(
+    --color-claro
+  ); /* Usamos nuestro color de fondo definido arriba */
+  color: var(--color-texto-principal); /* Color de texto por defecto */
+  min-height: 100vh; /* Asegura que el cuerpo ocupe al menos toda la altura de la pantalla */
+  padding-bottom: 80px; /* Dejamos espacio abajo para la barra de navegación en móviles */
 }
 
 /* =================================================================== */
@@ -50,37 +56,39 @@ body {
    Por defecto (en móviles), usamos flexbox para que los elementos se apilen
    uno encima del otro en una sola columna. */
 .grid-container {
-    display: flex;
-    flex-direction: column;
-    gap: 15px; /* Espacio entre las tarjetas */
-    padding: 15px;
-    width: 100%;
-    min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Espacio entre las tarjetas */
+  padding: 15px;
+  width: 100%;
+  min-height: 100vh;
 }
 
 /* Estas son las dos columnas principales de nuestro diseño. En móvil, ambas
    se comportan igual, apilando su contenido verticalmente. */
-.main-content-column, .sidebar-column {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+.main-content-column,
+.sidebar-column {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 /* Media Query: Estos estilos SOLO se aplican en pantallas grandes (1024px o más).
    Aquí es donde transformamos el layout de una columna a dos. */
 @media (min-width: 1024px) {
-    body { 
-        padding-bottom: 0; /* En escritorio no hay barra de navegación abajo, así que quitamos el espacio extra. */
-    }
-    .grid-container {
-        display: grid; /* Cambiamos de flex a grid para crear las dos columnas */
-        grid-template-columns: 2fr 1fr; /* La columna principal ocupa 2/3 y la lateral 1/3 del espacio */
-        gap: 20px;
-        padding: 20px;
-    }
-    .main-content-column, .sidebar-column {
-        gap: 20px; /* Aumentamos un poco el espacio entre tarjetas en escritorio */
-    }
+  body {
+    padding-bottom: 0; /* En escritorio no hay barra de navegación abajo, así que quitamos el espacio extra. */
+  }
+  .grid-container {
+    display: grid; /* Cambiamos de flex a grid para crear las dos columnas */
+    grid-template-columns: 2fr 1fr; /* La columna principal ocupa 2/3 y la lateral 1/3 del espacio */
+    gap: 20px;
+    padding: 20px;
+  }
+  .main-content-column,
+  .sidebar-column {
+    gap: 20px; /* Aumentamos un poco el espacio entre tarjetas en escritorio */
+  }
 }
 
 /* =================================================================== */
@@ -90,36 +98,37 @@ body {
 /* Este es el estilo base para todos los bloques de contenido (Desafío, Top, Tareas, etc.).
    Al tener un estilo unificado, toda la interfaz se siente consistente. */
 .card {
-    display: flex;
-    flex-direction: column;
-    background-color: var(--color-blanco);
-    border-radius: var(--border-radius-suave);
-    box-shadow: var(--sombra-suave);
-    overflow: hidden; /* Importante para que los bordes redondeados se apliquen bien */
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-blanco);
+  border-radius: var(--border-radius-suave);
+  box-shadow: var(--sombra-suave);
+  overflow: hidden; /* Importante para que los bordes redondeados se apliquen bien */
 }
 
 /* El encabezado de cada tarjeta (la franja amarilla con el título). */
 .card-header {
-    background-color: var(--color-principal);
-    color: var(--color-oscuro);
-    padding: 12px 20px;
-    flex-shrink: 0; /* Evita que el header se encoja si el contenido es muy grande */
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: var(--color-principal);
+  color: var(--color-oscuro);
+  padding: 12px 20px;
+  flex-shrink: 0; /* Evita que el header se encoja si el contenido es muy grande */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.card-header h1, .card-header h2 {
-    margin: 0;
-    font-size: 1.1em;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+.card-header h1,
+.card-header h2 {
+  margin: 0;
+  font-size: 1.1em;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 /* El cuerpo o contenido principal de cada tarjeta. */
 .card-body {
-    padding: 20px;
-    flex-grow: 1; /* Permite que el cuerpo de la tarjeta crezca para llenar el espacio disponible */
-    display: flex;
-    flex-direction: column;
+  padding: 20px;
+  flex-grow: 1; /* Permite que el cuerpo de la tarjeta crezca para llenar el espacio disponible */
+  display: flex;
+  flex-direction: column;
 }
 
 /* =================================================================== */
@@ -129,220 +138,509 @@ body {
 /* --- Componentes de la Barra Lateral --- */
 
 /* La tarjeta de información del perfil de usuario. */
-.info-section { 
-    padding: 20px; 
-    display: flex; 
-    flex-direction: column; 
-    gap: 20px; 
-    background-color: var(--color-blanco); 
-    border-radius: var(--border-radius-suave);
-    box-shadow: var(--sombra-suave);
+.info-section {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background-color: var(--color-blanco);
+  border-radius: var(--border-radius-suave);
+  box-shadow: var(--sombra-suave);
 }
-.profile-header { display: flex; align-items: center; gap: 15px; }
-.profile-avatar { width: 50px; height: 50px; flex-shrink: 0; background-color: var(--color-bordes-sutiles); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #90a4ae; }
-.profile-details { flex-grow: 1; min-width: 0; }
-.profile-details .username, .profile-details .user-email { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } /* Evita que textos largos rompan el diseño */
-.profile-details .username { font-size: 1.15em; font-weight: 600; }
-.profile-details .user-email { font-size: 0.85em; color: var(--color-texto-secundario); }
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.profile-avatar {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+  background-color: var(--color-bordes-sutiles);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #90a4ae;
+}
+.profile-details {
+  flex-grow: 1;
+  min-width: 0;
+}
+.profile-details .username,
+.profile-details .user-email {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+} /* Evita que textos largos rompan el diseño */
+.profile-details .username {
+  font-size: 1.15em;
+  font-weight: 600;
+}
+.profile-details .user-email {
+  font-size: 0.85em;
+  color: var(--color-texto-secundario);
+}
 
 /* La insignia circular que muestra el nivel del usuario. */
-.level-badge { background-color: var(--color-oscuro); display: flex; flex-direction: column; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; }
-.level-badge .level-number { color: var(--color-principal); font-size: 1em; font-weight: 700; }
-.level-badge .level-text { color: rgba(255, 255, 255, 0.7); font-size: 0.45em; letter-spacing: 1px; }
+.level-badge {
+  background-color: var(--color-oscuro);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.level-badge .level-number {
+  color: var(--color-principal);
+  font-size: 1em;
+  font-weight: 700;
+}
+.level-badge .level-text {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.45em;
+  letter-spacing: 1px;
+}
 
 /* La barra de progreso de experiencia (XP). */
-.xp-progress-bar { width: 100%; }
-.xp-text { display: flex; justify-content: space-between; font-size: 0.8em; color: var(--color-texto-secundario); margin-bottom: 5px; }
-.progress-bar-container { background-color: var(--color-bordes-sutiles); height: 8px; border-radius: 4px; overflow: hidden; width: 100%; }
-.progress-bar-fill { background-color: var(--color-principal); height: 100%; border-radius: 4px; transition: width 0.5s ease-in-out; } /* Animación suave para la barra */
+.xp-progress-bar {
+  width: 100%;
+}
+.xp-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8em;
+  color: var(--color-texto-secundario);
+  margin-bottom: 5px;
+}
+.progress-bar-container {
+  background-color: var(--color-bordes-sutiles);
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  width: 100%;
+}
+.progress-bar-fill {
+  background-color: var(--color-principal);
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease-in-out;
+} /* Animación suave para la barra */
 
 /* La sección de abajo con la racha y los botones. */
-.profile-actions { display: flex; align-items: center; gap: 10px; }
+.profile-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
 /* Estilos para el ícono de racha y su número. */
-.streak-display { 
-    display: flex;
-    align-items: center;
-    gap: 6px; /* Espacio entre el ícono y el número */
-    margin-right: auto; /* ¡Este es el truco! Empuja los botones hacia la derecha llenando el espacio. */
+.streak-display {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* Espacio entre el ícono y el número */
+  margin-right: auto; /* ¡Este es el truco! Empuja los botones hacia la derecha llenando el espacio. */
 }
-.streak-display .bxs-hot { 
-    font-size: 36px;
-    color: #ff6b35; 
+.streak-display .bxs-hot {
+  font-size: 36px;
+  color: #ff6b35;
 }
-.streak-display .streak-number { 
-    color: var(--color-oscuro); /* Número en color oscuro */
-    font-size: 1.2em;
-    font-weight: 700; 
+.streak-display .streak-number {
+  color: var(--color-oscuro); /* Número en color oscuro */
+  font-size: 1.2em;
+  font-weight: 700;
 }
 /* ESTILO PARA LA RACHA INACTIVA (APAGADA) */
 .streak-display.inactive .bxs-hot {
-    color: #adb5bd; /* Un gris neutro y suave, puedes usar var(--color-texto-secundario) si prefieres */
+  color: #adb5bd; /* Un gris neutro y suave, puedes usar var(--color-texto-secundario) si prefieres */
 }
 
 /* Cambiar el color del número a gris */
 .streak-display.inactive .streak-number {
-    color: #adb5bd;
+  color: #adb5bd;
 }
 
 /* Estilos generales para los botones "Ver Perfil" y "Cerrar Sesión". */
-.profile-actions button { 
-    width: 100%; 
-    padding: 10px 20px; 
-    border-radius: 50px; 
-    font-weight: 600; 
-    cursor: pointer; 
-    transition: var(--transicion-suave); 
-    font-size: 0.9em; 
-    background-color: transparent; 
-    border: 2px solid; 
-    white-space: nowrap; 
+.profile-actions button {
+  width: 100%;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transicion-suave);
+  font-size: 0.9em;
+  background-color: transparent;
+  border: 2px solid;
+  white-space: nowrap;
 }
-.btn-profile { border-color: var(--color-oscuro); color: var(--color-oscuro); }
-.btn-profile:hover { background-color: var(--color-oscuro); color: var(--color-blanco); }
-.btn-logout { border-color: var(--color-rojo-accion-suave); color: var(--color-rojo-accion-suave); }
-.btn-logout:hover { background-color: var(--color-rojo-accion-suave); color: var(--color-blanco); }
+.btn-profile {
+  border-color: var(--color-oscuro);
+  color: var(--color-oscuro);
+}
+.btn-profile:hover {
+  background-color: var(--color-oscuro);
+  color: var(--color-blanco);
+}
+.btn-logout {
+  border-color: var(--color-rojo-accion-suave);
+  color: var(--color-rojo-accion-suave);
+}
+.btn-logout:hover {
+  background-color: var(--color-rojo-accion-suave);
+  color: var(--color-blanco);
+}
 
 /* La tarjeta del clima. */
-.clima-section .card-body { padding: 15px 20px; }
-.clima-body-wrapper { display: flex; align-items: center; gap: 25px; width: 100%; }
-.clima-visual { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-.clima-icon { color: var(--color-acento-clima); font-size: 80px; line-height: 1; }
-.clima-status { font-size: 1.1em; font-weight: 500; color: var(--color-texto-secundario); text-align: center; }
-.clima-details { flex-grow: 1; display: flex; flex-direction: column; gap: 10px; }
-.detail-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; font-size: 1.1em; border-bottom: 1px solid var(--color-bordes-sutiles); }
-.detail-item:last-child { border-bottom: none; }
-.detail-item span:first-child { color: var(--color-texto-secundario); }
-.detail-item span:last-child { font-weight: 600; color: var(--color-texto-principal); }
+.clima-section .card-body {
+  padding: 15px 20px;
+}
+.clima-body-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  width: 100%;
+}
+.clima-visual {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.clima-icon {
+  color: var(--color-acento-clima);
+  font-size: 80px;
+  line-height: 1;
+}
+.clima-status {
+  font-size: 1.1em;
+  font-weight: 500;
+  color: var(--color-texto-secundario);
+  text-align: center;
+}
+.clima-details {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  font-size: 1.1em;
+  border-bottom: 1px solid var(--color-bordes-sutiles);
+}
+.detail-item:last-child {
+  border-bottom: none;
+}
+.detail-item span:first-child {
+  color: var(--color-texto-secundario);
+}
+.detail-item span:last-child {
+  font-weight: 600;
+  color: var(--color-texto-principal);
+}
 
 /* Las tarjetas de "Copa" y "Logo" en la barra lateral. */
-.copa-section, .logo-section { 
-    background-color: var(--color-oscuro); 
-    padding: 20px; 
-    text-align: center; 
-    display: flex; 
-    flex-direction: column; 
-    justify-content: center;
-    border-radius: var(--border-radius-suave);
-    min-height: 150px;
+.copa-section,
+.logo-section {
+  background-color: var(--color-oscuro);
+  padding: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: var(--border-radius-suave);
+  min-height: 150px;
 }
-.copa-section p { color: var(--color-texto-claro); }
-.copa-section img { max-width: 60%; max-height: 80px; object-fit: contain; margin: 10px auto; }
-.logo-section { 
-    background-color: var(--color-principal); 
-    min-height: 150px;
+.copa-section p {
+  color: var(--color-texto-claro);
 }
-.logo-section h2 { font-size: 1.1em; margin-bottom: 10px; }
-.logo-section h2, .logo-section p { color: var(--color-oscuro); }
-.placeholder-content { 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    text-align: center; 
-    flex-grow: 1; 
-    color: var(--color-texto-secundario); 
-    padding: 10px; 
+.copa-section img {
+  max-width: 60%;
+  max-height: 80px;
+  object-fit: contain;
+  margin: 10px auto;
+}
+.logo-section {
+  background-color: var(--color-principal);
+  min-height: 150px;
+}
+.logo-section h2 {
+  font-size: 1.1em;
+  margin-bottom: 10px;
+}
+.logo-section h2,
+.logo-section p {
+  color: var(--color-oscuro);
+}
+.placeholder-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex-grow: 1;
+  color: var(--color-texto-secundario);
+  padding: 10px;
 }
 
 /* --- Componentes del Contenido Principal --- */
-.reto-body, .top-body { 
-    justify-content: center; 
-    align-items: center; 
-    gap: 15px; 
-    text-align: center;
+.reto-body,
+.top-body {
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  text-align: center;
 }
-.reto-body p:first-child { font-size: 1.3em; font-weight: bold; color: var(--color-texto-principal); }
-.reto-body p:nth-child(2) { font-style: italic; color: var(--color-texto-secundario); }
-.reto-button { 
-    background-color: var(--color-oscuro); 
-    color: var(--color-blanco); 
-    border: none; 
-    padding: 10px 25px; 
-    border-radius: 25px; 
-    cursor: pointer; 
-    font-weight: bold; 
-    transition: var(--transicion-suave); 
-    margin-top: 10px;
+.reto-body p:first-child {
+  font-size: 1.3em;
+  font-weight: bold;
+  color: var(--color-texto-principal);
 }
-.reto-button:hover { background-color: #000; }
+.reto-body p:nth-child(2) {
+  font-style: italic;
+  color: var(--color-texto-secundario);
+}
+.reto-button {
+  background-color: var(--color-oscuro);
+  color: var(--color-blanco);
+  border: none;
+  padding: 10px 25px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: var(--transicion-suave);
+  margin-top: 10px;
+}
+.reto-button:hover {
+  background-color: #000;
+}
 
-.top-user-container { display: flex; justify-content: space-around; width: 100%; gap: 10px; align-items: center; }
-.top-user { display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; }
-.top-position { font-size: 1.2em; font-weight: bold; }
-.top-user-name { font-weight: 600; text-align: center; word-break: break-word; }
-.top-user-points { font-size: 0.85em; color: var(--color-texto-secundario); }
+.top-user-container {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  gap: 10px;
+  align-items: center;
+}
+.top-user {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+}
+.top-position {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+.top-user-name {
+  font-weight: 600;
+  text-align: center;
+  word-break: break-word;
+}
+.top-user-points {
+  font-size: 0.85em;
+  color: var(--color-texto-secundario);
+}
 
-.more-section { margin-top: auto; padding-top: 15px; width: 100%; text-align: center; border-top: 1px solid var(--color-bordes-sutiles); }
-.btn-show-all { background-color: var(--color-oscuro); color: white; text-decoration: none; padding: 10px 24px; border-radius: 24px; font-weight: 600; display: inline-block; transition: var(--transicion-suave); }
-.btn-show-all:hover { background-color: #000; }
+.more-section {
+  margin-top: auto;
+  padding-top: 15px;
+  width: 100%;
+  text-align: center;
+  border-top: 1px solid var(--color-bordes-sutiles);
+}
+.btn-show-all {
+  background-color: var(--color-oscuro);
+  color: white;
+  text-decoration: none;
+  padding: 10px 24px;
+  border-radius: 24px;
+  font-weight: 600;
+  display: inline-block;
+  transition: var(--transicion-suave);
+}
+.btn-show-all:hover {
+  background-color: #000;
+}
 
-.task-body { display: flex; flex-direction: column; gap: 15px; }
-.task-list { display: flex; flex-direction: column; gap: 10px; flex-grow: 1; }
-.task-item { background-color: var(--color-bordes-sutiles); border: 1px solid #ddd; padding: 12px 20px; border-radius: 8px; cursor: pointer; transition: var(--transicion-suave); text-align: left; border: none; font-family: 'Poppins', sans-serif; font-size: 1em; }
-.task-item:hover { background-color: #e9ecef; }
-.task-buttons { display: flex; justify-content: center; flex-shrink: 0; }
-.task-buttons a { background-color: var(--color-oscuro); color: var(--color-blanco); padding: 10px 24px; border-radius: 24px; font-weight: 600; text-decoration: none; transition: var(--transicion-suave); }
-.task-buttons a:hover { background-color: #000; }
+.task-body {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-grow: 1;
+}
+.task-item {
+  background-color: var(--color-bordes-sutiles);
+  border: 1px solid #ddd;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transicion-suave);
+  text-align: left;
+  border: none;
+  font-family: "Poppins", sans-serif;
+  font-size: 1em;
+}
+.task-item:hover {
+  background-color: #e9ecef;
+}
+.task-buttons {
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.task-buttons a {
+  background-color: var(--color-oscuro);
+  color: var(--color-blanco);
+  padding: 10px 24px;
+  border-radius: 24px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--transicion-suave);
+}
+.task-buttons a:hover {
+  background-color: #000;
+}
 
-.history-body { display: flex; flex-direction: column; gap: 15px; }
-.param-bar { display: grid; grid-template-columns: 2fr 1fr 1.5fr; gap: 10px; background-color: #f8f9fa; padding: 12px 15px; border-radius: 8px; font-weight: bold; margin-bottom: 10px; flex-shrink: 0; }
-.param-bar span:nth-child(2), .param-bar span:nth-child(3) { text-align: center; }
-.history-list { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; }
-.history-row { display: grid; grid-template-columns: 2fr 1fr 1.5fr; gap: 10px; padding: 12px 15px; border: 1px solid var(--color-bordes-sutiles); border-radius: 8px; align-items: center; }
-.history-row span:nth-child(2) { text-align: center; font-weight: 600; color: #28a745; }
-.history-row span:nth-child(3) { color: var(--color-texto-secundario); text-align: center; font-size: 0.9em; }
-.history-empty { flex-grow: 1; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--color-texto-secundario); padding: 20px; }
+.history-body {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.param-bar {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.5fr;
+  gap: 10px;
+  background-color: #f8f9fa;
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+.param-bar span:nth-child(2),
+.param-bar span:nth-child(3) {
+  text-align: center;
+}
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-grow: 1;
+}
+.history-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.5fr;
+  gap: 10px;
+  padding: 12px 15px;
+  border: 1px solid var(--color-bordes-sutiles);
+  border-radius: 8px;
+  align-items: center;
+}
+.history-row span:nth-child(2) {
+  text-align: center;
+  font-weight: 600;
+  color: #28a745;
+}
+.history-row span:nth-child(3) {
+  color: var(--color-texto-secundario);
+  text-align: center;
+  font-size: 0.9em;
+}
+.history-empty {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--color-texto-secundario);
+  padding: 20px;
+}
 
 /* =================================================================== */
 /* 5. MODAL (LA VENTANA EMERGENTE)                                   */
 /* =================================================================== */
 
 /* El fondo oscuro semitransparente que cubre toda la pantalla. */
-.modal { 
-    display: none; /* Oculto por defecto */
-    position: fixed; 
-    z-index: 1000; 
-    left: 0; top: 0; 
-    width: 100%; height: 100%; 
-    background-color: rgba(0,0,0,0.5); 
-    justify-content: center; 
-    align-items: center; 
+.modal {
+  display: none; /* Oculto por defecto */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
 }
 /* El contenedor blanco donde va el contenido del modal. */
-.modal-content { 
-    background-color: white; 
-    padding: 30px; 
-    border-radius: 24px; 
-    width: 90%; 
-    max-width: 500px; 
-    position: relative; 
-    box-shadow: var(--sombra-suave); 
-    max-height: 90vh;
-    overflow-y: auto;
+.modal-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 24px;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+  box-shadow: var(--sombra-suave);
+  max-height: 90vh;
+  overflow-y: auto;
 }
-.close-btn { 
-    position: absolute; 
-    top: 15px; right: 15px; 
-    background: transparent; 
-    border: none; 
-    font-size: 24px; 
-    cursor: pointer; 
-    color: var(--color-texto-secundario);
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--color-texto-secundario);
 }
-.close-btn:hover { color: var(--color-texto-principal); }
-#modalTitle { margin-bottom: 20px; color: var(--color-texto-principal); }
-.modal-content p { margin: 12px 0; }
-#deleteButton, #completeButton { 
-    padding: 10px 24px; 
-    border: none; 
-    border-radius: 24px; 
-    font-weight: 600; 
-    cursor: pointer; 
-    margin-top: 10px; 
-    margin-right: 10px;
-    transition: var(--transicion-suave);
+.close-btn:hover {
+  color: var(--color-texto-principal);
 }
-#deleteButton { background-color: var(--color-rojo-accion-suave); color: white; }
-#deleteButton:hover { background-color: #c0392b; }
-#completeButton { background-color: #5cb85c; color: white; }
-#completeButton:hover { background-color: #4cae4c; }
+#modalTitle {
+  margin-bottom: 20px;
+  color: var(--color-texto-principal);
+}
+.modal-content p {
+  margin: 12px 0;
+}
+#deleteButton,
+#completeButton {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 24px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  margin-right: 10px;
+  transition: var(--transicion-suave);
+}
+#deleteButton {
+  background-color: var(--color-rojo-accion-suave);
+  color: white;
+}
+#deleteButton:hover {
+  background-color: #c0392b;
+}
+#completeButton {
+  background-color: #5cb85c;
+  color: white;
+}
+#completeButton:hover {
+  background-color: #4cae4c;
+}

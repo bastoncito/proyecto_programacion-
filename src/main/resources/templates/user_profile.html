@@ -1,133 +1,200 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html
+  lang="es"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Perfil de Usuario</title>
-    <link rel="stylesheet" th:href="@{/styles/user_profile.css}">
-</head>
-<body>
+    <link rel="stylesheet" th:href="@{/styles/user_profile.css}" />
+  </head>
+  <body>
     <div class="container-header">
-        <div class="volver-section">
-            <form th:action="@{/home}" method="get" style="display: inline;">
-                <button type="submit" class="btn-volver">VOLVER</button>
-            </form>
-            <img class="logo" th:src="@{/images/logo_blanco2.png}" alt="logo">
+      <div class="volver-section">
+        <form th:action="@{/home}" method="get" style="display: inline">
+          <button type="submit" class="btn-volver">VOLVER</button>
+        </form>
+        <img class="logo" th:src="@{/images/logo_blanco2.png}" alt="logo" />
+      </div>
+      <div class="perfil-section">
+        <div class="user-lvl">
+          <p1 th:text="${usuarioLogueado.nivelExperiencia}">500</p1>
+          <p2>Nivel</p2>
         </div>
-        <div class="perfil-section">
-            <div class="user-lvl">
-                <p1 th:text="${usuarioLogueado.nivelExperiencia}">500</p1>
-                <p2>Nivel</p2>
-            </div>
-            <div class="user-info">
-                <p1 th:text="${usuarioLogueado.nombreUsuario}">user 123</p1>
-                <p2 th:text="${usuarioLogueado.correoElectronico}">correo@ejemplo.com</p2>
-            </div>
+        <div class="user-info">
+          <p1 th:text="${usuarioLogueado.nombreUsuario}">user 123</p1>
+          <p2 th:text="${usuarioLogueado.correoElectronico}"
+            >correo@ejemplo.com</p2
+          >
         </div>
+      </div>
     </div>
 
     <div class="container-main">
-        <div class="container-left">
-            <!-- SECCIÓN: Información Personal -->
-            <div class="container-body">
-                <h1>Información Personal</h1>
-                
-                <!-- Mensajes de éxito/error para información personal -->
-                <div th:if="${exitoInfo}" style="color: green; margin-bottom: 10px;">
-                    <p th:text="${exitoInfo}"></p>
-                </div>
-                <div th:if="${errorInfo}" style="color: red; margin-bottom: 10px;">
-                    <p th:text="${errorInfo}"></p>
-                </div>
-                <div th:if="${infoInfo}" style="color: orange; margin-bottom: 10px;">
-                    <p th:text="${infoInfo}"></p>
-                </div>
-                
-                <form class="info-form" th:action="@{/perfil/actualizar}" method="post">
-                    <div class="form-grupo">
-                        <label for="usuario">Usuario</label>
-                        <input type="text" id="usuario" name="usuario" 
-                            th:value="${usuarioLogueado.nombreUsuario}" 
-                            placeholder="Nombre actual del usuario"
-                            required>
-                    </div>
+      <div class="container-left">
+        <!-- SECCIÓN: Información Personal -->
+        <div class="container-body">
+          <h1>Información Personal</h1>
 
-                    <div class="form-grupo">
-                        <label for="correo">Correo</label>
-                        <input type="email" id="correo" name="correo" 
-                            th:value="${usuarioLogueado.correoElectronico}" 
-                            placeholder="correo@ejemplo.com"
-                            required>
-                    </div>
-                    
-                    <div class="form-grupo">
-                        <label for="ciudad">Ciudad</label>
-                        <input type="text" id="ciudad" name="ciudad"
-                            th:value="${usuarioLogueado.ciudad}"
-                            placeholder="Ej: Curico,CL">
-                    </div>
+          <!-- Mensajes de éxito/error para información personal -->
+          <div th:if="${exitoInfo}" style="color: green; margin-bottom: 10px">
+            <p th:text="${exitoInfo}"></p>
+          </div>
+          <div th:if="${errorInfo}" style="color: red; margin-bottom: 10px">
+            <p th:text="${errorInfo}"></p>
+          </div>
+          <div th:if="${infoInfo}" style="color: orange; margin-bottom: 10px">
+            <p th:text="${infoInfo}"></p>
+          </div>
 
-                    <button type="submit" class="btn-guardar">GUARDAR CAMBIOS</button>
-                </form>
+          <form
+            class="info-form"
+            th:action="@{/perfil/actualizar}"
+            method="post"
+          >
+            <div class="form-grupo">
+              <label for="usuario">Usuario</label>
+              <input
+                type="text"
+                id="usuario"
+                name="usuario"
+                th:value="${usuarioLogueado.nombreUsuario}"
+                placeholder="Nombre actual del usuario"
+                required
+              />
             </div>
 
-            <!-- SECCIÓN: Cambiar Contraseña -->
-            <div class="container-body">
-                <h1>Cambiar Contraseña</h1>
-                
-                <!-- Mensajes de éxito/error para contraseña -->
-                <div th:if="${exitoPassword}" style="color: green; margin-bottom: 10px;">
-                    <p th:text="${exitoPassword}"></p>
-                </div>
-                <div th:if="${errorPassword}" style="color: red; margin-bottom: 10px; white-space: pre-line;">
-                    <p th:text="${errorPassword}"></p>
-                </div>
-                
-                <form class="info-form" th:action="@{/perfil/cambiar-contrasena}" method="post">
-                    <div class="form-grupo">
-                        <label for="contrasena1">Contrasena Actual</label>
-                        <input type="password" id="contrasena1" name="contrasenaActual" required>
-                    </div>
-
-                    <div class="form-grupo">
-                        <label for="contrasena2">Nueva Contrasena</label>
-                        <input type="password" id="contrasena2" name="contrasenaNueva" required>
-                    </div>
-
-                    <div class="form-grupo">
-                        <label for="contrasena3">Confirmar Contrasena</label>
-                        <input type="password" id="contrasena3" name="contrasenaRepetida" required>
-                    </div>
-
-                    <button type="submit" class="btn-guardar">GUARDAR CAMBIOS</button>
-                </form>
+            <div class="form-grupo">
+              <label for="correo">Correo</label>
+              <input
+                type="email"
+                id="correo"
+                name="correo"
+                th:value="${usuarioLogueado.correoElectronico}"
+                placeholder="correo@ejemplo.com"
+                required
+              />
             </div>
+
+            <div class="form-grupo">
+              <label for="ciudad">Ciudad</label>
+              <input
+                type="text"
+                id="ciudad"
+                name="ciudad"
+                th:value="${usuarioLogueado.ciudad}"
+                placeholder="Ej: Curico,CL"
+              />
+            </div>
+
+            <button type="submit" class="btn-guardar">GUARDAR CAMBIOS</button>
+          </form>
         </div>
 
-        <div class="container-rigth">
-            <div class="container-description">
-                <h1>General</h1>
-                <p>Personaliza tu perfil: edita tu nombre de usuario, correo y detalles de tu cuenta. Además, si lo deseas, puedes actualizar tu contraseña en cualquier momento.</p>
+        <!-- SECCIÓN: Cambiar Contraseña -->
+        <div class="container-body">
+          <h1>Cambiar Contraseña</h1>
+
+          <!-- Mensajes de éxito/error para contraseña -->
+          <div
+            th:if="${exitoPassword}"
+            style="color: green; margin-bottom: 10px"
+          >
+            <p th:text="${exitoPassword}"></p>
+          </div>
+          <div
+            th:if="${errorPassword}"
+            style="color: red; margin-bottom: 10px; white-space: pre-line"
+          >
+            <p th:text="${errorPassword}"></p>
+          </div>
+
+          <form
+            class="info-form"
+            th:action="@{/perfil/cambiar-contrasena}"
+            method="post"
+          >
+            <div class="form-grupo">
+              <label for="contrasena1">Contrasena Actual</label>
+              <input
+                type="password"
+                id="contrasena1"
+                name="contrasenaActual"
+                required
+              />
             </div>
-            <div class="container-img">
-                <img th:src="@{/images/icon1.png}" alt="personaje1">
+
+            <div class="form-grupo">
+              <label for="contrasena2">Nueva Contrasena</label>
+              <input
+                type="password"
+                id="contrasena2"
+                name="contrasenaNueva"
+                required
+              />
             </div>
-            
-            <div class="container-buttons">
-                <form th:action="@{/logout}" method="post" style="width: 30%;">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                    <button type="submit" class="btn-cerrar_sesion" onclick="return confirm('¿Estás seguro de que quieres cerrar la sesión?');">
-                        CERRAR SESIÓN
-                    </button>
-                </form>
-                <form th:action="@{/perfil/borrar-cuenta}" method="post" style="width: 30%;">
-                    <button type="submit" class="btn-borrar_cuenta" onclick="return confirm('¡ATENCIÓN! ¿Estás seguro de que quieres eliminar tu cuenta? Esta acción es permanente y no se puede deshacer.');">
-                        BORRAR CUENTA
-                    </button>
-                </form>
-            </div> 
+
+            <div class="form-grupo">
+              <label for="contrasena3">Confirmar Contrasena</label>
+              <input
+                type="password"
+                id="contrasena3"
+                name="contrasenaRepetida"
+                required
+              />
+            </div>
+
+            <button type="submit" class="btn-guardar">GUARDAR CAMBIOS</button>
+          </form>
         </div>
+      </div>
+
+      <div class="container-rigth">
+        <div class="container-description">
+          <h1>General</h1>
+          <p>
+            Personaliza tu perfil: edita tu nombre de usuario, correo y detalles
+            de tu cuenta. Además, si lo deseas, puedes actualizar tu contraseña
+            en cualquier momento.
+          </p>
+        </div>
+        <div class="container-img">
+          <img th:src="@{/images/icon1.png}" alt="personaje1" />
+        </div>
+
+        <div class="container-buttons">
+          <form th:action="@{/logout}" method="post" style="width: 30%">
+            <input
+              type="hidden"
+              th:name="${_csrf.parameterName}"
+              th:value="${_csrf.token}"
+            />
+            <button
+              type="submit"
+              class="btn-cerrar_sesion"
+              onclick="return confirm('¿Estás seguro de que quieres cerrar la sesión?');"
+            >
+              CERRAR SESIÓN
+            </button>
+          </form>
+          <form
+            th:action="@{/perfil/borrar-cuenta}"
+            method="post"
+            style="width: 30%"
+          >
+            <button
+              type="submit"
+              class="btn-borrar_cuenta"
+              onclick="return confirm('¡ATENCIÓN! ¿Estás seguro de que quieres eliminar tu cuenta? Esta acción es permanente y no se puede deshacer.');"
+            >
+              BORRAR CUENTA
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
     <div th:replace="~{fragments :: navbar}"></div>
-</body>
+  </body>
 </html>

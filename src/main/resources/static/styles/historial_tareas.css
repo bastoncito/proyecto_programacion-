@@ -7,38 +7,37 @@
   Esto nos permite mantener un diseño consistente y facilita futuros cambios.
 */
 :root {
-    /* Paleta de colores principal */
-    --color-principal: #FFC839;
-    --color-principal-hover: #e6b332;
-    --color-oscuro: #212529;
-    --color-blanco: #fff;
-    --color-claro: #f5f5f5; /* Fondo general de la página */
-    
-    /* Colores de apoyo y estado */
-    --color-bordes-sutiles: #eef2f5;
-    --color-verde-exito: #28a745;
-    
-    /* Colores de texto */
-    --color-texto-principal: var(--color-oscuro);
-    --color-texto-secundario: #868e96;
+  /* Paleta de colores principal */
+  --color-principal: #ffc839;
+  --color-principal-hover: #e6b332;
+  --color-oscuro: #212529;
+  --color-blanco: #fff;
+  --color-claro: #f5f5f5; /* Fondo general de la página */
 
-    /* Estilos reutilizables */
-    --sombra-suave: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --border-radius-suave: 12px;
-    --transicion-suave: all 0.3s ease;
+  /* Colores de apoyo y estado */
+  --color-bordes-sutiles: #eef2f5;
+  --color-verde-exito: #28a745;
+
+  /* Colores de texto */
+  --color-texto-principal: var(--color-oscuro);
+  --color-texto-secundario: #868e96;
+
+  /* Estilos reutilizables */
+  --sombra-suave: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --border-radius-suave: 12px;
+  --transicion-suave: all 0.3s ease;
 }
 
 /* Estilos base para todo el cuerpo del documento */
 body {
-    font-family: 'Poppins', sans-serif;
-    background-color: var(--color-claro);
-    color: var(--color-texto-principal);
-    margin: 0;
-    /* Dejamos un espacio en la parte inferior para que la barra de navegación
+  font-family: "Poppins", sans-serif;
+  background-color: var(--color-claro);
+  color: var(--color-texto-principal);
+  margin: 0;
+  /* Dejamos un espacio en la parte inferior para que la barra de navegación
        no oculte el contenido en dispositivos móviles. */
-    padding-bottom: 80px;
+  padding-bottom: 80px;
 }
-
 
 /* =================================================================== */
 /* 2. ESTRUCTURA PRINCIPAL (LAYOUT)                                  */
@@ -46,11 +45,11 @@ body {
 
 /* --- Layout para Móviles (Mobile-First) --- */
 .grid-container {
-    display: grid;
-    grid-template-columns: 1fr; /* Por defecto, todo es una sola columna */
-    gap: 15px;
-    padding: 15px;
-    box-sizing: border-box; /* Asegura que el padding no afecte el ancho total */
+  display: grid;
+  grid-template-columns: 1fr; /* Por defecto, todo es una sola columna */
+  gap: 15px;
+  padding: 15px;
+  box-sizing: border-box; /* Asegura que el padding no afecte el ancho total */
 }
 
 /* 
@@ -58,8 +57,9 @@ body {
   se comporten como hijos directos del .grid-container, ignorando a sus padres.
   'display: contents' logra exactamente eso.
 */
-.left-column, .right-column {
-    display: contents;
+.left-column,
+.right-column {
+  display: contents;
 }
 
 /* 
@@ -67,91 +67,101 @@ body {
   SOLO en la vista móvil, sin alterar el orden en el HTML.
   Esto nos permite, por ejemplo, mostrar la bienvenida primero en móvil.
 */
-.welcome-card   { order: 1; }
-.history-card   { order: 2; }
-.summaries-card { order: 3; }
-.stats-card     { order: 4; }
-
+.welcome-card {
+  order: 1;
+}
+.history-card {
+  order: 2;
+}
+.summaries-card {
+  order: 3;
+}
+.stats-card {
+  order: 4;
+}
 
 /* --- Layout para Escritorio (a partir de 1024px) --- */
 @media (min-width: 1024px) {
-    body {
-        padding-bottom: 0; /* En escritorio no hay navbar inferior, quitamos el padding */
-    }
-    
-    .grid-container {
-        /* Cambiamos a un layout de dos columnas */
-        grid-template-columns: 2fr 1fr; /* La columna izquierda es el doble de ancha que la derecha */
-        gap: 20px;
-        padding: 20px;
-        align-items: start; /* Alinea los contenedores de las columnas en la parte superior */
-    }
+  body {
+    padding-bottom: 0; /* En escritorio no hay navbar inferior, quitamos el padding */
+  }
 
-    /* Restauramos las columnas para que actúen como contenedores flex */
-    .left-column, .right-column {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
+  .grid-container {
+    /* Cambiamos a un layout de dos columnas */
+    grid-template-columns: 2fr 1fr; /* La columna izquierda es el doble de ancha que la derecha */
+    gap: 20px;
+    padding: 20px;
+    align-items: start; /* Alinea los contenedores de las columnas en la parte superior */
+  }
 
-    /* La columna derecha se quedará fija al hacer scroll (efecto "sticky") */
-    .right-column {
-        position: sticky;
-        top: 20px;
-    }
+  /* Restauramos las columnas para que actúen como contenedores flex */
+  .left-column,
+  .right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
 
-    /* Anulamos el orden visual de móvil para que las tarjetas vuelvan a su
+  /* La columna derecha se quedará fija al hacer scroll (efecto "sticky") */
+  .right-column {
+    position: sticky;
+    top: 20px;
+  }
+
+  /* Anulamos el orden visual de móvil para que las tarjetas vuelvan a su
        orden natural dentro de sus respectivas columnas. */
-    .welcome-card, .history-card, .summaries-card, .stats-card {
-        order: unset;
-    }
+  .welcome-card,
+  .history-card,
+  .summaries-card,
+  .stats-card {
+    order: unset;
+  }
 }
-
 
 /* =================================================================== */
 /* 3. ESTILO GENERAL DE LAS TARJETAS (CARDS)                         */
 /* =================================================================== */
 
 .card {
-    display: flex;
-    flex-direction: column;
-    background-color: var(--color-blanco);
-    border-radius: var(--border-radius-suave);
-    box-shadow: var(--sombra-suave);
-    overflow: hidden; /* Asegura que el contenido respete los bordes redondeados */
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-blanco);
+  border-radius: var(--border-radius-suave);
+  box-shadow: var(--sombra-suave);
+  overflow: hidden; /* Asegura que el contenido respete los bordes redondeados */
 }
 
 .card-header {
-    background-color: var(--color-principal);
-    color: var(--color-oscuro);
-    padding: 15px 20px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap; /* Permite que los elementos se ajusten en pantallas pequeñas */
-    gap: 10px;
+  background-color: var(--color-principal);
+  color: var(--color-oscuro);
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* Permite que los elementos se ajusten en pantallas pequeñas */
+  gap: 10px;
 }
 
-.card-header h1, .card-header h2 {
-    margin: 0;
-    font-size: 1.2em;
-    font-weight: 600;
+.card-header h1,
+.card-header h2 {
+  margin: 0;
+  font-size: 1.2em;
+  font-weight: 600;
 }
 
 .card-body {
-    padding: 20px;
-    flex-grow: 1; /* Permite que el cuerpo de la tarjeta ocupe el espacio disponible */
+  padding: 20px;
+  flex-grow: 1; /* Permite que el cuerpo de la tarjeta ocupe el espacio disponible */
 }
 
 .card-body p {
-    margin: 0 0 10px 0;
-    line-height: 1.6;
+  margin: 0 0 10px 0;
+  line-height: 1.6;
 }
 .card-body p:last-child {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
-
 
 /* =================================================================== */
 /* 4. ESTILOS ESPECÍFICOS POR TARJETA                                */
@@ -159,199 +169,219 @@ body {
 
 /* --- Tarjeta de Bienvenida --- */
 .welcome-content {
-    display: flex;
-    flex-direction: column; /* En móvil, texto e imagen se apilan */
-    align-items: center;
-    text-align: center;
-    gap: 20px;
+  display: flex;
+  flex-direction: column; /* En móvil, texto e imagen se apilan */
+  align-items: center;
+  text-align: center;
+  gap: 20px;
 }
-.welcome-text { flex: 2; }
-.welcome-image { flex: 1; }
+.welcome-text {
+  flex: 2;
+}
+.welcome-image {
+  flex: 1;
+}
 .welcome-image img {
-    max-width: 100%;
-    height: auto;
-    max-height: 120px;
+  max-width: 100%;
+  height: auto;
+  max-height: 120px;
 }
 
 /* En escritorio, el texto y la imagen se ponen uno al lado del otro */
 @media (min-width: 1024px) {
-    .welcome-content {
-        flex-direction: row;
-        text-align: left;
-    }
-    .welcome-image img {
-        max-height: 140px;
-    }
+  .welcome-content {
+    flex-direction: row;
+    text-align: left;
+  }
+  .welcome-image img {
+    max-height: 140px;
+  }
 }
 
 /* --- Tarjeta de Historial Completo --- */
 .history-list-container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
 .param-bar {
-    display: grid;
-    grid-template-columns: 2.5fr 1fr 1.5fr;
-    gap: 15px;
-    background-color: #f8f9fa;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-weight: bold;
-    color: var(--color-texto-secundario);
-    font-size: 0.9em;
-    text-transform: uppercase;
+  display: grid;
+  grid-template-columns: 2.5fr 1fr 1.5fr;
+  gap: 15px;
+  background-color: #f8f9fa;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  color: var(--color-texto-secundario);
+  font-size: 0.9em;
+  text-transform: uppercase;
 }
 
 .history-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 10px;
-    max-height: 60vh; /* Límite de altura para que la lista no sea infinita */
-    overflow-y: auto; /* Habilita el scroll vertical si es necesario */
-    padding-right: 10px; /* Espacio para la barra de scroll */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+  max-height: 60vh; /* Límite de altura para que la lista no sea infinita */
+  overflow-y: auto; /* Habilita el scroll vertical si es necesario */
+  padding-right: 10px; /* Espacio para la barra de scroll */
 }
 
 .history-row {
-    display: grid;
-    grid-template-columns: 2.5fr 1fr 1.5fr;
-    gap: 15px;
-    padding: 15px 20px;
-    border: 1px solid var(--color-bordes-sutiles);
-    border-radius: 8px;
-    align-items: center;
+  display: grid;
+  grid-template-columns: 2.5fr 1fr 1.5fr;
+  gap: 15px;
+  padding: 15px 20px;
+  border: 1px solid var(--color-bordes-sutiles);
+  border-radius: 8px;
+  align-items: center;
 }
-.history-row span:first-child { font-weight: 600; }
+.history-row span:first-child {
+  font-weight: 600;
+}
 .history-row .exp-points {
-    font-weight: 700;
-    color: var(--color-verde-exito);
-    text-align: center;
+  font-weight: 700;
+  color: var(--color-verde-exito);
+  text-align: center;
 }
 .history-row span:last-child {
-    color: var(--color-texto-secundario);
-    font-size: 0.9em;
-    text-align: right;
+  color: var(--color-texto-secundario);
+  font-size: 0.9em;
+  text-align: right;
 }
 
 /* Mensaje para cuando el historial está vacío */
 .history-empty {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--color-texto-secundario);
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--color-texto-secundario);
 }
 .history-empty i {
-    font-size: 3rem;
-    margin-bottom: 10px;
+  font-size: 3rem;
+  margin-bottom: 10px;
 }
 
 /* Estilo para la barra de scroll de la lista */
-.history-list::-webkit-scrollbar { width: 6px; }
-.history-list::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
-.history-list::-webkit-scrollbar-thumb { background: var(--color-principal); border-radius: 10px; }
-
+.history-list::-webkit-scrollbar {
+  width: 6px;
+}
+.history-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+.history-list::-webkit-scrollbar-thumb {
+  background: var(--color-principal);
+  border-radius: 10px;
+}
 
 /* --- Tarjeta de Resúmenes --- */
 .historial-tabs {
-    display: flex;
-    gap: 10px;
+  display: flex;
+  gap: 10px;
 }
 .historial-tabs a {
-    padding: 8px 16px;
-    text-decoration: none;
-    color: var(--color-oscuro);
-    font-weight: 500;
-    border-radius: 20px;
-    background-color: rgba(255, 255, 255, 0.5);
-    transition: var(--transicion-suave);
+  padding: 8px 16px;
+  text-decoration: none;
+  color: var(--color-oscuro);
+  font-weight: 500;
+  border-radius: 20px;
+  background-color: rgba(255, 255, 255, 0.5);
+  transition: var(--transicion-suave);
 }
 .historial-tabs a:hover {
-    background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 0.9);
 }
 .historial-tabs a.active {
-    background-color: var(--color-oscuro);
-    color: var(--color-blanco);
-    font-weight: 600;
+  background-color: var(--color-oscuro);
+  color: var(--color-blanco);
+  font-weight: 600;
 }
 
 /* Contenedor para cuando aún no hay resúmenes que mostrar */
 .summary-placeholder {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--color-texto-secundario);
-    min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--color-texto-secundario);
+  min-height: 250px;
 }
 .summary-placeholder i {
-    font-size: 4rem;
-    margin-bottom: 15px;
-    color: var(--color-principal);
+  font-size: 4rem;
+  margin-bottom: 15px;
+  color: var(--color-principal);
 }
 .summary-placeholder h2 {
-    color: var(--color-texto-principal);
-    margin-bottom: 10px;
+  color: var(--color-texto-principal);
+  margin-bottom: 10px;
 }
-
 
 /* --- Tarjeta de Estadísticas --- */
 .stats-card .card-body {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .stat-item {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 .stat-icon-wrapper {
-    flex-shrink: 0;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: var(--color-bordes-sutiles);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  flex-shrink: 0;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: var(--color-bordes-sutiles);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .stat-icon-wrapper i {
-    font-size: 24px;
-    color: var(--color-texto-secundario);
+  font-size: 24px;
+  color: var(--color-texto-secundario);
 }
 
 /* Colores específicos para cada icono de estadística */
-.stat-item:nth-child(1) .stat-icon-wrapper i { color: #f1c40f; } /* Trofeo */
-.stat-item:nth-child(2) .stat-icon-wrapper i { color: var(--color-verde-exito); } /* Estrella */
-.stat-item:nth-child(3) .stat-icon-wrapper i { color: #8e44ad; } /* Nivel */
-.stat-item:nth-child(4) .stat-icon-wrapper i { color: #e74c3c; } /* Racha */
+.stat-item:nth-child(1) .stat-icon-wrapper i {
+  color: #f1c40f;
+} /* Trofeo */
+.stat-item:nth-child(2) .stat-icon-wrapper i {
+  color: var(--color-verde-exito);
+} /* Estrella */
+.stat-item:nth-child(3) .stat-icon-wrapper i {
+  color: #8e44ad;
+} /* Nivel */
+.stat-item:nth-child(4) .stat-icon-wrapper i {
+  color: #e74c3c;
+} /* Racha */
 
 .stat-text {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .stat-label {
-    font-size: 0.9em;
-    font-weight: 500;
-    color: var(--color-texto-secundario);
-    line-height: 1.2;
+  font-size: 0.9em;
+  font-weight: 500;
+  color: var(--color-texto-secundario);
+  line-height: 1.2;
 }
 
 .stat-value {
-    font-size: 1.4em;
-    font-weight: 700;
-    line-height: 1.2;
+  font-size: 1.4em;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .stat-value-xp {
-    color: var(--color-verde-exito);
+  color: var(--color-verde-exito);
 }
 
 /* 
@@ -360,9 +390,9 @@ body {
   la cual es añadida dinámicamente desde el HTML con Thymeleaf.
 */
 .stat-item.inactive .stat-icon-wrapper i {
-    color: var(--color-texto-secundario); /* Cambia el color del icono a gris */
+  color: var(--color-texto-secundario); /* Cambia el color del icono a gris */
 }
 
 .stat-item.inactive .stat-value {
-    color: var(--color-texto-secundario); /* Cambia el color del número a gris */
+  color: var(--color-texto-secundario); /* Cambia el color del número a gris */
 }

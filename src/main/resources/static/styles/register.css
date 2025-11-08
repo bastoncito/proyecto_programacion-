@@ -1,131 +1,131 @@
 /* Reset básico */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 /* Fondo general */
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-image: url('/images/fondo.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-image: url("/images/fondo.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 /* Contenedor centrado */
 .container {
-    display: flex;
-    background: #fff;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-    width: 900px;
-    height: 700px;
-    border-radius: 25px;
-    padding: 0 35px 0 35px;
-    overflow: hidden;
+  display: flex;
+  background: #fff;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  width: 900px;
+  height: 700px;
+  border-radius: 25px;
+  padding: 0 35px 0 35px;
+  overflow: hidden;
 }
 
 /* ===== SECCIÓN DEL REGISTER ===== */
 .register-section {
-    width:35%;
-    padding: 0 25px 0 25px;
-    flex: 1;
-    background-color: #fff;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    border-radius: 25px 0 0 25px;
-    position: relative;
+  width: 35%;
+  padding: 0 25px 0 25px;
+  flex: 1;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 25px 0 0 25px;
+  position: relative;
 }
 
 .register-section h1 {
-    color: #333;
-    font-size: 24px;
-    margin-bottom: 30px;
-    text-align: center;
-    font-weight: 600;
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: 600;
 }
 
 /* Formulario */
 .register-section form {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .register-section label {
-    color: #666;
-    font-size: 14px;
-    margin-bottom: 5px;
-    margin-left: 5px;
-    font-weight: 500;
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 5px;
+  margin-left: 5px;
+  font-weight: 500;
 }
 
 /* Contenedor para cada input con icono */
 .input-container {
-    position: relative;
-    margin-bottom: 20px;
+  position: relative;
+  margin-bottom: 20px;
 }
 
 .register-section input {
-    width: 100%;
-    padding: 12px 40px 12px 15px;
-    border: none;
-    border-radius: 8px;
-    background-color: #f0f0f0;
-    font-size: 14px;
-    outline: none;
-    color: #333;
+  width: 100%;
+  padding: 12px 40px 12px 15px;
+  border: none;
+  border-radius: 8px;
+  background-color: #f0f0f0;
+  font-size: 14px;
+  outline: none;
+  color: #333;
 }
 
 .register-section input::placeholder {
-    color: #999;
+  color: #999;
 }
 
 /* Iconos de Boxicons - posicionados relativos a cada input */
 .input-container i {
-    position: absolute;
-    right: 10px;
-    top: 12px;
-    color: #666;
-    font-size: 18px;
-    pointer-events: none;
+  position: absolute;
+  right: 10px;
+  top: 12px;
+  color: #666;
+  font-size: 18px;
+  pointer-events: none;
 }
 
 /* Enlace de contraseña olvidada */
 .register-section a {
-    color: #666;
-    text-decoration: none;
-    font-size: 12px;
-    text-align: center;
-    margin-bottom: 25px;
-    transition: color 0.3s;
+  color: #666;
+  text-decoration: none;
+  font-size: 12px;
+  text-align: center;
+  margin-bottom: 25px;
+  transition: color 0.3s;
 }
 
 .register-section a:hover {
-    color: #333;
-    text-decoration: underline;
+  color: #333;
+  text-decoration: underline;
 }
 
 /* Botón de register */
 .register-section button {
-    width: 100%;
-    padding: 12px;
-    background-color: #FFC839;
-    border: none;
-    border-radius: 25px;
-    color: #333;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s;
+  width: 100%;
+  padding: 12px;
+  background-color: #ffc839;
+  border: none;
+  border-radius: 25px;
+  color: #333;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .register-section button:hover {
-    background-color: #e6b332;
+  background-color: #e6b332;
 }

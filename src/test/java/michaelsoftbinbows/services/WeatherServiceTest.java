@@ -25,52 +25,52 @@ import org.springframework.web.client.RestTemplate;
 @ExtendWith(MockitoExtension.class)
 class WeatherServiceTest {
 
-    @Mock private RestTemplate restTemplate;
+  @Mock private RestTemplate restTemplate;
 
-    @InjectMocks private WeatherService weatherService;
+  @InjectMocks private WeatherService weatherService;
 
-    private static final String API_KEY = "test-api-key";
+  private static final String API_KEY = "test-api-key";
 
-    @BeforeEach
-    void setUp() {
-        ReflectionTestUtils.setField(weatherService, "apiKey", API_KEY);
-    }
+  @BeforeEach
+  void setUp() {
+    ReflectionTestUtils.setField(weatherService, "apiKey", API_KEY);
+  }
 
-    /** Test 1: Verifica que getWeatherByCity retorna los datos del clima correctamente. */
-    @Test
-    void testGetWeatherByCitySuccess() {
-        String city = "Santiago";
-        String expectedUrl =
-            "https://api.openweathermap.org/data/2.5/weather?q="
-                + city
-                + "&appid="
-                + API_KEY
-                + "&units=metric&lang=es";
-        String mockResponse = "{\"main\":{\"temp\":25.5},\"weather\":[{\"description\":\"soleado\"}]}";
+  /** Test 1: Verifica que getWeatherByCity retorna los datos del clima correctamente. */
+  @Test
+  void testGetWeatherByCitySuccess() {
+    String city = "Santiago";
+    String expectedUrl =
+        "https://api.openweathermap.org/data/2.5/weather?q="
+            + city
+            + "&appid="
+            + API_KEY
+            + "&units=metric&lang=es";
+    String mockResponse = "{\"main\":{\"temp\":25.5},\"weather\":[{\"description\":\"soleado\"}]}";
 
-        ResponseEntity<String> responseEntity = new ResponseEntity<>(mockResponse, HttpStatus.OK);
-        when(restTemplate.getForEntity(expectedUrl, String.class)).thenReturn(responseEntity);
+    ResponseEntity<String> responseEntity = new ResponseEntity<>(mockResponse, HttpStatus.OK);
+    when(restTemplate.getForEntity(expectedUrl, String.class)).thenReturn(responseEntity);
 
-        String result = weatherService.getWeatherByCity(city);
+    String result = weatherService.getWeatherByCity(city);
 
-        assertNotNull(result);
-        assertEquals(mockResponse, result);
-        verify(restTemplate, times(1)).getForEntity(expectedUrl, String.class);
-    }
+    assertNotNull(result);
+    assertEquals(mockResponse, result);
+    verify(restTemplate, times(1)).getForEntity(expectedUrl, String.class);
+  }
 
-    /** Test 2: Verifica que getFilteredWeatherByCity retorna los datos filtrados correctamente. */
-    @Test
-    void testGetFilteredWeatherByCitySuccess() {
-        String city = "Valparaíso";
-        String expectedUrl =
-            "https://api.openweathermap.org/data/2.5/weather?q="
-                + city
-                + "&appid="
-                + API_KEY
-                + "&units=metric&lang=es";
+  /** Test 2: Verifica que getFilteredWeatherByCity retorna los datos filtrados correctamente. */
+  @Test
+  void testGetFilteredWeatherByCitySuccess() {
+    String city = "Valparaíso";
+    String expectedUrl =
+        "https://api.openweathermap.org/data/2.5/weather?q="
+            + city
+            + "&appid="
+            + API_KEY
+            + "&units=metric&lang=es";
 
-        String mockResponse =
-            """
+    String mockResponse =
+        """
                 {
                     "main": {
                         "temp": 18.5,
@@ -89,40 +89,40 @@ class WeatherServiceTest {
                 }
                 """;
 
-        ResponseEntity<String> responseEntity = new ResponseEntity<>(mockResponse, HttpStatus.OK);
-        when(restTemplate.getForEntity(expectedUrl, String.class)).thenReturn(responseEntity);
+    ResponseEntity<String> responseEntity = new ResponseEntity<>(mockResponse, HttpStatus.OK);
+    when(restTemplate.getForEntity(expectedUrl, String.class)).thenReturn(responseEntity);
 
-        String result = weatherService.getFilteredWeatherByCity(city);
+    String result = weatherService.getFilteredWeatherByCity(city);
 
-        assertNotNull(result);
-        assertTrue(result.contains("temperatura"));
-        assertTrue(result.contains("clima"));
-        assertTrue(result.contains("humedad"));
-        assertTrue(result.contains("viento"));
-        assertTrue(result.contains("hora_actual"));
-        assertTrue(result.contains("18.5"));
-        assertTrue(result.contains("75"));
-        assertTrue(result.contains("5.2"));
-        assertTrue(result.contains("parcialmente nublado"));
+    assertNotNull(result);
+    assertTrue(result.contains("temperatura"));
+    assertTrue(result.contains("clima"));
+    assertTrue(result.contains("humedad"));
+    assertTrue(result.contains("viento"));
+    assertTrue(result.contains("hora_actual"));
+    assertTrue(result.contains("18.5"));
+    assertTrue(result.contains("75"));
+    assertTrue(result.contains("5.2"));
+    assertTrue(result.contains("parcialmente nublado"));
 
-        verify(restTemplate, times(1)).getForEntity(expectedUrl, String.class);
-    }
+    verify(restTemplate, times(1)).getForEntity(expectedUrl, String.class);
+  }
 
-    /** Test 3: Verifica que funciona con diferentes ciudades. */
-    @Test
-    void testGetWeatherByCityWithDifferentCity() {
+  /** Test 3: Verifica que funciona con diferentes ciudades. */
+  @Test
+  void testGetWeatherByCityWithDifferentCity() {
 
-        String city = "Concepción";
+    String city = "Concepción";
 
-        String expectedUrl =
-            "https://api.openweathermap.org/data/2.5/weather?q="
-                + city
-                + "&appid="
-                + API_KEY
-                + "&units=metric&lang=es";
+    String expectedUrl =
+        "https://api.openweathermap.org/data/2.5/weather?q="
+            + city
+            + "&appid="
+            + API_KEY
+            + "&units=metric&lang=es";
 
-        String mockResponse =
-            """
+    String mockResponse =
+        """
                 {
                     "main": {
                         "temp": 15.0,
@@ -141,39 +141,39 @@ class WeatherServiceTest {
                 }
                 """;
 
-        ResponseEntity<String> responseEntity = new ResponseEntity<>(mockResponse, HttpStatus.OK);
-        when(restTemplate.getForEntity(expectedUrl, String.class)).thenReturn(responseEntity);
-        
-        String result = weatherService.getFilteredWeatherByCity(city);
-        
-        assertNotNull(result);
-        assertTrue(result.contains("temperatura"));
-        assertTrue(result.contains("15.0"));
-        assertTrue(result.contains("80"));
-        assertTrue(result.contains("lluvia ligera"));
-        assertTrue(result.contains("8.5"));
+    ResponseEntity<String> responseEntity = new ResponseEntity<>(mockResponse, HttpStatus.OK);
+    when(restTemplate.getForEntity(expectedUrl, String.class)).thenReturn(responseEntity);
 
-        verify(restTemplate, times(1)).getForEntity(expectedUrl, String.class);
-    }
+    String result = weatherService.getFilteredWeatherByCity(city);
 
-    /** Test 4: Verifica que se lanza excepción cuando la API falla. */
-    @Test
-    void testGetWeatherByCityThrowsException() {
-        String city = "CiudadInexistente";
-        String expectedUrl =
-            "https://api.openweathermap.org/data/2.5/weather?q="
-                + city
-                + "&appid="
-                + API_KEY
-                + "&units=metric&lang=es";
+    assertNotNull(result);
+    assertTrue(result.contains("temperatura"));
+    assertTrue(result.contains("15.0"));
+    assertTrue(result.contains("80"));
+    assertTrue(result.contains("lluvia ligera"));
+    assertTrue(result.contains("8.5"));
 
-        when(restTemplate.getForEntity(expectedUrl, String.class))
-            .thenThrow(new RestClientException("API Error"));
+    verify(restTemplate, times(1)).getForEntity(expectedUrl, String.class);
+  }
 
-        WeatherApiException exception =
-            assertThrows(WeatherApiException.class, () -> weatherService.getWeatherByCity(city));
+  /** Test 4: Verifica que se lanza excepción cuando la API falla. */
+  @Test
+  void testGetWeatherByCityThrowsException() {
+    String city = "CiudadInexistente";
+    String expectedUrl =
+        "https://api.openweathermap.org/data/2.5/weather?q="
+            + city
+            + "&appid="
+            + API_KEY
+            + "&units=metric&lang=es";
 
-        assertEquals("No se pudo obtener el clima para la ciudad indicada.", exception.getMessage());
-        verify(restTemplate, times(1)).getForEntity(expectedUrl, String.class);
-    }
+    when(restTemplate.getForEntity(expectedUrl, String.class))
+        .thenThrow(new RestClientException("API Error"));
+
+    WeatherApiException exception =
+        assertThrows(WeatherApiException.class, () -> weatherService.getWeatherByCity(city));
+
+    assertEquals("No se pudo obtener el clima para la ciudad indicada.", exception.getMessage());
+    verify(restTemplate, times(1)).getForEntity(expectedUrl, String.class);
+  }
 }

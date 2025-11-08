@@ -1,173 +1,270 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html
+  lang="es"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ranking de Jugadores</title>
-    
+
     <!-- Estilos y fuentes unificadas -->
-    <link rel="stylesheet" th:href="@{/styles/ranking.css}">
-    <link rel="stylesheet" th:href="@{/styles/navbar.css}">
+    <link rel="stylesheet" th:href="@{/styles/ranking.css}" />
+    <link rel="stylesheet" th:href="@{/styles/navbar.css}" />
     <!-- Iconos de Boxicons -->
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
     <!-- Fuente Poppins de Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
     <main class="grid-container">
-        <!-- Columna Izquierda: Contenido principal (Ranking y Requisitos) -->
-        <div class="left-column">
-            <!-- Tarjeta de Ranking del Mes -->
-            <section class="card ranking-card">
-                <div class="card-header">
-                    <h1>Ranking del Mes</h1>
-                    <h2 class="subtitle" th:text="${tituloMesActual}">Noviembre 2025</h2>
+      <!-- Columna Izquierda: Contenido principal (Ranking y Requisitos) -->
+      <div class="left-column">
+        <!-- Tarjeta de Ranking del Mes -->
+        <section class="card ranking-card">
+          <div class="card-header">
+            <h1>Ranking del Mes</h1>
+            <h2 class="subtitle" th:text="${tituloMesActual}">
+              Noviembre 2025
+            </h2>
+          </div>
+          <div class="card-body">
+            <!-- Estado vacio: sin jugadores en ranking -->
+            <div th:if="${#lists.isEmpty(listaRanking)}" class="ranking-empty">
+              <i class="bx bx-ghost"></i>
+              <p>
+                Aún no hay nadie en el ranking. <br />¡Completa tareas para ser
+                el primero!
+              </p>
+            </div>
+            <!-- Contenedor del ranking cuando hay datos -->
+            <div
+              th:unless="${#lists.isEmpty(listaRanking)}"
+              class="ranking-list-container"
+            >
+              <div class="param-bar">
+                <span>#</span>
+                <span>Nombre</span>
+                <span>Puntos</span>
+                <span>Liga</span>
+              </div>
+              <!-- Lista de jugadores en el ranking -->
+              <div class="ranking-list">
+                <div
+                  class="ranking-row"
+                  th:each="usuario, stat : ${listaRanking}"
+                >
+                  <span class="rank-number" th:text="${stat.count}">1</span>
+                  <span class="rank-name" th:text="${usuario.nombreUsuario}"
+                    >Matias Gomez</span
+                  >
+                  <span
+                    class="rank-points"
+                    th:text="${usuario.puntosLiga} + ' Pts'"
+                    >4150 Pts</span
+                  >
+                  <span
+                    class="rank-league"
+                    th:text="${usuario.liga}"
+                    th:classappend="'liga-' + ${#strings.toLowerCase(usuario.liga)}"
+                  >
+                    Platino
+                  </span>
                 </div>
-                <div class="card-body">
-                    <!-- Estado vacio: sin jugadores en ranking -->
-                    <div th:if="${#lists.isEmpty(listaRanking)}" class="ranking-empty">
-                        <i class='bx bx-ghost'></i>
-                        <p>Aún no hay nadie en el ranking. <br>¡Completa tareas para ser el primero!</p>
-                    </div>
-                    <!-- Contenedor del ranking cuando hay datos -->
-                    <div th:unless="${#lists.isEmpty(listaRanking)}" class="ranking-list-container">
-                        <div class="param-bar">
-                            <span>#</span>
-                            <span>Nombre</span>
-                            <span>Puntos</span>
-                            <span>Liga</span>
-                        </div>
-                        <!-- Lista de jugadores en el ranking -->
-                        <div class="ranking-list">
-                            <div class="ranking-row" th:each="usuario, stat : ${listaRanking}">
-                                <span class="rank-number" th:text="${stat.count}">1</span>
-                                <span class="rank-name" th:text="${usuario.nombreUsuario}">Matias Gomez</span>
-                                <span class="rank-points" th:text="${usuario.puntosLiga} + ' Pts'">4150 Pts</span>
-                                <span class="rank-league" th:text="${usuario.liga}"
-                                      th:classappend="'liga-' + ${#strings.toLowerCase(usuario.liga)}">
-                                    Platino
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+              </div>
+            </div>
+          </div>
+        </section>
 
-            <!-- Tarjeta de Requisitos de Liga -->
-            <section class="card league-requirements-card">
-                <div class="card-header">
-                    <h1>Requisitos de Liga</h1>
-                </div>
-                <div class="card-body">
-                    <div class="league-requirement-item">
-                        <img th:src="@{/images/copa-diamante.png}" alt="Diamante" class="league-req-icon">
-                        <span class="league-name">Diamante</span>
-                        <span class="league-points" th:text="'>= ' + ${@configuracionService.getLimiteLiga('LIGA_DIAMANTE', 5000)} + ' Pts'"></span>
-                    </div>
-                    <div class="league-requirement-item">
-                        <img th:src="@{/images/copa-platino.png}" alt="Platino" class="league-req-icon">
-                        <span class="league-name">Platino</span>
-                        <span class="league-points" th:text="'>= ' + ${@configuracionService.getLimiteLiga('LIGA_PLATINO', 3000)} + ' Pts'"></span>
-                    </div>
-                    <div class="league-requirement-item">
-                        <img th:src="@{/images/copa-oro.png}" alt="Oro" class="league-req-icon">
-                        <span class="league-name">Oro</span>
-                        <span class="league-points" th:text="'>= ' + ${@configuracionService.getLimiteLiga('LIGA_ORO', 1500)} + ' Pts'"></span>
-                    </div>
-                    <div class="league-requirement-item">
-                        <img th:src="@{/images/copa-plata.png}" alt="Plata" class="league-req-icon">
-                        <span class="league-name">Plata</span>
-                        <span class="league-points" th:text="'>= ' + ${@configuracionService.getLimiteLiga('LIGA_PLATA', 500)} + ' Pts'"></span>
-                    </div>
-                    <div class="league-requirement-item">
-                        <img th:src="@{/images/copa-bronce.png}" alt="Bronce" class="league-req-icon">
-                        <span class="league-name">Bronce</span>
-                        <span class="league-points">&gt;= 0 Pts</span>
-                    </div>
-                </div>
-            </section>
-        </div>
+        <!-- Tarjeta de Requisitos de Liga -->
+        <section class="card league-requirements-card">
+          <div class="card-header">
+            <h1>Requisitos de Liga</h1>
+          </div>
+          <div class="card-body">
+            <div class="league-requirement-item">
+              <img
+                th:src="@{/images/copa-diamante.png}"
+                alt="Diamante"
+                class="league-req-icon"
+              />
+              <span class="league-name">Diamante</span>
+              <span
+                class="league-points"
+                th:text="'>= ' + ${@configuracionService.getLimiteLiga('LIGA_DIAMANTE', 5000)} + ' Pts'"
+              ></span>
+            </div>
+            <div class="league-requirement-item">
+              <img
+                th:src="@{/images/copa-platino.png}"
+                alt="Platino"
+                class="league-req-icon"
+              />
+              <span class="league-name">Platino</span>
+              <span
+                class="league-points"
+                th:text="'>= ' + ${@configuracionService.getLimiteLiga('LIGA_PLATINO', 3000)} + ' Pts'"
+              ></span>
+            </div>
+            <div class="league-requirement-item">
+              <img
+                th:src="@{/images/copa-oro.png}"
+                alt="Oro"
+                class="league-req-icon"
+              />
+              <span class="league-name">Oro</span>
+              <span
+                class="league-points"
+                th:text="'>= ' + ${@configuracionService.getLimiteLiga('LIGA_ORO', 1500)} + ' Pts'"
+              ></span>
+            </div>
+            <div class="league-requirement-item">
+              <img
+                th:src="@{/images/copa-plata.png}"
+                alt="Plata"
+                class="league-req-icon"
+              />
+              <span class="league-name">Plata</span>
+              <span
+                class="league-points"
+                th:text="'>= ' + ${@configuracionService.getLimiteLiga('LIGA_PLATA', 500)} + ' Pts'"
+              ></span>
+            </div>
+            <div class="league-requirement-item">
+              <img
+                th:src="@{/images/copa-bronce.png}"
+                alt="Bronce"
+                class="league-req-icon"
+              />
+              <span class="league-name">Bronce</span>
+              <span class="league-points">&gt;= 0 Pts</span>
+            </div>
+          </div>
+        </section>
+      </div>
 
-        <!-- Columna Derecha: Información adicional -->
-        <div class="right-column">
-            <!-- Tarjeta Salón de la Fama -->
-            <aside class="card hall-of-fame-card" aria-label="Salón de la Fama">
-                <div class="card-header">
-                    <h1>Salón de la Fama</h1>
-                    <!-- Título dinámico del mes anterior -->
-                    <h2 class="subtitle" th:text="'Ganadores de ' + ${tituloMesAnterior}">Ganadores de Octubre 2025</h2>
-                </div>
-                <div class="card-body">
-                    <!-- Estado vacío: cuando no hay ganadores del mes anterior -->
-                    <div th:if="${#lists.isEmpty(hallOfFame)}" class="hall-of-fame-empty">
-                        <p>Aún no hay campeones que celebrar de la temporada anterior.</p>
-                    </div>
-                    <!-- Lista de ganadores cuando hay datos -->
-                    <div th:unless="${#lists.isEmpty(hallOfFame)}" class="winners-list">
-                        <!-- Cada ganador con clase dinámica según su puesto (oro, plata, bronce) -->
-                        <div th:each="ganador : ${hallOfFame}" 
-                             th:classappend="${ganador.puesto == 1 ? 'gold' : (ganador.puesto == 2 ? 'silver' : 'bronze')}"
-                             class="winner-box">
-                            <span class="winner-place" th:text="${ganador.puesto == 1 ? '🥇 1er Lugar' : (ganador.puesto == 2 ? '🥈 2do Lugar' : '🥉 3er Lugar')}"></span>
-                            <span class="winner-name" th:text="${ganador.nombreUsuario}">Nombre Ganador</span>
-                            <span class="winner-points" th:text="${ganador.puntos} + ' Pts'">0 Pts</span>
-                        </div>
-                    </div>
-                </div>
-            </aside>
+      <!-- Columna Derecha: Información adicional -->
+      <div class="right-column">
+        <!-- Tarjeta Salón de la Fama -->
+        <aside class="card hall-of-fame-card" aria-label="Salón de la Fama">
+          <div class="card-header">
+            <h1>Salón de la Fama</h1>
+            <!-- Título dinámico del mes anterior -->
+            <h2
+              class="subtitle"
+              th:text="'Ganadores de ' + ${tituloMesAnterior}"
+            >
+              Ganadores de Octubre 2025
+            </h2>
+          </div>
+          <div class="card-body">
+            <!-- Estado vacío: cuando no hay ganadores del mes anterior -->
+            <div
+              th:if="${#lists.isEmpty(hallOfFame)}"
+              class="hall-of-fame-empty"
+            >
+              <p>Aún no hay campeones que celebrar de la temporada anterior.</p>
+            </div>
+            <!-- Lista de ganadores cuando hay datos -->
+            <div th:unless="${#lists.isEmpty(hallOfFame)}" class="winners-list">
+              <!-- Cada ganador con clase dinámica según su puesto (oro, plata, bronce) -->
+              <div
+                th:each="ganador : ${hallOfFame}"
+                th:classappend="${ganador.puesto == 1 ? 'gold' : (ganador.puesto == 2 ? 'silver' : 'bronze')}"
+                class="winner-box"
+              >
+                <span
+                  class="winner-place"
+                  th:text="${ganador.puesto == 1 ? '🥇 1er Lugar' : (ganador.puesto == 2 ? '🥈 2do Lugar' : '🥉 3er Lugar')}"
+                ></span>
+                <span class="winner-name" th:text="${ganador.nombreUsuario}"
+                  >Nombre Ganador</span
+                >
+                <span class="winner-points" th:text="${ganador.puntos} + ' Pts'"
+                  >0 Pts</span
+                >
+              </div>
+            </div>
+          </div>
+        </aside>
 
-            <!-- Tarjeta de Rango Actual del Usuario -->
-            <aside class="card your-rank-card" aria-label="Tu Rango Actual">
-                <div class="card-header">
-                    <h2>Tu Rango</h2>
-                </div>
-                <!-- Icono de la liga del usuario logueado -->
-                <div class="card-body">
-                    <img th:src="@{'/images/copa-' + ${#strings.toLowerCase(usuarioLogueado.liga)} + '.png'}" 
-                         th:alt="'Icono de la liga ' + ${usuarioLogueado.liga}" 
-                         class="your-rank-icon">
-                </div>
-            </aside>
+        <!-- Tarjeta de Rango Actual del Usuario -->
+        <aside class="card your-rank-card" aria-label="Tu Rango Actual">
+          <div class="card-header">
+            <h2>Tu Rango</h2>
+          </div>
+          <!-- Icono de la liga del usuario logueado -->
+          <div class="card-body">
+            <img
+              th:src="@{'/images/copa-' + ${#strings.toLowerCase(usuarioLogueado.liga)} + '.png'}"
+              th:alt="'Icono de la liga ' + ${usuarioLogueado.liga}"
+              class="your-rank-icon"
+            />
+          </div>
+        </aside>
 
-            <!-- Tarjeta de Progreso del Usuario -->
-            <aside class="card stats-card" aria-label="Tu Progreso">
-                <div class="card-header">
-                    <h2>Tu Progreso</h2>
-                </div>
-                <div class="card-body">
-                    <!-- Item: Puntos del mes actual -->
-                    <div class="stat-item">
-                        <div class="stat-icon-wrapper"><i class='bx bxs-bar-chart-alt-2'></i></div>
-                        <div class="stat-text">
-                            <span class="stat-label">Tus Puntos este mes</span>
-                            <span class="stat-value" th:text="${usuarioLogueado.puntosLiga} + ' Pts'">1800 Pts</span>
-                        </div>
-                    </div>
-                    <div class="stat-item">
-                        <!-- Item: Liga actual -->
-                        <div class="stat-icon-wrapper"><i class='bx bxs-trophy'></i></div>
-                        <div class="stat-text">
-                            <span class="stat-label">Tu Liga Actual</span>
-                            <span class="stat-value" th:text="${usuarioLogueado.liga}"
-                                  th:classappend="'liga-' + ${#strings.toLowerCase(usuarioLogueado.liga)}">Oro</span>
-                        </div>
-                    </div>
-                    <div class="stat-item">
-                        <!-- Item: Puntos del mes anterior -->
-                        <div class="stat-icon-wrapper"><i class='bx bx-rewind-circle'></i></div>
-                        <div class="stat-text">
-                            <span class="stat-label">Puntaje Mes Anterior</span>
-                            <span class="stat-value" th:text="${usuarioLogueado.puntosMesPasado} + ' Pts'">0 Pts</span>
-                        </div>
-                    </div>
-                </div>
-            </aside>
-        </div>
+        <!-- Tarjeta de Progreso del Usuario -->
+        <aside class="card stats-card" aria-label="Tu Progreso">
+          <div class="card-header">
+            <h2>Tu Progreso</h2>
+          </div>
+          <div class="card-body">
+            <!-- Item: Puntos del mes actual -->
+            <div class="stat-item">
+              <div class="stat-icon-wrapper">
+                <i class="bx bxs-bar-chart-alt-2"></i>
+              </div>
+              <div class="stat-text">
+                <span class="stat-label">Tus Puntos este mes</span>
+                <span
+                  class="stat-value"
+                  th:text="${usuarioLogueado.puntosLiga} + ' Pts'"
+                  >1800 Pts</span
+                >
+              </div>
+            </div>
+            <div class="stat-item">
+              <!-- Item: Liga actual -->
+              <div class="stat-icon-wrapper"><i class="bx bxs-trophy"></i></div>
+              <div class="stat-text">
+                <span class="stat-label">Tu Liga Actual</span>
+                <span
+                  class="stat-value"
+                  th:text="${usuarioLogueado.liga}"
+                  th:classappend="'liga-' + ${#strings.toLowerCase(usuarioLogueado.liga)}"
+                  >Oro</span
+                >
+              </div>
+            </div>
+            <div class="stat-item">
+              <!-- Item: Puntos del mes anterior -->
+              <div class="stat-icon-wrapper">
+                <i class="bx bx-rewind-circle"></i>
+              </div>
+              <div class="stat-text">
+                <span class="stat-label">Puntaje Mes Anterior</span>
+                <span
+                  class="stat-value"
+                  th:text="${usuarioLogueado.puntosMesPasado} + ' Pts'"
+                  >0 Pts</span
+                >
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
     </main>
 
     <!-- Barra de navegación inferior -->
     <div th:replace="~{fragments :: navbar}"></div>
-</body>
+  </body>
 </html>

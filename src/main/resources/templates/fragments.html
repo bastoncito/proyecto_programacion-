@@ -1,51 +1,62 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<body>
-
-
+  <body>
     <!-- Fragmento de la animacion de carga -->
     <div th:fragment="loadingScreen">
-        <!-- El contenedor principal que cubre toda la pantalla -->
-        <div id="loader-wrapper">
-            <!-- El spinner animado que gira en el centro -->
-            <div class="loader"></div>
-        </div>
+      <!-- El contenedor principal que cubre toda la pantalla -->
+      <div id="loader-wrapper">
+        <!-- El spinner animado que gira en el centro -->
+        <div class="loader"></div>
+      </div>
     </div>
 
     <!-- Fragmento de la barra de navegación -->
     <nav th:fragment="navbar" class="bottom-nav">
+      <!-- Enlace a Home -->
+      <a
+        th:href="@{/home}"
+        th:classappend="${activePage == 'home' ? 'active' : ''}"
+      >
+        <i class="bx bxs-home"></i>
+        <span>Home</span>
+      </a>
 
-        <!-- Enlace a Home -->
-        <a th:href="@{/home}" th:classappend="${activePage == 'home' ? 'active' : ''}">
-            <i class='bx bxs-home'></i>
-            <span>Home</span>
-        </a>
-        
-        <!-- Enlace a Historial -->
-        <a th:href="@{/historial}" th:classappend="${activePage == 'historial' ? 'active' : ''}">
-            <i class='bx bx-history'></i>
-            <span>Historial</span>
-        </a>
+      <!-- Enlace a Historial -->
+      <a
+        th:href="@{/historial}"
+        th:classappend="${activePage == 'historial' ? 'active' : ''}"
+      >
+        <i class="bx bx-history"></i>
+        <span>Historial</span>
+      </a>
 
-        <!-- Enlace a Ranking -->
-        <a th:href="@{/ranking}" th:classappend="${activePage == 'ranking' ? 'active' : ''}">
-            <i class='bx bxs-bar-chart-alt-2'></i>
-            <span>Ranking</span>
-        </a>
+      <!-- Enlace a Ranking -->
+      <a
+        th:href="@{/ranking}"
+        th:classappend="${activePage == 'ranking' ? 'active' : ''}"
+      >
+        <i class="bx bxs-bar-chart-alt-2"></i>
+        <span>Ranking</span>
+      </a>
 
-        <!-- Enlace a Perfil -->
-        <a th:href="@{/perfil}" th:classappend="${activePage == 'perfil' ? 'active' : ''}">
-            <i class='bx bxs-user'></i>
-            <span>Perfil</span>
-        </a>
+      <!-- Enlace a Perfil -->
+      <a
+        th:href="@{/perfil}"
+        th:classappend="${activePage == 'perfil' ? 'active' : ''}"
+      >
+        <i class="bx bxs-user"></i>
+        <span>Perfil</span>
+      </a>
 
-        <!-- Enlace a Admin (SOLO PARA ADMINS/MODS) -->
-        <a sec:authorize="hasAnyRole('ADMIN', 'MODERADOR')"
-        th:href="@{/admin}" 
-        th:classappend="${activePage == 'admin' ? 'active' : ''}">
-            <i class='bx bxs-cog'></i>
-            <span>Gestión</span>
-        </a>
+      <!-- Enlace a Admin (SOLO PARA ADMINS/MODS) -->
+      <a
+        sec:authorize="hasAnyRole('ADMIN', 'MODERADOR')"
+        th:href="@{/admin}"
+        th:classappend="${activePage == 'admin' ? 'active' : ''}"
+      >
+        <i class="bx bxs-cog"></i>
+        <span>Gestión</span>
+      </a>
     </nav>
-</body>
+  </body>
 </html>
