@@ -97,10 +97,11 @@ public class TareaController {
     String correo = userDetails.getUsername();
 
     // Verifica el límite de tareas pendientes
-    int tareasPendientes= usuarioService.obtenerTareasPendientes(correo).size();
-    if (tareasPendientes>=4) {
-        redirectAttributes.addFlashAttribute("errorTarea", "No puedes agregar más de 4 tareas pendientes.");
-        return "redirect:/nueva-tarea";
+    int tareasPendientes = usuarioService.obtenerTareasPendientes(correo).size();
+    if (tareasPendientes >= 4) {
+      redirectAttributes.addFlashAttribute(
+          "errorTarea", "No puedes agregar más de 4 tareas pendientes.");
+      return "redirect:/nueva-tarea";
     }
 
     Tarea nuevaTarea = new Tarea(nombre, descripcion, dificultad);

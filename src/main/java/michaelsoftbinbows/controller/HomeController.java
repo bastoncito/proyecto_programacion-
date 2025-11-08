@@ -19,7 +19,6 @@ import michaelsoftbinbows.services.TareaService;
 import michaelsoftbinbows.services.UsuarioService;
 import michaelsoftbinbows.services.WeatherService;
 import michaelsoftbinbows.util.SistemaNiveles;
-
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -148,8 +147,9 @@ public class HomeController {
     model.addAttribute("top3Usuarios", top3);
     model.addAttribute("activePage", "home");
 
-    //Obtener la tarea semanal del usuario
-    java.util.Optional<Tarea> tareaSemanal = tareaService.obtenerTareaSemanal(usuarioActual.getId());
+    // Obtener la tarea semanal del usuario
+    java.util.Optional<Tarea> tareaSemanal =
+        tareaService.obtenerTareaSemanal(usuarioActual.getId());
     model.addAttribute("tareaSemanal", tareaSemanal.orElse(null));
     boolean desafioCompletado = tareaSemanal.isPresent() && tareaSemanal.get().isCompletada();
     model.addAttribute("desafioCompletado", desafioCompletado);

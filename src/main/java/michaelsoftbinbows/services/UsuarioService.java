@@ -1,7 +1,6 @@
 package michaelsoftbinbows.services;
 
 import jakarta.transaction.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -448,8 +447,8 @@ public class UsuarioService {
   public List<Tarea> obtenerTareasPendientes(String correo) {
     Optional<Usuario> usuarioOpt = usuarioRepository.findByCorreoElectronico(correo);
     if (usuarioOpt.isPresent()) {
-        Usuario usuario = usuarioOpt.get();
-        return usuario.getTareasPendientes();
+      Usuario usuario = usuarioOpt.get();
+      return usuario.getTareasPendientes();
     }
     return new ArrayList<>();
   }

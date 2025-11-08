@@ -1,41 +1,37 @@
 package michaelsoftbinbows.services;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-/**
- * Servicio para interactuar con la API de Geocoding de OpenWeatherMap. Permite obtener coordenadas
- * a partir de una ciudad y viceversa.
- */
+/** Servicio para interactuar con la API de Geocoding de OpenWeatherMap. */
 @Service
 public class GeocodingService {
 
-  private final RestTemplate restTemplate = new RestTemplate();
+  private final RestTemplate restTemplate;
+  private final String apiKey;
 
   /**
-   * Obtiene las coordenadas (latitud y longitud) para una ciudad específica.
-   *
-   * @param city El nombre de la ciudad a buscar.
-   * @return Un JSON (como String) con la información de geocodificación.
+   * Constructor para inyección de dependencias. Spring Boot buscará un "Bean" de RestTemplate y el
+   * valor "owm.api.key" y se los pasará a este servicio automáticamente.
    */
+  public GeocodingService(RestTemplate restTemplate, @Value("${owm.api.key}") String apiKey) {
+    this.restTemplate = restTemplate;
+    this.apiKey = apiKey;
+  }
+
+  /** Obtiene las coordenadas (latitud y longitud) para una ciudad específica. */
   public String getCoordinatesByCity(String city) {
     String url =
-        "https://api.openweathermap.org/geo/1.0/direct?q="
-            + city
-            + "&limit=1&appid="
-            + System.getProperty("OWM_API_KEY");
+        "https://api.openweathermap.org/geo/1.0/direct?q=" + city + "&limit=1&appid=" + apiKey;
+
+    // Usamos el restTemplate que nos pasaron
     ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
     return response.getBody();
   }
 
-  /**
-   * Obtiene el nombre de la ciudad basado en coordenadas de latitud y longitud.
-   *
-   * @param lat La latitud.
-   * @param lon La longitud.
-   * @return Un JSON (como String) con la información de la ciudad.
-   */
+  /** Obtiene el nombre de la ciudad basado en coordenadas de latitud y longitud. */
   public String getCityByCoordinates(double lat, double lon) {
     String url =
         "https://api.openweathermap.org/geo/1.0/reverse?lat="
@@ -43,7 +39,8 @@ public class GeocodingService {
             + "&lon="
             + lon
             + "&limit=1&appid="
-            + System.getProperty("OWM_API_KEY");
+            + apiKey;
+
     ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
     return response.getBody();
   }

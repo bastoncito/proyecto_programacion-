@@ -1,7 +1,6 @@
 package michaelsoftbinbows.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -235,11 +234,11 @@ public class Tarea {
   private Boolean esSemanal = false;
 
   public Boolean getEsSemanal() {
-      return esSemanal;
+    return esSemanal;
   }
 
   public void setEsSemanal(Boolean esSemanal) {
-      this.esSemanal = esSemanal;
+    this.esSemanal = esSemanal;
   }
 
   public boolean isCompletada() {
