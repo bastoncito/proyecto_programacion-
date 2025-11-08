@@ -1,7 +1,15 @@
 package michaelsoftbinbows.data;
 
 import michaelsoftbinbows.entities.Tarea;
+
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /** Repositorio para tareas. */
-public interface TareaRepository extends JpaRepository<Tarea, Long> {}
+public interface TareaRepository extends JpaRepository<Tarea, Long> {
+    Optional<Tarea> findByUsuarioIdAndEsSemanalTrue(Long usuarioId);
+    List<Tarea> findAllByUsuarioIdAndEsSemanalTrue(Long usuarioId);
+}
+

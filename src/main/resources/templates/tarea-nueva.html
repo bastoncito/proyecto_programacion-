@@ -42,6 +42,11 @@
                 </div>
                 <p th:if="${mensaje}" th:text="${mensaje}"></p>
                 <p th:if="${error}" th:text="${error}" style="color:red;"></p>
+
+                <div th:if="${errorTarea != null}">
+                    <p class="error-msg" th:text="${errorTarea}" style="color:red;"></p>
+                </div>
+
                 <button type="submit">Crear Tarea</button>
                 <a th:href="@{/home}">Volver al inicio</a>
             </form>

@@ -1,6 +1,8 @@
 package michaelsoftbinbows.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -227,6 +229,21 @@ public class Tarea {
       }
     }
     return false;
+  }
+
+  @Column(name = "es_semanal")
+  private Boolean esSemanal = false;
+
+  public Boolean getEsSemanal() {
+      return esSemanal;
+  }
+
+  public void setEsSemanal(Boolean esSemanal) {
+      this.esSemanal = esSemanal;
+  }
+
+  public boolean isCompletada() {
+    return fechaCompletada != null;
   }
 
   @Override

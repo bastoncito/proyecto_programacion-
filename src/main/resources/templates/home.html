@@ -87,10 +87,27 @@
             <section class="card">
                 <div class="card-header"><h1>DESAFÍO SEMANAL</h1></div>
                 <div class="card-body reto-body">
-                    <p>Título del Desafío</p>
-                    <p>Descripción de la tarea semanal...</p>
-                    <p>Puntaje: 500 XP</p>
-                    <button class="reto-button">Aceptar Desafío</button>
+                    <!-- Estado 1: No hay desafío semanal -->
+                    <div th:if="${tareaSemanal == null}">
+                        <p>No tienes desafío semanal asignado.</p>
+                    </div>
+                    <!-- Estado 2: Desafío semanal pendiente -->
+                    <div th:if="${tareaSemanal != null} and !${desafioCompletado}">
+                        <p><strong th:text="${tareaSemanal.nombre}">Título del Desafío</strong></p>
+                        <p th:text="${tareaSemanal.descripcion}">Descripción de la tarea semanal...</p>
+                        <p>Puntaje: <span th:text="${tareaSemanal.exp}"></span> XP</p>
+                        <form th:action="@{/completar-tarea}" method="post">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <input type="hidden" name="nombreTarea" th:value="${tareaSemanal.nombre}" />
+                            <button type="submit" class="btn-show-all">Aceptar y Completar</button>
+                        </form>
+                    </div>
+                    <!-- Estado 3: Desafío semanal completado -->
+                    <div th:if="${desafioCompletado}">
+                        <p><strong th:text="${tareaSemanal.nombre}">Título del Desafío</strong></p>
+                        <p>¡Desafío semanal completado!</p>
+                        <p>Ganaste <span th:text="${tareaSemanal.exp}"></span> XP</p>
+                    </div>
                 </div>
             </section>
         </div>

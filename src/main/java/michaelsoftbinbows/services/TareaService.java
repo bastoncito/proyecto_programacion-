@@ -41,6 +41,10 @@ public class TareaService {
     return tareaRepository.findById(id);
   }
 
+  public Optional<Tarea> obtenerTareaSemanal(Long usuarioId) {
+    return tareaRepository.findByUsuarioIdAndEsSemanalTrue(usuarioId);
+  }
+
   /**
    * Crea una nueva tarea y la asocia a un usuario.
    *
