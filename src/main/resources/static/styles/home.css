@@ -101,7 +101,6 @@ body {
 /* El encabezado de cada tarjeta (la franja amarilla con el título). */
 .card-header {
     background-color: var(--color-principal);
-    background-image: linear-gradient(to bottom, #FFD466, #FFC839); /* Un gradiente sutil para darle vida */
     color: var(--color-oscuro);
     padding: 12px 20px;
     flex-shrink: 0; /* Evita que el header se encoja si el contenido es muy grande */
@@ -112,7 +111,6 @@ body {
     margin: 0;
     font-size: 1.1em;
     font-weight: 600;
-    text-transform: uppercase; /* Títulos en mayúsculas */
     letter-spacing: 0.5px;
 }
 

@@ -224,11 +224,17 @@ body {
     .container-task-bar a { text-decoration: none; color: var(--color-oscuro); font-weight: 600; font-size: 18px; display: flex; align-items: center; padding: 15px 20px; border-radius: 8px; margin: 5px 10px; gap: 12px; }
     .container-task-bar a:hover { background-color: var(--color-principal-hover); }
     .container-task-bar i { font-size: 22px; }
-    
+    .logo-placeholder {
+    text-align: center; /* Centra el contenido (la imagen) horizontalmente */
+    padding-bottom: 20px; /* Añade un poco de espacio debajo del logo */
+    }
+
     /* Ajustamos la vista maestro-detalle para que sea horizontal */
     .maestro-detalle-container { flex-direction: row; gap: 20px; height: 75vh; }
     .panel-maestro { flex: 0 0 250px; } /* Ancho fijo para la lista de usuarios */
     .panel-detalle { flex-grow: 1; padding: 20px; } /* El panel de tareas ocupa el resto */
+
+    
 }
 
 /* =================================================================== */

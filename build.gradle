@@ -40,6 +40,7 @@ dependencies {
 	implementation 'org.json:json:20240303'
 	errorprone "com.google.errorprone:error_prone_core:2.31.0"
     compileOnly "com.google.errorprone:error_prone_annotations:2.31.0"
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }
 
 tasks.named('test') {
