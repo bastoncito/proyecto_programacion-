@@ -150,7 +150,19 @@
             const tooltipDate = document.getElementById('tooltip-date');
             const achievementItems = document.querySelectorAll('.achievement-item');
 
-            // Añadir event listeners a cada elemento de logro
+            // Función para ocultar el tooltip
+            const hideTooltip = () => {
+                tooltip.classList.remove('visible');
+                tooltip.removeAttribute('data-current-item');
+            };
+
+            // Listener para cerrar el tooltip si se hace clic fuera de él
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.achievement-item') && tooltip.classList.contains('visible')) {
+                    hideTooltip();
+                }
+            });
+
             achievementItems.forEach(item => {
               // Mostrar tooltip al pasar el mouse
                 item.addEventListener('mouseenter', (e) => {
@@ -160,9 +172,27 @@
                     tooltip.classList.add('visible'); // Mostrar tooltip
                 });
 
-                // Ocultar tooltip al quitar el mouse
+                // Para quitar el hover en escritorio
                 item.addEventListener('mouseleave', () => {
-                    tooltip.classList.remove('visible');
+                    if (!tooltip.hasAttribute('data-current-item')) {
+                        tooltip.classList.remove('visible');
+                    }
+                });
+
+                // Para el clic en móvil (y escritorio)
+                item.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const target = e.currentTarget;
+                    const currentItemId = target.dataset.title;
+
+                    if (tooltip.classList.contains('visible') && tooltip.getAttribute('data-current-item') === currentItemId) {
+                        hideTooltip();
+                    } else {
+                        fillTooltipData(target);
+                        positionTooltip(target);
+                        tooltip.classList.add('visible');
+                        tooltip.setAttribute('data-current-item', currentItemId);
+                    }
                 });
             });
             
@@ -196,47 +226,66 @@
             }
 
             /**
-             * Posiciona el tooltip de forma inteligente
-             * @param {HTMLElement} target - Elemento del logro
+             * Posiciona el tooltip de forma inteligente, evitando que se salga de la pantalla.
+             * @param {HTMLElement} target - El elemento del logro que activó el tooltip.
              */
             function positionTooltip(target) {
-                const rect = target.getBoundingClientRect();
-                const tooltipRect = tooltip.getBoundingClientRect();
-                
-                let top, left;
+                const tooltipWidth = tooltip.offsetWidth;
+                const tooltipHeight = tooltip.offsetHeight;
 
-                // 1. CALCULAR POSICIÓN HORIZONTAL (left) DEL TOOLTIP
-                // Centra el tooltip respecto al icono
-                left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
-                
-                // Ajustar si se sale de la pantalla por la izquierda
-                if (left < 10) left = 10;
-                // Ajustar si se sale de la pantalla por la derecha
-                if (left + tooltipRect.width > window.innerWidth - 10) {
-                    left = window.innerWidth - tooltipRect.width - 10;  
-                }
+                // Obtenemos el contenedor con position:relative
+                const container = target.offsetParent; 
+                if (!container) return; // Salida segura si no hay contenedor
 
-                // 2. CALCULAR POSICIÓN VERTICAL (top) Y DIRECCIÓN DE LA FLECHA
-                // Si hay espacio arriba, coloca el tooltip arriba
-                if (rect.top - tooltipRect.height - 15 > 0) {
-                    top = rect.top - tooltipRect.height - 10;
+                // Coordenadas del ícono y del contenedor relativas a la ventana (viewport)
+                const targetRect = target.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+
+                // --- 1. CÁLCULO DE POSICIÓN VERTICAL (top) ---
+                let top;
+                // Decide si hay espacio para mostrar el tooltip arriba del ícono
+                if (targetRect.top - tooltipHeight - 10 > 0) {
+                    // Posición 'top' relativa al contenedor
+                    top = target.offsetTop - tooltipHeight - 10;
                     tooltip.classList.remove('arrow-up');
-                    tooltip.classList.add('arrow-down');  // Flecha apunta hacia abajo
+                    tooltip.classList.add('arrow-down');
                 } else {
-                    // Si no hay espacio arriba, coloca el tooltip abajo
-                    top = rect.bottom + 10;
+                    // O lo muestra abajo
+                    top = target.offsetTop + target.offsetHeight + 10;
                     tooltip.classList.remove('arrow-down');
-                    tooltip.classList.add('arrow-up');  // Flecha apunta hacia arriba
+                    tooltip.classList.add('arrow-up');
                 }
-                
-                // 3. CALCULAR LA POSICIÓN DE LA FLECHA
-                // Calcula la posición de la flecha para que apunte al centro del icono
-                const iconCenter = rect.left + rect.width / 2;
-                const arrowLeft = iconCenter - left; // Diferencia entre el centro del ícono y el borde izquierdo del tooltip
-                
-                // 4. APLICAR TODAS LAS POSICIONES
-                tooltip.style.left = `${left}px`;
+
+                // --- 2. CÁLCULO DE POSICIÓN HORIZONTAL (left) CON AJUSTE DE BORDES ---
+                // a) Posición 'left' ideal (centrado sobre el ícono), relativa al contenedor
+                let left = target.offsetLeft + (target.offsetWidth / 2) - (tooltipWidth / 2);
+
+                // b) Calculamos la posición absoluta (en la pantalla) que tendría el tooltip
+                const absoluteLeft = containerRect.left + left;
+
+                // c) Corregimos si se sale por la izquierda
+                if (absoluteLeft < 10) { // 10px de margen
+                    // Recalculamos 'left' para que el borde izquierdo absoluto sea 10
+                    left = 10 - containerRect.left;
+                }
+                // d) Corregimos si se sale por la derecha
+                else if (absoluteLeft + tooltipWidth > window.innerWidth - 10) {
+                    // Recalculamos 'left' para que el borde derecho absoluto sea el borde de la ventana - 10
+                    left = window.innerWidth - tooltipWidth - 10 - containerRect.left;
+                }
+
+                // --- 3. CÁLCULO DE LA POSICIÓN DE LA FLECHA ---
+                // La flecha debe apuntar al centro del ícono, sin importar dónde se movió el tooltip.
+                // Calculamos el centro absoluto del ícono
+                const iconCenterAbsoluteX = targetRect.left + (targetRect.width / 2);
+                // Calculamos la posición absoluta final del tooltip
+                const tooltipFinalAbsoluteX = containerRect.left + left;
+                // La posición de la flecha es la diferencia
+                const arrowLeft = iconCenterAbsoluteX - tooltipFinalAbsoluteX;
+
+                // --- 4. APLICAR TODOS LOS ESTILOS CALCULADOS ---
                 tooltip.style.top = `${top}px`;
+                tooltip.style.left = `${left}px`;
                 tooltip.style.setProperty('--arrow-left', `${arrowLeft}px`);
             }
         });

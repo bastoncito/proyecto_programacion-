@@ -45,9 +45,9 @@
                 No tienes tareas anotadas.
               </p>
             </div>
-            <div class="task-buttons">
-              <a th:href="@{/nueva-tarea}">Agregar Tarea</a>
-            </div>
+           <div class="task-buttons">
+            <a href="#" id="openCreateTaskModal" class="btn-show-all" style="background-color: var(--color-oscuro); color: var(--color-blanco);">Agregar Tarea</a>
+          </div>
           </div>
         </section>
 
@@ -340,7 +340,7 @@
         </div>  
     </main>
 
-    <!-- Modal y Scripts -->
+    <!-- MODAL PARA VER/COMPLETAR/ELIMINAR TAREA -->
     <div class="modal" id="taskModal">
       <div class="modal-content">
         <button class="close-btn" id="closeModal">X</button>
@@ -348,77 +348,264 @@
         <p><strong>Descripcion:</strong> <span id="modalDescription"></span></p>
         <p><strong>Vale:</strong> <span id="modalExp"></span></p>
         <p><strong>Expira:</strong> <span id="modalExpire"></span></p>
+        
+        <!-- Botones y formularios para las acciones -->
         <button id="deleteButton">Eliminar Tarea</button>
-        <form id="deleteForm" th:action="@{/eliminar-tarea}" method="post">
-          <input
-            type="hidden"
-            th:name="${_csrf.parameterName}"
-            th:value="${_csrf.token}"
-          />
+        <form id="deleteForm" th:action="@{/eliminar-tarea}" method="post" style="display: none;">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
           <input type="hidden" name="nombreTarea" id="deleteTaskId" />
         </form>
-        <button id="completeButton" class="">Marcar como completada</button>
-        <form id="completeForm" th:action="@{/completar-tarea}" method="post">
-          <input
-            type="hidden"
-            th:name="${_csrf.parameterName}"
-            th:value="${_csrf.token}"
-          />
+        
+        <button id="completeButton">Marcar como completada</button>
+        <form id="completeForm" th:action="@{/completar-tarea}" method="post" style="display: none;">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
           <input type="hidden" name="nombreTarea" id="completeTaskId" />
         </form>
       </div>
     </div>
-    <script>
+
+    <!-- MODAL PARA CREAR NUEVA TAREA -->
+    <div class="modal" id="createTaskModal">
+      <div class="modal-content">
+        <button class="close-btn" id="closeCreateTaskModal">×</button>
+        <h2>Crear Nueva Tarea</h2>
+        
+        <!-- Mensaje de error -->
+        <div th:if="${errorMessage}" class="alert-error" th:text="${errorMessage}"></div>
+
+
+        <form th:action="@{/nueva-tarea}" method="post" class="edit-form" id="createTaskForm">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+          
+          <div class="form-group">
+            <label for="nombre">Nombre</label>
+            <input type="text" name="nombre" id="nombre" required
+                  th:value="${nombreTareaFallida} ?: ''"
+                  placeholder="Ingresa el nombre de la tarea"/>
+            <small class="char-count"><span id="nombre-chars">0</span>/50</small>
+          </div>
+
+          <div class="form-group">
+            <label for="descripcion">Descripción</label>
+            <input type="text" name="descripcion" id="descripcion" required
+                  th:value="${descripcionTareaFallida} ?: ''"
+                  placeholder="Describe la tarea"/>
+            <small class="char-count"><span id="descripcion-chars">0</span>/100</small>
+          </div>
+
+          <div class="form-group">
+            <label for="categoria">Dificultad:</label>
+            <select id="categoria" name="dificultad" required>
+              <option value="">Selecciona una dificultad</option>
+              <option value="Muy fácil">Muy fácil</option>
+              <option value="Fácil">Fácil</option>
+              <option value="Medio">Intermedio</option>
+              <option value="Difícil">Difícil</option>
+              <option value="Muy difícil">Muy difícil</option>
+            </select>
+          </div>
+
+          <div id="result" class="result-box">
+            <div class="result-item">
+              <strong>XP:</strong> <span id="xp">—</span>
+            </div>
+            <div class="result-item">
+              <strong>Plazo:</strong> <span id="plazo">—</span>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="button" id="cancelCreateTask" class="btn-cancel">Cancelar</button>
+            <button type="submit" class="btn-save" id="submitTaskBtn">Crear Tarea</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Toast global para la aplicación -->
+    <div class="toast-container">
+      <div th:if="${successMessage}" class="toast success global-toast" id="global-success-toast">
+        <span class="toast-icon">✅</span>
+        <span th:text="${successMessage}"></span>
+        <button class="toast-close" onclick="this.parentElement.style.display='none'">×</button>
+      </div>
+      
+      <div th:if="${errorMessage}" class="toast error global-toast" id="global-error-toast">
+        <span class="toast-icon">❌</span>
+        <span th:text="${errorMessage}"></span>
+        <button class="toast-close" onclick="this.parentElement.style.display='none'">×</button>
+      </div>
+    </div>
+    <!-- SCRIPT PARA MODALES - VERSIÓN FINAL UNIFICADA -->
+
+    <script th:inline="javascript">
       document.addEventListener("DOMContentLoaded", function () {
+        // --- LÓGICA DEL LOADER ---
         const loader = document.getElementById("loader-wrapper");
         if (loader) {
           setTimeout(() => {
             loader.style.display = "none";
           }, 500);
         }
-      });
 
-      const modal = document.getElementById("taskModal");
-      const openButtons = document.querySelectorAll(".open-modal");
-      const modalTitle = document.getElementById("modalTitle");
-      const modalDescription = document.getElementById("modalDescription");
-      const modalExp = document.getElementById("modalExp");
-      const modalExpire = document.getElementById("modalExpire");
-      const closeModal = document.getElementById("closeModal");
-      const deleteTaskId = document.getElementById("deleteTaskId");
-      const deleteForm = document.getElementById("deleteForm");
-      const completeTaskId = document.getElementById("completeTaskId");
-      const completeForm = document.getElementById("completeForm");
+        // --- LÓGICA MODAL PARA VER/ELIMINAR TAREAS ---
+        const taskModal = document.getElementById("taskModal");
+        const openTaskButtons = document.querySelectorAll(".open-modal");
+        const modalTitle = document.getElementById("modalTitle");
+        const modalDescription = document.getElementById("modalDescription");
+        const modalExp = document.getElementById("modalExp");
+        const modalExpire = document.getElementById("modalExpire");
+        const closeModalBtn = document.getElementById("closeModal");
+        
+        const deleteButton = document.getElementById("deleteButton");
+        const deleteTaskId = document.getElementById("deleteTaskId");
+        const deleteForm = document.getElementById("deleteForm");
 
-      document.getElementById("deleteButton").addEventListener("click", () => {
-        deleteTaskId.value = modalTitle.textContent;
-        deleteForm.submit();
-      });
+        const completeButton = document.getElementById("completeButton");
+        const completeTaskId = document.getElementById("completeTaskId");
+        const completeForm = document.getElementById("completeForm");
 
-      document
-        .getElementById("completeButton")
-        .addEventListener("click", () => {
-          completeTaskId.value = modalTitle.textContent;
-          completeForm.submit();
+        if (deleteButton) {
+          deleteButton.addEventListener("click", () => {
+            if (modalTitle && deleteTaskId && deleteForm) {
+              deleteTaskId.value = modalTitle.textContent;
+              deleteForm.submit();
+            }
+          });
+        }
+
+        if (completeButton) {
+          completeButton.addEventListener("click", () => {
+            if (modalTitle && completeTaskId && completeForm) {
+              completeTaskId.value = modalTitle.textContent;
+              completeForm.submit();
+            }
+          });
+        }
+
+        openTaskButtons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            if (taskModal) {
+              modalTitle.textContent = btn.dataset.nombre;
+              modalDescription.textContent = btn.dataset.descripcion;
+              modalExp.textContent = btn.dataset.experiencia + " XP";
+              modalExpire.textContent = btn.dataset.expira;
+              taskModal.style.display = "flex";
+            }
+          });
         });
 
-      openButtons.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          modalTitle.textContent = btn.dataset.nombre;
-          modalDescription.textContent = btn.dataset.descripcion;
-          modalExp.textContent = btn.dataset.experiencia + " XP";
-          modalExpire.textContent = btn.dataset.expira;
-          modal.style.display = "flex";
-        });
-      });
+        if (closeModalBtn) closeModalBtn.addEventListener("click", () => { taskModal.style.display = "none"; });
+        
+        if (taskModal) {
+          taskModal.addEventListener("click", (event) => {
+            if (event.target === taskModal) {
+              taskModal.style.display = "none";
+            }
+          });
+        }
 
-      closeModal.addEventListener("click", () => {
-        modal.style.display = "none";
-      });
+        // --- LÓGICA PARA EL MODAL DE CREAR TAREA ---
+        const createTaskModal = document.getElementById("createTaskModal");
+        const openCreateTaskModalBtn = document.getElementById("openCreateTaskModal");
+        const closeCreateTaskModalBtn = document.getElementById("closeCreateTaskModal");
+        const cancelCreateTaskBtn = document.getElementById("cancelCreateTask");
 
-      modal.addEventListener("click", (event) => {
-        if (event.target === modal) {
-          modal.style.display = "none";
+        if (openCreateTaskModalBtn) {
+          openCreateTaskModalBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (createTaskModal) {
+              createTaskModal.style.display = "flex";
+            }
+          });
+        }
+        
+        const closeCreateModal = () => { if (createTaskModal) createTaskModal.style.display = "none"; };
+
+        if (closeCreateTaskModalBtn) closeCreateTaskModalBtn.addEventListener("click", closeCreateModal);
+        if (cancelCreateTaskBtn) cancelCreateTaskBtn.addEventListener("click", (e) => { e.preventDefault(); closeCreateModal(); });
+        
+        if (createTaskModal) {
+          createTaskModal.addEventListener("click", (event) => {
+            if (event.target === createTaskModal) {
+              closeCreateModal();
+            }
+          });
+        }
+
+        // Lógica para el formulario de creación
+        const dificultadSelect = document.getElementById("categoria");
+        const xpSpan = document.getElementById("xp");
+        const plazoSpan = document.getElementById("plazo");
+        const datosDificultad = {
+          "Muy fácil": { xp: 10, texto: "1 día" }, "Fácil": { xp: 25, texto: "2 días" },
+          "Medio": { xp: 50, texto: "3 días" }, "Difícil": { xp: 100, texto: "4 días" },
+          "Muy difícil": { xp: 150, texto: "5 días" },
+        };
+        
+        function actualizarResultados() {
+          if(dificultadSelect){
+              const seleccion = dificultadSelect.value;
+              const datos = datosDificultad[seleccion];
+              if (datos) {
+                xpSpan.textContent = datos.xp + " XP";
+                plazoSpan.textContent = datos.texto;
+              } else {
+                xpSpan.textContent = "—";
+                plazoSpan.textContent = "—";
+              }
+          }
+        }
+
+        if (dificultadSelect) {
+          dificultadSelect.addEventListener("change", actualizarResultados);
+          actualizarResultados();
+        }
+
+        // --- LÓGICA PARA CONTADORES DE CARACTERES CON LÍMITE Y ESTILO ---
+        function setupCharCounter(inputId, spanId, maxLength) {
+            const input = document.getElementById(inputId);
+            const span = document.getElementById(spanId);
+            
+            if (input && span) {
+                const parentCounter = span.parentElement;
+
+                const updateCounter = () => {
+                    const currentLength = input.value.length;
+                    span.textContent = currentLength;
+                    if (currentLength > maxLength) {
+                        parentCounter.classList.add('error-limit');
+                    } else {
+                        parentCounter.classList.remove('error-limit');
+                    }
+                };
+                input.addEventListener('input', updateCounter);
+                updateCounter();
+            }
+        }
+        setupCharCounter('nombre', 'nombre-chars', 50);
+        setupCharCounter('descripcion', 'descripcion-chars', 100);
+
+        // --- LÓGICA PARA ABRIR MODAL CON ERROR Y MOSTRAR TOAST ---
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('showCreateTaskModal') === 'true' && createTaskModal) {
+            createTaskModal.style.display = 'flex';
+        }
+
+        // Apuntamos al ID correcto del toast global
+        const successToast = document.getElementById('global-success-toast'); 
+
+        if (successToast) {
+            // La lógica para desaparecer después de 3 segundos
+            setTimeout(() => {
+                successToast.style.transition = 'opacity 0.5s ease';
+                successToast.style.opacity = '0';
+                
+                // Esperamos a que la transición termine para poner display: none
+                setTimeout(() => {
+                    successToast.style.display = 'none';
+                }, 500);
+            }, 3000); 
         }
       });
     </script>

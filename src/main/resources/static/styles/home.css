@@ -13,6 +13,7 @@
   --color-blanco: #fff;
   --color-claro: #f5f5f5; /* Un gris muy claro para el fondo general de la página */
   --color-bordes-sutiles: #eef2f5; /* Un color suave para bordes y fondos de ítems */
+  --color-rojo-peligro: #d9534f;
 
   /* Paleta de colores para textos */
   --color-texto-principal: var(--color-oscuro);
@@ -243,7 +244,7 @@ body {
   display: flex;
   align-items: center;
   gap: 6px; /* Espacio entre el ícono y el número */
-  margin-right: auto; /* ¡Este es el truco! Empuja los botones hacia la derecha llenando el espacio. */
+  margin-right: auto; /* Empuja los botones hacia la derecha llenando el espacio. */
 }
 .streak-display .bxs-hot {
   font-size: 36px;
@@ -617,6 +618,74 @@ body {
   max-height: 90vh;
   overflow-y: auto;
 }
+.modal-content .edit-form {
+  gap: 15px;
+}
+.modal-content .form-group {
+  display: flex;
+  flex-direction: column;
+}
+.modal-content .form-group label {
+  font-weight: 600;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: var(--color-texto-secundario);
+}
+.modal-content .form-group input,
+.modal-content .form-group select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  font-family: 'Poppins', sans-serif;
+}
+.modal-content .form-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+.modal-content .btn-save,
+.modal-content .btn-cancel {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 24px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 14px;
+  text-align: center;
+}
+.modal-content .btn-save { background-color: #28a745; color: white; }
+.modal-content .btn-save:hover { background-color: #218838; }
+.modal-content .btn-cancel { background-color: #6c757d; color: white; }
+.modal-content .btn-cancel:hover { background-color: #5a6268; }
+
+.alert-error {
+  color: #721c24;
+  background-color: #f8d7da;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+}
+.result-box {
+  color: #666;
+  font-size: 16px;
+  margin-top: 15px;
+  margin-bottom: 45px;
+  margin-left: 5px;
+  font-weight: 500;
+  text-align: center;
+  font-weight: bold;
+}
+.modal-content .result-box {
+  color: #666;
+  font-size: 16px;
+  margin-top: 10px; /* Reducimos un poco el margen para que se vea mejor en el modal */
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: bold;
+}
 .close-btn {
   position: absolute;
   top: 15px;
@@ -661,4 +730,92 @@ body {
 }
 #completeButton:hover {
   background-color: #4cae4c;
+}
+/* =================================================================== */
+/* 6. ESTILOS PARA NOTIFICACIONES (TOAST)                            */
+/* =================================================================== */
+
+.toast-container {
+  position: fixed;
+  bottom: 80px; /* Un poco por encima de la barra de navegación móvil */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: var(--sombra-suave);
+  font-weight: 600;
+  font-size: 15px;
+  min-width: 280px;
+  opacity: 1;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+/* Animación para que desaparezca suavemente */
+.toast.hide {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.toast.success {
+  background-color: #28a745;
+  color: white;
+  border: 1px solid #1e7e34;
+}
+
+.toast.error {
+  background-color: var(--color-rojo-accion-suave);
+  color: white;
+  border: 1px solid #c82333;
+}
+
+.toast-icon {
+  font-size: 20px;
+  margin-right: 12px;
+}
+
+.toast-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 22px;
+  margin-left: auto;
+  padding-left: 15px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.toast-close:hover {
+  opacity: 1;
+}
+
+/* Ajuste para escritorio */
+@media (min-width: 1024px) {
+  .toast-container {
+    /* Aumentamos este valor para que quede por encima de la navbar (60px) + un margen (20px) */
+    bottom: 80px; 
+  }
+}
+/* --- ESTILOS ADICIONALES PARA CONTADOR DE CARACTERES --- */
+
+.form-group .char-count {
+  text-align: right;
+  font-size: 12px;
+  color: var(--color-texto-secundario);
+  transition: color 0.3s ease; /* Transición suave de color */
+}
+
+/* ESTILO DE ERROR: Se activa cuando JS añade la clase 'error-limit' */
+.form-group .char-count.error-limit {
+  color: var(--color-rojo-peligro);
+  font-weight: bold;
 }

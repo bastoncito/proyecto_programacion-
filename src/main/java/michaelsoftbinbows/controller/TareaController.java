@@ -59,57 +59,38 @@ public class TareaController {
   }
 
   /**
-   * Muestra el formulario para que el usuario cree una nueva tarea.
-   *
-   * @param model modelo para añadir atributos
-   * @return template para tarea nueva
-   */
-  @GetMapping("/nueva-tarea")
-  public String mostrarFormularioNuevaTarea(Model model) {
-    // No es estrictamente necesario pasar un objeto Tarea vacío,
-    // pero lo mantenemos por si la plantilla lo necesita.
-    model.addAttribute("tarea", new Tarea());
-    return "tarea-nueva";
-  }
-
-  /**
-   * Procesa la creación de una nueva tarea para el usuario actual.
-   *
-   * @param nombre nombre de la tarea nueva
-   * @param descripcion descripcion de la tarea nueva
-   * @param dificultad dificultad de la tarea nueva
-   * @param model modelo para añadir atributos
-   * @param redirectAttributes atributos para redirect (mensajes de éxito)
-   * @return template para tarea nueva
-   * @throws TareaInvalidaException si la tarea no es válida
+   * Procesa la creación de una nueva tarea para el usuario autenticado.
+   * Valida que no se exceda el límite de 4 tareas pendientes antes de agregar la tarea.
+   * 
+   * @param nombre Nombre de la tarea a crear
+   * @param descripcion Descripción de la tarea
+   * @param dificultad Nivel de dificultad de la tarea
+   * @param redirectAttributes Atributos para pasar mensajes de éxito durante la redirección
+   * @return Redirección a la página principal ("redirect:/home")
+   * @throws TareaInvalidaException Si el usuario intenta exceder el límite de 4 tareas pendientes
    */
   @PostMapping("/nueva-tarea")
   public String procesarNuevaTarea(
-      @RequestParam("nombre") String nombre,
-      @RequestParam("descripcion") String descripcion,
-      @RequestParam("dificultad") String dificultad,
-      Model model,
-      RedirectAttributes redirectAttributes)
-      throws TareaInvalidaException {
+    @RequestParam("nombre") String nombre,
+    @RequestParam("descripcion") String descripcion,
+    @RequestParam("dificultad") String dificultad,
+    RedirectAttributes redirectAttributes)
+    throws TareaInvalidaException {
 
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
     String correo = userDetails.getUsername();
 
-    // Verifica el límite de tareas pendientes
     int tareasPendientes = usuarioService.obtenerTareasPendientes(correo).size();
-
     if (tareasPendientes >= 4) {
-      redirectAttributes.addFlashAttribute(
-          "errorTarea", "No puedes agregar más de 4 tareas pendientes.");
-      return "redirect:/nueva-tarea";
+      throw new TareaInvalidaException("No puedes agregar más de 4 tareas pendientes.", nombre, descripcion);
     }
 
     Tarea nuevaTarea = new Tarea(nombre, descripcion, dificultad);
     usuarioService.agregarTareaAusuario(correo, nuevaTarea);
 
-    // Usamos RedirectAttributes para que el mensaje de éxito se vea en /home
-    redirectAttributes.addFlashAttribute("mensaje", "¡Tarea agregada con éxito!");
-    return "tarea-nueva";
+    redirectAttributes.addFlashAttribute("successMessage", "¡Tarea '" + nombre + "' agregada con éxito!");
+    return "redirect:/home";
   }
+
 }

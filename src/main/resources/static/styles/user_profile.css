@@ -76,7 +76,7 @@ body {
   background-color: var(--color-blanco);
   border-radius: var(--border-radius-suave);
   box-shadow: var(--sombra-suave);
-  overflow: hidden; /* Mantiene los bordes redondeados del contenido interno */
+  overflow: visible;
 }
 
 /* Encabezado de tarjetas */
@@ -238,7 +238,7 @@ body {
 
 /* Tooltip para información de logros */
 #achievement-tooltip {
-  position: fixed; /* Posicionamiento absoluto en la ventana */
+  position: absolute;
   background-color: var(--color-oscuro);
   color: var(--color-blanco);
   padding: 10px 15px;

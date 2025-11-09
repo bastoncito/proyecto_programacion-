@@ -24,27 +24,24 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
   /**
-   * Maneja las excepciones de TareaInvalidaException, devolviendo al usuario al formulario de nueva
-   * tarea con un mensaje de error.
+   * Maneja las excepciones de TareaInvalidaException, redirigiendo al usuario a la página principal
+   * con un mensaje de error y mostrando el modal de creación de tarea.
    *
    * @param ex La excepción capturada.
-   * @param model El modelo para pasar datos a la vista.
-   * @return El nombre de la vista ("tarea-nueva").
+   * @param redirectAttributes Atributos para pasar datos durante la redirección.
+   * @return La vista de redirección a la página principal ("redirect:/home").
    */
   @ExceptionHandler(TareaInvalidaException.class)
-  public String manejoTareaInvalidaException(TareaInvalidaException ex, Model model) {
-    model.addAttribute("error", ex.getMessage());
-    // Re-poblamos los datos que el usuario ya había escrito
-    try {
-      Tarea tareaConDatosPrevios = new Tarea();
-      tareaConDatosPrevios.setNombre(ex.getNombre());
-      tareaConDatosPrevios.setDescripcion(ex.getDescripcion());
-      model.addAttribute("tarea", tareaConDatosPrevios);
-    } catch (TareaInvalidaException ignored) {
-      // Se ignora intencionalmente. Si falla la re-población de datos,
-      // simplemente se mostrará el formulario vacío con el error principal.
-    }
-    return "tarea-nueva";
+  public String manejoTareaInvalidaException(
+    TareaInvalidaException ex, RedirectAttributes redirectAttributes) {
+
+    redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+    redirectAttributes.addFlashAttribute("nombreTareaFallida", ex.getNombre());
+    redirectAttributes.addFlashAttribute("descripcionTareaFallida", ex.getDescripcion());
+    
+    redirectAttributes.addAttribute("showCreateTaskModal", "true");
+    
+    return "redirect:/home";
   }
 
   /**
