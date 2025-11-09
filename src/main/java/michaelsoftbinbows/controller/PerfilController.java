@@ -1,5 +1,11 @@
 package michaelsoftbinbows.controller;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import michaelsoftbinbows.entities.Logro;
+import michaelsoftbinbows.util.GestorLogros;
 import jakarta.servlet.http.HttpSession;
 import michaelsoftbinbows.entities.Usuario;
 import michaelsoftbinbows.security.CustomUserDetails;
@@ -51,6 +57,20 @@ public class PerfilController {
     if (usuarioActual == null) {
       return "redirect:/login?error=userNotFound";
     }
+
+    // --- SIMULACIÓN DE DATOS DE LOGROS ---
+    // Lista de TODOS los logros disponibles en la app.
+    // 1. Obtenemos la lista completa de logros desde GestorLogros.
+    List<Logro> allAchievements = GestorLogros.getLogrosDisponibles();
+    // 2. Lista de los logros que el usuario SÍ ha desbloqueado.
+    // En el futuro, esta lista vendrá del objeto 'usuarioActual'.
+    // Por ahora, la simulamos con datos fijos.
+    Set<String> unlockedAchievementsIds = Set.of("COMPLETE_1_TASK", "REACH_LEVEL_5", "JOIN_APP");
+
+
+
+    model.addAttribute("allAchievements", allAchievements);
+    model.addAttribute("unlockedAchievementsIds", unlockedAchievementsIds);
 
     model.addAttribute("usuarioLogueado", usuarioActual);
     model.addAttribute("activePage", "perfil");

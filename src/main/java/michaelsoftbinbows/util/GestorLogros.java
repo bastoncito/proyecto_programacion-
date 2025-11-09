@@ -125,4 +125,12 @@ public class GestorLogros {
         return false;
     }
   }
+  /**
+   * Devuelve una copia de la lista de todos los logros definidos en el sistema.
+   *
+   * @return Una lista de objetos Logro.
+   */
+  public static List<Logro> getLogrosDisponibles() {
+    return new ArrayList<>(LOGROS_DISPONIBLES);
+  }
 }
