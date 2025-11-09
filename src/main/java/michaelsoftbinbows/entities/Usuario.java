@@ -424,10 +424,15 @@ public class Usuario {
    * @return La tarea encontrada o null si no existe.
    */
   public Tarea buscarTareaPorNombre(String nombre) {
-    for (Tarea t : this.tareas) {
-      if (t.getFechaCompletada() == null && t.getNombre().trim().equals(nombre.trim())) {
-        return t;
-      }
+    for (Tarea t : getTareasPendientes()) {
+        if (t.getNombre().equalsIgnoreCase(nombre)) {
+            return t;
+        }
+    }
+    for (Tarea t : getTareasCompletadas()) {
+        if (t.getNombre().equalsIgnoreCase(nombre)) {
+            return t;
+        }
     }
     return null;
   }

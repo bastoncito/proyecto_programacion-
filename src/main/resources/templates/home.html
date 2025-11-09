@@ -299,19 +299,45 @@
         </div>
         <!-- Tarea Recomendada -->
         <div class="logo-section">
-          <div th:if="${tareaRecomendada == null}" class="placeholder-content">
-            <p>No hay tareas recomendadas.</p>
+          <div class="card-header">
+            <h2>Tarea Recomendada por el Clima</h2>
           </div>
-          <div th:if="${tareaRecomendada != null}">
-            <h2>Tarea Recomendada</h2>
-            <p><strong th:text="${tareaRecomendada.nombre}"></strong></p>
-            <p th:text="${tareaRecomendada.descripcion}"></p>
-            <p>
-              Clima: <span th:text="${tareaRecomendada.climaCompatible}"></span>
-            </p>
+          <div class="card-body">
+            <!-- Estado 1: No hay tarea recomendada -->
+            <div th:if="${tareaRecomendada == null}">
+              <p>No hay tarea recomendada para el clima actual.</p>
+            </div>
+            <!-- Estado 2: Tarea recomendada pendiente -->
+            <div th:if="${tareaRecomendada != null} and !${tareaRecomendadaCompletada}">
+              <p>
+                <strong th:text="${tareaRecomendada.nombre}">Nombre de la tarea</strong>
+              </p>
+              <p class="badge-clima" th:text="'Clima compatible: ' + ${tareaRecomendada.climaCompatible}"></p>
+                <p th:text="${tareaRecomendada.descripcion}">Descripción de la tarea...</p>
+              <p>
+                <span class="xp-icon">⭐</span>
+                <span th:text="'Puntaje: ' + ${tareaRecomendada.exp} + ' XP'"></span>
+              </p>
+              <form th:action="@{/completar-tarea}" method="post" style="margin-top: 12px;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <input type="hidden" name="nombreTarea" th:value="${tareaRecomendada.nombre}" />
+                <button type="submit" class="btn-show-all">Completar Tarea Recomendada</button>
+              </form>
+            </div>
+            <!-- Estado 3: Tarea recomendada completada -->
+            <div th:if="${tareaRecomendadaCompletada}">
+              <p>
+                <strong th:text="${tareaRecomendada.nombre}"></strong>
+              </p>
+              <p class="badge-clima" th:text="'Clima compatible: ' + ${tareaRecomendada.climaCompatible}"></p>
+              <p>¡Tarea recomendada completada!</p>
+              <p>
+                <span class="xp-icon">⭐</span>
+                <span th:text="'Ganaste ' + ${tareaRecomendada.exp} + ' XP'"></span>
+              </p>
+            </div>
           </div>
-        </div>
-      </div>
+        </div>  
     </main>
 
     <!-- Modal y Scripts -->

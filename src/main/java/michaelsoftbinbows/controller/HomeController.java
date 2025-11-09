@@ -138,7 +138,24 @@ public class HomeController {
         tareaRecomendada = recomendadas.get(0);
       }
     }
-    model.addAttribute("tareaRecomendada", tareaRecomendada);
+
+    // Si hay tarea recomendada y no está en el usuario, la agregamos
+    if (tareaRecomendada != null && usuarioActual.buscarTareaPorNombre(tareaRecomendada.getNombre()) == null) {
+      try {
+        usuarioActual.agregarTarea(tareaRecomendada);
+        usuarioService.guardarConTareas(usuarioActual);
+      } catch (Exception e) {
+        System.err.println("Error al agregar tarea recomendada por clima: " + e.getMessage());
+      }
+    }
+
+    // Ahora, busca la tarea recomendada desde el usuario para obtener el estado actualizado
+    Tarea tareaRecomendadaUsuario = tareaRecomendada != null
+        ? usuarioActual.buscarTareaPorNombre(tareaRecomendada.getNombre())
+        : null;
+    boolean tareaRecomendadaCompletada = tareaRecomendadaUsuario != null && tareaRecomendadaUsuario.isCompletada();
+    model.addAttribute("tareaRecomendada", tareaRecomendadaUsuario);
+    model.addAttribute("tareaRecomendadaCompletada", tareaRecomendadaCompletada);
 
     // 1. Pedimos el Top 3 (usando el método de UsuarioService)
     List<Usuario> top3 = usuarioService.getTopUsuarios(3);
