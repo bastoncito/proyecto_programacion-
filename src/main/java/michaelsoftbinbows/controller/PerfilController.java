@@ -1,15 +1,13 @@
 package michaelsoftbinbows.controller;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import michaelsoftbinbows.entities.Logro;
-import michaelsoftbinbows.util.GestorLogros;
 import jakarta.servlet.http.HttpSession;
+import java.util.List;
+import java.util.Set;
+import michaelsoftbinbows.entities.Logro;
 import michaelsoftbinbows.entities.Usuario;
 import michaelsoftbinbows.security.CustomUserDetails;
 import michaelsoftbinbows.services.UsuarioService;
+import michaelsoftbinbows.util.GestorLogros;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -66,8 +64,6 @@ public class PerfilController {
     // En el futuro, esta lista vendrá del objeto 'usuarioActual'.
     // Por ahora, la simulamos con datos fijos.
     Set<String> unlockedAchievementsIds = Set.of("COMPLETE_1_TASK", "REACH_LEVEL_5", "JOIN_APP");
-
-
 
     model.addAttribute("allAchievements", allAchievements);
     model.addAttribute("unlockedAchievementsIds", unlockedAchievementsIds);

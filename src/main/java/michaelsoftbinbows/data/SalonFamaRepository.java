@@ -4,6 +4,10 @@ import java.util.List;
 import michaelsoftbinbows.entities.SalonFama;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+/**
+ * Repositorio de Spring Data JPA para la entidad SalonFama. Proporciona métodos CRUD y consultas
+ * para el historial de ganadores.
+ */
 public interface SalonFamaRepository extends JpaRepository<SalonFama, Long> {
 
   /**

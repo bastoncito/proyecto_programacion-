@@ -78,7 +78,7 @@ class GeocodingServiceTest {
 
   /** Test 3: Prueba la reacción del servicio a un error 404 (Ciudad No Encontrada). */
   @Test
-  void testGetCoordinatesByCity_Throws404Error() {
+  void testGetCoordinatesByCityThrows404Error() {
 
     String city = "CiudadQueNoExiste";
     String expectedUrl =

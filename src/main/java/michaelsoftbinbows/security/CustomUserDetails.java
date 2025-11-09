@@ -12,6 +12,11 @@ public class CustomUserDetails implements UserDetails {
   /** Usuario que se va a autenticar. */
   private final Usuario usuario;
 
+  /**
+   * Constructor que envuelve la entidad Usuario para Spring Security.
+   *
+   * @param usuario El usuario de la base de datos.
+   */
   public CustomUserDetails(Usuario usuario) {
     this.usuario = usuario;
   }

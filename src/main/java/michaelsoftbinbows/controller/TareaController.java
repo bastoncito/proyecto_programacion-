@@ -98,6 +98,7 @@ public class TareaController {
 
     // Verifica el límite de tareas pendientes
     int tareasPendientes = usuarioService.obtenerTareasPendientes(correo).size();
+
     if (tareasPendientes >= 4) {
       redirectAttributes.addFlashAttribute(
           "errorTarea", "No puedes agregar más de 4 tareas pendientes.");

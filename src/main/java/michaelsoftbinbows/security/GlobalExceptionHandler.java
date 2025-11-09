@@ -16,9 +16,21 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+/**
+ * Controlador global de excepciones (Advice) para manejar errores de la aplicación de forma
+ * centralizada y devolver vistas de error amigables.
+ */
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
+  /**
+   * Maneja las excepciones de TareaInvalidaException, devolviendo al usuario al formulario de nueva
+   * tarea con un mensaje de error.
+   *
+   * @param ex La excepción capturada.
+   * @param model El modelo para pasar datos a la vista.
+   * @return El nombre de la vista ("tarea-nueva").
+   */
   @ExceptionHandler(TareaInvalidaException.class)
   public String manejoTareaInvalidaException(TareaInvalidaException ex, Model model) {
     model.addAttribute("error", ex.getMessage());
@@ -29,16 +41,35 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       tareaConDatosPrevios.setDescripcion(ex.getDescripcion());
       model.addAttribute("tarea", tareaConDatosPrevios);
     } catch (TareaInvalidaException ignored) {
+      // Se ignora intencionalmente. Si falla la re-población de datos,
+      // simplemente se mostrará el formulario vacío con el error principal.
     }
     return "tarea-nueva";
   }
 
+  /**
+   * Maneja las excepciones de RegistroInvalidoException, devolviendo al usuario a la página de
+   * registro con un mensaje de error.
+   *
+   * @param ex La excepción capturada.
+   * @param model El modelo para pasar datos a la vista.
+   * @return El nombre de la vista ("register").
+   */
   @ExceptionHandler(RegistroInvalidoException.class)
   public String manejoRegistroInvalidoException(RegistroInvalidoException ex, Model model) {
     model.addAttribute("error", ex.getMessage());
     return "register";
   }
 
+  /**
+   * Maneja las excepciones de EdicionInvalidaException (Panel de Admin). Redirige al panel de admin
+   * mostrando el modal de edición con el error.
+   *
+   * @param ex La excepción capturada.
+   * @param model El modelo (no usado aquí, pero requerido).
+   * @param redirectAttributes Para pasar el error tras la redirección.
+   * @return Una redirección a /admin.
+   */
   @ExceptionHandler(EdicionInvalidaException.class)
   public String manejoEdicionInvalidaException(
       EdicionInvalidaException ex, Model model, RedirectAttributes redirectAttributes) {
@@ -48,6 +79,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return "redirect:/admin";
   }
 
+  /**
+   * Maneja las excepciones al crear tareas desde el panel de admin.
+   *
+   * @param ex La excepción capturada.
+   * @param model El modelo.
+   * @param redirectAttributes Para pasar el error tras la redirección.
+   * @return Una redirección a /admin.
+   */
   @ExceptionHandler(AdminCrearTareaException.class)
   public String manejoAdminCrearTareaException(
       AdminCrearTareaException ex, Model model, RedirectAttributes redirectAttributes) {
@@ -57,6 +96,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return "redirect:/admin";
   }
 
+  /**
+   * Maneja las excepciones al crear usuarios desde el panel de admin.
+   *
+   * @param ex La excepción capturada.
+   * @param model El modelo.
+   * @param redirectAttributes Para pasar el error tras la redirección.
+   * @return Una redirección a /admin.
+   */
   @ExceptionHandler(AdminCrearUsuarioException.class)
   public String manejoAdminCrearUsuarioException(
       AdminCrearUsuarioException ex, Model model, RedirectAttributes redirectAttributes) {
@@ -65,6 +112,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return "redirect:/admin";
   }
 
+  /**
+   * Maneja las excepciones al guardar tareas desde el panel de admin.
+   *
+   * @param ex La excepción capturada.
+   * @param model El modelo.
+   * @param redirectAttributes Para pasar el error tras la redirección.
+   * @return El nombre de la vista ("admin-tarea-form").
+   */
   @ExceptionHandler(AdminGuardarTareaException.class)
   public String manejoAdminGuardarTareaException(
       AdminGuardarTareaException ex, Model model, RedirectAttributes redirectAttributes) {
@@ -79,11 +134,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       tareaConDatosPrevios.setDescripcion(ex.getDescripcionTarea());
       model.addAttribute("tarea", tareaConDatosPrevios);
     } catch (TareaInvalidaException ignored) {
+      // Se ignora intencionalmente. Si falla la re-población de datos,
+      // solo se muestra el error principal.
     }
 
     return "admin-tarea-form";
   }
 
+  /**
+   * Maneja las excepciones de la API del Clima (WeatherApiException). Devuelve una respuesta JSON
+   * de error (ResponseEntity).
+   *
+   * @param ex La excepción capturada.
+   * @return Un ResponseEntity con estado BAD_REQUEST y un JSON de error.
+   */
   @ExceptionHandler(WeatherApiException.class)
   public ResponseEntity<String> handleWeatherApiException(WeatherApiException ex) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)

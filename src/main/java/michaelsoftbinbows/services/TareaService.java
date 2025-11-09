@@ -41,6 +41,12 @@ public class TareaService {
     return tareaRepository.findById(id);
   }
 
+  /**
+   * Obtiene la tarea semanal activa para un usuario específico.
+   *
+   * @param usuarioId El ID del usuario.
+   * @return Un Optional que contiene la tarea semanal si existe.
+   */
   public Optional<Tarea> obtenerTareaSemanal(Long usuarioId) {
     return tareaRepository.findByUsuarioIdAndEsSemanalTrue(usuarioId);
   }

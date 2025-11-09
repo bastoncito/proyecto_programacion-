@@ -4,6 +4,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * Clase de configuración principal de Spring. Define los Beans que estarán disponibles para la
+ * inyección de dependencias.
+ */
 @Configuration
 public class AppConfig {
 

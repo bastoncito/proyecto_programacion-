@@ -506,18 +506,15 @@ public class Usuario {
     } else {
       // Calculamos los días de diferencia entre la última vez y hoy.
       long diasDiferencia = ChronoUnit.DAYS.between(fechaUltimaRacha, hoy);
-
       // CASO 2: Completó otra tarea hoy. La racha no cambia.
       if (diasDiferencia == 0) {
         // No se hace nada, la racha ya se contó para hoy.
         System.out.println("Racha diaria ya registrada. No se incrementa.");
         return; // Salimos del método para no actualizar la fecha innecesariamente
-      }
-      // CASO 3: La última tarea fue ayer. ¡La racha continúa!
+      } // CASO 3: La última tarea fue ayer. ¡La racha continúa!
       else if (diasDiferencia == 1) {
         this.racha++; // Incrementamos la racha existente
-      }
-      // CASO 4: La racha se rompió (pasó más de 1 día). Se reinicia a 1.
+      } // CASO 4: La racha se rompió (pasó más de 1 día). Se reinicia a 1.
       else {
         this.racha = 1;
       }

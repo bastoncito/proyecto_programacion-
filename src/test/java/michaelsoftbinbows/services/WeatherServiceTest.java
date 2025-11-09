@@ -3,12 +3,12 @@ package michaelsoftbinbows.services;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.json.JSONObject;
+
 import michaelsoftbinbows.exceptions.WeatherApiException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,23 +58,23 @@ class WeatherServiceTest {
     verify(restTemplate, times(1)).getForEntity(expectedUrl, String.class);
   }
 
-    /**
-     * Test 2 (Mejorado): Verifica que getFilteredWeatherByCity PARSEA
-     * los datos filtrados correctamente.
-     */
-    @Test
-    void testGetFilteredWeatherByCitySuccess() {
-        // --- ARRANGE ---
-        String city = "Valparaíso";
-        String expectedUrl =
-                "https://api.openweathermap.org/data/2.5/weather?q="
-                        + city
-                        + "&appid="
-                        + API_KEY
-                        + "&units=metric&lang=es";
+  /**
+   * Test 2 (Mejorado): Verifica que getFilteredWeatherByCity PARSEA los datos filtrados
+   * correctamente.
+   */
+  @Test
+  void testGetFilteredWeatherByCitySuccess() {
+    // --- ARRANGE ---
+    String city = "Valparaíso";
+    String expectedUrl =
+        "https://api.openweathermap.org/data/2.5/weather?q="
+            + city
+            + "&appid="
+            + API_KEY
+            + "&units=metric&lang=es";
 
-        String mockResponse =
-                """
+    String mockResponse =
+        """
                 {
                     "main": { "temp": 18.5, "humidity": 75 },
                     "weather": [ { "description": "parcialmente nublado" } ],
@@ -89,30 +89,30 @@ class WeatherServiceTest {
 
     String result = weatherService.getFilteredWeatherByCity(city);
 
-        assertNotNull(result);
+    assertNotNull(result);
 
-        JSONObject resultJson = new JSONObject(result);
+    JSONObject resultJson = new JSONObject(result);
 
-        assertEquals(18.5, resultJson.getDouble("temperatura"));
-        assertEquals(75, resultJson.getInt("humedad"));
-        assertEquals(5.2, resultJson.getDouble("viento"));
-        assertEquals("parcialmente nublado", resultJson.getString("clima"));
-        // El timestamp es (1699459200 + -10800) = 1699448400 -> "13:00:00" UTC
-        assertEquals("13:00:00", resultJson.getString("hora_actual"));
+    assertEquals(18.5, resultJson.getDouble("temperatura"));
+    assertEquals(75, resultJson.getInt("humedad"));
+    assertEquals(5.2, resultJson.getDouble("viento"));
+    assertEquals("parcialmente nublado", resultJson.getString("clima"));
+    // El timestamp es (1699459200 + -10800) = 1699448400 -> "13:00:00" UTC
+    assertEquals("13:00:00", resultJson.getString("hora_actual"));
 
     verify(restTemplate, times(1)).getForEntity(expectedUrl, String.class);
   }
 
-    /** Test 3: Verifica que se lanza excepción cuando la API falla. */
-    @Test
-    void testGetWeatherByCityThrowsException() {
-        String city = "CiudadInexistente";
-        String expectedUrl =
-            "https://api.openweathermap.org/data/2.5/weather?q="
-                + city
-                + "&appid="
-                + API_KEY
-                + "&units=metric&lang=es";
+  /** Test 3: Verifica que se lanza excepción cuando la API falla. */
+  @Test
+  void testGetWeatherByCityThrowsException() {
+    String city = "CiudadInexistente";
+    String expectedUrl =
+        "https://api.openweathermap.org/data/2.5/weather?q="
+            + city
+            + "&appid="
+            + API_KEY
+            + "&units=metric&lang=es";
 
     when(restTemplate.getForEntity(expectedUrl, String.class))
         .thenThrow(new RestClientException("API Error"));
@@ -120,41 +120,43 @@ class WeatherServiceTest {
     WeatherApiException exception =
         assertThrows(WeatherApiException.class, () -> weatherService.getWeatherByCity(city));
 
-        assertEquals("No se pudo obtener el clima para la ciudad indicada.", exception.getMessage());
-        verify(restTemplate, times(1)).getForEntity(expectedUrl, String.class);
-    }
+    assertEquals("No se pudo obtener el clima para la ciudad indicada.", exception.getMessage());
+    verify(restTemplate, times(1)).getForEntity(expectedUrl, String.class);
+  }
 
-    /**Test 4: Simula un 200 OK con JSON ROTO (le falta el objeto "main").
-     * Verifica que el try-catch atrapa el error de parseo (JSONException)
-     * y lo convierte en WeatherApiException.
-     */
-    @Test
-    void testGetFilteredWeatherByCity_HandlesMalformedJson() {
-        String city = "Talca";
-        String expectedUrl =
-                "https://api.openweathermap.org/data/2.5/weather?q="
-                        + city
-                        + "&appid="
-                        + API_KEY
-                        + "&units=metric&lang=es";
+  /**
+   * Test 4: Simula un 200 OK con JSON ROTO (le falta el objeto "main"). Verifica que el try-catch
+   * atrapa el error de parseo (JSONException) y lo convierte en WeatherApiException.
+   */
+  @Test
+  void testGetFilteredWeatherByCityHandlesMalformedJson() {
+    String city = "Talca";
+    String expectedUrl =
+        "https://api.openweathermap.org/data/2.5/weather?q="
+            + city
+            + "&appid="
+            + API_KEY
+            + "&units=metric&lang=es";
 
-        String mockBadResponse =
-                """
+    String mockBadResponse =
+        """
                 {
                     "weather": [{"description": "soleado"}],
                     "wind": {"speed": 5.2}
                 }
                 """;
-        ResponseEntity<String> responseEntity = new ResponseEntity<>(mockBadResponse, HttpStatus.OK);
-        when(restTemplate.getForEntity(expectedUrl, String.class)).thenReturn(responseEntity);
+    ResponseEntity<String> responseEntity = new ResponseEntity<>(mockBadResponse, HttpStatus.OK);
+    when(restTemplate.getForEntity(expectedUrl, String.class)).thenReturn(responseEntity);
 
-        WeatherApiException exception =
-                assertThrows(WeatherApiException.class, () -> {
-                    weatherService.getFilteredWeatherByCity(city);
-                });
+    WeatherApiException exception =
+        assertThrows(
+            WeatherApiException.class,
+            () -> {
+              weatherService.getFilteredWeatherByCity(city);
+            });
 
-        // 3. Verificamos el mensaje de error
-        assertEquals("No se pudo obtener el clima filtrado para la ciudad indicada.", exception.getMessage());
-        verify(restTemplate, times(1)).getForEntity(expectedUrl, String.class);
-    }
+    assertEquals(
+        "No se pudo obtener el clima filtrado para la ciudad indicada.", exception.getMessage());
+    verify(restTemplate, times(1)).getForEntity(expectedUrl, String.class);
+  }
 }

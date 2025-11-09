@@ -503,7 +503,10 @@ public class UsuarioService {
     usuario.setLiga(nuevaLiga);
   }
 
-  /** RECALCULA LA LIGA para TODOS los usuarios de la base de datos. */
+  /**
+   * RECALCULA LA LIGA para TODOS los usuarios de la base de datos. Útil cuando un admin cambia los
+   * límites de puntos de las ligas.
+   */
   @Transactional
   public void recalcularLigasGlobal() {
     System.out.println("LOG: Iniciando recálculo global de ligas...");

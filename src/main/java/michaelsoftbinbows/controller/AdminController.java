@@ -131,9 +131,14 @@ public class AdminController {
         (usuarioActual.getRol() == Rol.ADMIN)
             ? List.of(Rol.MODERADOR, Rol.USUARIO)
             : List.of(Rol.USUARIO));
-    if (error != null && !error.isEmpty()) model.addAttribute("error", error);
-    if (errorCreacionTarea != null && !errorCreacionTarea.isEmpty())
+
+    if (error != null && !error.isEmpty()) {
+      model.addAttribute("error", error);
+    }
+
+    if (errorCreacionTarea != null && !errorCreacionTarea.isEmpty()) {
       model.addAttribute("errorCreacionTarea", errorCreacionTarea);
+    }
 
     // --- Lógica para activar los modales (ventanas emergentes) ---
 
@@ -168,9 +173,10 @@ public class AdminController {
     if (correoEditado != null) {
       System.out.println(
           "DEBUG: Se ha solicitado abrir el modal para editar al usuario: " + correoEditado);
-      Usuario usuarioAEditar = usuarioService.buscarPorCorreo(correoEditado);
-      if (usuarioAEditar != null && seguridadService.puedeEditar(usuarioActual, usuarioAEditar)) {
-        model.addAttribute("usuarioParaEditar", usuarioAEditar);
+
+      Usuario usuarioAeditar = usuarioService.buscarPorCorreo(correoEditado);
+      if (usuarioAeditar != null && seguridadService.puedeEditar(usuarioActual, usuarioAeditar)) {
+        model.addAttribute("usuarioParaEditar", usuarioAeditar);
       }
     }
 
@@ -207,6 +213,12 @@ public class AdminController {
         model.addAttribute("listaTop10", usuarioService.getTopUsuarios(limiteActual));
         model.addAttribute("limiteActual", limiteActual);
         break;
+      case "usuarios":
+        // No hay carga extra para la vista de usuarios.
+        break;
+      default:
+        // Cae en "usuarios" (vista por defecto) o cualquier otro caso.
+        break;
     }
 
     model.addAttribute("activePage", "admin");
@@ -220,8 +232,8 @@ public class AdminController {
    * @param correoOriginal El correo original del usuario, para identificarlo en la BD.
    * @param nuevoCorreo El nuevo correo electrónico.
    * @param nuevoRol El nuevo rol asignado.
-   * @param nuevaContraseña La nueva contraseña (opcional).
-   * @param confirmarContraseña Confirmación de la nueva contraseña.
+   * @param nuevaContrasena La nueva contraseña (opcional).
+   * @param confirmarContrasena Confirmación de la nueva contraseña.
    * @param redirectAttributes Permite enviar mensajes (feedback) a la vista después de una
    *     redirección.
    * @return Una redirección a la página de administración.
@@ -295,28 +307,28 @@ public class AdminController {
   /**
    * Maneja la solicitud para eliminar un usuario del sistema.
    *
-   * @param correoAEliminar El correo del usuario a eliminar.
+   * @param correoAeliminar El correo del usuario a eliminar.
    * @param redirectAttributes Para enviar mensajes de feedback a la vista.
    * @return Redirección al panel de administración.
    */
   @GetMapping("/admin/eliminar")
   public String eliminarUsuario(
-      @RequestParam("correo") String correoAEliminar, RedirectAttributes redirectAttributes) {
+      @RequestParam("correo") String correoAeliminar, RedirectAttributes redirectAttributes) {
     Usuario actor =
         ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
             .getUsuario();
-    Usuario objetivo = usuarioService.buscarPorCorreo(correoAEliminar);
+    Usuario objetivo = usuarioService.buscarPorCorreo(correoAeliminar);
 
     System.out.println(
         "Log: El usuario '"
             + actor.getNombreUsuario()
             + "' está intentando eliminar a '"
-            + (objetivo != null ? objetivo.getNombreUsuario() : correoAEliminar)
+            + (objetivo != null ? objetivo.getNombreUsuario() : correoAeliminar)
             + "'.");
 
     if (objetivo == null) {
       System.err.println(
-          "ERROR: Se intentó eliminar un usuario que no existe con el correo: " + correoAEliminar);
+          "ERROR: Se intentó eliminar un usuario que no existe con el correo: " + correoAeliminar);
       redirectAttributes.addFlashAttribute("error", "No se encontró el usuario a eliminar.");
       return "redirect:/admin";
     }
@@ -330,7 +342,7 @@ public class AdminController {
       return "redirect:/acceso-denegado";
     }
 
-    usuarioService.eliminarPorCorreo(correoAEliminar);
+    usuarioService.eliminarPorCorreo(correoAeliminar);
     redirectAttributes.addFlashAttribute(
         "success", "Usuario '" + objetivo.getNombreUsuario() + "' eliminado.");
     System.out.println(
@@ -393,6 +405,18 @@ public class AdminController {
     return "redirect:/admin";
   }
 
+  /**
+   * Guarda los cambios de una tarea editada desde el panel de admin.
+   *
+   * @param correoUsuario El correo del propietario de la tarea.
+   * @param nombreOriginal El nombre original de la tarea.
+   * @param nuevoNombre El nuevo nombre para la tarea.
+   * @param nuevaDescripcion La nueva descripción para la tarea.
+   * @param nuevaDificultad La nueva dificultad para la tarea.
+   * @param redirectAttributes Atributos for redirect.
+   * @return Redirección a la vista de tareas del usuario.
+   * @throws AdminGuardarTareaException Si la tarea es inválida.
+   */
   @PostMapping("/admin/tareas/guardar")
   public String guardarTareaEditada(
       @RequestParam("correoUsuario") String correoUsuario,

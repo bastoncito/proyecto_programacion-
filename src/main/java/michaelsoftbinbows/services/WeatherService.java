@@ -55,7 +55,12 @@ public class WeatherService {
 
       JSONObject result = new JSONObject();
       result.put("temperatura", json.getJSONObject("main").getDouble("temp"));
-      result.put("clima", json.getJSONArray("weather").getJSONObject(0).getString("description"));
+
+      // ARREGLO: Línea partida extrayendo el valor a una variable
+      String climaDescripcion =
+          json.getJSONArray("weather").getJSONObject(0).getString("description");
+      result.put("clima", climaDescripcion);
+
       result.put("humedad", json.getJSONObject("main").getInt("humidity"));
       result.put("viento", json.getJSONObject("wind").getDouble("speed"));
 

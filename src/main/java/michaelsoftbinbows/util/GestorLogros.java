@@ -125,6 +125,7 @@ public class GestorLogros {
         return false;
     }
   }
+
   /**
    * Devuelve una copia de la lista de todos los logros definidos en el sistema.
    *

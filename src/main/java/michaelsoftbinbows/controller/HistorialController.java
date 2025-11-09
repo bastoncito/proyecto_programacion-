@@ -13,13 +13,20 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+/** Controlador para gestionar la vista del historial de tareas completadas del usuario. */
 @Controller
 @RequestMapping("/historial")
 public class HistorialController {
 
   @Autowired private UsuarioService usuarioService;
 
-  // Este método ahora responde a GET "/historial"
+  /**
+   * Muestra la página de historial de tareas del usuario actualmente logueado. Obtiene las tareas
+   * completadas y las pasa a la vista.
+   *
+   * @param model El modelo de Spring para pasar datos a la plantilla.
+   * @return El nombre de la plantilla "historial_tareas".
+   */
   @GetMapping
   public String mostrarHistorial(Model model) {
     System.out.println(
@@ -48,7 +55,7 @@ public class HistorialController {
   }
 
   /*
-   *  TODO: RESUMENES SEMANALES
+   * TODO: RESUMENES SEMANALES
    * @GetMapping("/semanal")
    * public String mostrarResumenSemanal(Model model) {
    */

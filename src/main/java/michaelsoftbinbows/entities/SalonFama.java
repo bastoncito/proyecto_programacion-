@@ -5,6 +5,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+/**
+ * Entidad que representa a un ganador en el Salón de la Fama al final de una temporada. Almacena
+ * una instantánea del top 3 de jugadores.
+ */
 @Entity
 public class SalonFama {
 
@@ -18,10 +22,20 @@ public class SalonFama {
   private int puntos;
   private String liga;
 
-  // JPA necesita un constructor vacío
-  public SalonFama() {}
+  /** Constructor vacío requerido por JPA. */
+  public SalonFama() {
+    // Constructor vacío
+  }
 
-  // Constructor para guardar a los ganadores
+  /**
+   * Constructor para guardar a los ganadores de una temporada.
+   *
+   * @param puesto El puesto en el podio (1, 2, o 3).
+   * @param temporadaNombre El nombre de la temporada (ej. "Octubre 2025").
+   * @param nombreUsuario El nombre del usuario ganador.
+   * @param puntos Los puntos con los que terminó.
+   * @param liga La liga en la que terminó.
+   */
   public SalonFama(
       int puesto, String temporadaNombre, String nombreUsuario, int puntos, String liga) {
     this.puesto = puesto;
