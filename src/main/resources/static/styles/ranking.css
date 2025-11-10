@@ -1,407 +1,431 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Arial, Helvetica, sans-serif;
+/* ===================================================================
+ * 1. CONFIGURACIÓN GENERAL
+ * =================================================================== */
+
+:root {
+  /* Aquí guardamos los colores y estilos (sombras, bordes redondeados) que se repiten en la página. */
+
+  /* Colores principales */
+  --color-principal: #ffc839;
+  --color-principal-hover: #e6b332;
+  --color-puntos: #007bff;
+
+  /* Tonos de gris */
+  --color-oscuro: #212529;
+  --color-texto-secundario: #868e96;
+  --color-bordes-sutiles: #eef2f5;
+  --color-claro: #f5f5f5;
+  --color-blanco: #fff;
+
+  /* Colores para las ligas */
+  --color-liga-bronce: #cd7f32;
+  --color-liga-plata: #a8a9ad;
+  --color-liga-oro: #ffd700;
+  --color-liga-platino: #4191a6;
+  --color-liga-diamante: #b9f2ff;
+
+  /* Efectos visuales */
+  --sombra-suave: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --border-radius-suave: 12px;
+  --transicion-suave: all 0.3s ease;
 }
 
+/* Estilos básicos para toda la página, como el tipo de letra y el color de fondo. */
 body {
-    margin: 0;
-    padding: 0;
-    background-color: #e6b332;
+  font-family: "Poppins", sans-serif;
+  background-color: var(--color-claro);
+  color: var(--color-texto-principal);
+  margin: 0;
+  padding-bottom: 80px; /* Deja espacio para la barra de navegación en móviles. */
 }
 
-/* ========================================
-    HEADER (Sin cambios)
-   ======================================== */
+/* ===================================================================
+ * 2. ESTRUCTURA DE LA PÁGINA (RESPONSIVE)
+ * =================================================================== */
 
-.container-header {
-    background-color: #181818;
-    height: 10vh;
-    display: flex;
+/* Define el layout principal. En móviles, todo se apila en una sola columna. */
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+  padding: 15px;
 }
 
-.volver-section {
-    width: 79vw;
-    display: flex;        
-    align-items: center;      
-    justify-content: flex-start; 
-    gap: 2%;
-    padding-left: 1%;            
+/* Un truco para que las columnas se organicen bien en la vista de móvil. */
+.left-column,
+.right-column {
+  display: contents;
 }
 
-.logo {
-    width: 6vw;
-    height: auto;
-    display: block;          
-    object-fit: contain;
+/* Cambia el orden en que aparecen las tarjetas solo en la vista de móvil. */
+.ranking-card {
+  order: 1;
+}
+.league-requirements-card {
+  order: 2;
+}
+.hall-of-fame-card {
+  order: 3;
+}
+.your-rank-card {
+  order: 4;
+}
+.stats-card {
+  order: 5;
 }
 
-.btn-volver {
-    background-color: #FFC839;
-    color: #181818;
-    padding: 10px 25px;
-    border-radius: 15px;
-    cursor: pointer;
-    font-weight: bolder;
-    font-size: 1rem;
-    border: none;
-    transition: all 0.3s ease;
-}
+/* A partir de aquí, son los estilos para pantallas grandes (escritorio). */
+@media (min-width: 1024px) {
+  /* Quitamos el espacio inferior que era para la barra de móvil. */
+  body {
+    padding-bottom: 0;
+  }
 
-.btn-volver:hover {
-    background-color: #e6b332;
-}
+  /* Cambiamos a un diseño de dos columnas. */
+  .grid-container {
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    padding: 20px;
+    align-items: start;
+  }
 
-.perfil-section {
-    width: 20vw;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    border-radius: 15px;
-    display: flex;            
-    align-items: center;
-    justify-content: flex-start;
-    padding-left: 0.5%;
-    padding-right: 0.5%;
-    background-color: #e6b332;
-}
-
-.user-lvl {
-    border-radius: 15px;
-    background-color: white;
-    height: 80%;
-    width: 20%;
-    margin-top: 1%;
-    margin-bottom: 1%;
-    align-items: center;
-    padding: 2%;
+  /* Restauramos las columnas para que funcionen en escritorio. */
+  .left-column,
+  .right-column {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    gap: 20px;
+  }
+
+  /* Hacemos que la columna de la derecha se quede fija al hacer scroll. */
+  .right-column {
+    position: sticky;
+    top: 20px;
+    height: fit-content;
+  }
+
+  /* Quitamos el orden especial que pusimos para móviles. */
+  .ranking-card,
+  .hall-of-fame-card,
+  .stats-card,
+  .league-requirements-card,
+  .your-rank-card {
+    order: unset;
+  }
 }
 
-.user-lvl .lvl-numero {
-    font-size: 1.8rem;
-    font-weight: bold;
+/* ===================================================================
+ * 3. ESTILO DE LAS TARJETAS
+ * =================================================================== */
+
+/* El estilo base para todas las "tarjetas" o bloques de contenido. */
+.card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-blanco);
+  border-radius: var(--border-radius-suave);
+  box-shadow: var(--sombra-suave);
+  overflow: hidden;
 }
 
-.user-lvl .lvl-texto {
-    font-size: 1rem;
+/* El encabezado amarillo de cada tarjeta. */
+.card-header {
+  background-color: var(--color-principal);
+  color: var(--color-oscuro);
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.user-info {
-    height: 80%;
-    width: 100%;
-    display: flex;
-    flex-direction: column; 
-    align-items: flex-end;
+.card-header h1,
+.card-header h2 {
+  margin: 0;
+  font-size: 1.2em;
+  font-weight: 600;
 }
 
-.user-info .info-nombre {
-    font-size: 1.5rem;
-    font-weight: bolder;
+/* El subtítulo que va debajo del título principal en el encabezado. */
+.card-header .subtitle {
+  font-size: 0.9em;
+  font-weight: 500;
+  opacity: 0.8;
 }
 
-.user-info .info-correo {
-    font-size: 1rem;
+/* El área de contenido blanco dentro de cada tarjeta. */
+.card-body {
+  padding: 20px;
+  flex-grow: 1;
 }
 
-/* ========================================
-    MAIN CONTENT (Sin cambios)
-   ======================================== */
+/* ===================================================================
+ * 4. ESTILOS ESPECÍFICOS PARA CADA TARJETA
+ * =================================================================== */
 
-.container-main {
-    display: flex;
-    height: 90vh;
-    align-items: stretch;
+/* --- Estilos para la tabla del Ranking --- */
+.ranking-list-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 65vh; /* Altura máxima para que aparezca el scroll. */
+  overflow-y: auto;
 }
 
-.container-left {
-    height: 90vh;
-    width: 62vw;
-}
-
-.container-right {
-    height: 90vh;
-    width: 38vw;
-}
-
-.container-body {
-    margin: 2vh;
-    height: calc(90vh - 4vh);
-    padding: 2%;
-    border-radius: 24px;
-    background: #fff;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-    overflow: hidden; 
-    display: flex;
-    flex-direction: column;
-}
-
-/* ========================================
-    SECCIÓN RANKING (IZQUIERDA - MODIFICADO)
-   ======================================== */
-
-.titulo-ranking { /* Renombrado de .titulo-historial */
-    font-size: 2rem;
-    color: #333;
-    margin-bottom: 5px; /* Menos margen */
-    padding-bottom: 15px;
-    border-bottom: 3px solid #FFC839;
-    flex-shrink: 0; 
-}
-
-.subtitulo-temporada { /* NUEVO */
-    font-size: 1.1rem;
-    color: #555;
-    margin-bottom: 20px;
-    flex-shrink: 0;
-}
-
-.ranking-container { /* Renombrado de .history-container */
-    display: flex;
-    flex-direction: column;
-    flex: 1; 
-    overflow: hidden; 
-}
-
-/* Barra de parámetros (headers) - MODIFICADO */
+/* La cabecera de la tabla (#, Nombre, etc.) que se queda fija arriba. */
 .param-bar {
-    display: grid;
-    /* 4 columnas: Puesto, Nombre, Puntos, Liga */
-    grid-template-columns: 0.5fr 2.5fr 1fr 1fr; 
-    gap: 15px;
-    background-color: #f8f9fa;
-    padding: 15px 20px;
-    border-radius: 12px;
-    font-weight: bold;
-    color: #495057;
-    font-size: 1rem;
-    flex-shrink: 0; 
-    margin-bottom: 15px;
+  display: grid;
+  grid-template-columns: 0.5fr 3fr 1.5fr 1.5fr;
+  gap: 10px;
+  background-color: #f8f9fa;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  color: var(--color-texto-secundario);
+  font-size: 0.9em;
+  text-transform: uppercase;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-/* Alineación de headers - NUEVO */
+/* Alinea el texto de las cabeceras. */
 .param-bar span:nth-child(1),
 .param-bar span:nth-child(3),
 .param-bar span:nth-child(4) {
-    text-align: center;
+  text-align: center;
 }
 
-/* Lista de ranking - MODIFICADO */
+/* La lista que contiene todas las filas de los jugadores. */
 .ranking-list {
-    flex: 1; 
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    overflow-y: auto; /* Solo esta lista tiene scroll */
-    padding-right: 10px;
-    margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-/* Filas del ranking - MODIFICADO */
+/* El estilo para cada fila de jugador en el ranking. */
 .ranking-row {
-    display: grid;
-    /* 4 columnas: Puesto, Nombre, Puntos, Liga */
-    grid-template-columns: 0.5fr 2.5fr 1fr 1fr;
-    gap: 15px;
-    padding: 15px 20px;
-    background-color: #ffffff;
-    border: 1px solid #e9ecef;
-    border-radius: 12px;
-    align-items: center;
-    transition: all 0.3s ease;
+  display: grid;
+  grid-template-columns: 0.5fr 3fr 1.5fr 1.5fr;
+  gap: 10px;
+  padding: 15px 20px;
+  border: 1px solid var(--color-bordes-sutiles);
+  border-radius: 8px;
+  align-items: center;
+  transition: var(--transicion-suave);
 }
 
+/* Efecto al pasar el mouse sobre una fila. */
 .ranking-row:hover {
-    background-color: #f8f9fa;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
+  background-color: var(--color-bordes-sutiles);
+  transform: translateY(-2px);
 }
 
-.ranking-row span {
-    font-size: 0.95rem;
-    color: #495057;
+/* Estilos para cada columna de la fila. */
+.rank-number {
+  font-weight: 700;
+  font-size: 1.1em;
+  text-align: center;
+}
+.rank-name {
+  font-weight: 600;
+}
+.rank-points {
+  font-weight: 700;
+  color: var(--color-puntos);
+  text-align: center;
+}
+.rank-league {
+  font-weight: 600;
+  text-align: center;
 }
 
-/* Estilos de celdas específicas - NUEVO */
-.ranking-row .rank-number {
-    font-weight: 700;
-    font-size: 1.1rem;
-    color: #333;
-    text-align: center;
+/* Mensaje que aparece si la tabla está vacía. */
+.ranking-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--color-texto-secundario);
+}
+.ranking-empty i {
+  font-size: 3rem;
+  margin-bottom: 10px;
 }
 
-.ranking-row span:nth-child(2) { /* Nombre */
-    font-weight: 600;
-    color: #333;
-    text-align: left;
+/* --- Estilos para la tarjeta de Requisitos de Liga --- */
+.league-requirements-card .card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.league-requirement-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 15px;
+  padding: 10px 15px;
+  background-color: var(--color-bordes-sutiles);
+  border-radius: 8px;
+}
+.league-req-icon {
+  height: 70px;
+  width: 70px;
+  object-fit: contain;
+}
+.league-requirement-item .league-name {
+  font-weight: 700;
+  font-size: 1.1em;
+}
+.league-requirement-item .league-points {
+  font-weight: 600;
+  color: #555;
+  justify-self: end;
 }
 
-.ranking-row .pts-liga { /* Puntos */
-    text-align: center;
-    font-weight: 700;
-    color: #007bff; /* Azul para Puntos de Liga */
-    font-size: 1rem;
+/* --- Estilos para la tarjeta del "Salón de la Fama" --- */
+.winners-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
-
-.ranking-row span:nth-child(4) { /* Liga */
-    text-align: center;
-    font-weight: 600;
-}
-
-/* Colores de Ligas - NUEVO */
-.liga-bronce { color: #CD7F32; }
-.liga-plata { color: #A8A9AD; }
-.liga-oro { color: #FFD700; }
-.liga-platino { color: #E5E4E2; }
-.liga-diamante { color: #B9F2FF; }
-
-
-/* ========================================
-    SECCIÓN DERECHA (INFORMACIÓN - MODIFICADO)
-   ======================================== */
-
-.container-description {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.container-description h1 {
-    font-size: 1.8rem;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.container-description p {
-    font-size: 1rem;
-    line-height: 1.6;
-    color: #555;
-}
-
-/* Salón de la Fama - NUEVO */
-.hall-of-fame {
-    background-color: #fdfdfd;
-    padding: 20px;
-    border-radius: 12px;
-    margin-top: 15px;
-    border: 1px solid #eee;
-}
-
-.hall-of-fame h2 {
-    font-size: 1.3rem;
-    color: #333;
-    margin-bottom: 15px;
-    text-align: center;
-}
-
 .winner-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    border: 2px solid transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+  border-radius: 10px;
+  border: 2px solid;
 }
 .winner-box.gold {
-    background: #fffaf0;
-    border-color: #FFD700;
+  background: #fffaf0;
+  border-color: var(--color-liga-oro);
 }
 .winner-box.silver {
-    background: #f8f8f8;
-    border-color: #C0C0C0;
+  background: #f8f8f8;
+  border-color: var(--color-liga-plata);
 }
 .winner-box.bronze {
-    background: #fbf5ef;
-    border-color: #CD7F32;
+  background: #fbf5ef;
+  border-color: var(--color-liga-bronce);
+}
+.winner-place {
+  font-size: 1em;
+  font-weight: bold;
+  color: var(--color-texto-secundario);
+}
+.winner-name {
+  font-size: 1.2em;
+  font-weight: 700;
+  margin: 5px 0;
+}
+.winner-points {
+  font-size: 1.1em;
+  font-weight: 600;
+  color: var(--color-puntos);
+}
+.hall-of-fame-empty {
+  text-align: center;
+  color: var(--color-texto-secundario);
+  padding: 20px;
 }
 
-.winner-box span:first-child {
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: #555;
+/* --- Estilos para la tarjeta que muestra tu rango actual --- */
+.your-rank-card .card-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
 }
-.winner-box .winner-name {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #000;
-    margin: 5px 0;
+.your-rank-icon {
+  max-height: 120px;
+  object-fit: contain;
 }
-.winner-box .winner-points {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #007bff;
-}
-
-/* Stats Personales - NUEVO */
-.personal-stats {
-    background-color: #f8f9fa;
-    padding: 20px;
-    border-radius: 12px;
-    margin-top: 0px;
+@media (max-width: 1023px) {
+  .your-rank-icon {
+    max-height: 150px;
+  }
 }
 
-.personal-stats h2 {
-    font-size: 1.3rem;
-    color: #333;
-    margin-bottom: 15px;
+/* --- Estilos para la tarjeta que muestra tus estadísticas --- */
+.stats-card .card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.stat-icon-wrapper {
+  flex-shrink: 0;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: var(--color-bordes-sutiles);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.stat-icon-wrapper i {
+  font-size: 24px;
+  color: var(--color-texto-secundario);
+}
+.stat-item:nth-child(1) i {
+  color: var(--color-puntos);
+}
+.stat-item:nth-child(2) i {
+  color: var(--color-principal);
+}
+.stat-item:nth-child(3) i {
+  color: #6c757d;
+}
+.stat-text {
+  display: flex;
+  flex-direction: column;
+}
+.stat-label {
+  font-size: 0.9em;
+  font-weight: 500;
+  color: var(--color-texto-secundario);
+}
+.stat-value {
+  font-size: 1.4em;
+  font-weight: 700;
 }
 
-.personal-stats p {
-    font-size: 1rem;
-    margin: 8px 0;
-    color: #555;
+/* ===================================================================
+ * 5. CLASES DE UTILIDAD
+ * =================================================================== */
+
+/* Clases para dar color al texto de cada liga (Bronce, Plata, etc.). */
+.liga-bronce {
+  color: var(--color-liga-bronce);
+}
+.liga-plata {
+  color: var(--color-liga-plata);
+}
+.liga-oro {
+  color: var(--color-liga-oro);
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+}
+.liga-platino {
+  color: var(--color-liga-platino);
+}
+.liga-diamante {
+  color: var(--color-liga-diamante);
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
 }
 
-.personal-stats strong {
-    color: #333;
-    font-weight: bold;
-}
+/* ===================================================================
+ * 6. MEJORAS VISUALES
+ * =================================================================== */
 
-
-/* ========================================
-    Scrollbar (Sin cambios)
-   ======================================== */
-.ranking-list::-webkit-scrollbar {
-    width: 8px;
+/* Personaliza la apariencia de la barra de scroll. */
+.ranking-list-container::-webkit-scrollbar {
+  width: 8px;
 }
-.ranking-list::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
+.ranking-list-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
 }
-.ranking-list::-webkit-scrollbar-thumb {
-    background: #FFC839;
-    border-radius: 10px;
-}
-.ranking-list::-webkit-scrollbar-thumb:hover {
-    background: #e6b332;
-}
-
-/* ========================================
-    RESPONSIVE (Sin cambios)
-   ======================================== */
-
-@media (max-width: 1200px) {
-    .container-left {
-        width: 55vw;
-    }
-    
-    .container-right {
-        width: 45vw;
-    }
-}
-
-@media (max-width: 768px) {
-    .container-main {
-        flex-direction: column;
-        height: auto;
-    }
-    
-    .container-left,
-    .container-right {
-        width: 100%;
-        height: auto;
-    }
+.ranking-list-container::-webkit-scrollbar-thumb {
+  background: var(--color-principal);
+  border-radius: 10px;
 }

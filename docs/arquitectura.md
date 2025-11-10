@@ -1,45 +1,52 @@
 ## Estructura del proyecto
-### Dentro de la carpeta src/main/java/Michaelsoft_Binbows...
+
+### Dentro de la carpeta src/main/java/michaelsoftbinbows...
 
 ```text
+├─ config/ --> configuración de Spring
+│  ├─ AppConfig.java
 ├─ controller/ --> Llamadas a la capa de servicios (validaciones de entradas/solicitudes), endpoints
-│  ├─ TareaController.java 
+│  ├─ TareaController.java
 │  ├─ AutorizacionController.java
 │  ├─ HomeController.java
 │  ├─ AdminController.java
-│  ├─ HomeController.java
 │  ├─ PerfilController.java
 │  ├─ DevController.java
+│  ├─ WeatherController.java
+│  ├─ GeocodingController.java
+│  ├─ APIController.java
+│  ├─ LogroController.java
+│  ├─ HistorialController.java
 ├─ dto/ --> objetos utilizados para transferir datos (especialmente desde solicitudes POST/PUT)
-│  ├─ UsuarioDTO.java 
-│  ├─ TareaDTO.java 
+│  ├─ UsuarioDto.java
+│  ├─ TareaDto.java
 ├─ model/ --> enums, interfaces
-│  ├─ Email.java 
-│  ├─ Id.java 
-│  ├─ NotBlank.java 
-│  ├─ Rol.java 
+│  ├─ Email.java
+│  ├─ Id.java
+│  ├─ NotBlank.java
+│  ├─ Rol.java
 ├─ util/ --> clases/métodos de utilidad
-│  ├─ Dificultad.java 
-│  ├─ GestorLogros.java 
-│  ├─ SistemaNiveles.java 
+│  ├─ Dificultad.java
+│  ├─ GestorLogros.java
+│  ├─ SistemaNiveles.java
 ├─ data/ --> Persistencia de datos, repositorios, interacción con base de datos
-│  ├─ PersistenciaJSON.java
 │  ├─ JsonMigrator.java
 │  ├─ LogroRepository.java
 │  ├─ TareaRepository.java
 │  ├─ UsuarioRepository.java
 │  ├─ JpaRepository.java
+│  ├─ ConfiguracionRepository.java
+│  ├─ SalonFamaRepository.java
 ├─ services/ --> La lógica de la solución en sí, Services de Spring
-│  ├─ GestorLogro.java
-│  ├─ Rol.java
-│  ├─ Id.java
-│  ├─ Email.java
-│  ├─ Dificultad.java
-│  ├─ NotBlank.java
 │  ├─ UsuarioService.java
+│  ├─ ConfiguracionService.java
 │  ├─ TareaService.java
 │  ├─ LogroService.java
+│  ├─ TemporadaService.java
 │  ├─ SeguridadService.java
+│  ├─ UsuarioTareaService.java
+│  ├─ WeatherService.java
+│  ├─ GeocodingService.java
 │  ├─ CustomUserDetailsService.java
 ├─ exceptions/ --> excepciones/errores personalizados
 │  ├─ (...)
@@ -51,4 +58,7 @@
 │  ├─ Usuario.java
 │  ├─ Tarea.java
 │  ├─ Logro.java
+│  ├─ SalonFama.java
+│  ├─ Configuracion.java
 
+```

@@ -1,883 +1,831 @@
+/* =================================================================== */
+/* 1. CONFIGURACIÓN GLOBAL Y PALETA DE COLORES                       */
+/* =================================================================== */
+
+/* Aquí definimos nuestras "variables" de diseño. Es un lugar central
+   para todos los colores, sombras y bordes. Si queremos cambiar el color
+   principal de la app, solo lo cambiamos aquí y se actualiza en todos lados. */
+:root {
+  /* Paleta de colores principal */
+  --color-principal: #ffc839; /* El amarillo característico de la marca */
+  --color-principal-hover: #e6b332; /* Un tono más oscuro para cuando pasas el mouse */
+  --color-oscuro: #212529; /* Un negro suave para textos y fondos */
+  --color-blanco: #fff;
+  --color-claro: #f5f5f5; /* Un gris muy claro para el fondo general de la página */
+  --color-bordes-sutiles: #eef2f5; /* Un color suave para bordes y fondos de ítems */
+  --color-rojo-peligro: #d9534f;
+
+  /* Paleta de colores para textos */
+  --color-texto-principal: var(--color-oscuro);
+  --color-texto-secundario: #868e96; /* Un gris para textos menos importantes */
+  --color-texto-claro: rgba(255, 255, 255, 0.9);
+
+  /* Colores de acento para elementos específicos */
+  --color-acento-clima: #3498db; /* Un azul para el ícono del clima */
+  --color-rojo-accion-suave: #e74c3c; /* Un rojo para botones de "peligro" como Cerrar Sesión */
+
+  /* Variables de estilo para reutilizar */
+  --sombra-suave: 0 4px 12px rgba(0, 0, 0, 0.08); /* Una sombra sutil para dar profundidad a las tarjetas */
+  --border-radius-suave: 12px; /* Bordes redondeados consistentes */
+  --transicion-suave: all 0.3s ease; /* Para que las animaciones (como los hover) sean fluidas */
+}
+
+/* El selector universal (*). Lo usamos para resetear los estilos por defecto
+   del navegador, asegurando que no haya márgenes o paddings inesperados. */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Estilos base para toda la página. */
 body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    display: flex;
-    flex-wrap: wrap;
-    height: 100vh;
-    background-color: #f5f5f5;
-    gap: 8px;
-    padding: 8px;
-    box-sizing: border-box;
+  font-family: "Poppins", sans-serif; /* Una fuente moderna y legible */
+  background-color: var(
+    --color-claro
+  ); /* Usamos nuestro color de fondo definido arriba */
+  color: var(--color-texto-principal); /* Color de texto por defecto */
+  min-height: 100vh; /* Asegura que el cuerpo ocupe al menos toda la altura de la pantalla */
+  padding-bottom: 80px; /* Dejamos espacio abajo para la barra de navegación en móviles */
 }
 
-/* Sección Anuncios - Superior Izquierda (60% altura, 60% ancho) */
-.container-advertisements {
-    width: calc(60% - 8px);
-    height: calc(60% - 8px);
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    padding: 15px;
-    box-sizing: border-box;
-    justify-content: flex-start;
-    align-items: stretch;
+/* =================================================================== */
+/* 2. LAYOUT PRINCIPAL (MÓVIL Y ESCRITORIO)                          */
+/* =================================================================== */
+
+/* Este es el contenedor principal que envuelve todo el contenido.
+   Por defecto (en móviles), usamos flexbox para que los elementos se apilen
+   uno encima del otro en una sola columna. */
+.grid-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Espacio entre las tarjetas */
+  padding: 15px;
+  width: 100%;
+  min-height: 100vh;
 }
 
-/* Sección Información - Superior Derecha (60% altura, 40% ancho) */
-.container-info {
-    width: calc(40% - 8px);
-    height: calc(60% - 8px);
-    display: flex;
-    gap: 8px;
-    padding: 10px;
-    box-sizing: border-box;
+/* Estas son las dos columnas principales de nuestro diseño. En móvil, ambas
+   se comportan igual, apilando su contenido verticalmente. */
+.main-content-column,
+.sidebar-column {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
-/* Info Left - acomodo vertical con alturas fijas */
-.info-left {
-    width: 75%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+/* Media Query: Estos estilos SOLO se aplican en pantallas grandes (1024px o más).
+   Aquí es donde transformamos el layout de una columna a dos. */
+@media (min-width: 1024px) {
+  body {
+    padding-bottom: 0; /* En escritorio no hay barra de navegación abajo, así que quitamos el espacio extra. */
+  }
+  .grid-container {
+    display: grid; /* Cambiamos de flex a grid para crear las dos columnas */
+    grid-template-columns: 2fr 1fr; /* La columna principal ocupa 2/3 y la lateral 1/3 del espacio */
+    gap: 20px;
+    padding: 20px;
+  }
+  .main-content-column,
+  .sidebar-column {
+    gap: 20px; /* Aumentamos un poco el espacio entre tarjetas en escritorio */
+  }
 }
 
-/* Info Right */
-.info-right {
-    width: 25%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+/* =================================================================== */
+/* 3. ESTILO DE "TARJETA" UNIFICADO                                  */
+/* =================================================================== */
+
+/* Este es el estilo base para todos los bloques de contenido (Desafío, Top, Tareas, etc.).
+   Al tener un estilo unificado, toda la interfaz se siente consistente. */
+.card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-blanco);
+  border-radius: var(--border-radius-suave);
+  box-shadow: var(--sombra-suave);
+  overflow: hidden; /* Importante para que los bordes redondeados se apliquen bien */
 }
 
-/* Sección Tareas - Inferior Izquierda (40% altura, 60% ancho) */
-.container-task {
-    width: calc(60% - 8px - 1vw);
-    height: 33vh;
-    padding: 0;
-    margin-left: 1vw;
-    box-sizing: border-box;
-    position: relative;
-    z-index: 1;
+/* El encabezado de cada tarjeta (la franja amarilla con el título). */
+.card-header {
+  background-color: var(--color-principal);
+  color: var(--color-oscuro);
+  padding: 12px 20px;
+  flex-shrink: 0; /* Evita que el header se encoja si el contenido es muy grande */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-/* Sección Historial - Inferior Derecha (40% altura, 40% ancho) */
-.container-history {
-    width: calc(40.3% - 8px);
-    height: calc(39% - 8px);
-    padding: 0;
-    box-sizing: border-box;
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
+.card-header h1,
+.card-header h2 {
+  margin: 0;
+  font-size: 1.1em;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
-.container-history h2 {
-    margin: 0;
-    padding: 20px 20px 10px 20px;
-    color: #333;
-    font-size: 1.3em;
-    background-color: transparent;
+/* El cuerpo o contenido principal de cada tarjeta. */
+.card-body {
+  padding: 20px;
+  flex-grow: 1; /* Permite que el cuerpo de la tarjeta crezca para llenar el espacio disponible */
+  display: flex;
+  flex-direction: column;
 }
 
-/* Reto Section */
-.reto-section {
-    flex: 1.5;
-    background-color: #333;
-    color: white;
-    text-align: center;
-    border-radius: 20px;
-    padding: 0;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    position: relative;
+/* =================================================================== */
+/* 4. ESTILOS ESPECÍFICOS DE CADA COMPONENTE                         */
+/* =================================================================== */
+
+/* --- Componentes de la Barra Lateral --- */
+
+/* La tarjeta de información del perfil de usuario. */
+.info-section {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background-color: var(--color-blanco);
+  border-radius: var(--border-radius-suave);
+  box-shadow: var(--sombra-suave);
+}
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.profile-avatar {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+  background-color: var(--color-bordes-sutiles);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #90a4ae;
+}
+.profile-details {
+  flex-grow: 1;
+  min-width: 0;
+}
+.profile-details .username,
+.profile-details .user-email {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+} /* Evita que textos largos rompan el diseño */
+.profile-details .username {
+  font-size: 1.15em;
+  font-weight: 600;
+}
+.profile-details .user-email {
+  font-size: 0.85em;
+  color: var(--color-texto-secundario);
 }
 
-.reto-header {
-    background-color: #FFC839;
-    padding: 15px;
-    margin: 0;
-    flex-shrink: 0;
+/* La insignia circular que muestra el nivel del usuario. */
+.level-badge {
+  background-color: var(--color-oscuro);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.level-badge .level-number {
+  color: var(--color-principal);
+  font-size: 1em;
+  font-weight: 700;
+}
+.level-badge .level-text {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.45em;
+  letter-spacing: 1px;
 }
 
-.reto-header h1 {
-    margin: 0;
-    color: #333;
-    font-size: 1.4em;
-    font-weight: bold;
-    letter-spacing: 1px;
+/* La barra de progreso de experiencia (XP). */
+.xp-progress-bar {
+  width: 100%;
+}
+.xp-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8em;
+  color: var(--color-texto-secundario);
+  margin-bottom: 5px;
+}
+.progress-bar-container {
+  background-color: var(--color-bordes-sutiles);
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  width: 100%;
+}
+.progress-bar-fill {
+  background-color: var(--color-principal);
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease-in-out;
+} /* Animación suave para la barra */
+
+/* La sección de abajo con la racha y los botones. */
+.profile-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.reto-body {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 25px 20px;
-    gap: 12px;
+/* Estilos para el ícono de racha y su número. */
+.streak-display {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* Espacio entre el ícono y el número */
+  margin-right: auto; /* Empuja los botones hacia la derecha llenando el espacio. */
+}
+.streak-display .bxs-hot {
+  font-size: 36px;
+  color: #ff6b35;
+}
+.streak-display .streak-number {
+  color: var(--color-oscuro); /* Número en color oscuro */
+  font-size: 1.2em;
+  font-weight: 700;
+}
+/* ESTILO PARA LA RACHA INACTIVA (APAGADA) */
+.streak-display.inactive .bxs-hot {
+  color: #adb5bd; /* Un gris neutro y suave, puedes usar var(--color-texto-secundario) si prefieres */
 }
 
-.reto-body p {
-    margin: 0;
-    color: white;
-    text-align: center;
+/* Cambiar el color del número a gris */
+.streak-display.inactive .streak-number {
+  color: #adb5bd;
 }
 
-.reto-body p:first-child {
-    font-size: 1.4em;
-    font-weight: bold;
-    line-height: 1.2;
+/* Estilos generales para los botones "Ver Perfil" y "Cerrar Sesión". */
+.profile-actions button {
+  width: 100%;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transicion-suave);
+  font-size: 0.9em;
+  background-color: transparent;
+  border: 2px solid;
+  white-space: nowrap;
+}
+.btn-profile {
+  border-color: var(--color-oscuro);
+  color: var(--color-oscuro);
+}
+.btn-profile:hover {
+  background-color: var(--color-oscuro);
+  color: var(--color-blanco);
+}
+.btn-logout {
+  border-color: var(--color-rojo-accion-suave);
+  color: var(--color-rojo-accion-suave);
+}
+.btn-logout:hover {
+  background-color: var(--color-rojo-accion-suave);
+  color: var(--color-blanco);
 }
 
-.reto-body p:nth-child(2) {
-    font-size: 0.95em;
-    opacity: 0.9;
-    font-style: italic;
+/* La tarjeta del clima. */
+.clima-section .card-body {
+  padding: 15px 20px;
+}
+.clima-body-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  width: 100%;
+}
+.clima-visual {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.clima-icon {
+  color: var(--color-acento-clima);
+  font-size: 80px;
+  line-height: 1;
+}
+.clima-status {
+  font-size: 1.1em;
+  font-weight: 500;
+  color: var(--color-texto-secundario);
+  text-align: center;
+}
+.clima-details {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  font-size: 1.1em;
+  border-bottom: 1px solid var(--color-bordes-sutiles);
+}
+.detail-item:last-child {
+  border-bottom: none;
+}
+.detail-item span:first-child {
+  color: var(--color-texto-secundario);
+}
+.detail-item span:last-child {
+  font-weight: 600;
+  color: var(--color-texto-principal);
 }
 
-.reto-body p:last-of-type {
-    font-size: 1.1em;
-    margin-top: 15px;
-    font-weight: 500;
+/* Las tarjetas de "Copa" y "Logo" en la barra lateral. */
+.copa-section,
+.logo-section {
+  background-color: var(--color-oscuro);
+  padding: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: var(--border-radius-suave);
+  min-height: 150px;
+}
+.copa-section p {
+  color: var(--color-texto-claro);
+}
+.copa-section img {
+  max-width: 60%;
+  max-height: 80px;
+  object-fit: contain;
+  margin: 10px auto;
+}
+.logo-section {
+  background-color: var(--color-principal);
+  min-height: 150px;
+}
+.logo-section h2 {
+  font-size: 1.1em;
+  margin-bottom: 10px;
+}
+.logo-section h2,
+.logo-section p {
+  color: var(--color-oscuro);
+}
+.placeholder-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex-grow: 1;
+  color: var(--color-texto-secundario);
+  padding: 10px;
 }
 
-.reto-button {
-    background-color: #FFC839;
-    color: #333;
-    border: none;
-    padding: 10px 25px;
-    border-radius: 25px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 0.95em;
-    margin-top: 8px;
-    transition: all 0.3s ease;
+/* Estilos para la tarea recomendada por el clima */
+.badge-clima {
+  background: var(--color-principal);
+  color: var(--color-oscuro);
+  border-radius: 12px;
+  padding: 2px 10px;
+  margin-left: 8px;
+  font-size: 0.95em;
+  font-weight: 500;
+  display: inline-block;
 }
 
-.reto-button:hover {
-    background-color: #e6b332;
-    transform: translateY(-2px);
+.xp-icon {
+  color: var(--color-principal);
+  font-size: 1.2em;
+  margin-right: 4px;
 }
 
-/* Top Section */
-.top-section {
-    flex: 1;
-    background-color: #FFC839;
-    border-radius: 20px;
-    padding: 0;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-
-.top-header {
-    background-color: #333;
-    padding: 15px;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.top-header h1 {
-    margin: 0;
-    color: white;
-    font-size: 1.3em;
-    font-weight: bold;
-    text-align: center;
-}
-
+/* --- Componentes del Contenido Principal --- */
+.reto-body,
 .top-body {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 15px 10px;
-    gap: 10px;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  text-align: center;
+}
+.reto-body p:first-child {
+  font-size: 1.3em;
+  font-weight: bold;
+  color: var(--color-texto-principal);
+}
+.reto-body p:nth-child(2) {
+  font-style: italic;
+  color: var(--color-texto-secundario);
+}
+.reto-button {
+  background-color: var(--color-oscuro);
+  color: var(--color-blanco);
+  border: none;
+  padding: 10px 25px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: var(--transicion-suave);
+  margin-top: 10px;
+}
+.reto-button:hover {
+  background-color: #000;
 }
 
 .top-user-container {
-    display: flex;
-    justify-content: space-around;
-    align-items: flex-start; /* Alinea arriba */
-    width: 100%;
-    gap: 10px;
-    flex: 1; /* Ocupa el espacio disponible */
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  gap: 10px;
+  align-items: center;
 }
-
 .top-user {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
 }
-
 .top-position {
-    font-size: 1.2em;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 8px;
+  font-size: 1.2em;
+  font-weight: bold;
 }
-
 .top-user-name {
-    font-size: 0.95em;
-    font-weight: bold;
-    color: #333;
+  font-weight: 600;
+  text-align: center;
+  word-break: break-word;
 }
-
 .top-user-points {
-    font-size: 0.85em;
-    color: #555;
+  font-size: 0.85em;
+  color: var(--color-texto-secundario);
 }
 
-.top-section .more-section {
-    margin-top: auto;  /* Empuja el botón al fondo del contenedor */
-    padding-top: 10px;
-    width: 100%;
-    text-align: center;
-    border-top: 1px solid #e6b332; /* Línea sutil de separación */
-}
-
-/* Info Section - Usuario */
-.info-section {
-    background-color: #FFC839;
-    padding: 15px;
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    height: 23vh;
-    flex-shrink: 0;
-}
-
-/* Contenedor superior del perfil */
-.user-profile-top {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    min-height: 60px;
-}
-
-/* Bloques dentro del user-profile-top */
-.user-top {
-    width: 60px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #333;
-    color: white;
-    font-size: 1.4em;
-    font-weight: bold;
-    border-radius: 8px;
-    flex-shrink: 0;
-}
-
-.user-info {
-    flex: 1;
-    text-align: right;
-    color: #333;
-    line-height: 1.2;
-    min-width: 0;
-}
-
-.user-info p {
-    margin: 2px 0;
-    font-size: 12px;
-}
-
-.user-info p:first-child {
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.user-avatar {
-    width: 60px;
-    height: 60px;
-    background-color: #ccc;
-    border-radius: 50%;
-    flex-shrink: 0;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.user-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* Streak Section */
-.streak-section {
-    background-color: #333;
-    color: white;
-    border-radius: 12px;
-    padding: 1vh;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: 96%;
-    height: 8vh;
-}
-
-.streak-title {
-    margin: 0 0 6px 0;
-    font-size: 0.9em;
-    font-weight: bold;
-}
-
-.streak-line {
-    width: 100%;
-    height: 2px;
-    background-color: #ff6b35;
-    margin: 4px 0;
-}
-
-.streak-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-}
-
-.streak-days {
-    font-size: 1.1em;
-    font-weight: bold;
-    color: #ff6b35;
-    margin: 0;
-}
-
-.streak-icon {
-    font-size: 1.2em;
-    color: #ff6b35;
-}
-
-.info-buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-}
-
-.info-buttons button {
-    padding: 10px 24px;
-    border: none;
-    border-radius: 24px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.info-buttons .logout{
-    background-color: #333;
-    color: #fff;
-}
-
-.info-buttons .borrar{
-    background-color: #d9534f;
-    color: #fff;
-}
-
-.info-buttons button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-/* Clima Section */
-.clima-section {
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    height: 45%;
-    flex-shrink: 0;
-}
-
-.clima-hora {
-    align-self: flex-end;
-    background-color: #333;
-    padding: 6px 10px;
-    border-radius: 8px;
-    font-size: 20px;
-    font-weight: bold;
-    color: white;
-}
-
-.clima-hora p {
-    margin: 0;
-}
-
-.clima-main-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
-}
-
-.clima-icon {
-    font-size: 150px;
-    color: #4a90e2;
-    text-align: right;
-    width: 50%;
-    display: flex;
-    justify-content: center;
-}
-
-.clima-info {
-    text-align: left;
-    width: 50%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.clima-info p {
-    margin: 3px 0;
-    font-size: 20px;
-    color: #333;
-}
-
-.clima-info p:first-child {
-    font-size: 25px;
-    font-weight: bold;
-}
-
-.clima-status {
-    text-align: center;
-    margin-top: 10px;
-}
-
-.clima-status h2 {
-    margin: 0;
-    font-size: 23px;
-    color: #333;
-}
-
-/* Copa Section */
-.copa-section {
-    height: 24vh;
-    background-color: #333;
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    padding: 10px;
-    text-align: center;
-    overflow: hidden;
-    flex-shrink: 0;
-}
-
-.copa-section p {
-    margin: 5px 0;
-    font-size: 0.8em;
-}
-
-.copa-section img {
-    max-width: 80%;
-    max-height: 50%;
-    object-fit: contain;
-    margin: 5px 0;
-}
-
-.copa-section::before {
-    display: none;
-}
-
-/* Logo Section */
-.logo-section {
-    margin-top: 0.8vh;
-    height: 27.5vh;
-    background-color: #FFC839;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 5px;
-    overflow: hidden;
-    flex-shrink: 0;
-    flex-direction: column;
-}
-
-.logo-section h2,
-.logo-section p {
-    width: 100%;
-    text-align: left;
-    white-space: normal;
-    word-break: break-word;
-    margin: 6px 0;
-    font-size: 1em;
-    line-height: 1.3;
-    display: block;
-}
-
-.logo-section strong,
-.logo-section span {
-    font-size: 1em;
-    font-weight: bold;
-    display: inline;
-    white-space: normal;
-    word-break: break-word;
-}
-
-.logo-section::before {
-    display: none;
-}
-
-/* Task Section */
-.task-section {
-    height: 100%;
-    width: 55.5vw;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-    background-color: #FFC839;
-    border-radius: 25px;
-    padding: 20px;
-}
-
-.task-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.task-header h1 {
-    margin: 0;
-    color: #333;
-    font-size: 1.8em;
-}
-
-.task-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    flex: 1;
-    overflow-y: auto;
-}
-
-.task-item {
-    background-color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    text-align: left;
-    transition: all 0.3s ease;
-}
-
-.task-item:hover {
-    background-color: #f0f0f0;
-    transform: translateY(-2px);
-}
-
-.task-buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-}
-
-.task-buttons a {
-    padding: 10px 24px;
-    border: none;
-    border-radius: 24px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
-}
-
-.task-buttons a:first-child {
-    background-color: #333;
-    color: #fff;
-}
-
-.task-buttons a:last-child {
-    background-color: #d9534f;
-    color: #fff;
-}
-
-.task-buttons a:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-/* ========================================
-   SECCIÓN HISTORIAL - CORREGIDA
-   ======================================== */
-
-/* View Section en Historial */
-.view-section {
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    margin: 0 10px 10px 10px;
-    overflow: hidden;
-}
-
-/* Barra de parámetros (headers de la tabla) */
-.param-bar {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1.5fr;
-    gap: 10px;
-    background-color: #f8f9fa;
-    padding: 12px 15px;
-    border-radius: 8px;
-    font-weight: bold;
-    color: #495057;
-    margin-bottom: 10px;
-    align-items: center;
-}
-
-.param-bar span {
-    text-align: left;
-}
-
-.param-bar span:nth-child(2) {
-    text-align: center;
-}
-
-.param-bar span:nth-child(3) {
-    text-align: right;
-}
-
-/* Lista de historial */
-.history-list {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    overflow-y: auto;
-    padding-right: 5px;
-}
-
-/* Filas del historial */
-.history-row {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1.5fr;
-    gap: 10px;
-    padding: 12px 15px;
-    background-color: #ffffff;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    align-items: center;
-    transition: all 0.2s ease;
-}
-
-.history-row:hover {
-    background-color: #f8f9fa;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.history-row span {
-    font-size: 14px;
-    color: #495057;
-}
-
-.history-row span:first-child {
-    font-weight: 600;
-    color: #333;
-    text-align: left;
-}
-
-.history-row span:nth-child(2) {
-    text-align: center;
-    font-weight: 600;
-    color: #28a745;
-}
-
-.history-row span:nth-child(3) {
-    text-align: right;
-    font-size: 13px;
-    color: #6c757d;
-}
-
-/* Mensaje cuando no hay tareas */
-.history-empty {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: #6c757d;
-    font-style: italic;
-    padding: 20px;
-}
-
-.history-empty p {
-    margin: 0;
-    font-size: 15px;
-}
-
-/* Sección "Mostrar Todo" */
 .more-section {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid #e9ecef;
-    text-align: center;
+  margin-top: auto;
+  padding-top: 15px;
+  width: 100%;
+  text-align: center;
+  border-top: 1px solid var(--color-bordes-sutiles);
 }
-
 .btn-show-all {
-    display: inline-block;
-    background-color: #333;
-    color: white;
-    text-decoration: none;
-    padding: 10px 24px;
-    border-radius: 24px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
+  background-color: var(--color-oscuro);
+  color: white;
+  text-decoration: none;
+  padding: 10px 24px;
+  border-radius: 24px;
+  font-weight: 600;
+  display: inline-block;
+  transition: var(--transicion-suave);
 }
-
 .btn-show-all:hover {
-    background-color: #555;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  background-color: #000;
 }
 
-/* Scrollbar personalizado para la lista */
-.history-list::-webkit-scrollbar {
-    width: 6px;
+.task-body {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-grow: 1;
+}
+.task-item {
+  background-color: var(--color-bordes-sutiles);
+  border: 1px solid #ddd;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transicion-suave);
+  text-align: left;
+  border: none;
+  font-family: "Poppins", sans-serif;
+  font-size: 1em;
+}
+.task-item:hover {
+  background-color: #e9ecef;
+}
+.task-buttons {
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.task-buttons a {
+  background-color: var(--color-oscuro);
+  color: var(--color-blanco);
+  padding: 10px 24px;
+  border-radius: 24px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--transicion-suave);
+}
+.task-buttons a:hover {
+  background-color: #000;
 }
 
-.history-list::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
+.history-body {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.param-bar {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.5fr;
+  gap: 10px;
+  background-color: #f8f9fa;
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+.param-bar span:nth-child(2),
+.param-bar span:nth-child(3) {
+  text-align: center;
+}
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-grow: 1;
+}
+.history-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.5fr;
+  gap: 10px;
+  padding: 12px 15px;
+  border: 1px solid var(--color-bordes-sutiles);
+  border-radius: 8px;
+  align-items: center;
+}
+.history-row span:nth-child(2) {
+  text-align: center;
+  font-weight: 600;
+  color: #28a745;
+}
+.history-row span:nth-child(3) {
+  color: var(--color-texto-secundario);
+  text-align: center;
+  font-size: 0.9em;
+}
+.history-empty {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--color-texto-secundario);
+  padding: 20px;
 }
 
-.history-list::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 10px;
-}
+/* =================================================================== */
+/* 5. MODAL (LA VENTANA EMERGENTE)                                   */
+/* =================================================================== */
 
-.history-list::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
-
-/* ========================================
-   MODAL
-   ======================================== */
-
+/* El fondo oscuro semitransparente que cubre toda la pantalla. */
 .modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    padding-top: 100px;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgb(0,0,0);
-    background-color: rgba(0,0,0,0.4);
+  display: none; /* Oculto por defecto */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
 }
-
+/* El contenedor blanco donde va el contenido del modal. */
 .modal-content {
-    background-color: white;
-    margin: auto;
-    padding: 30px;
-    border-radius: 24px;
-    width: 80%;
-    max-width: 500px;
-    position: relative;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  background-color: white;
+  padding: 30px;
+  border-radius: 24px;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+  box-shadow: var(--sombra-suave);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal-content .edit-form {
+  gap: 15px;
+}
+.modal-content .form-group {
+  display: flex;
+  flex-direction: column;
+}
+.modal-content .form-group label {
+  font-weight: 600;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: var(--color-texto-secundario);
+}
+.modal-content .form-group input,
+.modal-content .form-group select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  font-family: "Poppins", sans-serif;
+}
+.modal-content .form-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+.modal-content .btn-save,
+.modal-content .btn-cancel {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 24px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 14px;
+  text-align: center;
+}
+.modal-content .btn-save {
+  background-color: #28a745;
+  color: white;
+}
+.modal-content .btn-save:hover {
+  background-color: #218838;
+}
+.modal-content .btn-cancel {
+  background-color: #6c757d;
+  color: white;
+}
+.modal-content .btn-cancel:hover {
+  background-color: #5a6268;
 }
 
+.alert-error {
+  color: #721c24;
+  background-color: #f8d7da;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+}
+.result-box {
+  color: #666;
+  font-size: 16px;
+  margin-top: 15px;
+  margin-bottom: 45px;
+  margin-left: 5px;
+  font-weight: 500;
+  text-align: center;
+  font-weight: bold;
+}
+.modal-content .result-box {
+  color: #666;
+  font-size: 16px;
+  margin-top: 10px; /* Reducimos un poco el margen para que se vea mejor en el modal */
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: bold;
+}
 .close-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background-color: transparent;
-    border: none;
-    font-size: 24px;
-    font-weight: bold;
-    cursor: pointer;
-    color: #333;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--color-texto-secundario);
 }
-
 .close-btn:hover {
-    background-color: #d9534f;
-    color: white;
+  color: var(--color-texto-principal);
 }
-
-.modal-content > button:not(.close-btn) {
-    gap: 10px;
-    padding: 10px 24px;
-    border: none;
-    border-radius: 24px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 20px;
-}
-
-#deleteButton {
-    background-color: #d9534f;
-    color: white;
-    margin-right: 10px;
-}
-
-#deleteButton:hover {
-    background-color: #c9302c;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(217, 83, 79, 0.3);
-}
-
-#completeButton {
-    background-color: #5cb85c;
-    color: white;
-}
-
-#completeButton:hover {
-    background-color: #4cae4c;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(92, 184, 92, 0.3);
-}
-
 #modalTitle {
-    margin-top: 10px;
-    margin-bottom: 20px;
-    color: #333;
-    font-size: 24px;
+  margin-bottom: 20px;
+  color: var(--color-texto-principal);
 }
-
 .modal-content p {
-    margin: 12px 0;
-    line-height: 1.6;
-    color: #555;
+  margin: 12px 0;
+}
+#deleteButton,
+#completeButton {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 24px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  margin-right: 10px;
+  transition: var(--transicion-suave);
+}
+#deleteButton {
+  background-color: var(--color-rojo-accion-suave);
+  color: white;
+}
+#deleteButton:hover {
+  background-color: #c0392b;
+}
+#completeButton {
+  background-color: #5cb85c;
+  color: white;
+}
+#completeButton:hover {
+  background-color: #4cae4c;
+}
+/* =================================================================== */
+/* 6. ESTILOS PARA NOTIFICACIONES (TOAST)                            */
+/* =================================================================== */
+
+.toast-container {
+  position: fixed;
+  bottom: 80px; /* Un poco por encima de la barra de navegación móvil */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
 }
 
-.modal-content p strong {
-    color: #333;
-    margin-right: 8px;
+.toast {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: var(--sombra-suave);
+  font-weight: 600;
+  font-size: 15px;
+  min-width: 280px;
+  opacity: 1;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+/* Animación para que desaparezca suavemente */
+.toast.hide {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.toast.success {
+  background-color: #28a745;
+  color: white;
+  border: 1px solid #1e7e34;
+}
+
+.toast.error {
+  background-color: var(--color-rojo-accion-suave);
+  color: white;
+  border: 1px solid #c82333;
+}
+
+.toast-icon {
+  font-size: 20px;
+  margin-right: 12px;
+}
+
+.toast-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 22px;
+  margin-left: auto;
+  padding-left: 15px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.toast-close:hover {
+  opacity: 1;
+}
+
+/* Ajuste para escritorio */
+@media (min-width: 1024px) {
+  .toast-container {
+    /* Aumentamos este valor para que quede por encima de la navbar (60px) + un margen (20px) */
+    bottom: 80px;
+  }
+}
+/* --- ESTILOS ADICIONALES PARA CONTADOR DE CARACTERES --- */
+
+.form-group .char-count {
+  text-align: right;
+  font-size: 12px;
+  color: var(--color-texto-secundario);
+  transition: color 0.3s ease; /* Transición suave de color */
+}
+
+/* ESTILO DE ERROR: Se activa cuando JS añade la clase 'error-limit' */
+.form-group .char-count.error-limit {
+  color: var(--color-rojo-peligro);
+  font-weight: bold;
 }

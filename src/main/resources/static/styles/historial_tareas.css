@@ -1,395 +1,398 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Arial, Helvetica, sans-serif;
+/* =================================================================== */
+/* 1. CONFIGURACIÓN GLOBAL Y VARIABLES DE DISEÑO                     */
+/* =================================================================== */
+
+/*
+  Definimos aquí todas nuestras "variables" de CSS (Custom Properties).
+  Esto nos permite mantener un diseño consistente y facilita futuros cambios.
+*/
+:root {
+  /* Paleta de colores principal */
+  --color-principal: #ffc839;
+  --color-principal-hover: #e6b332;
+  --color-oscuro: #212529;
+  --color-blanco: #fff;
+  --color-claro: #f5f5f5; /* Fondo general de la página */
+
+  /* Colores de apoyo y estado */
+  --color-bordes-sutiles: #eef2f5;
+  --color-verde-exito: #28a745;
+
+  /* Colores de texto */
+  --color-texto-principal: var(--color-oscuro);
+  --color-texto-secundario: #868e96;
+
+  /* Estilos reutilizables */
+  --sombra-suave: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --border-radius-suave: 12px;
+  --transicion-suave: all 0.3s ease;
 }
 
+/* Estilos base para todo el cuerpo del documento */
 body {
-    margin: 0;
-    padding: 0;
-    background-color: #e6b332;
+  font-family: "Poppins", sans-serif;
+  background-color: var(--color-claro);
+  color: var(--color-texto-principal);
+  margin: 0;
+  /* Dejamos un espacio en la parte inferior para que la barra de navegación
+       no oculte el contenido en dispositivos móviles. */
+  padding-bottom: 80px;
 }
 
-/* ========================================
-   HEADER
-   ======================================== */
+/* =================================================================== */
+/* 2. ESTRUCTURA PRINCIPAL (LAYOUT)                                  */
+/* =================================================================== */
 
-.container-header {
-    background-color: #181818;
-    height: 10vh;
-    display: flex;
+/* --- Layout para Móviles (Mobile-First) --- */
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr; /* Por defecto, todo es una sola columna */
+  gap: 15px;
+  padding: 15px;
+  box-sizing: border-box; /* Asegura que el padding no afecte el ancho total */
 }
 
-.volver-section {
-    width: 79vw;
-    display: flex;          
-    align-items: center;      
-    justify-content: flex-start; 
-    gap: 2%;
-    padding-left: 1%;                
+/* 
+  En móvil, queremos que los elementos dentro de .left-column y .right-column
+  se comporten como hijos directos del .grid-container, ignorando a sus padres.
+  'display: contents' logra exactamente eso.
+*/
+.left-column,
+.right-column {
+  display: contents;
 }
 
-.logo {
-    width: 6vw;
-    height: auto;
-    display: block;            
-    object-fit: contain;
+/* 
+  Usamos la propiedad 'order' para cambiar el orden visual de las tarjetas
+  SOLO en la vista móvil, sin alterar el orden en el HTML.
+  Esto nos permite, por ejemplo, mostrar la bienvenida primero en móvil.
+*/
+.welcome-card {
+  order: 1;
+}
+.history-card {
+  order: 2;
+}
+.summaries-card {
+  order: 3;
+}
+.stats-card {
+  order: 4;
 }
 
-.btn-volver {
-    background-color: #FFC839;
-    color: #181818;
-    padding: 10px 25px;
-    border-radius: 15px;
-    cursor: pointer;
-    font-weight: bolder;
-    font-size: 1rem;
-    border: none;
-    transition: all 0.3s ease;
-}
+/* --- Layout para Escritorio (a partir de 1024px) --- */
+@media (min-width: 1024px) {
+  body {
+    padding-bottom: 0; /* En escritorio no hay navbar inferior, quitamos el padding */
+  }
 
-.btn-volver:hover {
-    background-color: #e6b332;
-}
-
-.perfil-section {
-    width: 20vw;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    border-radius: 15px;
-    display: flex;            
-    align-items: center;
-    justify-content: flex-start;
-    padding-left: 0.5%;
-    padding-right: 0.5%;
-    background-color: #e6b332;
-}
-
-.user-lvl {
-    border-radius: 15px;
-    background-color: white;
-    height: 80%;
-    width: 20%;
-    margin-top: 1%;
-    margin-bottom: 1%;
-    align-items: center;
-    padding: 2%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.user-lvl .lvl-numero {
-    font-size: 1.8rem;
-    font-weight: bold;
-}
-
-.user-lvl .lvl-texto {
-    font-size: 1rem;
-}
-
-.user-info {
-    height: 80%;
-    width: 100%;
-    display: flex;
-    flex-direction: column; 
-    align-items: flex-end;
-}
-
-.user-info .info-nombre {
-    font-size: 1.5rem;
-    font-weight: bolder;
-}
-
-.user-info .info-correo {
-    font-size: 1rem;
-}
-
-/* ========================================
-   MAIN CONTENT
-   ======================================== */
-
-.container-main {
-    display: flex;
-    height: 90vh;
-    align-items: stretch;
-}
-
-.container-left {
-    height: 90vh;
-    width: 62vw;
-}
-
-.container-right {
-    height: 90vh;
-    width: 38vw;
-}
-
-.container-body {
-    margin: 2vh;
-    height: calc(90vh - 4vh);
-    padding: 2%;
-    border-radius: 24px;
-    background: #fff;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-    overflow: hidden; /* Eliminar scroll del contenedor principal */
-    display: flex;
-    flex-direction: column;
-}
-
-/* ========================================
-   SECCIÓN HISTORIAL (IZQUIERDA)
-   ======================================== */
-
-.titulo-historial {
-    font-size: 2rem;
-    color: #333;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 3px solid #FFC839;
-    flex-shrink: 0; /* No se reduce, siempre visible */
-}
-
-.history-container {
-    display: flex;
-    flex-direction: column;
-    flex: 1; /* Ocupa todo el espacio disponible */
-    overflow: hidden; /* Importante para el control del scroll */
-}
-
-/* Barra de parámetros (headers) */
-.param-bar {
-    display: grid;
-    grid-template-columns: 2.5fr 1fr 1.5fr;
-    gap: 15px;
-    background-color: #f8f9fa;
-    padding: 15px 20px;
-    border-radius: 12px;
-    font-weight: bold;
-    color: #495057;
-    font-size: 1rem;
-    flex-shrink: 0; /* No se reduce, siempre visible */
-    margin-bottom: 15px;
-}
-
-.param-bar span:nth-child(1) {
-    text-align: left;
-}
-
-.param-bar span:nth-child(2) {
-    text-align: center;
-}
-
-.param-bar span:nth-child(3) {
-    text-align: right;
-}
-
-/* Lista de historial */
-.history-list {
-    flex: 1; /* Ocupa el espacio disponible */
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    overflow-y: auto; /* Solo esta lista tiene scroll */
-    padding-right: 10px;
-    margin-bottom: 15px;
-}
-
-/* Filas del historial */
-.history-row {
-    display: grid;
-    grid-template-columns: 2.5fr 1fr 1.5fr;
-    gap: 15px;
-    padding: 15px 20px;
-    background-color: #ffffff;
-    border: 1px solid #e9ecef;
-    border-radius: 12px;
-    align-items: center;
-    transition: all 0.3s ease;
-}
-
-.history-row:hover {
-    background-color: #f8f9fa;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
-}
-
-.history-row span {
-    font-size: 0.95rem;
-    color: #495057;
-}
-
-.history-row span:first-child {
-    font-weight: 600;
-    color: #333;
-    text-align: left;
-}
-
-.history-row span:nth-child(2) {
-    text-align: center;
-    font-weight: 700;
-    color: #28a745;
-    font-size: 1rem;
-}
-
-.history-row span:nth-child(3) {
-    text-align: right;
-    font-size: 0.9rem;
-    color: #6c757d;
-}
-
-/* Mensaje cuando no hay tareas */
-.history-empty {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: #6c757d;
-    font-style: italic;
-    padding: 60px 20px;
-    min-height: 300px;
-}
-
-.history-empty p {
-    margin: 0;
-    font-size: 1.2rem;
-}
-
-/* Sección de estadísticas */
-.stats-section {
-    margin-top: auto; /* Se empuja hacia abajo */
-    padding-top: 20px;
-    border-top: 2px solid #e9ecef;
-    display: flex;
-    justify-content: space-around;
+  .grid-container {
+    /* Cambiamos a un layout de dos columnas */
+    grid-template-columns: 2fr 1fr; /* La columna izquierda es el doble de ancha que la derecha */
     gap: 20px;
-    flex-shrink: 0; /* No se reduce, siempre visible */
+    padding: 20px;
+    align-items: start; /* Alinea los contenedores de las columnas en la parte superior */
+  }
+
+  /* Restauramos las columnas para que actúen como contenedores flex */
+  .left-column,
+  .right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* La columna derecha se quedará fija al hacer scroll (efecto "sticky") */
+  .right-column {
+    position: sticky;
+    top: 20px;
+  }
+
+  /* Anulamos el orden visual de móvil para que las tarjetas vuelvan a su
+       orden natural dentro de sus respectivas columnas. */
+  .welcome-card,
+  .history-card,
+  .summaries-card,
+  .stats-card {
+    order: unset;
+  }
+}
+
+/* =================================================================== */
+/* 3. ESTILO GENERAL DE LAS TARJETAS (CARDS)                         */
+/* =================================================================== */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-blanco);
+  border-radius: var(--border-radius-suave);
+  box-shadow: var(--sombra-suave);
+  overflow: hidden; /* Asegura que el contenido respete los bordes redondeados */
+}
+
+.card-header {
+  background-color: var(--color-principal);
+  color: var(--color-oscuro);
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* Permite que los elementos se ajusten en pantallas pequeñas */
+  gap: 10px;
+}
+
+.card-header h1,
+.card-header h2 {
+  margin: 0;
+  font-size: 1.2em;
+  font-weight: 600;
+}
+
+.card-body {
+  padding: 20px;
+  flex-grow: 1; /* Permite que el cuerpo de la tarjeta ocupe el espacio disponible */
+}
+
+.card-body p {
+  margin: 0 0 10px 0;
+  line-height: 1.6;
+}
+.card-body p:last-child {
+  margin-bottom: 0;
+}
+
+/* =================================================================== */
+/* 4. ESTILOS ESPECÍFICOS POR TARJETA                                */
+/* =================================================================== */
+
+/* --- Tarjeta de Bienvenida --- */
+.welcome-content {
+  display: flex;
+  flex-direction: column; /* En móvil, texto e imagen se apilan */
+  align-items: center;
+  text-align: center;
+  gap: 20px;
+}
+.welcome-text {
+  flex: 2;
+}
+.welcome-image {
+  flex: 1;
+}
+.welcome-image img {
+  max-width: 100%;
+  height: auto;
+  max-height: 120px;
+}
+
+/* En escritorio, el texto y la imagen se ponen uno al lado del otro */
+@media (min-width: 1024px) {
+  .welcome-content {
+    flex-direction: row;
+    text-align: left;
+  }
+  .welcome-image img {
+    max-height: 140px;
+  }
+}
+
+/* --- Tarjeta de Historial Completo --- */
+.history-list-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.param-bar {
+  display: grid;
+  grid-template-columns: 2.5fr 1fr 1.5fr;
+  gap: 15px;
+  background-color: #f8f9fa;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  color: var(--color-texto-secundario);
+  font-size: 0.9em;
+  text-transform: uppercase;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+  max-height: 60vh; /* Límite de altura para que la lista no sea infinita */
+  overflow-y: auto; /* Habilita el scroll vertical si es necesario */
+  padding-right: 10px; /* Espacio para la barra de scroll */
+}
+
+.history-row {
+  display: grid;
+  grid-template-columns: 2.5fr 1fr 1.5fr;
+  gap: 15px;
+  padding: 15px 20px;
+  border: 1px solid var(--color-bordes-sutiles);
+  border-radius: 8px;
+  align-items: center;
+}
+.history-row span:first-child {
+  font-weight: 600;
+}
+.history-row .exp-points {
+  font-weight: 700;
+  color: var(--color-verde-exito);
+  text-align: center;
+}
+.history-row span:last-child {
+  color: var(--color-texto-secundario);
+  font-size: 0.9em;
+  text-align: right;
+}
+
+/* Mensaje para cuando el historial está vacío */
+.history-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--color-texto-secundario);
+}
+.history-empty i {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+/* Estilo para la barra de scroll de la lista */
+.history-list::-webkit-scrollbar {
+  width: 6px;
+}
+.history-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+.history-list::-webkit-scrollbar-thumb {
+  background: var(--color-principal);
+  border-radius: 10px;
+}
+
+/* --- Tarjeta de Resúmenes --- */
+.historial-tabs {
+  display: flex;
+  gap: 10px;
+}
+.historial-tabs a {
+  padding: 8px 16px;
+  text-decoration: none;
+  color: var(--color-oscuro);
+  font-weight: 500;
+  border-radius: 20px;
+  background-color: rgba(255, 255, 255, 0.5);
+  transition: var(--transicion-suave);
+}
+.historial-tabs a:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+.historial-tabs a.active {
+  background-color: var(--color-oscuro);
+  color: var(--color-blanco);
+  font-weight: 600;
+}
+
+/* Contenedor para cuando aún no hay resúmenes que mostrar */
+.summary-placeholder {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--color-texto-secundario);
+  min-height: 250px;
+}
+.summary-placeholder i {
+  font-size: 4rem;
+  margin-bottom: 15px;
+  color: var(--color-principal);
+}
+.summary-placeholder h2 {
+  color: var(--color-texto-principal);
+  margin-bottom: 10px;
+}
+
+/* --- Tarjeta de Estadísticas --- */
+.stats-card .card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .stat-item {
-    background-color: #f8f9fa;
-    padding: 15px 25px;
-    border-radius: 12px;
-    text-align: center;
-    flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.stat-icon-wrapper {
+  flex-shrink: 0;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: var(--color-bordes-sutiles);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-icon-wrapper i {
+  font-size: 24px;
+  color: var(--color-texto-secundario);
+}
+
+/* Colores específicos para cada icono de estadística */
+.stat-item:nth-child(1) .stat-icon-wrapper i {
+  color: #f1c40f;
+} /* Trofeo */
+.stat-item:nth-child(2) .stat-icon-wrapper i {
+  color: var(--color-verde-exito);
+} /* Estrella */
+.stat-item:nth-child(3) .stat-icon-wrapper i {
+  color: #8e44ad;
+} /* Nivel */
+.stat-item:nth-child(4) .stat-icon-wrapper i {
+  color: #e74c3c;
+} /* Racha */
+
+.stat-text {
+  display: flex;
+  flex-direction: column;
 }
 
 .stat-label {
-    display: block;
-    font-size: 0.9rem;
-    color: #6c757d;
-    margin-bottom: 8px;
+  font-size: 0.9em;
+  font-weight: 500;
+  color: var(--color-texto-secundario);
+  line-height: 1.2;
 }
 
 .stat-value {
-    display: block;
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #333;
+  font-size: 1.4em;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
-/* Scrollbar personalizado */
-.history-list::-webkit-scrollbar {
-    width: 8px;
+.stat-value-xp {
+  color: var(--color-verde-exito);
 }
 
-.history-list::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
+/* 
+  Estilos para la racha cuando está inactiva.
+  Estos solo se aplican si el .stat-item tiene la clase 'inactive',
+  la cual es añadida dinámicamente desde el HTML con Thymeleaf.
+*/
+.stat-item.inactive .stat-icon-wrapper i {
+  color: var(--color-texto-secundario); /* Cambia el color del icono a gris */
 }
 
-.history-list::-webkit-scrollbar-thumb {
-    background: #FFC839;
-    border-radius: 10px;
-}
-
-.history-list::-webkit-scrollbar-thumb:hover {
-    background: #e6b332;
-}
-
-/* ========================================
-   SECCIÓN DERECHA (INFORMACIÓN)
-   ======================================== */
-
-.container-description {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.container-description h1 {
-    font-size: 1.8rem;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.container-description p {
-    font-size: 1rem;
-    line-height: 1.6;
-    color: #555;
-}
-
-.logros-preview {
-    background-color: #f8f9fa;
-    padding: 20px;
-    border-radius: 12px;
-    margin-top: 20px;
-}
-
-.logros-preview h2 {
-    font-size: 1.3rem;
-    color: #333;
-    margin-bottom: 15px;
-}
-
-.logros-preview p {
-    font-size: 1rem;
-    margin: 8px 0;
-    color: #555;
-}
-
-.logros-preview strong {
-    color: #FFC839;
-    font-weight: bold;
-}
-
-.container-img {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 30px;
-}
-
-.container-img img {
-    max-width: 100%;
-    height: auto;
-    max-height: 300px;
-}
-
-/* ========================================
-   RESPONSIVE
-   ======================================== */
-
-@media (max-width: 1200px) {
-    .container-left {
-        width: 55vw;
-    }
-    
-    .container-right {
-        width: 45vw;
-    }
-}
-
-@media (max-width: 768px) {
-    .container-main {
-        flex-direction: column;
-        height: auto;
-    }
-    
-    .container-left,
-    .container-right {
-        width: 100%;
-        height: auto;
-    }
+.stat-item.inactive .stat-value {
+  color: var(--color-texto-secundario); /* Cambia el color del número a gris */
 }

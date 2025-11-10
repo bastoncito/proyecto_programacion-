@@ -1,235 +1,615 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html
+  lang="es"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Good Time - Home</title>
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" th:href="@{/styles/home.css}">
-    <link rel="stylesheet" th:href="@{/styles/loader.css}">
-</head>
-<body>
-    <!--Pantalla de carga-->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" th:href="@{/styles/home.css}" />
+    <link rel="stylesheet" th:href="@{/styles/navbar.css}" />
+    <link rel="stylesheet" th:href="@{/styles/loader.css}" />
+  </head>
+  <body>
+    <!-- Pantalla de carga -->
     <div th:replace="~{fragments :: loadingScreen}"></div>
 
-    <!-- ===== CONTENEDOR SUPERIOR IZQUIERDO (60% ancho) ===== -->
-    <div class="container-advertisements">
-        <div class="reto-section">
-            <div class="reto-header"><h1>DESAFÍO SEMANAL</h1></div>
-            <div class="reto-body">
-                <p>Título</p>
-                <p>Descripción de la tarea semanal...</p>
-                <p>Puntaje: 500 XP</p>
-                <button class="reto-button">Aceptar Desafío</button>
-            </div>
-        </div>
-    <div class="top-section">
-            <div class="top-header">
-                <h1>TOP GLOBALES</h1>
-            </div>
-            
-            <div class="top-body"> <div class="top-user-container">
-                    
-                    <div class="top-user" th:each="topUser, stat : ${top3Usuarios}">
-                        <div class="top-position" th:text="${stat.count}">1</div>
-                        <div class="top-user-name" th:text="${topUser.nombreUsuario}">Nombre de Usuario</div>
-                        <div class="top-user-points" th:text="${topUser.puntosLiga} + ' Pts'">0 Pts</div>
-                    </div>
-                </div>
-
-                <div th:if="${#lists.isEmpty(top3Usuarios)}" style="padding: 20px; text-align: center; color: #555;">
-                    <p>Aún no hay ranking este mes.</p>
-                </div>
-                
-                <div class="more-section">
-                    <a th:href="@{/ranking}" class="btn-show-all">Mostrar Todo</a>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <!-- ===== CONTENEDOR SUPERIOR DERECHO (40% ancho) ===== -->
-    <div class="container-info">
-        <div class="info-left">
-            <div class="info-section">
-                <div class="user-profile-top">
-                    <div class="user-top"><p th:text="${usuario.nivelExperiencia}"></p></div>
-                    <div class="user-info">
-                        <strong><p th:text="${usuario.nombreUsuario}" class="username"></p></strong>
-                        <p th:text="${usuario.correoElectronico}"></p>
-                    </div>
-                    <div class="user-avatar"></div>
-                </div>
-                <div class="streak-section">
-                    <h1 class="streak-title">Racha Actual</h1>
-                    <div class="streak-line"></div>
-                    <div class="streak-content">
-                        <strong><p th:text="${usuario.racha}" class="streakDays"></p></strong>
-                        <i class='bx bxs-hot streak-icon'></i>
-                    </div>
-                </div>
-                <div class="info-buttons">
-                    <form th:action="@{/perfil}" method="get"><button type="submit" class="logout">Ver Perfil</button></form>
-                    <form th:action="@{/logout}" method="post">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                        <button type="submit" class="borrar" onclick="return confirm('¿Estás seguro de que quieres cerrar la sesión?');">Cerrar Sesión</button>
-                    </form>
-                </div>
-            </div>
-            <div class="clima-section">
-                 <div th:if="${clima}">
-                    <div class="clima-hora"><p th:text="${clima.hora}">12:30</p></div>
-                    <div class="clima-main-content">
-                        <div class="clima-icon">
-                            <i th:classappend="${ #strings.startsWith(clima.icono, '01') ? 'bx-sun' : #strings.startsWith(clima.icono, '02') ? 'bx-cloud' : #strings.startsWith(clima.icono, '03') or #strings.startsWith(clima.icono, '04') ? 'bxs-cloud' : #strings.startsWith(clima.icono, '09') or #strings.startsWith(clima.icono, '10') ? 'bx-cloud-rain' : #strings.startsWith(clima.icono, '11') ? 'bx-cloud-lightning' : #strings.startsWith(clima.icono, '13') ? 'bx-cloud-snow' : 'bx-question-mark' }" class='bx'></i>
-                        </div>
-                        <div class="clima-info">
-                            <p th:text="${clima.temperatura} + '°C'">15°C</p>
-                            <p th:text="'Humedad: ' + ${clima.humedad} + '%'">Humedad: 75%</p>
-                        </div>
-                    </div>
-                    <div class="clima-status"><h2 th:text="${#strings.capitalize(clima.descripcion)}">Lluvioso</h2></div>
-                </div>
-                <div th:unless="${clima}" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; height: 100%;">
-                    <p th:if="${climaError}" th:text="${climaError}" style="color: red;"></p>
-                    <p th:unless="${climaError}">
-                        <a th:href="@{/perfil}" style="font-weight: bold; color: #333;">Configura tu ciudad</a>
-                         para ver el clima.</p>
-                </div>
-            </div>
-        </div>
-        <div class="info-right">
-            <div class="copa-section">
-                <p>Puntos: <span th:text="${usuario.puntosLiga}">0</span></p>
-                <img th:src="@{'/images/copa-' + ${usuario.liga.toLowerCase().replace(' ', '_')} + '.png'}" alt="Copa Liga">
-                <p>Liga: <span th:text="${usuario.liga}">Bronce</span></p>
-            </div>
-            <div class="logo-section">
-                <div th:if="${tareaRecomendada == null}">
-                    <p>No hay tareas recomendadas para el clima actual.</p>
-                </div>
-                <div th:if="${tareaRecomendada != null}">
-                    <h2>Tarea Recomendada por el Clima</h2>
-                    <p><strong th:text="${tareaRecomendada.nombre}">Nombre</strong></p>
-                    <p th:text="${tareaRecomendada.descripcion}">Descripción</p>
-                    <p>Clima compatible: <span th:text="${tareaRecomendada.climaCompatible}">Soleado</span></p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ===== CONTENEDOR INFERIOR IZQUIERDO (60% ancho) ===== -->
-    <div class="container-task">
-        <div class="task-section">
-            <div class="task-header"><h1>Tareas Pendientes</h1></div>
+    <main class="grid-container">
+      <!-- COLUMNA IZQUIERDA: Contenido principal -->
+      <div class="main-content-column">
+        <!-- Tareas Pendientes -->
+        <section class="card">
+          <div class="card-header"><h1>Tareas Pendientes</h1></div>
+          <div class="card-body task-body">
             <div class="task-list">
-                <button class="task-item open-modal" th:each="tarea, stat : ${tareas}" th:if="${stat.index < 4}"
-                        th:text="${tarea.nombre}"
-                        th:attr="data-nombre=${tarea.nombre}, data-descripcion=${tarea.descripcion}, data-experiencia=${tarea.exp}, data-expira=${#temporals.format(tarea.fechaExpiracion, 'dd/MM/yyyy')}">
-                </button>
-                <p th:if="${#lists.isEmpty(tareas)}">No tienes tareas anotadas.</p>
+              <button
+                class="task-item open-modal"
+                th:each="tarea, stat : ${tareas}"
+                th:if="${stat.index < 4}"
+                th:text="${tarea.nombre}"
+                th:attr="data-nombre=${tarea.nombre}, data-descripcion=${tarea.descripcion}, data-experiencia=${tarea.exp}, data-expira=${#temporals.format(tarea.fechaExpiracion, 'dd/MM/yyyy')}"
+              ></button>
+              <p th:if="${#lists.isEmpty(tareas)}" class="placeholder-content">
+                No tienes tareas anotadas.
+              </p>
             </div>
-            <div class="task-buttons">
-                <a th:href="@{/nueva-tarea}">Agregar Tarea</a>
-            </div>
-        </div>
-    </div>
-    
-    <!-- ===== CONTENEDOR INFERIOR DERECHO (40% ancho) ===== -->
-    <div class="container-history">
-        <h2>Historial de Tareas</h2>
-        <div class="view-section">
+           <div class="task-buttons">
+            <a href="#" id="openCreateTaskModal" class="btn-show-all" style="background-color: var(--color-oscuro); color: var(--color-blanco);">Agregar Tarea</a>
+          </div>
+          </div>
+        </section>
+
+        <!-- Historial de Tareas -->
+        <aside class="card">
+          <div class="card-header"><h2>Historial de Tareas</h2></div>
+          <div class="card-body history-body">
             <div class="param-bar">
-                <span>Nombre</span>
-                <span>Experiencia</span>
-                <span>Fecha Finalización</span>
+              <span>Nombre</span>
+              <span>Experiencia</span>
+              <span>Fecha Finalización</span>
             </div>
-            <div th:if="${#lists.isEmpty(historialTareas)}" class="history-empty">
-                <p>Aún no has completado ninguna tarea.</p>
+            <div th:if="${totalHistorial == 0}" class="history-empty">
+              <p>Aún no has completado ninguna tarea.</p>
             </div>
-            <div th:unless="${#lists.isEmpty(historialTareas)}" class="history-list">
-                <div class="history-row" th:each="tarea, stat : ${historialTareas}" th:if="${stat.index < 3}">
-                    <span th:text="${tarea.nombre}"></span>
-                    <span th:text="${tarea.exp} + ' XP'" class="exp-points"></span>
-                    <span th:text="${#temporals.format(tarea.fechaCompletada, 'dd/MM/yyyy HH:mm')}"></span>
+            <div th:if="${totalHistorial > 0}" class="history-list">
+              <div class="history-row" th:each="tarea : ${historialReciente}">
+                <span th:text="${tarea.nombre}"></span>
+                <span th:text="${tarea.exp} + ' XP'" class="exp-points"></span>
+                <span
+                  th:text="${#temporals.format(tarea.fechaCompletada, 'dd/MM/yyyy HH:mm')}"
+                ></span>
+              </div>
+            </div>
+            <div class="more-section" th:if="${totalHistorial > 3}">
+              <a th:href="@{/historial}" class="btn-show-all">Mostrar Todo</a>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Top Globales -->
+        <section class="card">
+          <div class="card-header"><h1>TOP GLOBALES</h1></div>
+          <div class="card-body top-body">
+            <div class="top-user-container">
+              <div class="top-user" th:each="topUser, stat : ${top3Usuarios}">
+                <div class="top-position" th:text="${stat.count}"></div>
+                <div
+                  class="top-user-name"
+                  th:text="${topUser.nombreUsuario}"
+                ></div>
+                <div
+                  class="top-user-points"
+                  th:text="${topUser.puntosLiga} + ' Pts'"
+                ></div>
+              </div>
+            </div>
+            <div
+              th:if="${#lists.isEmpty(top3Usuarios)}"
+              class="placeholder-content"
+            >
+              <p>Aún no hay ranking este mes.</p>
+            </div>
+            <div class="more-section">
+              <a th:href="@{/ranking}" class="btn-show-all">Mostrar Todo</a>
+            </div>
+          </div>
+        </section>
+
+        <!-- Desafío Semanal -->
+        <section class="card">
+          <div class="card-header"><h1>DESAFÍO SEMANAL</h1></div>
+          <div class="card-body reto-body">
+            <!-- Estado 1: No hay desafío semanal -->
+            <div th:if="${tareaSemanal == null}">
+              <p>No tienes desafío semanal asignado.</p>
+            </div>
+            <!-- Estado 2: Desafío semanal pendiente -->
+            <div th:if="${tareaSemanal != null} and !${desafioCompletado}">
+              <p>
+                <strong th:text="${tareaSemanal.nombre}"
+                  >Título del Desafío</strong
+                >
+              </p>
+              <p th:text="${tareaSemanal.descripcion}">
+                Descripción de la tarea semanal...
+              </p>
+              <p>Puntaje: <span th:text="${tareaSemanal.exp}"></span> XP</p>
+              <form th:action="@{/completar-tarea}" method="post">
+                <input
+                  type="hidden"
+                  th:name="${_csrf.parameterName}"
+                  th:value="${_csrf.token}"
+                />
+                <input
+                  type="hidden"
+                  name="nombreTarea"
+                  th:value="${tareaSemanal.nombre}"
+                />
+                <button type="submit" class="btn-show-all">
+                  Aceptar y Completar
+                </button>
+              </form>
+            </div>
+            <!-- Estado 3: Desafío semanal completado -->
+            <div th:if="${desafioCompletado}">
+              <p>
+                <strong th:text="${tareaSemanal.nombre}"
+                  >Título del Desafío</strong
+                >
+              </p>
+              <p>¡Desafío semanal completado!</p>
+              <p>Ganaste <span th:text="${tareaSemanal.exp}"></span> XP</p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- COLUMNA DERECHA: Barra lateral de información -->
+      <div class="sidebar-column">
+        <!-- Perfil de Usuario -->
+        <div class="info-section">
+          <div class="profile-header">
+            <div class="profile-avatar"><i class="bx bxs-user"></i></div>
+            <div class="profile-details">
+              <h2 class="username" th:text="${usuario.nombreUsuario}">
+                Nombre de Usuario
+              </h2>
+              <p class="user-email" th:text="${usuario.correoElectronico}">
+                correo@ejemplo.com
+              </p>
+            </div>
+            <div class="level-badge">
+              <span
+                class="level-number"
+                th:text="${usuario.nivelExperiencia}"
+              ></span>
+              <span class="level-text">NIVEL</span>
+            </div>
+          </div>
+          <div class="xp-progress-bar">
+            <div class="xp-text">
+              <span>Progreso</span>
+              <span
+                th:text="${usuario.experiencia} + '/' + ${expSiguienteNivel} + ' XP'"
+              ></span>
+            </div>
+            <div class="progress-bar-container">
+              <div
+                class="progress-bar-fill"
+                th:style="'width: ' + (${usuario.experiencia} * 100 / ${expSiguienteNivel}) + '%;'"
+              ></div>
+            </div>
+          </div>
+          <div class="profile-actions">
+            <div
+              class="streak-display"
+              th:classappend="${usuario.racha == 0 ? 'inactive' : ''}"
+            >
+              <i class="bx bxs-hot"></i>
+              <span class="streak-number" th:text="${usuario.racha}">2</span>
+            </div>
+            <form
+              th:action="@{/perfil}"
+              method="get"
+              class="action-button-form"
+            >
+              <button type="submit" class="btn-profile">Ver Perfil</button>
+            </form>
+            <form
+              th:action="@{/logout}"
+              method="post"
+              class="action-button-form"
+            >
+              <input
+                type="hidden"
+                th:name="${_csrf.parameterName}"
+                th:value="${_csrf.token}"
+              />
+              <button
+                type="submit"
+                class="btn-logout"
+                onclick="return confirm('¿Estás seguro de que quieres cerrar la sesión?');"
+              >
+                Cerrar Sesión
+              </button>
+            </form>
+          </div>
+        </div>
+        <!-- Clima -->
+        <div class="card clima-section">
+          <div class="card-header"><h2>Clima</h2></div>
+          <div class="card-body">
+            <div th:if="${clima}" class="clima-body-wrapper">
+              <!-- Columna Izquierda: Icono y Descripción -->
+              <div class="clima-visual">
+                <div class="clima-icon">
+                  <i
+                    th:classappend="${ #strings.startsWith(clima.icono, '01') ? 'bx-sun' : 
+                                                    #strings.startsWith(clima.icono, '02') ? 'bx-cloud' : 
+                                                    #strings.startsWith(clima.icono, '03') or #strings.startsWith(clima.icono, '04') ? 'bxs-cloud' : 
+                                                    #strings.startsWith(clima.icono, '09') or #strings.startsWith(clima.icono, '10') ? 'bx-cloud-rain' : 
+                                                    #strings.startsWith(clima.icono, '11') ? 'bx-cloud-lightning' : 
+                                                    #strings.startsWith(clima.icono, '13') ? 'bx-cloud-snow' : 
+                                                    #strings.startsWith(clima.icono, '50') ? 'bx-menu' : 'bx-question-mark' }"
+                    class="bx"
+                  ></i>
                 </div>
-            </div>
-            <div class="more-section" th:if="${#lists.size(historialTareas) > 3}">
-                <a th:href="@{/historial}" class="btn-show-all">Mostrar Todo</a>
-            </div>
-        </div>
-    </div>
+                <div
+                  class="clima-status"
+                  th:text="${#strings.capitalize(clima.descripcion)}"
+                >
+                  Cielo Claro
+                </div>
+              </div>
 
-    <!-- Modal de Tareas -->
+              <!-- Columna Derecha: Detalles -->
+              <div class="clima-details">
+                <div class="detail-item">
+                  <span>Temperatura</span>
+                  <span th:text="${clima.temperatura} + '°C'">23°C</span>
+                </div>
+                <div class="detail-item">
+                  <span>Humedad</span>
+                  <span th:text="${clima.humedad} + '%'">32%</span>
+                </div>
+                <div class="detail-item">
+                  <span>Hora</span>
+                  <span th:text="${clima.hora}">17:11</span>
+                </div>
+              </div>
+            </div>
+            <!-- Mensaje de placeholder si no hay clima -->
+            <div th:unless="${clima}" class="placeholder-content">
+              <p
+                th:if="${climaError}"
+                th:text="${climaError}"
+                style="color: red"
+              ></p>
+              <p th:unless="${climaError}">
+                <a
+                  th:href="@{/perfil}"
+                  style="font-weight: bold; color: var(--color-texto-principal)"
+                  >Configura tu ciudad</a
+                >
+                para ver el clima.
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- Copas -->
+        <div class="copa-section">
+          <p>Puntos: <span th:text="${usuario.puntosLiga}">0</span></p>
+          <img
+            th:src="@{'/images/copa-' + ${usuario.liga.toLowerCase().replace(' ', '_')} + '.png'}"
+            alt="Copa Liga"
+          />
+          <p>Liga: <span th:text="${usuario.liga}">Bronce</span></p>
+        </div>
+        <!-- Tarea Recomendada -->
+        <div class="logo-section">
+          <div class="card-header">
+            <h2>Tarea Recomendada por el Clima</h2>
+          </div>
+          <div class="card-body">
+            <!-- Estado 1: No hay tarea recomendada -->
+            <div th:if="${tareaRecomendada == null}">
+              <p>No hay tarea recomendada para el clima actual.</p>
+            </div>
+            <!-- Estado 2: Tarea recomendada pendiente -->
+            <div th:if="${tareaRecomendada != null} and !${tareaRecomendadaCompletada}">
+              <p>
+                <strong th:text="${tareaRecomendada.nombre}">Nombre de la tarea</strong>
+              </p>
+              <p class="badge-clima" th:text="'Clima compatible: ' + ${tareaRecomendada.climaCompatible}"></p>
+                <p th:text="${tareaRecomendada.descripcion}">Descripción de la tarea...</p>
+              <p>
+                <span class="xp-icon">⭐</span>
+                <span th:text="'Puntaje: ' + ${tareaRecomendada.exp} + ' XP'"></span>
+              </p>
+              <form th:action="@{/completar-tarea}" method="post" style="margin-top: 12px;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <input type="hidden" name="nombreTarea" th:value="${tareaRecomendada.nombre}" />
+                <button type="submit" class="btn-show-all">Completar Tarea Recomendada</button>
+              </form>
+            </div>
+            <!-- Estado 3: Tarea recomendada completada -->
+            <div th:if="${tareaRecomendadaCompletada}">
+              <p>
+                <strong th:text="${tareaRecomendada.nombre}"></strong>
+              </p>
+              <p class="badge-clima" th:text="'Clima compatible: ' + ${tareaRecomendada.climaCompatible}"></p>
+              <p>¡Tarea recomendada completada!</p>
+              <p>
+                <span class="xp-icon">⭐</span>
+                <span th:text="'Ganaste ' + ${tareaRecomendada.exp} + ' XP'"></span>
+              </p>
+            </div>
+          </div>
+        </div>  
+    </main>
+
+    <!-- MODAL PARA VER/COMPLETAR/ELIMINAR TAREA -->
     <div class="modal" id="taskModal">
-        <div class="modal-content">
-            <button class="close-btn" id="closeModal">X</button>
-            <h2 id="modalTitle"></h2>
-            <p><strong>Descripcion:</strong> <span id="modalDescription"></span></p>
-            <p><strong>Vale:</strong> <span id="modalExp"></span></p>
-            <p><strong>Expira:</strong> <span id="modalExpire"></span></p>
-            <button id="deleteButton">Eliminar Tarea</button>
-            <form id="deleteForm" th:action="@{/eliminar-tarea}" method="post">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                <input type="hidden" name="nombreTarea" id="deleteTaskId">
-            </form>
-            <button id="completeButton" class="">Marcar como completada</button> 
-            <form id="completeForm" th:action="@{/completar-tarea}" method="post">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                <input type="hidden" name="nombreTarea" id="completeTaskId">
-            </form>
-        </div>
+      <div class="modal-content">
+        <button class="close-btn" id="closeModal">X</button>
+        <h2 id="modalTitle"></h2>
+        <p><strong>Descripcion:</strong> <span id="modalDescription"></span></p>
+        <p><strong>Vale:</strong> <span id="modalExp"></span></p>
+        <p><strong>Expira:</strong> <span id="modalExpire"></span></p>
+        
+        <!-- Botones y formularios para las acciones -->
+        <button id="deleteButton">Eliminar Tarea</button>
+        <form id="deleteForm" th:action="@{/eliminar-tarea}" method="post" style="display: none;">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+          <input type="hidden" name="nombreTarea" id="deleteTaskId" />
+        </form>
+        
+        <button id="completeButton">Marcar como completada</button>
+        <form id="completeForm" th:action="@{/completar-tarea}" method="post" style="display: none;">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+          <input type="hidden" name="nombreTarea" id="completeTaskId" />
+        </form>
+      </div>
     </div>
 
-    <script>
-        const modal = document.getElementById("taskModal");
-        const openButtons = document.querySelectorAll(".open-modal");
+    <!-- MODAL PARA CREAR NUEVA TAREA -->
+    <div class="modal" id="createTaskModal">
+      <div class="modal-content">
+        <button class="close-btn" id="closeCreateTaskModal">×</button>
+        <h2>Crear Nueva Tarea</h2>
+        
+        <!-- Mensaje de error -->
+        <div th:if="${errorMessage}" class="alert-error" th:text="${errorMessage}"></div>
+
+
+        <form th:action="@{/nueva-tarea}" method="post" class="edit-form" id="createTaskForm">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+          
+          <div class="form-group">
+            <label for="nombre">Nombre</label>
+            <input type="text" name="nombre" id="nombre" required
+                  th:value="${nombreTareaFallida} ?: ''"
+                  placeholder="Ingresa el nombre de la tarea"/>
+            <small class="char-count"><span id="nombre-chars">0</span>/50</small>
+          </div>
+
+          <div class="form-group">
+            <label for="descripcion">Descripción</label>
+            <input type="text" name="descripcion" id="descripcion" required
+                  th:value="${descripcionTareaFallida} ?: ''"
+                  placeholder="Describe la tarea"/>
+            <small class="char-count"><span id="descripcion-chars">0</span>/100</small>
+          </div>
+
+          <div class="form-group">
+            <label for="categoria">Dificultad:</label>
+            <select id="categoria" name="dificultad" required>
+              <option value="">Selecciona una dificultad</option>
+              <option value="Muy fácil">Muy fácil</option>
+              <option value="Fácil">Fácil</option>
+              <option value="Medio">Intermedio</option>
+              <option value="Difícil">Difícil</option>
+              <option value="Muy difícil">Muy difícil</option>
+            </select>
+          </div>
+
+          <div id="result" class="result-box">
+            <div class="result-item">
+              <strong>XP:</strong> <span id="xp">—</span>
+            </div>
+            <div class="result-item">
+              <strong>Plazo:</strong> <span id="plazo">—</span>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="button" id="cancelCreateTask" class="btn-cancel">Cancelar</button>
+            <button type="submit" class="btn-save" id="submitTaskBtn">Crear Tarea</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Toast global para la aplicación -->
+    <div class="toast-container">
+      <div th:if="${successMessage}" class="toast success global-toast" id="global-success-toast">
+        <span class="toast-icon">✅</span>
+        <span th:text="${successMessage}"></span>
+        <button class="toast-close" onclick="this.parentElement.style.display='none'">×</button>
+      </div>
+      
+      <div th:if="${errorMessage}" class="toast error global-toast" id="global-error-toast">
+        <span class="toast-icon">❌</span>
+        <span th:text="${errorMessage}"></span>
+        <button class="toast-close" onclick="this.parentElement.style.display='none'">×</button>
+      </div>
+    </div>
+    <!-- SCRIPT PARA MODALES - VERSIÓN FINAL UNIFICADA -->
+
+    <script th:inline="javascript">
+      document.addEventListener("DOMContentLoaded", function () {
+        // --- LÓGICA DEL LOADER ---
+        const loader = document.getElementById("loader-wrapper");
+        if (loader) {
+          setTimeout(() => {
+            loader.style.display = "none";
+          }, 500);
+        }
+
+        // --- LÓGICA MODAL PARA VER/ELIMINAR TAREAS ---
+        const taskModal = document.getElementById("taskModal");
+        const openTaskButtons = document.querySelectorAll(".open-modal");
         const modalTitle = document.getElementById("modalTitle");
         const modalDescription = document.getElementById("modalDescription");
         const modalExp = document.getElementById("modalExp");
         const modalExpire = document.getElementById("modalExpire");
-        const closeModal = document.getElementById("closeModal");
-
+        const closeModalBtn = document.getElementById("closeModal");
+        
+        const deleteButton = document.getElementById("deleteButton");
         const deleteTaskId = document.getElementById("deleteTaskId");
         const deleteForm = document.getElementById("deleteForm");
 
+        const completeButton = document.getElementById("completeButton");
         const completeTaskId = document.getElementById("completeTaskId");
         const completeForm = document.getElementById("completeForm");
 
-        document.getElementById("deleteButton").addEventListener("click", () => {
-            deleteTaskId.value = modalTitle.textContent;
-            deleteForm.submit();
+        if (deleteButton) {
+          deleteButton.addEventListener("click", () => {
+            if (modalTitle && deleteTaskId && deleteForm) {
+              deleteTaskId.value = modalTitle.textContent;
+              deleteForm.submit();
+            }
+          });
+        }
+
+        if (completeButton) {
+          completeButton.addEventListener("click", () => {
+            if (modalTitle && completeTaskId && completeForm) {
+              completeTaskId.value = modalTitle.textContent;
+              completeForm.submit();
+            }
+          });
+        }
+
+        openTaskButtons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            if (taskModal) {
+              modalTitle.textContent = btn.dataset.nombre;
+              modalDescription.textContent = btn.dataset.descripcion;
+              modalExp.textContent = btn.dataset.experiencia + " XP";
+              modalExpire.textContent = btn.dataset.expira;
+              taskModal.style.display = "flex";
+            }
+          });
         });
 
-         document.getElementById("completeButton").addEventListener("click", () => {
-            completeTaskId.value = modalTitle.textContent;
-            completeForm.submit();
-        });
+        if (closeModalBtn) closeModalBtn.addEventListener("click", () => { taskModal.style.display = "none"; });
+        
+        if (taskModal) {
+          taskModal.addEventListener("click", (event) => {
+            if (event.target === taskModal) {
+              taskModal.style.display = "none";
+            }
+          });
+        }
 
-        // Show modal with task info
-        openButtons.forEach(btn => {
-            btn.addEventListener("click", () => {
-                modalTitle.textContent = btn.dataset.nombre;
-                modalDescription.textContent = btn.dataset.descripcion;
-                modalExp.textContent = btn.dataset.experiencia + " XP";
-                modalExpire.textContent = btn.dataset.expira;
-                modal.style.display = "flex";
-            });
-        });
+        // --- LÓGICA PARA EL MODAL DE CREAR TAREA ---
+        const createTaskModal = document.getElementById("createTaskModal");
+        const openCreateTaskModalBtn = document.getElementById("openCreateTaskModal");
+        const closeCreateTaskModalBtn = document.getElementById("closeCreateTaskModal");
+        const cancelCreateTaskBtn = document.getElementById("cancelCreateTask");
 
-        // Close modal
-        closeModal.addEventListener("click", () => {
-            modal.style.display = "none";
-        });
-    </script>
-    <script>
-        window.onload = function() {
-            const loader = document.getElementById('loader-wrapper');
-            setTimeout(function() {
-                loader.style.display = 'none';
-            }, 1420); 
+        if (openCreateTaskModalBtn) {
+          openCreateTaskModalBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (createTaskModal) {
+              createTaskModal.style.display = "flex";
+            }
+          });
+        }
+        
+        const closeCreateModal = () => { if (createTaskModal) createTaskModal.style.display = "none"; };
+
+        if (closeCreateTaskModalBtn) closeCreateTaskModalBtn.addEventListener("click", closeCreateModal);
+        if (cancelCreateTaskBtn) cancelCreateTaskBtn.addEventListener("click", (e) => { e.preventDefault(); closeCreateModal(); });
+        
+        if (createTaskModal) {
+          createTaskModal.addEventListener("click", (event) => {
+            if (event.target === createTaskModal) {
+              closeCreateModal();
+            }
+          });
+        }
+
+        // Lógica para el formulario de creación
+        const dificultadSelect = document.getElementById("categoria");
+        const xpSpan = document.getElementById("xp");
+        const plazoSpan = document.getElementById("plazo");
+        const datosDificultad = {
+          "Muy fácil": { xp: 10, texto: "1 día" }, "Fácil": { xp: 25, texto: "2 días" },
+          "Medio": { xp: 50, texto: "3 días" }, "Difícil": { xp: 100, texto: "4 días" },
+          "Muy difícil": { xp: 150, texto: "5 días" },
         };
+        
+        function actualizarResultados() {
+          if(dificultadSelect){
+              const seleccion = dificultadSelect.value;
+              const datos = datosDificultad[seleccion];
+              if (datos) {
+                xpSpan.textContent = datos.xp + " XP";
+                plazoSpan.textContent = datos.texto;
+              } else {
+                xpSpan.textContent = "—";
+                plazoSpan.textContent = "—";
+              }
+          }
+        }
+
+        if (dificultadSelect) {
+          dificultadSelect.addEventListener("change", actualizarResultados);
+          actualizarResultados();
+        }
+
+        // --- LÓGICA PARA CONTADORES DE CARACTERES CON LÍMITE Y ESTILO ---
+        function setupCharCounter(inputId, spanId, maxLength) {
+            const input = document.getElementById(inputId);
+            const span = document.getElementById(spanId);
+            
+            if (input && span) {
+                const parentCounter = span.parentElement;
+
+                const updateCounter = () => {
+                    const currentLength = input.value.length;
+                    span.textContent = currentLength;
+                    if (currentLength > maxLength) {
+                        parentCounter.classList.add('error-limit');
+                    } else {
+                        parentCounter.classList.remove('error-limit');
+                    }
+                };
+                input.addEventListener('input', updateCounter);
+                updateCounter();
+            }
+        }
+        setupCharCounter('nombre', 'nombre-chars', 50);
+        setupCharCounter('descripcion', 'descripcion-chars', 100);
+
+        // --- LÓGICA PARA ABRIR MODAL CON ERROR Y MOSTRAR TOAST ---
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('showCreateTaskModal') === 'true' && createTaskModal) {
+            createTaskModal.style.display = 'flex';
+        }
+
+        // Apuntamos al ID correcto del toast global
+        const successToast = document.getElementById('global-success-toast'); 
+
+        if (successToast) {
+            // La lógica para desaparecer después de 3 segundos
+            setTimeout(() => {
+                successToast.style.transition = 'opacity 0.5s ease';
+                successToast.style.opacity = '0';
+                
+                // Esperamos a que la transición termine para poner display: none
+                setTimeout(() => {
+                    successToast.style.display = 'none';
+                }, 500);
+            }, 3000); 
+        }
+      });
     </script>
-</body>
+
+    <div th:replace="~{fragments :: navbar}"></div>
+  </body>
 </html>
