@@ -10,7 +10,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -59,9 +58,9 @@ public class TareaController {
   }
 
   /**
-   * Procesa la creación de una nueva tarea para el usuario autenticado.
-   * Valida que no se exceda el límite de 4 tareas pendientes antes de agregar la tarea.
-   * 
+   * Procesa la creación de una nueva tarea para el usuario autenticado. Valida que no se exceda el
+   * límite de 4 tareas pendientes antes de agregar la tarea.
+   *
    * @param nombre Nombre de la tarea a crear
    * @param descripcion Descripción de la tarea
    * @param dificultad Nivel de dificultad de la tarea
@@ -71,11 +70,11 @@ public class TareaController {
    */
   @PostMapping("/nueva-tarea")
   public String procesarNuevaTarea(
-    @RequestParam("nombre") String nombre,
-    @RequestParam("descripcion") String descripcion,
-    @RequestParam("dificultad") String dificultad,
-    RedirectAttributes redirectAttributes)
-    throws TareaInvalidaException {
+      @RequestParam("nombre") String nombre,
+      @RequestParam("descripcion") String descripcion,
+      @RequestParam("dificultad") String dificultad,
+      RedirectAttributes redirectAttributes)
+      throws TareaInvalidaException {
 
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
@@ -83,14 +82,15 @@ public class TareaController {
 
     int tareasPendientes = usuarioService.obtenerTareasPendientes(correo).size();
     if (tareasPendientes >= 4) {
-      throw new TareaInvalidaException("No puedes agregar más de 4 tareas pendientes.", nombre, descripcion);
+      throw new TareaInvalidaException(
+          "No puedes agregar más de 4 tareas pendientes.", nombre, descripcion);
     }
 
     Tarea nuevaTarea = new Tarea(nombre, descripcion, dificultad);
     usuarioService.agregarTareaAusuario(correo, nuevaTarea);
 
-    redirectAttributes.addFlashAttribute("successMessage", "¡Tarea '" + nombre + "' agregada con éxito!");
+    redirectAttributes.addFlashAttribute(
+        "successMessage", "¡Tarea '" + nombre + "' agregada con éxito!");
     return "redirect:/home";
   }
-
 }

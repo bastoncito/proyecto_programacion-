@@ -33,14 +33,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
    */
   @ExceptionHandler(TareaInvalidaException.class)
   public String manejoTareaInvalidaException(
-    TareaInvalidaException ex, RedirectAttributes redirectAttributes) {
+      TareaInvalidaException ex, RedirectAttributes redirectAttributes) {
 
     redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
     redirectAttributes.addFlashAttribute("nombreTareaFallida", ex.getNombre());
     redirectAttributes.addFlashAttribute("descripcionTareaFallida", ex.getDescripcion());
-    
+
     redirectAttributes.addAttribute("showCreateTaskModal", "true");
-    
+
     return "redirect:/home";
   }
 

@@ -425,14 +425,14 @@ public class Usuario {
    */
   public Tarea buscarTareaPorNombre(String nombre) {
     for (Tarea t : getTareasPendientes()) {
-        if (t.getNombre().equalsIgnoreCase(nombre)) {
-            return t;
-        }
+      if (t.getNombre().equalsIgnoreCase(nombre)) {
+        return t;
+      }
     }
     for (Tarea t : getTareasCompletadas()) {
-        if (t.getNombre().equalsIgnoreCase(nombre)) {
-            return t;
-        }
+      if (t.getNombre().equalsIgnoreCase(nombre)) {
+        return t;
+      }
     }
     return null;
   }
@@ -502,7 +502,7 @@ public class Usuario {
    * tarea.
    */
   public void actualizarRacha() {
-    LocalDate hoy = LocalDate.now();
+    LocalDate hoy = LocalDate.now(ZoneId.systemDefault());
     LocalDate fechaUltimaRacha = this.fechaRacha; // Usamos el nombre de tu campo
 
     // CASO 1: Es la primera tarea que el usuario completa en su vida.

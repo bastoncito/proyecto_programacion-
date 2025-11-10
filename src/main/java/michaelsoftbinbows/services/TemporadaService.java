@@ -2,6 +2,7 @@ package michaelsoftbinbows.services;
 
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
@@ -41,13 +42,13 @@ public class TemporadaService {
     List<Usuario> ganadores = usuarioRepository.findTop3ByOrderByPuntosLigaDesc();
 
     // Generamos el nombre del mes que ACABA de terminar (ej. "Octubre 2025")
-    LocalDate mesPasado = LocalDate.now().minusMonths(1);
+    LocalDate mesPasado = LocalDate.now(ZoneId.systemDefault()).minusMonths(1);
     // Locale("es", "ES") es para que ponga "Octubre" y no "October"
-    String temporadaNombre =
-        mesPasado.getMonth().getDisplayName(TextStyle.FULL, new Locale("es", "ES"));
+    Locale localeEs = Locale.forLanguageTag("es-ES");
+    String temporadaNombre = mesPasado.getMonth().getDisplayName(TextStyle.FULL, localeEs);
     // Capitalizar: "octubre" -> "Octubre"
     temporadaNombre =
-        temporadaNombre.substring(0, 1).toUpperCase()
+        temporadaNombre.substring(0, 1).toUpperCase(Locale.getDefault())
             + temporadaNombre.substring(1)
             + " "
             + mesPasado.getYear();

@@ -65,6 +65,11 @@ spotless {
         encoding 'UTF-8'
         lineEndings 'UNIX'
 	}
+    format 'misc', {
+        target('*.md', '*.gradle', '.gitignore')
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
 }
 
 checkstyle {
@@ -79,6 +84,3 @@ tasks.withType(Checkstyle) {
         html.outputLocation = file("$buildDir/reports/checkstyle/checkstyle.html")
     }
 }
-
-
-

@@ -444,6 +444,15 @@ public class UsuarioService {
     return usuarioRepository.save(usuario);
   }
 
+  /**
+   * Método utilizado para obtener una lista de las tareas pendientes de un usuario.
+   *
+   * <p>A partir del correo, busca al usuario en la base de datos y devuelve su lista de tareas
+   * pendientes.
+   *
+   * @param correo correo electrónico del usuario
+   * @return lista de tareas pendientes
+   */
   public List<Tarea> obtenerTareasPendientes(String correo) {
     Optional<Usuario> usuarioOpt = usuarioRepository.findByCorreoElectronico(correo);
     if (usuarioOpt.isPresent()) {

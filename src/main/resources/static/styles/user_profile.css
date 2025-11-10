@@ -40,7 +40,7 @@ body {
 
 /* Diseño para escritorio */
 @media (min-width: 1024px) {
-  body { 
+  body {
     padding-bottom: 0; /* Elimina padding en escritorio */
   }
   .grid-container {
@@ -49,14 +49,15 @@ body {
     padding: 20px;
     align-items: start;
   }
-  .sidebar-column { 
+  .sidebar-column {
     position: sticky; /* Barra lateral fija al hacer scroll */
-    top: 20px; 
+    top: 20px;
   }
 }
 
 /* Contenedores de columnas */
-.main-column, .sidebar-column {
+.main-column,
+.sidebar-column {
   display: flex;
   flex-direction: column;
   gap: 15px; /* Espaciado entre tarjetas */
@@ -64,7 +65,8 @@ body {
 
 /* Ajustes de espaciado para escritorio */
 @media (min-width: 1024px) {
-  .main-column, .sidebar-column { 
+  .main-column,
+  .sidebar-column {
     gap: 20px; /* Más espacio entre tarjetas en escritorio */
   }
 }
@@ -87,48 +89,49 @@ body {
   border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Línea sutil de separación */
 }
 
-.card-header h1, .card-header h2 {
+.card-header h1,
+.card-header h2 {
   margin: 0;
   font-size: 1.2em;
   font-weight: 600;
 }
 
 /* Cuerpo de tarjetas */
-.card-body { 
-  padding: 20px; 
+.card-body {
+  padding: 20px;
   position: relative; /* Contenedor de referencia para el tooltip dinámico */
 }
 
 /* Estilos de formularios */
-.profile-form { 
-  display: flex; 
-  flex-direction: column; 
+.profile-form {
+  display: flex;
+  flex-direction: column;
   gap: 20px; /* Espacio entre grupos de formulario */
 }
-.form-group { 
-  display: flex; 
-  flex-direction: column; 
+.form-group {
+  display: flex;
+  flex-direction: column;
   gap: 8px; /* Espacio entre label e input */
 }
-.form-group label { 
-  font-weight: 600; 
-  font-size: 0.9em; 
-  color: var(--color-texto-secundario); 
+.form-group label {
+  font-weight: 600;
+  font-size: 0.9em;
+  color: var(--color-texto-secundario);
 }
 
 /* Estilo mejorado para los inputs */
-.form-group input { 
-  padding: 12px 15px; 
-  border-radius: 8px; 
-  font-size: 1em; 
-  transition: var(--transicion-suave); 
+.form-group input {
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-size: 1em;
+  transition: var(--transicion-suave);
   background-color: var(--color-blanco);
   border: 1px solid #dcdcdc; /* Borde sutil por defecto */
 }
 /* Efectos de focus en inputs */
-.form-group input:focus { 
-  outline: none; 
-  border-color: var(--color-principal); 
+.form-group input:focus {
+  outline: none;
+  border-color: var(--color-principal);
   box-shadow: 0 0 0 3px rgba(255, 200, 57, 0.5); /* Glow effect */
 }
 
@@ -136,63 +139,63 @@ body {
 /* 4. BOTONES Y MENSAJES DE ALERTA                                   */
 /* =================================================================== */
 /* Estilos base para botones */
-.btn { 
-  padding: 12px 24px; 
-  border: none; 
+.btn {
+  padding: 12px 24px;
+  border: none;
   border-radius: 50px; /* Bordes completamente redondeados */
-  font-size: 1em; 
-  font-weight: 600; 
-  cursor: pointer; 
-  transition: var(--transicion-suave); 
-  text-align: center; 
-  text-decoration: none; 
-  display: block; 
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transicion-suave);
+  text-align: center;
+  text-decoration: none;
+  display: block;
   width: 100%; /* Botones de ancho completo */
 }
 
 /* Variantes de botones */
-.btn-primary { 
-  background-color: var(--color-oscuro); 
-  color: var(--color-blanco); 
+.btn-primary {
+  background-color: var(--color-oscuro);
+  color: var(--color-blanco);
   align-self: flex-end; /* Alineación a la derecha en formularios */
 }
-.btn-primary:hover { 
+.btn-primary:hover {
   background-color: #000; /* Oscurece al hacer hover */
 }
 
-.btn-secondary { 
-  background-color: var(--color-texto-secundario); 
-  color: var(--color-blanco); 
+.btn-secondary {
+  background-color: var(--color-texto-secundario);
+  color: var(--color-blanco);
 }
-.btn-secondary:hover { 
-  background-color: #5a6268; 
+.btn-secondary:hover {
+  background-color: #5a6268;
 }
 
-.btn-danger-outline { 
-  background-color: transparent; 
-  color: var(--color-rojo-peligro); 
-  border: 2px solid var(--color-rojo-peligro); 
+.btn-danger-outline {
+  background-color: transparent;
+  color: var(--color-rojo-peligro);
+  border: 2px solid var(--color-rojo-peligro);
 }
-.btn-danger-outline:hover { 
-  background-color: var(--color-rojo-peligro); 
-  color: var(--color-blanco); 
+.btn-danger-outline:hover {
+  background-color: var(--color-rojo-peligro);
+  color: var(--color-blanco);
 }
 
 /* Mensajes de alerta */
-.alert { 
-  padding: 15px; 
-  border-radius: 8px; 
-  font-weight: 500; 
-  margin-bottom: 20px; 
+.alert {
+  padding: 15px;
+  border-radius: 8px;
+  font-weight: 500;
+  margin-bottom: 20px;
   white-space: pre-line; /* Mantiene saltos de línea */
 }
-.alert-success { 
-  background-color: #d4edda; 
-  color: #155724; 
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
 }
-.alert-error { 
-  background-color: #f8d7da; 
-  color: #721c24; 
+.alert-error {
+  background-color: #f8d7da;
+  color: #721c24;
 }
 
 /* =================================================================== */
@@ -201,7 +204,10 @@ body {
 /* Grid responsivo para logros */
 .achievements-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); /* Grid adaptable */
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(60px, 1fr)
+  ); /* Grid adaptable */
   gap: 15px;
 }
 
@@ -255,7 +261,7 @@ body {
 
 /* Flecha del tooltip */
 #achievement-tooltip::after {
-  content: '';
+  content: "";
   position: absolute;
   left: var(--arrow-left, 50%); /* Controlado por JavaScript */
   transform: translateX(-50%);
@@ -265,14 +271,14 @@ body {
 
 /* Flecha apuntando hacia abajo */
 #achievement-tooltip.arrow-down::after {
-    top: 100%;
-    border-color: var(--color-oscuro) transparent transparent transparent;
+  top: 100%;
+  border-color: var(--color-oscuro) transparent transparent transparent;
 }
 
 /* Flecha apuntando hacia arriba */
 #achievement-tooltip.arrow-up::after {
-    bottom: 100%;
-    border-color: transparent transparent var(--color-oscuro) transparent;
+  bottom: 100%;
+  border-color: transparent transparent var(--color-oscuro) transparent;
 }
 
 /* Estado visible del tooltip */
@@ -282,24 +288,24 @@ body {
 }
 
 /* Elementos internos del tooltip */
-.tooltip-title { 
-  font-weight: 700; 
-  margin-bottom: 5px; 
+.tooltip-title {
+  font-weight: 700;
+  margin-bottom: 5px;
 }
-.tooltip-description { 
-  font-size: 0.9em; 
+.tooltip-description {
+  font-size: 0.9em;
   opacity: 0.8; /* Texto secundario más suave */
 }
-.tooltip-date { 
-  font-size: 0.8em; 
-  margin-top: 8px; 
+.tooltip-date {
+  font-size: 0.8em;
+  margin-top: 8px;
   color: var(--color-principal); /* Color destacado */
 }
-.tooltip-exp { 
-  font-weight: 700; 
-  font-size: 0.95em; 
-  color: var(--color-verde-exito); 
-  margin-top: 8px; 
-  padding-top: 8px; 
+.tooltip-exp {
+  font-weight: 700;
+  font-size: 0.95em;
+  color: var(--color-verde-exito);
+  margin-top: 8px;
+  padding-top: 8px;
   border-top: 1px solid rgba(255, 255, 255, 0.2); /* Línea separadora */
 }

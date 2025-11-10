@@ -1,7 +1,5 @@
 package michaelsoftbinbows.services;
 
-import java.util.HashMap;
-import java.util.Map;
 import michaelsoftbinbows.data.UsuarioRepository;
 import michaelsoftbinbows.entities.Usuario;
 import michaelsoftbinbows.security.CustomUserDetails;
@@ -17,8 +15,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
-
-  private final Map<String, Usuario> users = new HashMap<>();
 
   @Autowired private UsuarioRepository usuarioRepository;
 

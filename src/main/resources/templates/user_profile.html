@@ -12,11 +12,17 @@
     <link rel="stylesheet" th:href="@{/styles/user_profile.css}" />
     <link rel="stylesheet" th:href="@{/styles/navbar.css}" />
     <!-- Iconos de Boxicons -->
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
     <!-- Fuente de Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <!-- Contenedor principal con diseño de grid -->
@@ -28,25 +34,61 @@
           <div class="card-header"><h1>Información Personal</h1></div>
           <div class="card-body">
             <!-- Mensajes de alerta para información personal -->
-            <div th:if="${exitoInfo}" class="alert alert-success" th:text="${exitoInfo}"></div>
-            <div th:if="${errorInfo}" class="alert alert-error" th:text="${errorInfo}"></div>
+            <div
+              th:if="${exitoInfo}"
+              class="alert alert-success"
+              th:text="${exitoInfo}"
+            ></div>
+            <div
+              th:if="${errorInfo}"
+              class="alert alert-error"
+              th:text="${errorInfo}"
+            ></div>
             <!-- Formulario para actualizar información personal -->
-            <form class="profile-form" th:action="@{/perfil/actualizar}" method="post">
+            <form
+              class="profile-form"
+              th:action="@{/perfil/actualizar}"
+              method="post"
+            >
               <!-- Token CSRF para seguridad -->
-              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+              <input
+                type="hidden"
+                th:name="${_csrf.parameterName}"
+                th:value="${_csrf.token}"
+              />
               <div class="form-group">
                 <label for="usuario">Nombre de Usuario</label>
-                <input type="text" id="usuario" name="usuario" th:value="${usuarioLogueado.nombreUsuario}" required />
+                <input
+                  type="text"
+                  id="usuario"
+                  name="usuario"
+                  th:value="${usuarioLogueado.nombreUsuario}"
+                  required
+                />
               </div>
               <div class="form-group">
                 <label for="correo">Correo Electrónico</label>
-                <input type="email" id="correo" name="correo" th:value="${usuarioLogueado.correoElectronico}" required />
+                <input
+                  type="email"
+                  id="correo"
+                  name="correo"
+                  th:value="${usuarioLogueado.correoElectronico}"
+                  required
+                />
               </div>
               <div class="form-group">
                 <label for="ciudad">Ciudad (para el clima)</label>
-                <input type="text" id="ciudad" name="ciudad" th:value="${usuarioLogueado.ciudad}" placeholder="Ej: Curico,CL" />
+                <input
+                  type="text"
+                  id="ciudad"
+                  name="ciudad"
+                  th:value="${usuarioLogueado.ciudad}"
+                  placeholder="Ej: Curico,CL"
+                />
               </div>
-              <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+              <button type="submit" class="btn btn-primary">
+                Guardar Cambios
+              </button>
             </form>
           </div>
         </section>
@@ -56,26 +98,61 @@
           <div class="card-header"><h1>Cambiar Contraseña</h1></div>
           <div class="card-body">
             <!-- Mensajes de alerta para cambio de contraseña -->
-            <div th:if="${exitoPassword}" class="alert alert-success" th:text="${exitoPassword}"></div>
-            <div th:if="${errorPassword}" class="alert alert-error" th:text="${errorPassword}"></div>
+            <div
+              th:if="${exitoPassword}"
+              class="alert alert-success"
+              th:text="${exitoPassword}"
+            ></div>
+            <div
+              th:if="${errorPassword}"
+              class="alert alert-error"
+              th:text="${errorPassword}"
+            ></div>
 
             <!-- Formulario para cambiar contraseña -->
-            <form class="profile-form" th:action="@{/perfil/cambiar-contrasena}" method="post">
+            <form
+              class="profile-form"
+              th:action="@{/perfil/cambiar-contrasena}"
+              method="post"
+            >
               <!-- Token CSRF para seguridad -->
-              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+              <input
+                type="hidden"
+                th:name="${_csrf.parameterName}"
+                th:value="${_csrf.token}"
+              />
               <div class="form-group">
                 <label for="contrasenaActual">Contraseña Actual</label>
-                <input type="password" id="contrasenaActual" name="contrasenaActual" required />
+                <input
+                  type="password"
+                  id="contrasenaActual"
+                  name="contrasenaActual"
+                  required
+                />
               </div>
               <div class="form-group">
                 <label for="contrasenaNueva">Nueva Contraseña</label>
-                <input type="password" id="contrasenaNueva" name="contrasenaNueva" required />
+                <input
+                  type="password"
+                  id="contrasenaNueva"
+                  name="contrasenaNueva"
+                  required
+                />
               </div>
               <div class="form-group">
-                <label for="contrasenaRepetida">Confirmar Nueva Contraseña</label>
-                <input type="password" id="contrasenaRepetida" name="contrasenaRepetida" required />
+                <label for="contrasenaRepetida"
+                  >Confirmar Nueva Contraseña</label
+                >
+                <input
+                  type="password"
+                  id="contrasenaRepetida"
+                  name="contrasenaRepetida"
+                  required
+                />
               </div>
-              <button type="submit" class="btn btn-primary">Actualizar Contraseña</button>
+              <button type="submit" class="btn btn-primary">
+                Actualizar Contraseña
+              </button>
             </form>
           </div>
         </section>
@@ -90,26 +167,30 @@
             <!-- Grid de logros -->
             <div class="achievements-grid">
               <!-- Iteración sobre todos los logros disponibles -->
-               <!-- Añade clase 'locked' si el logro no está desbloqueado -->
-              <div th:each="logro : ${allAchievements}"
-                   class="achievement-item"
-                   th:classappend="${!unlockedAchievementsIds.contains(logro.getId()) ? 'locked' : ''}"
-                   th:data-title="${logro.getNombre()}"
-                   th:data-desc="${logro.getDescripcion()}"
-                   th:data-exp="${logro.getPuntosRecompensa()}"
-                   th:data-unlocked="${unlockedAchievementsIds.contains(logro.getId())}">
-
+              <!-- Añade clase 'locked' si el logro no está desbloqueado -->
+              <div
+                th:each="logro : ${allAchievements}"
+                class="achievement-item"
+                th:classappend="${!unlockedAchievementsIds.contains(logro.getId()) ? 'locked' : ''}"
+                th:data-title="${logro.getNombre()}"
+                th:data-desc="${logro.getDescripcion()}"
+                th:data-exp="${logro.getPuntosRecompensa()}"
+                th:data-unlocked="${unlockedAchievementsIds.contains(logro.getId())}"
+              >
                 <!-- Imagen del logro -->
-                <img th:src="@{'/images/logros/' + ${logro.getId()} + '.png'}" th:alt="${logro.getNombre()}" />
+                <img
+                  th:src="@{'/images/logros/' + ${logro.getId()} + '.png'}"
+                  th:alt="${logro.getNombre()}"
+                />
               </div>
             </div>
-            
+
             <!-- Tooltip que se mostrará al pasar el mouse sobre los logros -->
             <div id="achievement-tooltip">
-                <div id="tooltip-title" class="tooltip-title"></div>
-                <div id="tooltip-desc" class="tooltip-description"></div>
-                <div id="tooltip-exp" class="tooltip-exp"></div>
-                <div id="tooltip-date" class="tooltip-date"></div>
+              <div id="tooltip-title" class="tooltip-title"></div>
+              <div id="tooltip-desc" class="tooltip-description"></div>
+              <div id="tooltip-exp" class="tooltip-exp"></div>
+              <div id="tooltip-date" class="tooltip-date"></div>
             </div>
           </div>
         </aside>
@@ -117,18 +198,37 @@
         <!-- Tarjeta: Acciones de la Cuenta -->
         <aside class="card">
           <div class="card-header"><h2>Acciones de la Cuenta</h2></div>
-          <div class="card-body" style="display: flex; flex-direction: column; gap: 15px;">
+          <div
+            class="card-body"
+            style="display: flex; flex-direction: column; gap: 15px"
+          >
             <!-- Formulario para cerrar sesión -->
             <form th:action="@{/logout}" method="post">
-              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-              <button type="submit" class="btn btn-secondary" onclick="return confirm('¿Estás seguro de que quieres cerrar la sesión?');">
+              <input
+                type="hidden"
+                th:name="${_csrf.parameterName}"
+                th:value="${_csrf.token}"
+              />
+              <button
+                type="submit"
+                class="btn btn-secondary"
+                onclick="return confirm('¿Estás seguro de que quieres cerrar la sesión?');"
+              >
                 Cerrar Sesión
               </button>
             </form>
             <!-- Formulario para eliminar cuenta -->
             <form th:action="@{/perfil/borrar-cuenta}" method="post">
-              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-              <button type="submit" class="btn btn-danger-outline" onclick="return confirm('¡ATENCIÓN! Esta acción es permanente. ¿Seguro que quieres eliminar tu cuenta?');">
+              <input
+                type="hidden"
+                th:name="${_csrf.parameterName}"
+                th:value="${_csrf.token}"
+              />
+              <button
+                type="submit"
+                class="btn btn-danger-outline"
+                onclick="return confirm('¡ATENCIÓN! Esta acción es permanente. ¿Seguro que quieres eliminar tu cuenta?');"
+              >
                 Eliminar Cuenta
               </button>
             </form>
@@ -139,156 +239,166 @@
 
     <!-- Inclusión de la barra de navegación -->
     <div th:replace="~{fragments :: navbar}"></div>
-    
+
     <!-- SCRIPT PARA EL TOOLTIP INTELIGENTE -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const tooltip = document.getElementById('achievement-tooltip');
-            const tooltipTitle = document.getElementById('tooltip-title');
-            const tooltipDesc = document.getElementById('tooltip-desc');
-            const tooltipExp = document.getElementById('tooltip-exp');
-            const tooltipDate = document.getElementById('tooltip-date');
-            const achievementItems = document.querySelectorAll('.achievement-item');
+      document.addEventListener("DOMContentLoaded", function () {
+        const tooltip = document.getElementById("achievement-tooltip");
+        const tooltipTitle = document.getElementById("tooltip-title");
+        const tooltipDesc = document.getElementById("tooltip-desc");
+        const tooltipExp = document.getElementById("tooltip-exp");
+        const tooltipDate = document.getElementById("tooltip-date");
+        const achievementItems = document.querySelectorAll(".achievement-item");
 
-            // Función para ocultar el tooltip
-            const hideTooltip = () => {
-                tooltip.classList.remove('visible');
-                tooltip.removeAttribute('data-current-item');
-            };
+        // Función para ocultar el tooltip
+        const hideTooltip = () => {
+          tooltip.classList.remove("visible");
+          tooltip.removeAttribute("data-current-item");
+        };
 
-            // Listener para cerrar el tooltip si se hace clic fuera de él
-            document.addEventListener('click', function(e) {
-                if (!e.target.closest('.achievement-item') && tooltip.classList.contains('visible')) {
-                    hideTooltip();
-                }
-            });
-
-            achievementItems.forEach(item => {
-              // Mostrar tooltip al pasar el mouse
-                item.addEventListener('mouseenter', (e) => {
-                    const target = e.currentTarget; // Llenar datos...
-                    fillTooltipData(target);  // Posicionar...
-                    positionTooltip(target);  // Mostrar.
-                    tooltip.classList.add('visible'); // Mostrar tooltip
-                });
-
-                // Para quitar el hover en escritorio
-                item.addEventListener('mouseleave', () => {
-                    if (!tooltip.hasAttribute('data-current-item')) {
-                        tooltip.classList.remove('visible');
-                    }
-                });
-
-                // Para el clic en móvil (y escritorio)
-                item.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const target = e.currentTarget;
-                    const currentItemId = target.dataset.title;
-
-                    if (tooltip.classList.contains('visible') && tooltip.getAttribute('data-current-item') === currentItemId) {
-                        hideTooltip();
-                    } else {
-                        fillTooltipData(target);
-                        positionTooltip(target);
-                        tooltip.classList.add('visible');
-                        tooltip.setAttribute('data-current-item', currentItemId);
-                    }
-                });
-            });
-            
-            /**
-             * Llena el tooltip con los datos del logro
-             * @param {HTMLElement} target - Elemento del logro
-             */
-            function fillTooltipData(target) {
-                const isUnlocked = target.dataset.unlocked === 'true'
-                // Título del logro
-                tooltipTitle.textContent = target.dataset.title;
-                // Descripción - cambia según si está desbloqueado o no
-                tooltipDesc.textContent = isUnlocked ? target.dataset.desc : 'Requisito: ' + target.dataset.desc;
-                
-                const exp = parseInt(target.dataset.exp, 10);
-                // Experiencia - solo muestra si es mayor a 0
-                if (exp > 0) {
-                    tooltipExp.textContent = `+${exp} XP`;
-                    tooltipExp.style.display = 'block';
-                } else {
-                    tooltipExp.style.display = 'none';
-                }
-                // Fecha de desbloqueo - solo muestra si está desbloqueado
-                if (isUnlocked) {
-                    // Por ahora fijamos una fecha simulada.
-                    tooltipDate.textContent = 'Desbloqueado el 28/09/2025';
-                    tooltipDate.style.display = 'block';
-                } else {
-                    tooltipDate.style.display = 'none';
-                }
-            }
-
-            /**
-             * Posiciona el tooltip de forma inteligente, evitando que se salga de la pantalla.
-             * @param {HTMLElement} target - El elemento del logro que activó el tooltip.
-             */
-            function positionTooltip(target) {
-                const tooltipWidth = tooltip.offsetWidth;
-                const tooltipHeight = tooltip.offsetHeight;
-
-                // Obtenemos el contenedor con position:relative
-                const container = target.offsetParent; 
-                if (!container) return; // Salida segura si no hay contenedor
-
-                // Coordenadas del ícono y del contenedor relativas a la ventana (viewport)
-                const targetRect = target.getBoundingClientRect();
-                const containerRect = container.getBoundingClientRect();
-
-                // --- 1. CÁLCULO DE POSICIÓN VERTICAL (top) ---
-                let top;
-                // Decide si hay espacio para mostrar el tooltip arriba del ícono
-                if (targetRect.top - tooltipHeight - 10 > 0) {
-                    // Posición 'top' relativa al contenedor
-                    top = target.offsetTop - tooltipHeight - 10;
-                    tooltip.classList.remove('arrow-up');
-                    tooltip.classList.add('arrow-down');
-                } else {
-                    // O lo muestra abajo
-                    top = target.offsetTop + target.offsetHeight + 10;
-                    tooltip.classList.remove('arrow-down');
-                    tooltip.classList.add('arrow-up');
-                }
-
-                // --- 2. CÁLCULO DE POSICIÓN HORIZONTAL (left) CON AJUSTE DE BORDES ---
-                // a) Posición 'left' ideal (centrado sobre el ícono), relativa al contenedor
-                let left = target.offsetLeft + (target.offsetWidth / 2) - (tooltipWidth / 2);
-
-                // b) Calculamos la posición absoluta (en la pantalla) que tendría el tooltip
-                const absoluteLeft = containerRect.left + left;
-
-                // c) Corregimos si se sale por la izquierda
-                if (absoluteLeft < 10) { // 10px de margen
-                    // Recalculamos 'left' para que el borde izquierdo absoluto sea 10
-                    left = 10 - containerRect.left;
-                }
-                // d) Corregimos si se sale por la derecha
-                else if (absoluteLeft + tooltipWidth > window.innerWidth - 10) {
-                    // Recalculamos 'left' para que el borde derecho absoluto sea el borde de la ventana - 10
-                    left = window.innerWidth - tooltipWidth - 10 - containerRect.left;
-                }
-
-                // --- 3. CÁLCULO DE LA POSICIÓN DE LA FLECHA ---
-                // La flecha debe apuntar al centro del ícono, sin importar dónde se movió el tooltip.
-                // Calculamos el centro absoluto del ícono
-                const iconCenterAbsoluteX = targetRect.left + (targetRect.width / 2);
-                // Calculamos la posición absoluta final del tooltip
-                const tooltipFinalAbsoluteX = containerRect.left + left;
-                // La posición de la flecha es la diferencia
-                const arrowLeft = iconCenterAbsoluteX - tooltipFinalAbsoluteX;
-
-                // --- 4. APLICAR TODOS LOS ESTILOS CALCULADOS ---
-                tooltip.style.top = `${top}px`;
-                tooltip.style.left = `${left}px`;
-                tooltip.style.setProperty('--arrow-left', `${arrowLeft}px`);
-            }
+        // Listener para cerrar el tooltip si se hace clic fuera de él
+        document.addEventListener("click", function (e) {
+          if (
+            !e.target.closest(".achievement-item") &&
+            tooltip.classList.contains("visible")
+          ) {
+            hideTooltip();
+          }
         });
+
+        achievementItems.forEach((item) => {
+          // Mostrar tooltip al pasar el mouse
+          item.addEventListener("mouseenter", (e) => {
+            const target = e.currentTarget; // Llenar datos...
+            fillTooltipData(target); // Posicionar...
+            positionTooltip(target); // Mostrar.
+            tooltip.classList.add("visible"); // Mostrar tooltip
+          });
+
+          // Para quitar el hover en escritorio
+          item.addEventListener("mouseleave", () => {
+            if (!tooltip.hasAttribute("data-current-item")) {
+              tooltip.classList.remove("visible");
+            }
+          });
+
+          // Para el clic en móvil (y escritorio)
+          item.addEventListener("click", function (e) {
+            e.stopPropagation();
+            const target = e.currentTarget;
+            const currentItemId = target.dataset.title;
+
+            if (
+              tooltip.classList.contains("visible") &&
+              tooltip.getAttribute("data-current-item") === currentItemId
+            ) {
+              hideTooltip();
+            } else {
+              fillTooltipData(target);
+              positionTooltip(target);
+              tooltip.classList.add("visible");
+              tooltip.setAttribute("data-current-item", currentItemId);
+            }
+          });
+        });
+
+        /**
+         * Llena el tooltip con los datos del logro
+         * @param {HTMLElement} target - Elemento del logro
+         */
+        function fillTooltipData(target) {
+          const isUnlocked = target.dataset.unlocked === "true";
+          // Título del logro
+          tooltipTitle.textContent = target.dataset.title;
+          // Descripción - cambia según si está desbloqueado o no
+          tooltipDesc.textContent = isUnlocked
+            ? target.dataset.desc
+            : "Requisito: " + target.dataset.desc;
+
+          const exp = parseInt(target.dataset.exp, 10);
+          // Experiencia - solo muestra si es mayor a 0
+          if (exp > 0) {
+            tooltipExp.textContent = `+${exp} XP`;
+            tooltipExp.style.display = "block";
+          } else {
+            tooltipExp.style.display = "none";
+          }
+          // Fecha de desbloqueo - solo muestra si está desbloqueado
+          if (isUnlocked) {
+            // Por ahora fijamos una fecha simulada.
+            tooltipDate.textContent = "Desbloqueado el 28/09/2025";
+            tooltipDate.style.display = "block";
+          } else {
+            tooltipDate.style.display = "none";
+          }
+        }
+
+        /**
+         * Posiciona el tooltip de forma inteligente, evitando que se salga de la pantalla.
+         * @param {HTMLElement} target - El elemento del logro que activó el tooltip.
+         */
+        function positionTooltip(target) {
+          const tooltipWidth = tooltip.offsetWidth;
+          const tooltipHeight = tooltip.offsetHeight;
+
+          // Obtenemos el contenedor con position:relative
+          const container = target.offsetParent;
+          if (!container) return; // Salida segura si no hay contenedor
+
+          // Coordenadas del ícono y del contenedor relativas a la ventana (viewport)
+          const targetRect = target.getBoundingClientRect();
+          const containerRect = container.getBoundingClientRect();
+
+          // --- 1. CÁLCULO DE POSICIÓN VERTICAL (top) ---
+          let top;
+          // Decide si hay espacio para mostrar el tooltip arriba del ícono
+          if (targetRect.top - tooltipHeight - 10 > 0) {
+            // Posición 'top' relativa al contenedor
+            top = target.offsetTop - tooltipHeight - 10;
+            tooltip.classList.remove("arrow-up");
+            tooltip.classList.add("arrow-down");
+          } else {
+            // O lo muestra abajo
+            top = target.offsetTop + target.offsetHeight + 10;
+            tooltip.classList.remove("arrow-down");
+            tooltip.classList.add("arrow-up");
+          }
+
+          // --- 2. CÁLCULO DE POSICIÓN HORIZONTAL (left) CON AJUSTE DE BORDES ---
+          // a) Posición 'left' ideal (centrado sobre el ícono), relativa al contenedor
+          let left =
+            target.offsetLeft + target.offsetWidth / 2 - tooltipWidth / 2;
+
+          // b) Calculamos la posición absoluta (en la pantalla) que tendría el tooltip
+          const absoluteLeft = containerRect.left + left;
+
+          // c) Corregimos si se sale por la izquierda
+          if (absoluteLeft < 10) {
+            // 10px de margen
+            // Recalculamos 'left' para que el borde izquierdo absoluto sea 10
+            left = 10 - containerRect.left;
+          }
+          // d) Corregimos si se sale por la derecha
+          else if (absoluteLeft + tooltipWidth > window.innerWidth - 10) {
+            // Recalculamos 'left' para que el borde derecho absoluto sea el borde de la ventana - 10
+            left = window.innerWidth - tooltipWidth - 10 - containerRect.left;
+          }
+
+          // --- 3. CÁLCULO DE LA POSICIÓN DE LA FLECHA ---
+          // La flecha debe apuntar al centro del ícono, sin importar dónde se movió el tooltip.
+          // Calculamos el centro absoluto del ícono
+          const iconCenterAbsoluteX = targetRect.left + targetRect.width / 2;
+          // Calculamos la posición absoluta final del tooltip
+          const tooltipFinalAbsoluteX = containerRect.left + left;
+          // La posición de la flecha es la diferencia
+          const arrowLeft = iconCenterAbsoluteX - tooltipFinalAbsoluteX;
+
+          // --- 4. APLICAR TODOS LOS ESTILOS CALCULADOS ---
+          tooltip.style.top = `${top}px`;
+          tooltip.style.left = `${left}px`;
+          tooltip.style.setProperty("--arrow-left", `${arrowLeft}px`);
+        }
+      });
     </script>
   </body>
 </html>

@@ -1,9 +1,12 @@
 ## Estructura del proyecto
+
 ### Dentro de la carpeta src/main/java/michaelsoftbinbows...
 
 ```text
+├─ config/ --> configuración de Spring
+│  ├─ AppConfig.java
 ├─ controller/ --> Llamadas a la capa de servicios (validaciones de entradas/solicitudes), endpoints
-│  ├─ TareaController.java 
+│  ├─ TareaController.java
 │  ├─ AutorizacionController.java
 │  ├─ HomeController.java
 │  ├─ AdminController.java
@@ -13,18 +16,19 @@
 │  ├─ GeocodingController.java
 │  ├─ APIController.java
 │  ├─ LogroController.java
+│  ├─ HistorialController.java
 ├─ dto/ --> objetos utilizados para transferir datos (especialmente desde solicitudes POST/PUT)
-│  ├─ UsuarioDto.java 
-│  ├─ TareaDto.java 
+│  ├─ UsuarioDto.java
+│  ├─ TareaDto.java
 ├─ model/ --> enums, interfaces
-│  ├─ Email.java 
-│  ├─ Id.java 
-│  ├─ NotBlank.java 
-│  ├─ Rol.java 
+│  ├─ Email.java
+│  ├─ Id.java
+│  ├─ NotBlank.java
+│  ├─ Rol.java
 ├─ util/ --> clases/métodos de utilidad
-│  ├─ Dificultad.java 
-│  ├─ GestorLogros.java 
-│  ├─ SistemaNiveles.java 
+│  ├─ Dificultad.java
+│  ├─ GestorLogros.java
+│  ├─ SistemaNiveles.java
 ├─ data/ --> Persistencia de datos, repositorios, interacción con base de datos
 │  ├─ JsonMigrator.java
 │  ├─ LogroRepository.java
@@ -32,6 +36,7 @@
 │  ├─ UsuarioRepository.java
 │  ├─ JpaRepository.java
 │  ├─ ConfiguracionRepository.java
+│  ├─ SalonFamaRepository.java
 ├─ services/ --> La lógica de la solución en sí, Services de Spring
 │  ├─ UsuarioService.java
 │  ├─ ConfiguracionService.java
@@ -53,4 +58,7 @@
 │  ├─ Usuario.java
 │  ├─ Tarea.java
 │  ├─ Logro.java
+│  ├─ SalonFama.java
+│  ├─ Configuracion.java
 
+```

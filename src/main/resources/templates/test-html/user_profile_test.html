@@ -1,126 +1,165 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Perfil de Usuario</title>
-    <link rel="stylesheet" href="/styles/user_profile.css">
-</head>
-<body>
+    <link rel="stylesheet" href="/styles/user_profile.css" />
+  </head>
+  <body>
     <div class="container-header">
-        <div class="volver-section">
-            <form action="/home" method="get" style="display: inline;">
-                <button type="submit" class="btn-volver">VOLVER</button>
-            </form>
-            <img class="logo" src="/images/logo_blanco2.png" alt="logo">
+      <div class="volver-section">
+        <form action="/home" method="get" style="display: inline">
+          <button type="submit" class="btn-volver">VOLVER</button>
+        </form>
+        <img class="logo" src="/images/logo_blanco2.png" alt="logo" />
+      </div>
+      <div class="perfil-section">
+        <div class="user-lvl">
+          <p1>25</p1>
+          <p2>Nivel</p2>
         </div>
-        <div class="perfil-section">
-            <div class="user-lvl">
-                <p1>25</p1>
-                <p2>Nivel</p2>
-            </div>
-            <div class="user-info">
-                <p1>JuanPerez123</p1>
-                <p2>juan.perez@ejemplo.com</p2>
-            </div>
+        <div class="user-info">
+          <p1>JuanPerez123</p1>
+          <p2>juan.perez@ejemplo.com</p2>
         </div>
+      </div>
     </div>
 
     <div class="container-main">
-        <div class="container-left">
-            <!-- SECCIÓN: Información Personal -->
-            <div class="container-body">
-                <h1>Información Personal</h1>
-                
-                <!-- Mensajes de éxito/error para información personal -->
-                <!-- Descomenta para probar diferentes estados -->
-                <!-- <div style="color: green; margin-bottom: 10px;">
+      <div class="container-left">
+        <!-- SECCIÓN: Información Personal -->
+        <div class="container-body">
+          <h1>Información Personal</h1>
+
+          <!-- Mensajes de éxito/error para información personal -->
+          <!-- Descomenta para probar diferentes estados -->
+          <!-- <div style="color: green; margin-bottom: 10px;">
                     <p>✓ Información actualizada correctamente.</p>
                 </div> -->
-                <!-- <div style="color: red; margin-bottom: 10px;">
+          <!-- <div style="color: red; margin-bottom: 10px;">
                     <p>✗ El nombre de usuario ya está en uso.</p>
                 </div> -->
-                <!-- <div style="color: orange; margin-bottom: 10px;">
+          <!-- <div style="color: orange; margin-bottom: 10px;">
                     <p>ⓘ No hay cambios que guardar.</p>
                 </div> -->
-                
-                <form class="info-form" action="/perfil/actualizar" method="post">
-                    <div class="form-grupo">
-                        <label for="usuario">Usuario</label>
-                        <input type="text" id="usuario" name="usuario" 
-                               value="JuanPerez123" 
-                               placeholder="Nombre actual del usuario"
-                               required>
-                    </div>
 
-                    <div class="form-grupo">
-                        <label for="correo">Correo</label>
-                        <input type="email" id="correo" name="correo" 
-                               value="juan.perez@ejemplo.com" 
-                               placeholder="correo@ejemplo.com"
-                               required>
-                    </div>
-
-                    <button type="submit" class="btn-guardar">GUARDAR CAMBIOS</button>
-                </form>
+          <form class="info-form" action="/perfil/actualizar" method="post">
+            <div class="form-grupo">
+              <label for="usuario">Usuario</label>
+              <input
+                type="text"
+                id="usuario"
+                name="usuario"
+                value="JuanPerez123"
+                placeholder="Nombre actual del usuario"
+                required
+              />
             </div>
 
-            <!-- SECCIÓN: Cambiar Contraseña -->
-            <div class="container-body">
-                <h1>Cambiar Contraseña</h1>
-                
-                <!-- Mensajes de éxito/error para contraseña -->
-                <!-- Descomenta para probar diferentes estados -->
-                <!-- <div style="color: green; margin-bottom: 10px;">
+            <div class="form-grupo">
+              <label for="correo">Correo</label>
+              <input
+                type="email"
+                id="correo"
+                name="correo"
+                value="juan.perez@ejemplo.com"
+                placeholder="correo@ejemplo.com"
+                required
+              />
+            </div>
+
+            <button type="submit" class="btn-guardar">GUARDAR CAMBIOS</button>
+          </form>
+        </div>
+
+        <!-- SECCIÓN: Cambiar Contraseña -->
+        <div class="container-body">
+          <h1>Cambiar Contraseña</h1>
+
+          <!-- Mensajes de éxito/error para contraseña -->
+          <!-- Descomenta para probar diferentes estados -->
+          <!-- <div style="color: green; margin-bottom: 10px;">
                     <p>✓ Contraseña actualizada correctamente.</p>
                 </div> -->
-                <!-- <div style="color: red; margin-bottom: 10px; white-space: pre-line;">
+          <!-- <div style="color: red; margin-bottom: 10px; white-space: pre-line;">
                     <p>✗ La contraseña actual es incorrecta.</p>
                 </div> -->
-                
-                <form class="info-form" action="/perfil/cambiar-contrasena" method="post">
-                    <div class="form-grupo">
-                        <label for="contrasena1">Contrasena Actual</label>
-                        <input type="password" id="contrasena1" name="contrasenaActual" required>
-                    </div>
 
-                    <div class="form-grupo">
-                        <label for="contrasena2">Nueva Contrasena</label>
-                        <input type="password" id="contrasena2" name="contrasenaNueva" required>
-                    </div>
-
-                    <div class="form-grupo">
-                        <label for="contrasena3">Confirmar Contrasena</label>
-                        <input type="password" id="contrasena3" name="contrasenaRepetida" required>
-                    </div>
-
-                    <button type="submit" class="btn-guardar">GUARDAR CAMBIOS</button>
-                </form>
+          <form
+            class="info-form"
+            action="/perfil/cambiar-contrasena"
+            method="post"
+          >
+            <div class="form-grupo">
+              <label for="contrasena1">Contrasena Actual</label>
+              <input
+                type="password"
+                id="contrasena1"
+                name="contrasenaActual"
+                required
+              />
             </div>
+
+            <div class="form-grupo">
+              <label for="contrasena2">Nueva Contrasena</label>
+              <input
+                type="password"
+                id="contrasena2"
+                name="contrasenaNueva"
+                required
+              />
+            </div>
+
+            <div class="form-grupo">
+              <label for="contrasena3">Confirmar Contrasena</label>
+              <input
+                type="password"
+                id="contrasena3"
+                name="contrasenaRepetida"
+                required
+              />
+            </div>
+
+            <button type="submit" class="btn-guardar">GUARDAR CAMBIOS</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="container-rigth">
+        <div class="container-description">
+          <h1>General</h1>
+          <p>
+            Personaliza tu perfil: edita tu nombre de usuario, correo y detalles
+            de tu cuenta. Además, si lo deseas, puedes actualizar tu contraseña
+            en cualquier momento.
+          </p>
+        </div>
+        <div class="container-img">
+          <img src="/images/icon1.png" alt="personaje1" />
         </div>
 
-        <div class="container-rigth">
-            <div class="container-description">
-                <h1>General</h1>
-                <p>Personaliza tu perfil: edita tu nombre de usuario, correo y detalles de tu cuenta. Además, si lo deseas, puedes actualizar tu contraseña en cualquier momento.</p>
-            </div>
-            <div class="container-img">
-                <img src="/images/icon1.png" alt="personaje1">
-            </div>
-            
-            <div class="container-buttons">
-                <form action="/logout" method="post" style="width: 30%;">
-                    <button type="submit" class="btn-cerrar_sesion" onclick="return confirm('¿Estás seguro de que quieres cerrar la sesión?');">
-                        CERRAR SESIÓN
-                    </button>
-                </form>
-                <form action="/perfil/borrar-cuenta" method="post" style="width: 30%;">
-                    <button type="submit" class="btn-borrar_cuenta" onclick="return confirm('¡ATENCIÓN! ¿Estás seguro de que quieres eliminar tu cuenta? Esta acción es permanente y no se puede deshacer.');">
-                        BORRAR CUENTA
-                    </button>
-                </form>
-            </div> 
+        <div class="container-buttons">
+          <form action="/logout" method="post" style="width: 30%">
+            <button
+              type="submit"
+              class="btn-cerrar_sesion"
+              onclick="return confirm('¿Estás seguro de que quieres cerrar la sesión?');"
+            >
+              CERRAR SESIÓN
+            </button>
+          </form>
+          <form action="/perfil/borrar-cuenta" method="post" style="width: 30%">
+            <button
+              type="submit"
+              class="btn-borrar_cuenta"
+              onclick="return confirm('¡ATENCIÓN! ¿Estás seguro de que quieres eliminar tu cuenta? Esta acción es permanente y no se puede deshacer.');"
+            >
+              BORRAR CUENTA
+            </button>
+          </form>
         </div>
-    </div>  
-</body>
+      </div>
+    </div>
+  </body>
 </html>

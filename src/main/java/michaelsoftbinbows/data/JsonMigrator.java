@@ -5,7 +5,10 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
-import java.io.FileReader;
+import java.io.Reader;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -51,7 +54,8 @@ public class JsonMigrator implements CommandLineRunner {
                       (src, type, context) -> new com.google.gson.JsonPrimitive(src.toString()))
               .create();
 
-      try (FileReader reader = new FileReader("base_datos.json")) {
+      try (Reader reader =
+          Files.newBufferedReader(Paths.get("base_datos.json"), Charset.defaultCharset())) {
         List<Usuario> usuarios = gson.fromJson(reader, new TypeToken<List<Usuario>>() {}.getType());
         for (Usuario usuario : usuarios) {
           // Verifica si ya existe un usuario con ese correo

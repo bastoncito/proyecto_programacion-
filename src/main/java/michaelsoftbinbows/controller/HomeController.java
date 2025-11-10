@@ -140,7 +140,8 @@ public class HomeController {
     }
 
     // Si hay tarea recomendada y no está en el usuario, la agregamos
-    if (tareaRecomendada != null && usuarioActual.buscarTareaPorNombre(tareaRecomendada.getNombre()) == null) {
+    if (tareaRecomendada != null
+        && usuarioActual.buscarTareaPorNombre(tareaRecomendada.getNombre()) == null) {
       try {
         usuarioActual.agregarTarea(tareaRecomendada);
         usuarioService.guardarConTareas(usuarioActual);
@@ -150,10 +151,12 @@ public class HomeController {
     }
 
     // Ahora, busca la tarea recomendada desde el usuario para obtener el estado actualizado
-    Tarea tareaRecomendadaUsuario = tareaRecomendada != null
-        ? usuarioActual.buscarTareaPorNombre(tareaRecomendada.getNombre())
-        : null;
-    boolean tareaRecomendadaCompletada = tareaRecomendadaUsuario != null && tareaRecomendadaUsuario.isCompletada();
+    Tarea tareaRecomendadaUsuario =
+        tareaRecomendada != null
+            ? usuarioActual.buscarTareaPorNombre(tareaRecomendada.getNombre())
+            : null;
+    boolean tareaRecomendadaCompletada =
+        tareaRecomendadaUsuario != null && tareaRecomendadaUsuario.isCompletada();
     model.addAttribute("tareaRecomendada", tareaRecomendadaUsuario);
     model.addAttribute("tareaRecomendadaCompletada", tareaRecomendadaCompletada);
 

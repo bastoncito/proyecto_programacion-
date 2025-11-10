@@ -637,7 +637,7 @@ body {
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 16px;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 .modal-content .form-actions {
   display: flex;
@@ -656,10 +656,20 @@ body {
   font-size: 14px;
   text-align: center;
 }
-.modal-content .btn-save { background-color: #28a745; color: white; }
-.modal-content .btn-save:hover { background-color: #218838; }
-.modal-content .btn-cancel { background-color: #6c757d; color: white; }
-.modal-content .btn-cancel:hover { background-color: #5a6268; }
+.modal-content .btn-save {
+  background-color: #28a745;
+  color: white;
+}
+.modal-content .btn-save:hover {
+  background-color: #218838;
+}
+.modal-content .btn-cancel {
+  background-color: #6c757d;
+  color: white;
+}
+.modal-content .btn-cancel:hover {
+  background-color: #5a6268;
+}
 
 .alert-error {
   color: #721c24;
@@ -802,7 +812,7 @@ body {
 @media (min-width: 1024px) {
   .toast-container {
     /* Aumentamos este valor para que quede por encima de la navbar (60px) + un margen (20px) */
-    bottom: 80px; 
+    bottom: 80px;
   }
 }
 /* --- ESTILOS ADICIONALES PARA CONTADOR DE CARACTERES --- */
