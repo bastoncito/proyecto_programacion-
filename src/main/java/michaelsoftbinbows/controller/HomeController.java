@@ -174,6 +174,8 @@ public class HomeController {
     boolean desafioCompletado = tareaSemanal.isPresent() && tareaSemanal.get().isCompletada();
     model.addAttribute("desafioCompletado", desafioCompletado);
 
+    usuarioActual.actualizarRacha();
+
     return "home";
   }
 

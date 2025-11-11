@@ -2,10 +2,10 @@
 
 ## Integrantes (y roles actuales):
 
-- Hans Reicher (Hans3661): Backend
-- Matías Gómez (gomezdfault): Frontend
-- Diego Pezoa (Zketsh01): Líder técnico
-- Bastián Reyes (bastoncito): QA y Documentación
+- Hans Reicher (Hans3661): QA y Documentación
+- Matías Gómez (gomezdfault): Líder Técnico
+- Diego Pezoa (Zketsh01): Frontend
+- Bastián Reyes (bastoncito): Backend
 
 ## Canales de comunicación:
 
@@ -18,4 +18,11 @@
 
 ## Rotación de roles:
 
-Se verá por las afinidades de cada integrante, al igual que se hizo con la decisión para los roles iniciales, evitando que se repitan.
+La asignación de roles es dinámica y busca que todos los integrantes experimenten diferentes responsabilidades. La rotación se define **hasta la entrega de cada hito (pre-hito)**.
+
+| Integrante           | Hito 1              | Hito 2              | Hito 3              |
+| -------------------- | ------------------- | ------------------- | ------------------- |
+| Hans Reicher         | Líder Técnico       | Backend             | QA y Documentación  |
+| Matías Gómez         | Backend             | Frontend            | Líder Técnico       |
+| Diego Pezoa          | QA y Documentación  | Líder Técnico       | Frontend            |
+| Bastián Reyes        | Frontend            | QA y Documentación  | Backend             |

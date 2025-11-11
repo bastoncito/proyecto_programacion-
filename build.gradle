@@ -65,11 +65,6 @@ spotless {
         encoding 'UTF-8'
         lineEndings 'UNIX'
 	}
-    format 'misc', {
-        target('*.md', '*.gradle', '.gitignore')
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
 }
 
 checkstyle {

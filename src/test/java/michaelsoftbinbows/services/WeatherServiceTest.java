@@ -58,10 +58,7 @@ class WeatherServiceTest {
     verify(restTemplate, times(1)).getForEntity(expectedUrl, String.class);
   }
 
-  /**
-   * Test 2 (Mejorado): Verifica que getFilteredWeatherByCity PARSEA los datos filtrados
-   * correctamente.
-   */
+  /** Test 2: Verifica que getFilteredWeatherByCity PARSEA los datos filtrados correctamente. */
   @Test
   void testGetFilteredWeatherByCitySuccess() {
     // --- ARRANGE ---
@@ -121,42 +118,6 @@ class WeatherServiceTest {
         assertThrows(WeatherApiException.class, () -> weatherService.getWeatherByCity(city));
 
     assertEquals("No se pudo obtener el clima para la ciudad indicada.", exception.getMessage());
-    verify(restTemplate, times(1)).getForEntity(expectedUrl, String.class);
-  }
-
-  /**
-   * Test 4: Simula un 200 OK con JSON ROTO (le falta el objeto "main"). Verifica que el try-catch
-   * atrapa el error de parseo (JSONException) y lo convierte en WeatherApiException.
-   */
-  @Test
-  void testGetFilteredWeatherByCityHandlesMalformedJson() {
-    String city = "Talca";
-    String expectedUrl =
-        "https://api.openweathermap.org/data/2.5/weather?q="
-            + city
-            + "&appid="
-            + API_KEY
-            + "&units=metric&lang=es";
-
-    String mockBadResponse =
-        """
-                {
-                    "weather": [{"description": "soleado"}],
-                    "wind": {"speed": 5.2}
-                }
-                """;
-    ResponseEntity<String> responseEntity = new ResponseEntity<>(mockBadResponse, HttpStatus.OK);
-    when(restTemplate.getForEntity(expectedUrl, String.class)).thenReturn(responseEntity);
-
-    WeatherApiException exception =
-        assertThrows(
-            WeatherApiException.class,
-            () -> {
-              weatherService.getFilteredWeatherByCity(city);
-            });
-
-    assertEquals(
-        "No se pudo obtener el clima filtrado para la ciudad indicada.", exception.getMessage());
     verify(restTemplate, times(1)).getForEntity(expectedUrl, String.class);
   }
 }

@@ -518,10 +518,12 @@ public class Usuario {
         return; // Salimos del método para no actualizar la fecha innecesariamente
       } // CASO 3: La última tarea fue ayer. ¡La racha continúa!
       else if (diasDiferencia == 1) {
+        System.out.println("LOG: La racha del Usuario " + getNombreUsuario() + " ha aumentado.");
         this.racha++; // Incrementamos la racha existente
       } // CASO 4: La racha se rompió (pasó más de 1 día). Se reinicia a 1.
       else {
-        this.racha = 1;
+        System.out.println("LOG: " + getNombreUsuario() + " ha perdido su racha.");
+        this.racha = 0;
       }
     }
     // Actualizamos la fecha de la racha a hoy.
