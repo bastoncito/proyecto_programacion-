@@ -114,10 +114,10 @@ Trabajo colaborativo con rotación de roles por hitos, usando Discord para coord
 ### Trabajo realizado:
 - **Hans Reicher:** 
 - **Matías Gómez:** 
-- **Diego Pezoa:** 
-- **Bastián Reyes:** 
+- **Diego Pezoa:** Implementar historial de tareas realizadas, Error de visualización tareas en admin
+- **Bastián Reyes:** Actualizar acta de equipo con roles nuevos, Escribir un readme.md más elaborado
 
----
+--- tarjeta sin autor: Implementar al menos 6 endpoints para API REST, Utilizar .env para guardar datos importantes (contraseña basedatos), Actualizar estructura.md (de nuevo)
 
 ## SEMANA 11
 **Hito en desarrollo:** Hito 2
