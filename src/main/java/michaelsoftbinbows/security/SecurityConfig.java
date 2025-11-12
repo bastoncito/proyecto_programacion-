@@ -26,8 +26,8 @@ public class SecurityConfig {
     http.csrf(csrf -> csrf.ignoringRequestMatchers("/api/**")) // temporal para probar postman
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers(
-                        "/", "/styles/**", "/images/**", "/login", "/register", "/api/**")
+    auth.requestMatchers(
+      "/", "/styles/**", "/images/**", "/js/**", "/login", "/register", "/api/**")
                     .permitAll() // public endpoints
                     .requestMatchers("/admin/**")
                     .hasAnyAuthority("ROLE_ADMIN", "ROLE_MODERADOR")

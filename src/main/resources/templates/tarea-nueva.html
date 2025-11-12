@@ -67,40 +67,7 @@
         </form>
       </div>
     </div>
-    <script>
-      // Seleccionamos los elementos del DOM
-      const dificultadSelect = document.getElementById("categoria");
-      const xpSpan = document.getElementById("xp");
-      const plazoSpan = document.getElementById("plazo");
-
-      //  Replicamos la lógica de Dificultad.java
-      const datosDificultad = {
-        "Muy fácil": { xp: 10, texto: "1 día" },
-        Fácil: { xp: 25, texto: "2 días" },
-        Medio: { xp: 50, texto: "3 días" },
-        Difícil: { xp: 100, texto: "4 días" },
-        "Muy difícil": { xp: 150, texto: "5 días" },
-      };
-
-      //  Creamos la función para actualizar la UI
-      function actualizarResultados() {
-        const seleccion = dificultadSelect.value;
-        const datos = datosDificultad[seleccion];
-
-        if (datos) {
-          xpSpan.textContent = datos.xp + " XP";
-          plazoSpan.textContent = datos.texto;
-        } else {
-          xpSpan.textContent = "—";
-          plazoSpan.textContent = "—";
-        }
-      }
-
-      //  Le decimos al 'select' que ejecute la función cuando cambie
-      dificultadSelect.addEventListener("change", actualizarResultados);
-
-      //  Ejecutamos la función una vez al cargar la página
-      actualizarResultados();
-    </script>
+    <!-- Script para actualizar XP/plazo según dificultad -->
+    <script th:src="@{/js/task_dificultad.js}"></script>
   </body>
 </html>

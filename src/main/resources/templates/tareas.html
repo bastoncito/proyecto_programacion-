@@ -69,29 +69,6 @@
       </div>
     </div>
 
-    <script>
-      const modal = document.getElementById("taskModal");
-      const modalTitle = document.getElementById("modalTitle");
-      const modalDescription = document.getElementById("modalDescription");
-      const modalExp = document.getElementById("modalExp");
-      const modalExpire = document.getElementById("modalExpire");
-      const closeModal = document.getElementById("closeModal");
-
-      // Show modal with task info
-      document.querySelectorAll(".view-btn").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          modalTitle.textContent = btn.dataset.nombre;
-          modalDescription.textContent = btn.dataset.descripcion;
-          modalExp.textContent = btn.dataset.experiencia + " XP";
-          modalExpire.textContent = btn.dataset.expira;
-          modal.style.display = "flex";
-        });
-      });
-
-      // Close modal
-      closeModal.addEventListener("click", () => {
-        modal.style.display = "none";
-      });
-    </script>
+    <script th:src="@{/js/tareas_modal.js}"></script>
   </body>
 </html>

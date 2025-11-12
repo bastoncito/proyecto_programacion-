@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" th:href="@{/styles/historial_tareas.css}" />
     <link rel="stylesheet" th:href="@{/styles/navbar.css}" />
+    <link rel="stylesheet" th:href="@{/styles/loader.css}" />
 
     <link
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
@@ -24,6 +25,9 @@
     />
   </head>
   <body>
+    <!-- Pantalla de carga -->
+    <div th:replace="~{fragments :: loadingScreen}"></div>
+
     <main class="grid-container">
       <!-- Columna izquierda para escritorio -->
       <div class="left-column">
@@ -76,12 +80,14 @@
                 href="javascript:void(0);"
                 id="tab-semanal"
                 class="active"
+                data-no-loader
                 onclick="mostrarResumen('semanal')"
                 >Semanal</a
               >
               <a
                 href="javascript:void(0);"
                 id="tab-mensual"
+                data-no-loader
                 onclick="mostrarResumen('mensual')"
                 >Mensual</a
               >
@@ -192,22 +198,9 @@
 
     <div th:replace="~{fragments :: navbar}"></div>
 
-    <!-- Script para que los resumenes semanales puedan cambiar entre semana y mensual -->
-    <!-- Posiblemente se cambiara para cuando tengamos esa feat -->
-    <script>
-      function mostrarResumen(vista) {
-        document.getElementById("resumen-semanal").style.display = "none";
-        document.getElementById("resumen-mensual").style.display = "none";
-        document.getElementById("tab-semanal").classList.remove("active");
-        document.getElementById("tab-mensual").classList.remove("active");
-        if (vista === "semanal") {
-          document.getElementById("resumen-semanal").style.display = "block";
-          document.getElementById("tab-semanal").classList.add("active");
-        } else if (vista === "mensual") {
-          document.getElementById("resumen-mensual").style.display = "block";
-          document.getElementById("tab-mensual").classList.add("active");
-        }
-      }
-    </script>
+    <!-- Pantalla de carga -->
+    <script th:src="@{/js/loader.js}"></script>
+    <!-- Script para que los resúmenes puedan cambiar entre semanal y mensual -->
+    <script th:src="@{/js/historial_tareas.js}"></script>
   </body>
 </html>

@@ -16,6 +16,7 @@
       <a
         th:href="@{/home}"
         th:classappend="${activePage == 'home' ? 'active' : ''}"
+        data-show-loader
       >
         <i class="bx bxs-home"></i>
         <span>Home</span>
@@ -25,6 +26,7 @@
       <a
         th:href="@{/historial}"
         th:classappend="${activePage == 'historial' ? 'active' : ''}"
+        data-show-loader
       >
         <i class="bx bx-history"></i>
         <span>Historial</span>
@@ -34,6 +36,7 @@
       <a
         th:href="@{/ranking}"
         th:classappend="${activePage == 'ranking' ? 'active' : ''}"
+        data-show-loader
       >
         <i class="bx bxs-bar-chart-alt-2"></i>
         <span>Ranking</span>
@@ -43,6 +46,7 @@
       <a
         th:href="@{/perfil}"
         th:classappend="${activePage == 'perfil' ? 'active' : ''}"
+        data-show-loader
       >
         <i class="bx bxs-user"></i>
         <span>Perfil</span>
@@ -53,6 +57,7 @@
         sec:authorize="hasAnyRole('ADMIN', 'MODERADOR')"
         th:href="@{/admin}"
         th:classappend="${activePage == 'admin' ? 'active' : ''}"
+        data-show-loader
       >
         <i class="bx bxs-cog"></i>
         <span>Gestión</span>
