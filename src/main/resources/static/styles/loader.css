@@ -1,3 +1,5 @@
+/* --- ESTADO DEL LOADER --- */
+
 #loader-wrapper {
   position: fixed;
   top: 0;
@@ -6,15 +8,13 @@
   height: 100%;
   z-index: 9999;
   background-color: #ffffff;
-  display: none; /* Correcto: oculto por defecto */
   justify-content: center;
   align-items: center;
-  opacity: 1;
-  transition: opacity 0.5s ease;
-}
 
-#loader-wrapper.fade-out {
+  /* Por defecto, está completamente oculto */
+  display: none;
   opacity: 0;
+  transition: opacity 0.5s ease;
 }
 
 .loader {
@@ -27,10 +27,27 @@
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* --- ESTADO DEL CONTENIDO PRINCIPAL --- */
+
+main {
+  opacity: 1;
+  transition: opacity 0.4s ease-in;
+}
+
+/* --- ESTADO DE CARGA GLOBAL (ACTIVADO CON JS) --- */
+
+/* Cuando la página está en modo "cargando"... */
+html.is-loading main {
+  /* ...ocultamos el contenido principal. */
+  opacity: 0;
+}
+
+html.is-loading #loader-wrapper {
+  /* ...mostramos el loader como un contenedor flex. */
+  display: flex;
+  opacity: 1;
 }

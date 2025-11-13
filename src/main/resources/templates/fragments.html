@@ -1,13 +1,26 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
   <body>
-    <!-- Fragmento de la animacion de carga -->
+    <!-- Fragmento de la animacion de carga (Versión Definitiva) -->
     <div th:fragment="loadingScreen">
-      <!-- El contenedor principal que cubre toda la pantalla -->
       <div id="loader-wrapper">
-        <!-- El spinner animado que gira en el centro -->
         <div class="loader"></div>
       </div>
+
+      <!--
+        Este script se ejecuta INMEDIATAMENTE después de que 'loader-wrapper' es parseado.
+        Su única misión es mostrar el loader si venimos de una navegación.
+        NO se espera a que el DOM esté completo.
+      -->
+      <script>
+        (function() {
+          if (sessionStorage.getItem('isLoading') === 'true') {
+            document.getElementById('loader-wrapper').style.display = 'flex';
+            // Limpiamos la bandera para que un refresco (F5) no reactive el loader.
+            sessionStorage.removeItem('isLoading');
+          }
+        })();
+      </script>
     </div>
 
     <!-- Fragmento de la barra de navegación -->
@@ -16,7 +29,6 @@
       <a
         th:href="@{/home}"
         th:classappend="${activePage == 'home' ? 'active' : ''}"
-        data-show-loader
       >
         <i class="bx bxs-home"></i>
         <span>Home</span>
@@ -26,7 +38,6 @@
       <a
         th:href="@{/historial}"
         th:classappend="${activePage == 'historial' ? 'active' : ''}"
-        data-show-loader
       >
         <i class="bx bx-history"></i>
         <span>Historial</span>
@@ -36,7 +47,6 @@
       <a
         th:href="@{/ranking}"
         th:classappend="${activePage == 'ranking' ? 'active' : ''}"
-        data-show-loader
       >
         <i class="bx bxs-bar-chart-alt-2"></i>
         <span>Ranking</span>
@@ -46,7 +56,6 @@
       <a
         th:href="@{/perfil}"
         th:classappend="${activePage == 'perfil' ? 'active' : ''}"
-        data-show-loader
       >
         <i class="bx bxs-user"></i>
         <span>Perfil</span>
@@ -57,7 +66,6 @@
         sec:authorize="hasAnyRole('ADMIN', 'MODERADOR')"
         th:href="@{/admin}"
         th:classappend="${activePage == 'admin' ? 'active' : ''}"
-        data-show-loader
       >
         <i class="bx bxs-cog"></i>
         <span>Gestión</span>

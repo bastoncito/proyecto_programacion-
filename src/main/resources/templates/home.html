@@ -21,6 +21,8 @@
     <link rel="stylesheet" th:href="@{/styles/home.css}" />
     <link rel="stylesheet" th:href="@{/styles/navbar.css}" />
     <link rel="stylesheet" th:href="@{/styles/loader.css}" />
+
+    <script th:src="@{/js/loader-init.js}"></script>
   </head>
   <body>
     
@@ -436,8 +438,8 @@
     </div>
 
     <!-- SCRIPTS pantalla de carga y modales -->
-    <script th:src="@{/js/loader.js}"></script>
     <script th:src="@{/js/home.js}"></script>
+    <script th:src="@{/js/loader-main.js}"></script>
 
     <div th:replace="~{fragments :: navbar}"></div>
   </body>

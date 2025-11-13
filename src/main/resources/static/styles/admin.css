@@ -38,7 +38,7 @@ body {
   background-color: var(
     --color-claro
   ); /* Usamos el color de fondo que definimos arriba */
-  padding-bottom: 80px; /* Dejamos espacio abajo para la barra de navegación en móviles */
+  padding-bottom: 100px; /* Dejamos espacio abajo para la barra de navegación en móviles */
 }
 
 /* =================================================================== */
@@ -51,12 +51,13 @@ body {
   flex-direction: column;
   width: 100%;
 }
-.main-content {
-  margin-left: 0;
-  padding: 15px;
-  box-sizing: border-box;
-  width: 100%;
-}
+ .main-content {
+    padding: 20px 30px;
+    height: 100%;
+    overflow-y: auto;
+    padding-bottom: 80px; /* 60px de la navbar + 20px de margen */
+    box-sizing: border-box; /* Asegura que el padding no altere las dimensiones totales */
+  }   
 
 /* Tarjeta de información del admin (arriba del todo) */
 .container-info {
@@ -349,25 +350,36 @@ body {
 /* 4. LAYOUT DE ESCRITORIO (cuando la pantalla es ancha)               */
 /* =================================================================== */
 @media (min-width: 1024px) {
-  /* Transformamos el layout a una grilla de 2 columnas */
   .admin-container {
-    display: grid;
-    grid-template-columns: 250px 1fr;
     height: 100vh;
   }
   .main-content {
+    margin-left: 250px; /* Mantiene el espacio para la barra lateral */
+    height: 100vh;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    
+    /* El padding ahora lo gestionan los hijos, no el contenedor principal */
     padding: 20px 30px;
-    height: 100%;
-    overflow-y: auto;
   }
 
-  /* Movemos la info del admin a la esquina superior derecha */
   .container-info {
-    position: absolute;
-    top: 20px;
-    right: 30px;
+    /* Reseteamos cualquier posicionamiento */
+    position: static;
+    /* Lo convertimos en un contenedor flexible */
+    display: flex;
+    justify-content: flex-end;
+    
+    margin-bottom: 20px;
+    width: 100%; /* El contenedor debe ocupar todo el ancho para poder empujar */
+  }
+  .info-section {
+    /* Le damos un ancho máximo para que no se expanda innecesariamente */
+    max-width: 500px; 
+
+    /* Le permitimos tener un ancho flexible basado en su contenido */
     width: auto;
-    max-width: 400px;
   }
   .container-work {
     margin-top: 100px;
@@ -375,8 +387,11 @@ body {
   .section-title {
     font-size: 32px;
   }
+  .info-section{
+    display: flex;
+  }
 
-  /* Hacemos visible la barra lateral y ocultamos las pestañas de móvil */
+    /* Hacemos la barra lateral FIJA en la pantalla */
   .container-task-bar {
     display: flex;
     flex-direction: column;
@@ -384,10 +399,13 @@ body {
     background-color: var(--color-principal);
     padding: 20px 0;
     height: 100vh;
-    position: sticky;
+    position: fixed; 
     top: 0;
-    width: 100%;
+    left: 0;
+    width: 250px; /* Le damos un ancho fijo */
+    box-sizing: border-box; /* Asegura que el padding no altere el ancho */
   }
+
   .admin-tabs {
     display: none;
   }
@@ -435,6 +453,9 @@ body {
     flex-grow: 1;
     padding: 20px;
   } /* El panel de tareas ocupa el resto */
+  .fab {
+    bottom: 80px;
+}
 }
 
 /* =================================================================== */
@@ -612,11 +633,6 @@ body {
 .fab:hover {
   transform: scale(1.1);
   background-color: var(--color-principal-hover);
-}
-@media (min-width: 1024px) {
-  .fab {
-    bottom: 80px;
-  }
 }
 /* --- Estilos para el Modal de Configuración 'Top' --- */
 .top-n-buttons {

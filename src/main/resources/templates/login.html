@@ -85,6 +85,19 @@
         <a th:href="@{/register}" class="btn-register">Registrarse</a>
       </div>
     </div>
+    <!-- SCRIPT PARA ACTIVAR EL LOADER EN LA SIGUIENTE PÁGINA -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const loginForm = document.querySelector('.login-section form');
+        if (loginForm) {
+          loginForm.addEventListener('submit', function() {
+            // Justo antes de que el formulario se envíe, dejamos una señal
+            // para que la siguiente página sepa que debe mostrar el loader.
+            sessionStorage.setItem('isLoading', 'true');
+          });
+        }
+      });
+    </script>
 
   </body>
 </html>
