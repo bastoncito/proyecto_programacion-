@@ -1,8 +1,10 @@
 package michaelsoftbinbows.services;
 
 import jakarta.transaction.Transactional;
-import michaelsoftbinbows.data.TareaRepository;
-import michaelsoftbinbows.data.UsuarioRepository;
+import java.time.ZoneId;
+import michaelsoftbinbows.entities.Tarea;
+import michaelsoftbinbows.entities.Usuario;
+import michaelsoftbinbows.exceptions.RegistroInvalidoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,28 +12,37 @@ import org.springframework.stereotype.Service;
 @Service
 @Transactional
 public class UsuarioTareaService {
-  @Autowired UsuarioRepository usuarioRepository;
-  @Autowired TareaRepository tareaRepository;
-  /*
+  @Autowired UsuarioService usuarioService;
+  @Autowired TareaService tareaService;
 
-  Estas son acciones que requieren coordinacion del usuario y de la tarea,
-  por lo que se tienen que ver en un servicio aparte.
-  POR COMPLETAR
+  public void completarTarea(Long usuarioId, Long tareaId) throws RegistroInvalidoException {
+    Usuario u = usuarioService.obtenerPorId(usuarioId).get();
+    Tarea tarea = tareaService.obtenerPorId(tareaId).get();
+    if (!tarea.getUsuario().getId().equals(u.getId())) {
+      throw new IllegalArgumentException("La tarea no pertenece al usuario");
+    }
+    if (tarea.getFechaCompletada() != null) {
+      throw new RegistroInvalidoException("La tarea ya ha sido completada");
+    }
+    tarea.setFechaCompletada(java.time.LocalDateTime.now(ZoneId.systemDefault()));
+    int expTarea = tarea.getExp();
+    usuarioService.actualizarRacha(u);
+    usuarioService.sumarExperienciaTarea(u, expTarea);
+    usuarioService.verificarSubidaDeNivel(u);
+    usuarioService.actualizarLigaDelUsuario(u);
+    System.out.println(
+        "¡'"
+            + u.getNombreUsuario()
+            + "' ha completado la tarea '"
+            + tarea.getNombre()
+            + "' y ha ganado "
+            + expTarea
+            + " de experiencia!");
+    System.out.println("Experiencia total: " + u.getExperiencia());
 
-  public void completarTarea(Long usuarioId, Long tareaId) {
-      Usuario u = usuarioRepository.findById(usuarioId).get();
-      Tarea tarea = tareaRepository.findById(tareaId).get();
-      if(u == null || tarea == null) throw new IllegalArgumentException
-      ("Usuario o tarea no encontrados");
-      if(tarea.getUsuario() != u) {
-          throw new IllegalArgumentException("La tarea no pertenece al usuario");
-      }
-      tarea.setFechaCompletada(java.time.LocalDateTime.now(ZoneId.systemDefault()));
-      u.completarTarea(null);
+    u.setPuntosLiga(u.getPuntosLiga() + expTarea);
+    tareaService.guardar(tarea);
+    // Persistimos también los cambios en el usuario (racha, experiencia, puntosLiga)
+    usuarioService.guardarEnBd(u);
   }
-
-  public void eliminarTarea(Long usuarioId, Long tareaId) {
-      Usuario u = usuarioRepository.findById(usuarioId).
-  */
-
 }

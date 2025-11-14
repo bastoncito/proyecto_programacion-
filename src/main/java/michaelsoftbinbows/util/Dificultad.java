@@ -17,14 +17,14 @@ public class Dificultad {
    * 7 - 250
    */
   // ARREGLO: Renombrado de obtenerIDPorDificultad a obtenerIdPorDificultad
-  private static int obtenerIdPorDificultad(String dificultad) {
+  public static int obtenerIdPorDificultad(String dificultad) {
     return switch (dificultad) {
       case "Muy fácil" -> 1;
       case "Fácil" -> 2;
       case "Medio" -> 3;
       case "Difícil" -> 4;
       case "Muy difícil" -> 5;
-      default -> throw new IllegalArgumentException("Dificultad no válida: " + dificultad);
+      default -> -1;
     };
   }
 
