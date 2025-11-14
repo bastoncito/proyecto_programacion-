@@ -22,6 +22,7 @@
       rel="stylesheet"
     />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:src="@{/js/loader-init.js}"></script>
   </head>
   <body>
     <!-- 
@@ -759,8 +760,7 @@
     </a>
 
     <!-- Script para gestionar la animación de carga -->
-    <script th:src="@{/js/loader.js}"></script>
-
+    <script th:src="@{/js/loader-main.js}"></script>
     <!-- Incluimos el fragmento de la barra de navegación inferior -->
     <div th:replace="~{fragments :: navbar}"></div>
   </body>

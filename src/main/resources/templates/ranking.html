@@ -25,6 +25,7 @@
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <script th:src="@{/js/loader-init.js}"></script>
   </head>
   <body>
     <!-- Pantalla de carga -->
@@ -271,6 +272,6 @@
     <!-- Barra de navegación inferior -->
     <div th:replace="~{fragments :: navbar}"></div>
     <!-- Pantalla de carga -->
-    <script th:src="@{/js/loader.js}"></script>
+    <script th:src="@{/js/loader-main.js}"></script>
   </body>
 </html>
