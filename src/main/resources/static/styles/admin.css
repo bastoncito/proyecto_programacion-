@@ -251,11 +251,12 @@ body {
   background-color: var(--color-blanco);
 }
 .panel-header {
+  color: var(--color-blanco);
   font-size: 16px;
   font-weight: 600;
   padding: 15px 20px;
   border-bottom: 1px solid var(--color-bordes-sutiles);
-  background-color: #f8f9fa;
+  background-color: var(--color-oscuro);
   flex-shrink: 0;
 }
 .user-list {
@@ -661,4 +662,337 @@ body {
   padding: 10px;
   border-radius: 6px;
   margin-top: 10px;
+}
+
+/* =================================================================== */
+/* ESTILOS PARA LA SECCIÓN DE LOGROS                                   */
+/* =================================================================== */
+
+/* Grilla para las tarjetas de estadísticas.
+  Por defecto (móvil), es una sola columna.
+*/
+.logros-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+/* Estilo base para cada tarjeta de estadística.
+  Usamos flexbox para alinear el contenido (izquierda) y el icono (derecha).
+*/
+.stat-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--color-blanco);
+  padding: 20px 25px;
+  border-radius: var(--border-radius-suave);
+  box-shadow: var(--sombra-suave);
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Contenido de la tarjeta (título y número) */
+.stat-card-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-card-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-texto-secundario);
+  margin-bottom: 4px;
+}
+
+.stat-card-value {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--color-texto-principal);
+}
+
+/* Círculo del icono de la tarjeta */
+.stat-card-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  font-size: 26px;
+  flex-shrink: 0;
+  margin-left: 15px;
+}
+
+/* Colores de los iconos */
+.stat-card-icon.icon-trophy {
+  background-color: #fff8e1;
+  color: #ffab00;
+}
+
+.stat-card-icon.icon-graph {
+  background-color: #e8f5e9;
+  color: #4caf50;
+}
+
+.stat-card-icon.icon-completed {
+  background-color: #ede7f6;
+  color: #673ab7;
+}
+
+/* =================================================================== */
+/* LAYOUT Y TARJETAS DE LA LISTA DE LOGROS (MOBILE FIRST)             */
+/* =================================================================== */
+
+/* Layout principal - Por defecto en móvil es columna */
+.logros-main-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 25px;
+}
+
+/* Paneles base */
+.logros-panel-lista,
+.logros-panel-detalle {
+  background-color: var(--color-blanco);
+  border-radius: var(--border-radius-suave);
+  box-shadow: var(--sombra-suave);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Panel de lista tiene altura máxima y scroll */
+.logros-panel-lista {
+  max-height: 600px;
+}
+
+/* Contenedor de la lista de tarjetas de logro */
+.logro-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+/* Tarjeta individual de la lista de logros */
+.logro-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  border: 1px solid var(--color-bordes-sutiles);
+  border-radius: var(--border-radius-suave);
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.logro-card:hover {
+  box-shadow: var(--sombra-suave);
+}
+
+/* Icono/Emoji a la izquierda de la tarjeta */
+.logro-card-icon {
+  flex-shrink: 0;
+  width: 50px;
+  height: 50px;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  font-size: 28px; /* Más grande para móvil */
+  color: var(--color-principal);
+  background-color: #f8f9fa;
+  border-radius: 10px;
+}
+
+/* Contenedor del texto (Nombre y XP) */
+.logro-card-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.logro-card-nombre {
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--color-texto-principal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.logro-card-xp {
+  font-size: 14px;
+  color: #ffab00;
+  font-weight: 500;
+}
+
+/* Contenedor de los botones de acción */
+.logro-card-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Botón de Icono (Cuadrado) - Más grande en móvil */
+.btn-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px; /* Más grande para móvil */
+  height: 40px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: var(--color-blanco);
+  color: var(--color-texto-principal);
+  font-size: 22px; /* Icono más grande */
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.btn-icon:hover {
+  background-color: #e2e6ea;
+}
+
+/* Modificador de peligro para el botón de icono (eliminar) */
+.btn-icon.btn-icon-danger {
+  border-color: var(--color-rojo-peligro);
+  color: var(--color-rojo-peligro);
+}
+
+.btn-icon.btn-icon-danger:hover {
+  background-color: var(--color-rojo-peligro);
+  color: var(--color-blanco);
+}
+
+/* =================================================================== */
+/* PANEL DERECHO DE LOGROS (TOP 5) - MOBILE FIRST                     */
+/* =================================================================== */
+
+/* Contenedor que apila las dos tarjetas de la derecha */
+.logros-panel-columna-derecha {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Contenedor de la lista de jugadores */
+.top-jugadores-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 15px 20px 20px 20px;
+}
+
+/* Fila para cada jugador */
+.top-jugador-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Estilo del Ranking (#1, #2...) */
+.top-jugador-rank {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-principal);
+  min-width: 35px; /* Ancho mínimo para alinear */
+  flex-shrink: 0;
+}
+
+/* Avatar circular (placeholder) */
+.top-jugador-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background-color: #eef2f5;
+  flex-shrink: 0;
+}
+
+/* Info (Nombre y subtexto) */
+.top-jugador-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.top-jugador-nombre {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--color-texto-principal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.top-jugador-subtext {
+  font-size: 0.9rem;
+  color: var(--color-texto-secundario);
+}
+
+/* =================================================================== */
+/* MEDIA QUERIES - TABLETS                                             */
+/* =================================================================== */
+
+@media (min-width: 768px) {
+  /* Stats grid en 3 columnas */
+  .logros-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .stat-card-title {
+    font-size: 15px;
+  }
+  
+  .stat-card-value {
+    font-size: 32px;
+  }
+
+  .stat-card-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 28px;
+  }
+
+  /* Iconos de logros un poco más grandes */
+  .logro-card-icon {
+    display: flex;
+    font-size: 32px;
+  }
+}
+
+/* =================================================================== */
+/* MEDIA QUERIES - ESCRITORIO                                          */
+/* =================================================================== */
+
+@media (min-width: 1024px) {
+  /* Layout de 2 columnas: 66% / 33% */
+  .logros-main-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+  }
+
+  /* Panel de lista con altura máxima para scroll */
+  .logros-panel-lista {
+    max-height: 65vh;
+  }
+
+  /* Botones más pequeños en escritorio */
+  .btn-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
+
+  /* Iconos de logros más grandes en escritorio */
+  .logro-card-icon {
+    font-size: 36px;
+  }
 }

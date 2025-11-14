@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <body>
+    <div th:fragment="contenidoLogros">
+      
+      <div class="section-title">Sistema de Logros</div>
+      <div class="section-line"></div>
+
+      <div class="logros-stats-grid">
+        
+        <div class="stat-card">
+          <div class="stat-card-info">
+            <span class="stat-card-title">Total Logros</span>
+            <span class="stat-card-value">0</span>
+          </div>
+          <div class="stat-card-icon icon-trophy">
+            <i class='bx bxs-trophy'></i>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-info">
+            <span class="stat-card-title">Logros Activos</span>
+            <span class="stat-card-value">0</span>
+          </div>
+          <div class="stat-card-icon icon-graph">
+            <i class='bx bx-line-chart'></i>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-info">
+            <span class="stat-card-title">Total Completados</span>
+            <span class="stat-card-value">0</span>
+          </div>
+          <div class="stat-card-icon icon-completed">
+            <i class='bx bxs-bar-chart-square'></i>
+          </div>
+        </div>
+      </div> 
+      <div class="logros-main-container">
+        
+        <div class="logros-panel-lista">
+          <div class="panel-header">
+            <span>Lista de Logros</span>
+            </div>
+
+          <div class="logro-list-container">
+            
+            <div class="logro-card" th:each="logro : ${listaDeLogros}">
+              
+              <div class="logro-card-icon">
+                <i class='bx bxs-trophy'></i>
+              </div>
+
+              <div class="logro-card-info">
+                <span class="logro-card-nombre">Primera Victoria</span>
+                <span class="logro-card-xp">100 XP</span>
+              </div>
+
+              <div class="logro-card-actions">
+                <a
+                  th:href="@{/admin(vista='logros', editarLogroId=${logro.id})}"
+                  class="btn-edit"
+                >
+                  Editar
+                </a>
+                
+                <a
+                  th:href="@{/admin/logros/toggle(id=${logro.id})}"
+                  class="btn-icon"
+                  title="Desactivar Logro"
+                >
+                  <i class='bx bx-toggle-right'></i>
+                </a>
+                
+                <a
+                  th:href="@{/admin/logros/eliminar(id=${logro.id})}"
+                  class="btn-icon btn-icon-danger"
+                  onclick="return confirm('¿Seguro que quieres eliminar este logro? Esta acción no se puede deshacer.');"
+                  title="Eliminar Logro"
+                >
+                  <i class='bx bx-trash'></i>
+                </a>
+              </div>
+            </div> 
+            <div class="logro-card">
+              <div class="logro-card-icon">
+                <i class='bx bxs-star'></i>
+              </div>
+              <div class="logro-card-info">
+                <span class="logro-card-nombre">Explorador de la Senda Perdida</span>
+                <span class="logro-card-xp">50 XP</span>
+              </div>
+              <div class="logro-card-actions">
+                <a href="#" class="btn-edit">Editar</a>
+                <a href="#" class="btn-icon" title="Activar Logro">
+                  <i class='bx bx-toggle-left' style="color: #868e96;"></i>
+                </a>
+                <a href="#" class="btn-icon btn-icon-danger" title="Eliminar Logro">
+                  <i class='bx bx-trash'></i>
+                </a>
+              </div>
+            </div> 
+            <div class="logro-card">
+              <div class="logro-card-icon">
+                <i class='bx bxs-star'></i>
+              </div>
+              <div class="logro-card-info">
+                <span class="logro-card-nombre">Explorador de la Senda Perdida</span>
+                <span class="logro-card-xp">50 XP</span>
+              </div>
+              <div class="logro-card-actions">
+                <a href="#" class="btn-edit">Editar</a>
+                <a href="#" class="btn-icon" title="Activar Logro">
+                  <i class='bx bx-toggle-left' style="color: #868e96;"></i>
+                </a>
+                <a href="#" class="btn-icon btn-icon-danger" title="Eliminar Logro">
+                  <i class='bx bx-trash'></i>
+                </a>
+              </div>
+            </div> 
+            <div class="logro-card">
+              <div class="logro-card-icon">
+                <i class='bx bxs-star'></i>
+              </div>
+              <div class="logro-card-info">
+                <span class="logro-card-nombre">Explorador de la Senda Perdida</span>
+                <span class="logro-card-xp">50 XP</span>
+              </div>
+              <div class="logro-card-actions">
+                <a href="#" class="btn-edit">Editar</a>
+                <a href="#" class="btn-icon" title="Activar Logro">
+                  <i class='bx bx-toggle-left' style="color: #868e96;"></i>
+                </a>
+                <a href="#" class="btn-icon btn-icon-danger" title="Eliminar Logro">
+                  <i class='bx bx-trash'></i>
+                </a>
+              </div>
+            </div> 
+            <div class="logro-card">
+              <div class="logro-card-icon">
+                <i class='bx bxs-star'></i>
+              </div>
+              <div class="logro-card-info">
+                <span class="logro-card-nombre">Explorador de la Senda Perdida</span>
+                <span class="logro-card-xp">50 XP</span>
+              </div>
+              <div class="logro-card-actions">
+                <a href="#" class="btn-edit">Editar</a>
+                <a href="#" class="btn-icon" title="Activar Logro">
+                  <i class='bx bx-toggle-left' style="color: #868e96;"></i>
+                </a>
+                <a href="#" class="btn-icon btn-icon-danger" title="Eliminar Logro">
+                  <i class='bx bx-trash'></i>
+                </a>
+              </div>
+            </div> 
+            <div class="logro-card">
+              <div class="logro-card-icon">
+                <i class='bx bxs-star'></i>
+              </div>
+              <div class="logro-card-info">
+                <span class="logro-card-nombre">Explorador de la Senda Perdida</span>
+                <span class="logro-card-xp">50 XP</span>
+              </div>
+              <div class="logro-card-actions">
+                <a href="#" class="btn-edit">Editar</a>
+                <a href="#" class="btn-icon" title="Activar Logro">
+                  <i class='bx bx-toggle-left' style="color: #868e96;"></i>
+                </a>
+                <a href="#" class="btn-icon btn-icon-danger" title="Eliminar Logro">
+                  <i class='bx bx-trash'></i>
+                </a>
+              </div>
+            </div> 
+            <div class="logro-card">
+              <div class="logro-card-icon">
+                <i class='bx bxs-star'></i>
+              </div>
+              <div class="logro-card-info">
+                <span class="logro-card-nombre">Explorador de la Senda Perdida</span>
+                <span class="logro-card-xp">50 XP</span>
+              </div>
+              <div class="logro-card-actions">
+                <a href="#" class="btn-edit">Editar</a>
+                <a href="#" class="btn-icon" title="Activar Logro">
+                  <i class='bx bx-toggle-left' style="color: #868e96;"></i>
+                </a>
+                <a href="#" class="btn-icon btn-icon-danger" title="Eliminar Logro">
+                  <i class='bx bx-trash'></i>
+                </a>
+              </div>
+            </div> 
+            <div class="logro-card">
+              <div class="logro-card-icon">
+                <i class='bx bxs-star'></i>
+              </div>
+              <div class="logro-card-info">
+                <span class="logro-card-nombre">Explorador de la Senda Perdida</span>
+                <span class="logro-card-xp">50 XP</span>
+              </div>
+              <div class="logro-card-actions">
+                <a href="#" class="btn-edit">Editar</a>
+                <a href="#" class="btn-icon" title="Activar Logro">
+                  <i class='bx bx-toggle-left' style="color: #868e96;"></i>
+                </a>
+                <a href="#" class="btn-icon btn-icon-danger" title="Eliminar Logro">
+                  <i class='bx bx-trash'></i>
+                </a>
+              </div>
+            </div> 
+            <div class="logro-card">
+              <div class="logro-card-icon">
+                <i class='bx bxs-star'></i>
+              </div>
+              <div class="logro-card-info">
+                <span class="logro-card-nombre">Explorador de la Senda Perdida</span>
+                <span class="logro-card-xp">50 XP</span>
+              </div>
+              <div class="logro-card-actions">
+                <a href="#" class="btn-edit">Editar</a>
+                <a href="#" class="btn-icon" title="Activar Logro">
+                  <i class='bx bx-toggle-left' style="color: #868e96;"></i>
+                </a>
+                <a href="#" class="btn-icon btn-icon-danger" title="Eliminar Logro">
+                  <i class='bx bx-trash'></i>
+                </a>
+              </div>
+            </div> 
+            <div class="logro-card">
+              <div class="logro-card-icon">
+                <i class='bx bxs-star'></i>
+              </div>
+              <div class="logro-card-info">
+                <span class="logro-card-nombre">Explorador de la Senda Perdida</span>
+                <span class="logro-card-xp">50 XP</span>
+              </div>
+              <div class="logro-card-actions">
+                <a href="#" class="btn-edit">Editar</a>
+                <a href="#" class="btn-icon" title="Activar Logro">
+                  <i class='bx bx-toggle-left' style="color: #868e96;"></i>
+                </a>
+                <a href="#" class="btn-icon btn-icon-danger" title="Eliminar Logro">
+                  <i class='bx bx-trash'></i>
+                </a>
+              </div>
+            </div> 
+          </div> 
+        </div> 
+        
+        <div class="logros-panel-columna-derecha">
+    
+          <div class="logros-panel-detalle">
+              <div class="panel-header">
+                  <span>Top Jugadores</span>
+              </div>
+              <div class="top-jugadores-list">
+                  
+                  <div class="top-jugador-item">
+                      <span class="top-jugador-rank">#1</span>
+                      <div class="top-jugador-avatar"></div>
+                      <div class="top-jugador-info">
+                          <span class="top-jugador-nombre">Ana García</span>
+                          <span class="top-jugador-subtext">47 logros</span>
+                      </div>
+                  </div>
+                  
+                  <div class="top-jugador-item">
+                      <span class="top-jugador-rank">#2</span>
+                      <div class="top-jugador-avatar"></div>
+                      <div class="top-jugador-info">
+                          <span class="top-jugador-nombre">Carlos Ruiz</span>
+                          <span class="top-jugador-subtext">45 logros</span>
+                      </div>
+                  </div>
+
+                  <div class="top-jugador-item">
+                      <span class="top-jugador-rank">#3</span>
+                      <div class="top-jugador-avatar"></div>
+                      <div class="top-jugador-info">
+                          <span class="top-jugador-nombre">María López</span>
+                          <span class="top-jugador-subtext">42 logros</span>
+                      </div>
+                  </div>
+
+                  <div class="top-jugador-item">
+                      <span class="top-jugador-rank">#4</span>
+                      <div class="top-jugador-avatar"></div>
+                      <div class="top-jugador-info">
+                          <span class="top-jugador-nombre">Juan Torres</span>
+                          <span class="top-jugador-subtext">38 logros</span>
+                      </div>
+                  </div>
+
+                  <div class="top-jugador-item">
+                      <span class="top-jugador-rank">#5</span>
+                      <div class="top-jugador-avatar"></div>
+                      <div class="top-jugador-info">
+                          <span class="top-jugador-nombre">Laura Sánchez</span>
+                          <span class="top-jugador-subtext">35 logros</span>
+                      </div>
+                  </div>
+
+              </div>
+          </div> <div class="logros-panel-detalle">
+              <div class="panel-header">
+                  <span>Logros Más Completados</span>
+              </div>
+              <div class="chart-container" style="padding: 20px;">
+                  <canvas id="graficoLogrosCompletados"></canvas>
+              </div>
+            </div>
+          </div>  
+      </div> 
+    </div> 
+  </body>
+</html>

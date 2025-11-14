@@ -634,4 +634,5 @@ public class AdminController {
         "success", "Límites de liga actualizados. Todas las ligas han sido recalculadas.");
     return "redirect:/admin?vista=top&limite=" + limiteActual;
   }
+
 }

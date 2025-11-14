@@ -21,6 +21,7 @@
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body>
     <!-- 
@@ -47,9 +48,7 @@
           <li><a th:href="@{/admin(vista='usuarios')}"><i class="bx bxs-group"></i> Usuarios</a></li>
           <li><a th:href="@{/admin(vista='tareas')}"><i class="bx bx-task"></i> Tareas</a></li>
           <li><a th:href="@{/admin(vista='top')}"r><i class="bx bxs-bar-chart-alt-2"></i> Top</a></li>
-          <li>
-            <a href="#"><i class="bx bxs-trophy"></i> Logros</a>
-          </li>
+          <li><a th:href="@{/admin(vista='logros')}"><i class="bx bxs-trophy"></i> Logros</a></li>
         </ul>
         <div></div>
         <!-- Div vacío para ayudar con el layout flexbox -->
@@ -98,7 +97,11 @@
             th:classappend="${vistaActual == 'top' ? 'active' : ''}"
             >Top</a
           >
-          <a href="#">Logros</a>
+          <a
+          th:href="@{/admin(vista='logros')}"
+          th:classappend="${vistaActual == 'logros' ? 'active' : ''}"
+          >Logros</a
+          >
         </div>
 
         <!-- Área de trabajo principal donde se renderiza el contenido de cada vista -->
@@ -183,6 +186,14 @@
                 th:replace="~{top-fragment :: contenidoTopLeaderboard}"
               ></div>
             </div>
+
+            <!-- === VISTA DE LOGROS (cargada desde un fragmento) === -->
+            <div th:case="'logros'">
+              <div
+                th:replace="~{logros-fragment :: contenidoLogros}"
+              ></div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -647,12 +658,91 @@
       </div>
     </div>
 
+  <!-- Modal para Editar Logro -->
+  <div class="modal-overlay" th:if="${logroParaEditar != null}">
+    <div class="modal-content">
+      <h2>Editar Logro</h2>
+      <div class="section-line"></div>
+      
+      <form th:action="@{/admin/logros/guardar}" method="post" class="edit-form">
+        <input
+          type="hidden"
+          th:name="${_csrf.parameterName}"
+          th:value="${_csrf.token}"
+        />
+        <input
+          type="hidden"
+          name="id"
+          th:value="${logroParaEditar.id}"
+        />
+
+        <div class="form-group">
+          <label for="editNombreLogro">Nombre del Logro</label>
+          <input
+            type="text"
+            id="editNombreLogro"
+            name="nombre"
+            th:value="${logroParaEditar.nombre}"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="editDescripcionLogro">Descripción</label>
+          <textarea
+            id="editDescripcionLogro"
+            name="descripcion"
+            rows="3"
+            style="resize: vertical; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; font-family: 'Poppins', sans-serif;"
+            th:text="${logroParaEditar.descripcion}"
+            required
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="editEmojiLogro">Emoji/Icono</label>
+          <input
+            type="text"
+            id="editEmojiLogro"
+            name="emoji"
+            th:value="${logroParaEditar.emoji}"
+            maxlength="4"
+            placeholder="🏆"
+            style="font-size: 32px; text-align: center;"
+          />
+          <small style="color: #868e96; font-size: 12px; margin-top: 5px; display: block;">
+            Puedes usar emojis o dejar vacío para usar uno por defecto
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label for="editExperienciaLogro">Experiencia Recompensa (XP)</label>
+          <input
+            type="number"
+            id="editExperienciaLogro"
+            name="experienciaRecompensa"
+            th:value="${logroParaEditar.experienciaRecompensa}"
+            min="0"
+            step="10"
+            required
+          />
+        </div>
+
+        <div th:if="${errorLogro}" class="alert-error" th:text="${errorLogro}"></div>
+
+        <div class="form-actions">
+          <a th:href="@{/admin(vista='logros')}" class="btn-cancel">Cancelar</a>
+          <button type="submit" class="btn-save">Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
     <!-- 
       Botón Flotante (FAB - Floating Action Button)
       Este es un botón multifuncional cuya acción cambia dependiendo de la vista actual.
     -->
     <a
-      th:href="@{/admin(
+      th:if="${vistaActual != 'logros'}" th:href="@{/admin(
         crearUsuario=${vistaActual == 'usuarios'},
         crearTarea=${vistaActual == 'tareas'},
         mostrarConfig=${vistaActual == 'top'},
