@@ -10,19 +10,19 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import michaelsoftbinbows.data.SalonFamaRepository;
+import michaelsoftbinbows.dto.TareaDto;
 import michaelsoftbinbows.entities.SalonFama;
 import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.entities.Usuario;
-import michaelsoftbinbows.security.CustomUserDetails;
+import michaelsoftbinbows.services.AuthService;
 import michaelsoftbinbows.services.ConfiguracionService;
 import michaelsoftbinbows.services.TareaService;
 import michaelsoftbinbows.services.UsuarioService;
 import michaelsoftbinbows.services.WeatherService;
+import michaelsoftbinbows.util.Dificultad;
 import michaelsoftbinbows.util.SistemaNiveles;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,6 +37,7 @@ public class HomeController {
   @Autowired private ConfiguracionService configuracionService;
   @Autowired private TareaService tareaService;
   @Autowired private SalonFamaRepository salonFamaRepository;
+  @Autowired private AuthService authservice;
 
   /**
    * Redirige al login si se entra a la dirección.
@@ -57,12 +58,7 @@ public class HomeController {
   @GetMapping("/home")
   public String mostrarHome(Model model) {
     System.out.println("LOG: El método 'mostrarMain' ha sido llamado por una petición a /home.");
-
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-    String correo = userDetails.getUsername();
-
-    Usuario usuarioActual = usuarioService.buscarPorCorreoConTareas(correo);
+    Usuario usuarioActual = usuarioService.buscarPorCorreo(authservice.getCurrentUser().getCorreoElectronico());
 
     model.addAttribute("usuario", usuarioActual);
     model.addAttribute("tareas", usuarioActual.getTareasPendientes());
@@ -143,8 +139,11 @@ public class HomeController {
     if (tareaRecomendada != null
         && usuarioActual.buscarTareaPorNombre(tareaRecomendada.getNombre()) == null) {
       try {
-        usuarioActual.agregarTarea(tareaRecomendada);
-        usuarioService.guardarConTareas(usuarioActual);
+        TareaDto tareaDto = new TareaDto();
+        tareaDto.nombre = tareaRecomendada.getNombre();
+        tareaDto.descripcion = tareaRecomendada.getDescripcion();
+        tareaDto.dificultad = Dificultad.obtenerDificultadPorExp(tareaRecomendada.getExp());
+        tareaService.crear(tareaDto, expSiguienteNivel);
       } catch (Exception e) {
         System.err.println("Error al agregar tarea recomendada por clima: " + e.getMessage());
       }
@@ -174,7 +173,8 @@ public class HomeController {
     boolean desafioCompletado = tareaSemanal.isPresent() && tareaSemanal.get().isCompletada();
     model.addAttribute("desafioCompletado", desafioCompletado);
 
-    usuarioActual.actualizarRacha();
+    usuarioService.verificarPerdidaRacha(usuarioActual);
+    usuarioService.guardarEnBd(usuarioActual);
 
     return "home";
   }
@@ -191,9 +191,7 @@ public class HomeController {
 
     try {
       // 1. Obtener el usuario actual (para la tarjeta de perfil)
-      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-      CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-      Usuario usuarioActual = usuarioService.buscarPorCorreo(userDetails.getUsername());
+      Usuario usuarioActual = authservice.getCurrentUser();
       model.addAttribute("usuarioLogueado", usuarioActual); // Lo pasamos al HTML
 
       // 2. Obtener el límite del Top (10, 20, etc.) desde la BD

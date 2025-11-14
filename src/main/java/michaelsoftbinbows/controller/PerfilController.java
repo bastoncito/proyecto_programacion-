@@ -5,10 +5,11 @@ import java.util.List;
 import java.util.Set;
 import michaelsoftbinbows.entities.Logro;
 import michaelsoftbinbows.entities.Usuario;
-import michaelsoftbinbows.security.CustomUserDetails;
+import michaelsoftbinbows.services.AuthService;
 import michaelsoftbinbows.services.UsuarioService;
 import michaelsoftbinbows.util.GestorLogros;
-import org.springframework.security.core.Authentication;
+import michaelsoftbinbows.util.UsuarioValidator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -23,6 +24,8 @@ public class PerfilController {
 
   private final UsuarioService usuarioService;
   private final PasswordEncoder passwordEncoder;
+  private UsuarioValidator usuarioValidator = new UsuarioValidator();
+  @Autowired private AuthService authservice;
 
   /**
    * Constructor de clase.
@@ -46,11 +49,7 @@ public class PerfilController {
   @GetMapping("/perfil")
   public String mostrarPerfil(Model model) {
     System.out.println("LOG: Método 'mostrarPerfil' llamado.");
-
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-    String correo = userDetails.getUsername();
-    Usuario usuarioActual = usuarioService.buscarPorCorreo(correo);
+    Usuario usuarioActual = authservice.getCurrentUser();
 
     if (usuarioActual == null) {
       return "redirect:/login?error=userNotFound";
@@ -90,10 +89,7 @@ public class PerfilController {
       Model model) {
 
     System.out.println("LOG: Intentando actualizar perfil.");
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-    String correo = userDetails.getUsername();
-    Usuario usuarioActual = usuarioService.buscarPorCorreo(correo);
+    Usuario usuarioActual = authservice.getCurrentUser();
 
     if (usuarioActual == null) {
       model.addAttribute("errorInfo", "Error crítico: No se encontró el usuario.");
@@ -106,16 +102,12 @@ public class PerfilController {
       usuarioActual.setCorreoElectronico(nuevoCorreo);
       usuarioActual.setCiudad(nuevaCiudad);
 
-      usuarioService.guardarEnBd(usuarioActual);
+      usuarioService.actualizarUsuario(usuarioActual.getCorreoElectronico(), nuevoUsuario, nuevoCorreo, usuarioActual.getRol(), nuevaCiudad);
 
       model.addAttribute("exitoInfo", "Información actualizada correctamente.");
 
       // Actualizar el contexto de seguridad
-      CustomUserDetails nuevosDetalles = new CustomUserDetails(usuarioActual);
-      Authentication nuevaAuth =
-          new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
-              nuevosDetalles, auth.getCredentials(), nuevosDetalles.getAuthorities());
-      SecurityContextHolder.getContext().setAuthentication(nuevaAuth);
+      authservice.actualizarSesion(usuarioActual.getId());
 
     } catch (Exception e) {
       System.out.println("LOG: Error al actualizar perfil: " + e.getMessage());
@@ -143,10 +135,7 @@ public class PerfilController {
       Model model) {
 
     System.out.println("LOG: Intentando cambiar contrasena.");
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-    String correo = userDetails.getUsername();
-    Usuario usuarioActual = usuarioService.buscarPorCorreo(correo);
+    Usuario usuarioActual = authservice.getCurrentUser();
 
     if (usuarioActual == null) {
       model.addAttribute("errorPassword", "Error crítico: No se encontró el usuario.");
@@ -161,13 +150,14 @@ public class PerfilController {
       if (!contrasenaNueva.equals(contrasenaRepetida)) {
         throw new Exception("Las contrasenas nuevas no coinciden.");
       }
-      String resultado = usuarioService.validarContrasena(contrasenaNueva);
+      String resultado = usuarioValidator.validarContrasena(contrasenaNueva);
       if (resultado != null) {
         throw new Exception(resultado);
       }
 
       usuarioActual.setContrasena(passwordEncoder.encode(contrasenaNueva));
       usuarioService.guardarEnBd(usuarioActual);
+      authservice.actualizarSesion(usuarioActual.getId());
       model.addAttribute("exitoPassword", "Contrasena actualizada correctamente.");
 
     } catch (Exception e) {
@@ -186,14 +176,11 @@ public class PerfilController {
    */
   @PostMapping("/perfil/borrar-cuenta")
   public String borrarCuenta(HttpSession session) {
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-    String correo = userDetails.getUsername();
-    Usuario usuarioActual = usuarioService.buscarPorCorreo(correo);
+    Usuario usuarioActual = authservice.getCurrentUser();
 
     if (usuarioActual != null) {
       try {
-        usuarioService.eliminar(usuarioActual.getId());
+        usuarioService.eliminarUsuario(usuarioActual.getId());
         SecurityContextHolder.clearContext();
         session.invalidate();
       } catch (Exception e) {

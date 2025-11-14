@@ -1,13 +1,13 @@
 package michaelsoftbinbows.controller;
 
-import michaelsoftbinbows.entities.Tarea;
+import michaelsoftbinbows.dto.TareaDto;
 import michaelsoftbinbows.exceptions.RegistroInvalidoException;
 import michaelsoftbinbows.exceptions.TareaInvalidaException;
-import michaelsoftbinbows.security.CustomUserDetails;
+import michaelsoftbinbows.services.AuthService;
+import michaelsoftbinbows.services.TareaService;
 import michaelsoftbinbows.services.UsuarioService;
+import michaelsoftbinbows.services.UsuarioTareaService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +19,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class TareaController {
 
   @Autowired private UsuarioService usuarioService;
+  @Autowired private TareaService tareaService;
+  @Autowired private AuthService authservice;
+  @Autowired private UsuarioTareaService usuarioTareaService;
 
   /**
    * Elimina una tarea específica de un usuario.
@@ -31,10 +34,8 @@ public class TareaController {
   @PostMapping("/eliminar-tarea")
   public String eliminarTarea(Model model, @RequestParam("nombreTarea") String nombreTarea)
       throws RegistroInvalidoException {
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-    String correo = userDetails.getUsername();
-    usuarioService.eliminarTarea(correo, nombreTarea);
+    Long id = authservice.getCurrentUser().getId();
+    tareaService.eliminarPorUsuarioYNombreTarea(id, nombreTarea);
     return "redirect:/home";
   }
 
@@ -49,11 +50,9 @@ public class TareaController {
   @PostMapping("/completar-tarea")
   public String completarTarea(Model model, @RequestParam("nombreTarea") String nombreTarea)
       throws RegistroInvalidoException {
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-    String correo = userDetails.getUsername();
-
-    usuarioService.completarTarea(correo, nombreTarea);
+    Long idUsuario = authservice.getCurrentUser().getId();
+    usuarioTareaService.completarTarea(
+        idUsuario, tareaService.obtenerPorNombreYUsuarioId(nombreTarea, idUsuario).get().getId());
     return "redirect:/home";
   }
 
@@ -75,19 +74,19 @@ public class TareaController {
       @RequestParam("dificultad") String dificultad,
       RedirectAttributes redirectAttributes)
       throws TareaInvalidaException {
-
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-    String correo = userDetails.getUsername();
+    Long id = authservice.getCurrentUser().getId();
+    String correo = authservice.getCurrentUser().getCorreoElectronico();
 
     int tareasPendientes = usuarioService.obtenerTareasPendientes(correo).size();
     if (tareasPendientes >= 4) {
       throw new TareaInvalidaException(
           "No puedes agregar más de 4 tareas pendientes.", nombre, descripcion);
     }
-
-    Tarea nuevaTarea = new Tarea(nombre, descripcion, dificultad);
-    usuarioService.agregarTareaAusuario(correo, nuevaTarea);
+    TareaDto tareaDto = new TareaDto();
+    tareaDto.nombre = nombre;
+    tareaDto.descripcion = descripcion;
+    tareaDto.dificultad = dificultad;
+    tareaService.crear(tareaDto, id);
 
     redirectAttributes.addFlashAttribute(
         "successMessage", "¡Tarea '" + nombre + "' agregada con éxito!");

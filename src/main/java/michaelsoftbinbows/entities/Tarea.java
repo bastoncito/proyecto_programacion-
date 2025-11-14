@@ -9,9 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 import michaelsoftbinbows.exceptions.TareaInvalidaException;
 import michaelsoftbinbows.util.Dificultad;
@@ -114,77 +112,19 @@ public class Tarea {
     this.climaCompatible = climaCompatible;
   }
 
-  /**
-   * Establece el nombre de la tarea, con validación.
-   *
-   * @param nombre El nombre a establecer.
-   * @throws TareaInvalidaException Si el nombre no es válido.
-   */
   public void setNombre(String nombre) throws TareaInvalidaException {
-    if (nombre == null || nombre.isEmpty()) {
-      throw new TareaInvalidaException(
-          "El nombre de la tarea no puede estar vacío.", nombre, descripcion);
-    }
-    if (nombre.length() < 5 || nombre.length() > 30) {
-      throw new TareaInvalidaException(
-          "El nombre de la tarea debe tener entre 5 y 30 carácteres", nombre, descripcion);
-    }
     this.nombre = nombre;
   }
 
-  /**
-   * Establece la descripción de la tarea, con validación.
-   *
-   * @param descripcion La descripción a establecer.
-   * @throws TareaInvalidaException Si la descripción no es válida.
-   */
   public void setDescripcion(String descripcion) throws TareaInvalidaException {
-    if (descripcion == null || descripcion.isEmpty()) {
-      throw new TareaInvalidaException(
-          "La descripción de la tarea no puede estar vacía.", nombre, descripcion);
-    }
-    if (descripcion.length() < 5 || descripcion.length() > 70) {
-      throw new TareaInvalidaException(
-          "La descripción debe tener entre 5 y 80 carácteres", nombre, descripcion);
-    }
     this.descripcion = descripcion;
   }
 
-  /**
-   * Establece la experiencia (EXP) de la tarea, con validación.
-   *
-   * @param exp La cantidad de EXP (debe ser > 0).
-   * @throws TareaInvalidaException Si la EXP es 0 o negativa.
-   */
   public void setExp(int exp) throws TareaInvalidaException {
-    if (exp <= 0) {
-      throw new TareaInvalidaException(
-          "La exp de la tarea no puede ser menor a 1.", nombre, descripcion);
-    }
     this.exp = exp;
   }
 
-  /**
-   * Establece la fecha de expiración de la tarea, con validación.
-   *
-   * @param fechaExpiracion La fecha de expiración (debe ser futura).
-   * @throws TareaInvalidaException Si la fecha no es válida.
-   */
-  public void setFechaExpiracion(LocalDateTime fechaExpiracion) throws TareaInvalidaException {
-    if (fechaExpiracion == null) {
-      throw new TareaInvalidaException("La fecha no puede estar vacía.", nombre, descripcion);
-    }
-    LocalDateTime fechaActual = LocalDateTime.now(ZoneId.systemDefault());
-    if (fechaExpiracion.isBefore(fechaActual)) {
-      throw new TareaInvalidaException(
-          "La fecha debe ser igual o posterior a hoy.", nombre, descripcion);
-    }
-    // revisa si la fecha está al menos 1 hora en el futuro
-    long diferenciaMilisegundos = Duration.between(fechaActual, fechaExpiracion).toMillis();
-    if (diferenciaMilisegundos < 60 * 60 * 1000) {
-      throw new TareaInvalidaException(
-          "La fecha debe ser al menos 1 hora posterior a la actual.", nombre, descripcion);
-    }
+  public void setFechaExpiracion(LocalDateTime fechaExpiracion) {
     this.fechaExpiracion = fechaExpiracion;
   }
 
