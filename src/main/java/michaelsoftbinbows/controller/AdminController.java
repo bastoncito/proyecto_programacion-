@@ -3,6 +3,7 @@ package michaelsoftbinbows.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import michaelsoftbinbows.dto.TareaDto;
 import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.entities.Usuario;
 import michaelsoftbinbows.exceptions.AdminCrearTareaException;
@@ -15,6 +16,7 @@ import michaelsoftbinbows.model.Rol;
 import michaelsoftbinbows.security.CustomUserDetails;
 import michaelsoftbinbows.services.ConfiguracionService;
 import michaelsoftbinbows.services.SeguridadService;
+import michaelsoftbinbows.services.TareaService;
 import michaelsoftbinbows.services.TemporadaService;
 import michaelsoftbinbows.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +45,7 @@ public class AdminController {
   @Autowired private UsuarioService usuarioService; // Lógica de negocio para usuarios.
   @Autowired private SeguridadService seguridadService; // Reglas de permisos y roles.
   @Autowired private TemporadaService temporadaService; // Lógica para el reseteo de temporadas.
+  @Autowired private TareaService tareaService; // Lógica de negocio para tareas.
 
   @Autowired
   private ConfiguracionService
@@ -59,7 +62,7 @@ public class AdminController {
   public void registrarUsuario(Usuario usuario) throws RegistroInvalidoException {
     String encodedPassword = passwordEncoder.encode(usuario.getContrasena());
     usuario.setContrasena(encodedPassword);
-    usuarioService.guardarEnBd(usuario);
+    usuarioService.guardarSinValidarContrasena(usuario);
   }
 
   /**
@@ -284,7 +287,7 @@ public class AdminController {
     System.out.println(
         "LOG: Permisos verificados. Intentando aplicar cambios en la capa de datos...");
     try {
-      usuarioService.actualizarUsuario(correoOriginal, nuevoNombre, nuevoCorreo, nuevoRol);
+      usuarioService.actualizarUsuario(correoOriginal, nuevoNombre, nuevoCorreo, nuevoRol, null);
 
       if (nuevaContrasena != null && !nuevaContrasena.isEmpty()) {
         System.out.println("LOG: Se ha detectado un intento de cambio de contraseña.");
@@ -380,7 +383,7 @@ public class AdminController {
     }
 
     try {
-      usuarioService.eliminarTarea(correoUsuario, nombreTarea);
+      tareaService.eliminarPorUsuarioYNombreTarea(objetivo.getId(), nombreTarea);
       redirectAttributes.addFlashAttribute(
           "success",
           "Tarea '"
@@ -396,7 +399,7 @@ public class AdminController {
               + "' del usuario '"
               + objetivo.getNombreUsuario()
               + "'.");
-    } catch (RegistroInvalidoException e) {
+    } catch (Exception e) {
       redirectAttributes.addFlashAttribute("error", e.getMessage());
       System.err.println("ERROR al eliminar tarea: " + e.getMessage());
     }
@@ -427,14 +430,20 @@ public class AdminController {
       RedirectAttributes redirectAttributes)
       throws AdminGuardarTareaException {
 
-    Usuario usuario = usuarioService.buscarPorCorreo(correoUsuario);
+    Long idUsuario = usuarioService.buscarPorCorreo(correoUsuario).getId();
     try {
-      Tarea tareaActualizada = new Tarea(nuevoNombre, nuevaDescripcion, nuevaDificultad);
-      usuario.actualizarTarea(nombreOriginal, tareaActualizada);
-      usuarioService.guardarEnBd(usuario);
+      TareaDto tareaActualizada = new TareaDto();
+      tareaActualizada.nombre = nuevoNombre;
+      tareaActualizada.descripcion = nuevaDescripcion;
+      tareaActualizada.dificultad = nuevaDificultad;
+      tareaService.actualizarTarea(idUsuario, nombreOriginal, tareaActualizada);
       redirectAttributes.addFlashAttribute("success", "Tarea actualizada correctamente.");
     } catch (TareaInvalidaException | RegistroInvalidoException e) {
-      throw new AdminGuardarTareaException(e.getMessage(), usuario, nuevoNombre, nuevaDescripcion);
+      throw new AdminGuardarTareaException(
+          e.getMessage(),
+          usuarioService.buscarPorCorreo(correoUsuario),
+          nuevoNombre,
+          nuevaDescripcion);
     }
     redirectAttributes.addAttribute("vista", "tareas");
     redirectAttributes.addAttribute("correo", correoUsuario);
@@ -518,13 +527,15 @@ public class AdminController {
     }
 
     try {
-      Tarea nuevaTarea = new Tarea(nombre, descripcion, dificultad);
-      usuario.agregarTarea(nuevaTarea);
-      usuarioService.guardarEnBd(usuario);
+      TareaDto tareaDto = new TareaDto();
+      tareaDto.nombre = nombre;
+      tareaDto.descripcion = descripcion;
+      tareaDto.dificultad = dificultad;
+      tareaService.crear(tareaDto, usuario.getId());
       redirectAttributes.addFlashAttribute(
           "success",
           "Tarea '" + nombre + "' anadida exitosamente a " + usuario.getNombreUsuario() + ".");
-    } catch (TareaInvalidaException | RegistroInvalidoException e) {
+    } catch (TareaInvalidaException e) {
       throw new AdminCrearTareaException(e.getMessage());
     }
     redirectAttributes.addAttribute("vista", "tareas");

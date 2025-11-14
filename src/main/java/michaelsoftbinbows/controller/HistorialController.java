@@ -3,11 +3,10 @@ package michaelsoftbinbows.controller;
 import java.util.List;
 import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.entities.Usuario;
-import michaelsoftbinbows.security.CustomUserDetails;
+import michaelsoftbinbows.services.AuthService;
 import michaelsoftbinbows.services.UsuarioService;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/historial")
 public class HistorialController {
 
+  @Autowired private AuthService authservice;
   @Autowired private UsuarioService usuarioService;
 
   /**
@@ -33,9 +33,7 @@ public class HistorialController {
         "LOG: El método 'mostrarHistorial' ha sido llamado desde HistorialController.");
 
     // 1. Obtener el usuario actual de forma segura
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-    Usuario usuarioActual = usuarioService.buscarPorCorreoConTareas(userDetails.getUsername());
+    Usuario usuarioActual = usuarioService.buscarPorCorreo(authservice.getCurrentUser().getCorreoElectronico());
 
     // 2. Manejar el caso en que el usuario no se encuentre
     if (usuarioActual == null) {

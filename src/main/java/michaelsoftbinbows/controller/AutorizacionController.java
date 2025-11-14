@@ -2,10 +2,8 @@ package michaelsoftbinbows.controller;
 
 import michaelsoftbinbows.entities.Usuario;
 import michaelsoftbinbows.exceptions.RegistroInvalidoException;
-import michaelsoftbinbows.security.CustomUserDetails;
+import michaelsoftbinbows.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +18,7 @@ public class AutorizacionController {
   @Autowired private PasswordEncoder passwordEncoder;
 
   @Autowired private michaelsoftbinbows.services.UsuarioService usuarioService;
+  @Autowired AuthService authService;
 
   /**
    * Guarda usuarios con contraseñas encriptadas.
@@ -77,12 +76,14 @@ public class AutorizacionController {
     Usuario nuevoUsuario = new Usuario(username, email, password);
     // registrarUsuario encodifica y llama al servicio que valida unicidad
     registrarUsuario(nuevoUsuario);
-    // usuario registrado; authentication already set below
     System.out.println("LOG: Nuevo usuario registrado: " + username);
+    authService.actualizarSesion(nuevoUsuario.getId());
+    /* comentado de momento
     CustomUserDetails userDetails = new CustomUserDetails(nuevoUsuario);
     UsernamePasswordAuthenticationToken authToken =
         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     SecurityContextHolder.getContext().setAuthentication(authToken);
+    */
     return "redirect:/home";
   }
 
