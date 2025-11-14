@@ -1011,4 +1011,32 @@ body {
   .logro-card-icon {
     font-size: 36px;
   }
+
+  /* =================================================================== */
+  /* 9. ESTILOS DE ESTADO PARA BOTONES DE LOGROS                       */
+  /* =================================================================== */
+
+  /* Sobrescribimos el color y borde del .btn-icon
+    cuando tiene una clase de estado.
+  */
+
+  /* Estado ACTIVO (Verde) */
+  .btn-icon.btn-icon-activo {
+    border-color: #28a745;
+    color: #28a745;
+  }
+  .btn-icon.btn-icon-activo:hover {
+    background-color: #28a745;
+    color: var(--color-blanco);
+  }
+
+  /* Estado INACTIVO (Gris) */
+  .btn-icon.btn-icon-inactivo {
+    border-color: #ccc;
+    color: var(--color-texto-secundario);
+  }
+  .btn-icon.btn-icon-inactivo:hover {
+    background-color: var(--color-texto-secundario);
+    color: var(--color-blanco);
+  }
 }

@@ -3,9 +3,11 @@ package michaelsoftbinbows.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import michaelsoftbinbows.dto.TareaDto;
 import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.entities.Usuario;
+import michaelsoftbinbows.entities.Logro;
 import michaelsoftbinbows.exceptions.AdminCrearTareaException;
 import michaelsoftbinbows.exceptions.AdminCrearUsuarioException;
 import michaelsoftbinbows.exceptions.AdminGuardarTareaException;
@@ -19,6 +21,7 @@ import michaelsoftbinbows.services.SeguridadService;
 import michaelsoftbinbows.services.TareaService;
 import michaelsoftbinbows.services.TemporadaService;
 import michaelsoftbinbows.services.UsuarioService;
+import michaelsoftbinbows.services.LogroService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,10 +49,8 @@ public class AdminController {
   @Autowired private SeguridadService seguridadService; // Reglas de permisos y roles.
   @Autowired private TemporadaService temporadaService; // Lógica para el reseteo de temporadas.
   @Autowired private TareaService tareaService; // Lógica de negocio para tareas.
-
-  @Autowired
-  private ConfiguracionService
-      configuracionService; // Para ajustes del sistema como el límite del Top.
+  @Autowired private LogroService logroService;
+  @Autowired private ConfiguracionService configuracionService; // Para ajustes del sistema como el límite del Top.
 
   /**
    * Método de ayuda para registrar un nuevo usuario con la contraseña ya encriptada. Centraliza la
@@ -110,6 +111,8 @@ public class AdminController {
       @RequestParam(name = "mostrarConfig", required = false) boolean mostrarConfig,
       @RequestParam(name = "preselectUser", required = false) String preselectedUserEmail,
       @RequestParam(name = "errorConfig", required = false) String errorConfig,
+      @RequestParam(name = "editarLogroId", required = false) String logroIdParaEditar,
+      @RequestParam(name = "errorLogro", required = false) String errorLogro,
       Model model) {
 
     // Se obtiene el usuario que está actualmente logueado para verificar sus permisos.
@@ -200,6 +203,19 @@ public class AdminController {
       }
     }
 
+    if (logroIdParaEditar != null) {
+      System.out.println("DEBUG: Se ha solicitado abrir el modal para editar el logro: " + logroIdParaEditar);
+      
+      // Buscamos el logro en la BD usando el servicio
+      logroService.obtenerPorId(logroIdParaEditar).ifPresent(logro -> {
+          model.addAttribute("logroParaEditar", logro);
+      });
+      
+      if (errorLogro != null) {
+          model.addAttribute("errorLogro", errorLogro);
+      }
+    }
+
     // --- Carga de datos específicos para cada vista ---
     switch (vistaActual) {
       case "tareas":
@@ -216,6 +232,19 @@ public class AdminController {
         model.addAttribute("listaTop10", usuarioService.getTopUsuarios(limiteActual));
         model.addAttribute("limiteActual", limiteActual);
         break;
+
+      case "logros":
+        System.out.println("DEBUG: Cargando datos para la vista 'logros'.");
+        
+        // 1. Cargamos los contadores
+        model.addAttribute("totalLogros", logroService.getConteoTotalLogros());
+        model.addAttribute("logrosActivos", logroService.getConteoLogrosActivos());
+        model.addAttribute("totalCompletados", 0); // Placeholder
+
+        // 2. Cargamos la lista de logros
+        model.addAttribute("listaDeLogros", logroService.obtenerTodos());
+        break;
+
       case "usuarios":
         // No hay carga extra para la vista de usuarios.
         break;
@@ -644,6 +673,93 @@ public class AdminController {
     redirectAttributes.addFlashAttribute(
         "success", "Límites de liga actualizados. Todas las ligas han sido recalculadas.");
     return "redirect:/admin?vista=top&limite=" + limiteActual;
+  }
+
+  /**
+   * Maneja la petición para cambiar el estado (activo/inactivo) de un logro.
+   *
+   * @param id El ID del logro a modificar.
+   * @param redirectAttributes Para enviar mensajes de feedback a la vista.
+   * @return Redirección a la vista de logros.
+   */
+  @GetMapping("/admin/logros/toggle")
+  public String toggleLogroActivo(
+      @RequestParam("id") String id, RedirectAttributes redirectAttributes) {
+        
+    // 1. Buscamos el logro en el servicio
+    Optional<Logro> logroOpt = logroService.obtenerPorId(id);
+
+    if (logroOpt.isPresent()) {
+      Logro logro = logroOpt.get();
+      
+      // 2. Invertimos su estado
+      logro.setActivo(!logro.isActivo());
+      
+      // 3. Guardamos los cambios
+      logroService.guardar(logro);
+      
+      String estado = logro.isActivo() ? "activado" : "desactivado";
+      redirectAttributes.addFlashAttribute(
+          "success", "Logro '" + logro.getNombre() + "' ha sido " + estado + ".");
+    } else {
+      redirectAttributes.addFlashAttribute("error", "No se encontró el logro con ID: " + id);
+    }
+
+    // 4. Redirigimos de vuelta a la pestaña de logros
+    return "redirect:/admin?vista=logros";
+  }
+
+  /**
+   * Procesa el formulario para guardar los cambios de un logro editado.
+   *
+   * @param id El ID del logro a guardar.
+   * @param nombre El nuevo nombre para el logro.
+   * @param descripcion La nueva descripción.
+   * @param imagenUrl La nueva URL de la imagen/icono.
+   * @param experienciaRecompensa La nueva cantidad de XP.
+   * @param redirectAttributes Para enviar mensajes de feedback.
+   * @return Redirección a la vista de logros.
+   */
+  @PostMapping("/admin/logros/guardar")
+  public String guardarLogroEditado(
+      @RequestParam("id") String id,
+      @RequestParam("nombre") String nombre,
+      @RequestParam("descripcion") String descripcion,
+      @RequestParam("imagenUrl") String imagenUrl,
+      @RequestParam("experienciaRecompensa") int experienciaRecompensa,
+      RedirectAttributes redirectAttributes) {
+
+    // 1. Validamos los datos
+    if (nombre == null || nombre.trim().isEmpty()) {
+      redirectAttributes.addFlashAttribute("errorLogro", "El nombre no puede estar vacío.");
+      // Devolvemos al usuario al modal de edición
+      return "redirect:/admin?vista=logros&editarLogroId=" + id;
+    }
+    if (experienciaRecompensa < 0) {
+      redirectAttributes.addFlashAttribute("errorLogro", "La experiencia no puede ser negativa.");
+      return "redirect:/admin?vista=logros&editarLogroId=" + id;
+    }
+
+    // 2. Buscamos el logro
+    Optional<Logro> logroOpt = logroService.obtenerPorId(id);
+    if (logroOpt.isEmpty()) {
+      redirectAttributes.addFlashAttribute("error", "Error: No se encontró el logro a guardar.");
+      return "redirect:/admin?vista=logros";
+    }
+
+    // 3. Actualizamos el objeto Logro
+    Logro logro = logroOpt.get();
+    logro.setNombre(nombre.trim());
+    logro.setDescripcion(descripcion.trim());
+    logro.setExperienciaRecompensa(experienciaRecompensa);
+    logro.setImagenUrl(imagenUrl.trim()); // Guardamos la nueva URL
+
+    // 4. Guardamos en la base de datos
+    logroService.guardar(logro);
+
+    redirectAttributes.addFlashAttribute(
+        "success", "Logro '" + logro.getNombre() + "' guardado correctamente.");
+    return "redirect:/admin?vista=logros";
   }
 
 }

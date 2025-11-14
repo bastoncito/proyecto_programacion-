@@ -11,7 +11,7 @@
         <div class="stat-card">
           <div class="stat-card-info">
             <span class="stat-card-title">Total Logros</span>
-            <span class="stat-card-value">0</span>
+            <span class="stat-card-value" th:text="${totalLogros}">0</span>
           </div>
           <div class="stat-card-icon icon-trophy">
             <i class='bx bxs-trophy'></i>
@@ -21,7 +21,7 @@
         <div class="stat-card">
           <div class="stat-card-info">
             <span class="stat-card-title">Logros Activos</span>
-            <span class="stat-card-value">0</span>
+            <span class="stat-card-value" th:text="${logrosActivos}">0</span>
           </div>
           <div class="stat-card-icon icon-graph">
             <i class='bx bx-line-chart'></i>
@@ -31,7 +31,7 @@
         <div class="stat-card">
           <div class="stat-card-info">
             <span class="stat-card-title">Total Completados</span>
-            <span class="stat-card-value">0</span>
+            <span class="stat-card-value" th:text="${totalCompletados}">0</span>
           </div>
           <div class="stat-card-icon icon-completed">
             <i class='bx bxs-bar-chart-square'></i>
@@ -44,208 +44,48 @@
           <div class="panel-header">
             <span>Lista de Logros</span>
             </div>
-
-          <div class="logro-list-container">
             
-            <div class="logro-card" th:each="logro : ${listaDeLogros}">
-              
-              <div class="logro-card-icon">
-                <i class='bx bxs-trophy'></i>
-              </div>
-
-              <div class="logro-card-info">
-                <span class="logro-card-nombre">Primera Victoria</span>
-                <span class="logro-card-xp">100 XP</span>
-              </div>
-
-              <div class="logro-card-actions">
-                <a
-                  th:href="@{/admin(vista='logros', editarLogroId=${logro.id})}"
-                  class="btn-edit"
-                >
-                  Editar
-                </a>
+          <div class="logro-list-container">
+                      
+              <div class="logro-card" th:each="logro : ${listaDeLogros}">
                 
-                <a
-                  th:href="@{/admin/logros/toggle(id=${logro.id})}"
-                  class="btn-icon"
-                  title="Desactivar Logro"
-                >
-                  <i class='bx bx-toggle-right'></i>
-                </a>
-                
-                <a
-                  th:href="@{/admin/logros/eliminar(id=${logro.id})}"
-                  class="btn-icon btn-icon-danger"
-                  onclick="return confirm('¿Seguro que quieres eliminar este logro? Esta acción no se puede deshacer.');"
-                  title="Eliminar Logro"
-                >
-                  <i class='bx bx-trash'></i>
-                </a>
+                <div class="logro-card-icon">
+                    <img th:if="${logro.imagenUrl != null && !logro.imagenUrl.isEmpty()}" 
+                        th:src="${logro.imagenUrl}" 
+                        alt="Icono del logro" 
+                        style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;" />
+                    
+                    <i th:unless="${logro.imagenUrl != null && !logro.imagenUrl.isEmpty()}" 
+                      class='bx bxs-star' 
+                      style="font-size: 30px;"></i>
+                </div>
+
+                <div class="logro-card-info">
+                  <span class="logro-card-nombre" th:text="${logro.nombre}">Nombre del Logro</span>
+                  <span class="logro-card-xp" th:text="|${logro.getPuntosRecompensa()} XP|">100 XP</span>
+                </div>
+
+                <div class="logro-card-actions">
+                  
+                  <a th:href="@{/admin(vista='logros', editarLogroId=${logro.id})}"
+                    class="btn-edit">
+                    Editar
+                  </a>
+                  
+                  <a th:href="@{/admin/logros/toggle(id=${logro.id})}"
+                    class="btn-icon"
+                    th:classappend="${logro.isActivo() ? 'btn-icon-activo' : 'btn-icon-inactivo'}"
+                    th:title="${logro.isActivo() ? 'Desactivar Logro' : 'Activar Logro'}">
+                    
+                    <i th:if="${logro.isActivo()}" class='bx bx-toggle-right'></i>
+                    <i th:unless="${logro.isActivo()}" class='bx bx-toggle-left'></i>
+                  </a>
+                  
+                  </div>
+              </div> <div th:if="${listaDeLogros.isEmpty()}" class="empty-list-message">
+                <p>No se encontraron logros en la base de datos.</p>
+                <p style="font-size: 14px; color: #868e96;">Asegúrate de que la aplicación se inició correctamente para sincronizar los logros.</p>
               </div>
-            </div> 
-            <div class="logro-card">
-              <div class="logro-card-icon">
-                <i class='bx bxs-star'></i>
-              </div>
-              <div class="logro-card-info">
-                <span class="logro-card-nombre">Explorador de la Senda Perdida</span>
-                <span class="logro-card-xp">50 XP</span>
-              </div>
-              <div class="logro-card-actions">
-                <a href="#" class="btn-edit">Editar</a>
-                <a href="#" class="btn-icon" title="Activar Logro">
-                  <i class='bx bx-toggle-left' style="color: #868e96;"></i>
-                </a>
-                <a href="#" class="btn-icon btn-icon-danger" title="Eliminar Logro">
-                  <i class='bx bx-trash'></i>
-                </a>
-              </div>
-            </div> 
-            <div class="logro-card">
-              <div class="logro-card-icon">
-                <i class='bx bxs-star'></i>
-              </div>
-              <div class="logro-card-info">
-                <span class="logro-card-nombre">Explorador de la Senda Perdida</span>
-                <span class="logro-card-xp">50 XP</span>
-              </div>
-              <div class="logro-card-actions">
-                <a href="#" class="btn-edit">Editar</a>
-                <a href="#" class="btn-icon" title="Activar Logro">
-                  <i class='bx bx-toggle-left' style="color: #868e96;"></i>
-                </a>
-                <a href="#" class="btn-icon btn-icon-danger" title="Eliminar Logro">
-                  <i class='bx bx-trash'></i>
-                </a>
-              </div>
-            </div> 
-            <div class="logro-card">
-              <div class="logro-card-icon">
-                <i class='bx bxs-star'></i>
-              </div>
-              <div class="logro-card-info">
-                <span class="logro-card-nombre">Explorador de la Senda Perdida</span>
-                <span class="logro-card-xp">50 XP</span>
-              </div>
-              <div class="logro-card-actions">
-                <a href="#" class="btn-edit">Editar</a>
-                <a href="#" class="btn-icon" title="Activar Logro">
-                  <i class='bx bx-toggle-left' style="color: #868e96;"></i>
-                </a>
-                <a href="#" class="btn-icon btn-icon-danger" title="Eliminar Logro">
-                  <i class='bx bx-trash'></i>
-                </a>
-              </div>
-            </div> 
-            <div class="logro-card">
-              <div class="logro-card-icon">
-                <i class='bx bxs-star'></i>
-              </div>
-              <div class="logro-card-info">
-                <span class="logro-card-nombre">Explorador de la Senda Perdida</span>
-                <span class="logro-card-xp">50 XP</span>
-              </div>
-              <div class="logro-card-actions">
-                <a href="#" class="btn-edit">Editar</a>
-                <a href="#" class="btn-icon" title="Activar Logro">
-                  <i class='bx bx-toggle-left' style="color: #868e96;"></i>
-                </a>
-                <a href="#" class="btn-icon btn-icon-danger" title="Eliminar Logro">
-                  <i class='bx bx-trash'></i>
-                </a>
-              </div>
-            </div> 
-            <div class="logro-card">
-              <div class="logro-card-icon">
-                <i class='bx bxs-star'></i>
-              </div>
-              <div class="logro-card-info">
-                <span class="logro-card-nombre">Explorador de la Senda Perdida</span>
-                <span class="logro-card-xp">50 XP</span>
-              </div>
-              <div class="logro-card-actions">
-                <a href="#" class="btn-edit">Editar</a>
-                <a href="#" class="btn-icon" title="Activar Logro">
-                  <i class='bx bx-toggle-left' style="color: #868e96;"></i>
-                </a>
-                <a href="#" class="btn-icon btn-icon-danger" title="Eliminar Logro">
-                  <i class='bx bx-trash'></i>
-                </a>
-              </div>
-            </div> 
-            <div class="logro-card">
-              <div class="logro-card-icon">
-                <i class='bx bxs-star'></i>
-              </div>
-              <div class="logro-card-info">
-                <span class="logro-card-nombre">Explorador de la Senda Perdida</span>
-                <span class="logro-card-xp">50 XP</span>
-              </div>
-              <div class="logro-card-actions">
-                <a href="#" class="btn-edit">Editar</a>
-                <a href="#" class="btn-icon" title="Activar Logro">
-                  <i class='bx bx-toggle-left' style="color: #868e96;"></i>
-                </a>
-                <a href="#" class="btn-icon btn-icon-danger" title="Eliminar Logro">
-                  <i class='bx bx-trash'></i>
-                </a>
-              </div>
-            </div> 
-            <div class="logro-card">
-              <div class="logro-card-icon">
-                <i class='bx bxs-star'></i>
-              </div>
-              <div class="logro-card-info">
-                <span class="logro-card-nombre">Explorador de la Senda Perdida</span>
-                <span class="logro-card-xp">50 XP</span>
-              </div>
-              <div class="logro-card-actions">
-                <a href="#" class="btn-edit">Editar</a>
-                <a href="#" class="btn-icon" title="Activar Logro">
-                  <i class='bx bx-toggle-left' style="color: #868e96;"></i>
-                </a>
-                <a href="#" class="btn-icon btn-icon-danger" title="Eliminar Logro">
-                  <i class='bx bx-trash'></i>
-                </a>
-              </div>
-            </div> 
-            <div class="logro-card">
-              <div class="logro-card-icon">
-                <i class='bx bxs-star'></i>
-              </div>
-              <div class="logro-card-info">
-                <span class="logro-card-nombre">Explorador de la Senda Perdida</span>
-                <span class="logro-card-xp">50 XP</span>
-              </div>
-              <div class="logro-card-actions">
-                <a href="#" class="btn-edit">Editar</a>
-                <a href="#" class="btn-icon" title="Activar Logro">
-                  <i class='bx bx-toggle-left' style="color: #868e96;"></i>
-                </a>
-                <a href="#" class="btn-icon btn-icon-danger" title="Eliminar Logro">
-                  <i class='bx bx-trash'></i>
-                </a>
-              </div>
-            </div> 
-            <div class="logro-card">
-              <div class="logro-card-icon">
-                <i class='bx bxs-star'></i>
-              </div>
-              <div class="logro-card-info">
-                <span class="logro-card-nombre">Explorador de la Senda Perdida</span>
-                <span class="logro-card-xp">50 XP</span>
-              </div>
-              <div class="logro-card-actions">
-                <a href="#" class="btn-edit">Editar</a>
-                <a href="#" class="btn-icon" title="Activar Logro">
-                  <i class='bx bx-toggle-left' style="color: #868e96;"></i>
-                </a>
-                <a href="#" class="btn-icon btn-icon-danger" title="Eliminar Logro">
-                  <i class='bx bx-trash'></i>
-                </a>
-              </div>
-            </div> 
           </div> 
         </div> 
         

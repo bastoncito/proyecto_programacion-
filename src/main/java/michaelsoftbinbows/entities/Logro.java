@@ -11,11 +11,11 @@ import java.util.Locale;
 @Entity
 public class Logro {
   @Id private String id; // Usamos el ID como clave primaria
-
   private String nombre;
-  // private final String id;
   private String descripcion;
   private int experienciaRecompensa;
+  private boolean activo = true;
+  private String imagenUrl;
 
   /**    * Constructor vacío requerido por JPA.     */
   public Logro() {
@@ -23,6 +23,8 @@ public class Logro {
     this.nombre = "";
     this.descripcion = "";
     this.experienciaRecompensa = 0;
+    this.activo = true;
+    this.imagenUrl = null;
   }
 
   /**
@@ -65,6 +67,7 @@ public class Logro {
     this.nombre = nombre.trim();
     this.descripcion = descripcion.trim();
     this.experienciaRecompensa = experienciaRecompensa;
+    this.activo = true;
   }
 
   // GETTERS
@@ -82,5 +85,28 @@ public class Logro {
 
   public int getPuntosRecompensa() {
     return experienciaRecompensa;
+  }
+
+  public boolean isActivo() { 
+    return activo; 
+  }
+
+  public void setNombre(String nombre) {
+    this.nombre = nombre;
+  }
+  
+  public void setDescripcion(String descripcion) {
+    this.descripcion = descripcion;
+  }
+ 
+  public void setActivo(boolean activo) { 
+    this.activo = activo; 
+  }
+
+  public String getImagenUrl() { return imagenUrl; }
+  public void setImagenUrl(String imagenUrl) { this.imagenUrl = imagenUrl; }
+  
+  public void setExperienciaRecompensa(int experiencia){
+    this.experienciaRecompensa = experiencia;
   }
 }

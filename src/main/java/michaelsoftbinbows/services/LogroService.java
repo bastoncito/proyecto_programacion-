@@ -53,4 +53,20 @@ public class LogroService {
   public void eliminar(String id) {
     logroRepository.deleteById(id);
   }
+
+  /**
+   * Obtiene el conteo total de logros definidos en la BD.
+   * @return long el número total de logros.
+   */
+  public long getConteoTotalLogros() {
+    return logroRepository.count();
+  }
+
+  /**
+   * Obtiene el conteo de logros que están marcados como 'activos'.
+   * @return long el número de logros activos.
+   */
+  public long getConteoLogrosActivos() {
+    return logroRepository.countByActivo(true);
+  }
 }
