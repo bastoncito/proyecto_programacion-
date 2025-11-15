@@ -8,6 +8,8 @@ import michaelsoftbinbows.dto.TareaDto;
 import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.entities.Usuario;
 import michaelsoftbinbows.entities.Logro;
+import michaelsoftbinbows.dto.TopJugadorLogrosDto;
+import michaelsoftbinbows.entities.Logro;
 import michaelsoftbinbows.exceptions.AdminCrearTareaException;
 import michaelsoftbinbows.exceptions.AdminCrearUsuarioException;
 import michaelsoftbinbows.exceptions.AdminGuardarTareaException;
@@ -51,6 +53,7 @@ public class AdminController {
   @Autowired private TareaService tareaService; // Lógica de negocio para tareas.
   @Autowired private LogroService logroService;
   @Autowired private ConfiguracionService configuracionService; // Para ajustes del sistema como el límite del Top.
+  
 
   /**
    * Método de ayuda para registrar un nuevo usuario con la contraseña ya encriptada. Centraliza la
@@ -236,13 +239,18 @@ public class AdminController {
       case "logros":
         System.out.println("DEBUG: Cargando datos para la vista 'logros'.");
         
-        // 1. Cargamos los contadores
+        // (Datos que ya teníamos)
         model.addAttribute("totalLogros", logroService.getConteoTotalLogros());
         model.addAttribute("logrosActivos", logroService.getConteoLogrosActivos());
-        model.addAttribute("totalCompletados", 0); // Placeholder
-
-        // 2. Cargamos la lista de logros
         model.addAttribute("listaDeLogros", logroService.obtenerTodos());
+
+        // --- ¡NUEVO! Cargas los datos calculados desde UsuarioService ---
+        // 1. Añade el conteo total para la tarjeta de estadísticas
+        model.addAttribute("totalCompletados", usuarioService.getConteoTotalLogrosCompletados());
+
+        // 2. Añade la lista del Top 5 Jugadores
+        model.addAttribute("top5Jugadores", usuarioService.getTop5JugadoresPorLogros());
+        
         break;
 
       case "usuarios":

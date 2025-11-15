@@ -1,8 +1,16 @@
 package michaelsoftbinbows.entities;
 
+import jakarta.persistence.ManyToMany;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import java.util.Locale;
+
+
+
 
 /**
  * Entidad que representa un Logro (Achievement) que un usuario puede desbloquear. Contiene la
@@ -16,6 +24,10 @@ public class Logro {
   private int experienciaRecompensa;
   private boolean activo = true;
   private String imagenUrl;
+
+
+  @ManyToMany(mappedBy = "logros")
+  private List<Usuario> usuarios = new ArrayList<>();
 
   /**    * Constructor vacío requerido por JPA.     */
   public Logro() {
@@ -70,6 +82,7 @@ public class Logro {
     this.activo = true;
   }
 
+
   // GETTERS
   public String getId() {
     return id;
@@ -109,4 +122,17 @@ public class Logro {
   public void setExperienciaRecompensa(int experiencia){
     this.experienciaRecompensa = experiencia;
   }
+
+  @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Logro logro = (Logro) o;
+        return Objects.equals(id, logro.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

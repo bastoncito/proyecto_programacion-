@@ -1,8 +1,9 @@
 package michaelsoftbinbows.config;
 
 import michaelsoftbinbows.entities.Logro;
+import michaelsoftbinbows.services.GestorLogrosService;
 import michaelsoftbinbows.services.LogroService;
-import michaelsoftbinbows.util.GestorLogros;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -19,12 +20,14 @@ public class LogroDataLoader implements CommandLineRunner {
 
     @Autowired
     private LogroService logroService;
+    @Autowired
+    private GestorLogrosService gestorLogrosService;
 
     @Override
     public void run(String... args) throws Exception {
         System.out.println("LOG: Sincronizando logros de GestorLogros con la BD...");
         
-        List<Logro> logrosEstaticos = GestorLogros.getLogrosDisponibles();
+        List<Logro> logrosEstaticos = gestorLogrosService.getLogrosDisponibles();
         int logrosNuevos = 0;
         int logrosActualizados = 0;
 

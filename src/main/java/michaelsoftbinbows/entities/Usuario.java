@@ -10,6 +10,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.JoinColumn;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -68,7 +71,12 @@ public class Usuario {
       orphanRemoval = true)
   private List<Tarea> tareas = new ArrayList<>();
 
-  @Transient private List<Logro> logros = new ArrayList<>();
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(
+      name = "usuario_logros", // Nombre de la nueva tabla intermedia
+      joinColumns = @JoinColumn(name = "usuario_id"),
+      inverseJoinColumns = @JoinColumn(name = "logro_id"))
+  private List<Logro> logros = new ArrayList<>();
 
   private String ciudad;
 
@@ -233,7 +241,7 @@ public class Usuario {
    * @return Una lista nueva (para evitar alterar la original) de objetos Logro.
    */
   public List<Logro> getLogros() {
-    return new ArrayList<>(this.logros);
+    return this.logros;
   }
 
   /**

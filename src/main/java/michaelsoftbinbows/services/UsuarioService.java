@@ -7,6 +7,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import michaelsoftbinbows.dto.TopJugadorLogrosDto;
 import michaelsoftbinbows.data.UsuarioRepository;
 import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.entities.Usuario;
@@ -30,6 +33,7 @@ public class UsuarioService {
 
   @Autowired private UsuarioRepository usuarioRepository;
   @Autowired private ConfiguracionService configuracionService;
+  @Autowired private GestorLogrosService gestorLogrosService;
   private UsuarioValidator usuarioValidator = new UsuarioValidator();
 
   /**
@@ -497,4 +501,53 @@ public class UsuarioService {
   public void sumarExperienciaTarea(Usuario usuario, int expTarea) {
     usuario.setExperiencia(usuario.getExperiencia() + expTarea);
   }
+
+  /**
+     * Obtiene el Top 5 de jugadores ordenados por la cantidad de logros completados.
+     * Este método calcula el conteo en Java, ya que los logros son @Transient.
+     *
+     * @return Una lista de DTOs con el nombre y el conteo de logros.
+     */
+    public List<TopJugadorLogrosDto> getTop5JugadoresPorLogros() {
+        // 1. Obtenemos TODOS los usuarios de la BD
+        List<Usuario> todosLosUsuarios = usuarioRepository.findAll();
+        
+        // 2. Creamos una lista para guardar los resultados (DTOs)
+        List<TopJugadorLogrosDto> dtos = new ArrayList<>();
+
+        // 3. Iteramos y calculamos el conteo para cada uno
+        for (Usuario u : todosLosUsuarios) {
+            // ¡Aquí usamos el GestorLogrosService!
+            // Contamos cuántos logros ha cumplido este usuario según la lógica
+            int conteo = gestorLogrosService.getTodosLogrosCumplidos(u).size();
+            
+            // Creamos el DTO con el resultado
+            dtos.add(new TopJugadorLogrosDto(u.getNombreUsuario(), conteo));
+        }
+
+        // 4. Ordenamos la lista de DTOs en Java (de mayor a menor)
+        dtos.sort((dto1, dto2) -> Long.compare(dto2.getTotalLogros(), dto1.getTotalLogros()));
+
+        // 5. Devolvemos solo los primeros 5
+        return dtos.stream().limit(5).collect(Collectors.toList());
+    }
+
+    // --- ¡NUEVO MÉTODO PARA LA TARJETA DE CONTEO! ---
+    /**
+     * Obtiene el conteo total de todos los logros completados por todos los usuarios.
+     * (Calculado en Java para la tarjeta de estadísticas).
+     *
+     * @return un long con el conteo total.
+     */
+    public long getConteoTotalLogrosCompletados() {
+        long conteoTotal = 0;
+        // Obtenemos todos los usuarios
+        List<Usuario> todosLosUsuarios = usuarioRepository.findAll();
+        
+        // Iteramos, calculamos el conteo de cada uno y lo sumamos
+        for (Usuario u : todosLosUsuarios) {
+            conteoTotal += gestorLogrosService.getTodosLogrosCumplidos(u).size();
+        }
+        return conteoTotal;
+    }
 }

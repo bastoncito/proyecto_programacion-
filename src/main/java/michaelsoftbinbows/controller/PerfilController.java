@@ -6,8 +6,8 @@ import java.util.Set;
 import michaelsoftbinbows.entities.Logro;
 import michaelsoftbinbows.entities.Usuario;
 import michaelsoftbinbows.services.AuthService;
+import michaelsoftbinbows.services.GestorLogrosService;
 import michaelsoftbinbows.services.UsuarioService;
-import michaelsoftbinbows.util.GestorLogros;
 import michaelsoftbinbows.util.UsuarioValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,6 +25,7 @@ public class PerfilController {
   private final UsuarioService usuarioService;
   private final PasswordEncoder passwordEncoder;
   private UsuarioValidator usuarioValidator = new UsuarioValidator();
+  @Autowired private GestorLogrosService gestorLogrosService;
   @Autowired private AuthService authservice;
 
   /**
@@ -58,7 +59,7 @@ public class PerfilController {
     // --- SIMULACIÓN DE DATOS DE LOGROS ---
     // Lista de TODOS los logros disponibles en la app.
     // 1. Obtenemos la lista completa de logros desde GestorLogros.
-    List<Logro> allAchievements = GestorLogros.getLogrosDisponibles();
+    List<Logro> allAchievements = gestorLogrosService.getLogrosDisponibles();
     // 2. Lista de los logros que el usuario SÍ ha desbloqueado.
     // En el futuro, esta lista vendrá del objeto 'usuarioActual'.
     // Por ahora, la simulamos con datos fijos.

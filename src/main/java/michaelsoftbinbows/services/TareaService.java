@@ -24,6 +24,7 @@ public class TareaService {
 
   @Autowired private TareaRepository tareaRepository;
   @Autowired private UsuarioRepository usuarioRepository;
+  @Autowired private GestorLogrosService gestorLogrosService;
   private TareaValidator tareaValidator = new TareaValidator();
 
   /**

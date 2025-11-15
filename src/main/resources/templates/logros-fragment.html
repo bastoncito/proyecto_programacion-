@@ -95,52 +95,28 @@
               <div class="panel-header">
                   <span>Top Jugadores</span>
               </div>
-              <div class="top-jugadores-list">
-                  
-                  <div class="top-jugador-item">
-                      <span class="top-jugador-rank">#1</span>
-                      <div class="top-jugador-avatar"></div>
-                      <div class="top-jugador-info">
-                          <span class="top-jugador-nombre">Ana García</span>
-                          <span class="top-jugador-subtext">47 logros</span>
-                      </div>
-                  </div>
-                  
-                  <div class="top-jugador-item">
-                      <span class="top-jugador-rank">#2</span>
-                      <div class="top-jugador-avatar"></div>
-                      <div class="top-jugador-info">
-                          <span class="top-jugador-nombre">Carlos Ruiz</span>
-                          <span class="top-jugador-subtext">45 logros</span>
-                      </div>
-                  </div>
+              <div class="top-jugadores-list">        
+                <div class="top-jugador-item" 
+                    th:each="jugador, iterStat : ${top5Jugadores}">
+                    
+                    <span class="top-jugador-rank" th:text="'#' + ${iterStat.count}">#1</span>
+                    
+                    <div class="top-jugador-avatar">
+                        </div>
+                    
+                    <div class="top-jugador-info">
+                        <span class="top-jugador-nombre" th:text="${jugador.nombreUsuario}">
+                          Ana García
+                        </span>
+                        <span class="top-jugador-subtext" th:text="|${jugador.totalLogros} logros|">
+                          47 logros
+                        </span>
+                    </div>
+                </div>
 
-                  <div class="top-jugador-item">
-                      <span class="top-jugador-rank">#3</span>
-                      <div class="top-jugador-avatar"></div>
-                      <div class="top-jugador-info">
-                          <span class="top-jugador-nombre">María López</span>
-                          <span class="top-jugador-subtext">42 logros</span>
-                      </div>
-                  </div>
-
-                  <div class="top-jugador-item">
-                      <span class="top-jugador-rank">#4</span>
-                      <div class="top-jugador-avatar"></div>
-                      <div class="top-jugador-info">
-                          <span class="top-jugador-nombre">Juan Torres</span>
-                          <span class="top-jugador-subtext">38 logros</span>
-                      </div>
-                  </div>
-
-                  <div class="top-jugador-item">
-                      <span class="top-jugador-rank">#5</span>
-                      <div class="top-jugador-avatar"></div>
-                      <div class="top-jugador-info">
-                          <span class="top-jugador-nombre">Laura Sánchez</span>
-                          <span class="top-jugador-subtext">35 logros</span>
-                      </div>
-                  </div>
+                <div th:if="${top5Jugadores == null || top5Jugadores.isEmpty()}" class="empty-list-message" style="padding: 20px 0;">
+                  <p style="font-size: 14px;">No hay datos de jugadores.</p>
+                </div>
 
               </div>
           </div> <div class="logros-panel-detalle">
