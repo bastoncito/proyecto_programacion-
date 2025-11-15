@@ -188,14 +188,6 @@
                 />
               </div>
             </div>
-
-            <!-- Tooltip que se mostrará al pasar el mouse sobre los logros -->
-            <div id="achievement-tooltip">
-              <div id="tooltip-title" class="tooltip-title"></div>
-              <div id="tooltip-desc" class="tooltip-description"></div>
-              <div id="tooltip-exp" class="tooltip-exp"></div>
-              <div id="tooltip-date" class="tooltip-date"></div>
-            </div>
           </div>
         </aside>
 
@@ -244,6 +236,14 @@
     <!-- Inclusión de la barra de navegación -->
     <div th:replace="~{fragments :: navbar}"></div>
 
+    <!-- Tooltip que se mostrará al pasar el mouse sobre los logros -->
+    <div id="achievement-tooltip">
+      <div id="tooltip-title" class="tooltip-title"></div>
+      <div id="tooltip-desc" class="tooltip-description"></div>
+      <div id="tooltip-exp" class="tooltip-exp"></div>
+      <div id="tooltip-date" class="tooltip-date"></div>
+    </div>
+    
     <!-- Pantalla de carga -->
     <script th:src="@{/js/loader-main.js}"></script>
     <!-- SCRIPT PARA EL TOOLTIP INTELIGENTE -->
