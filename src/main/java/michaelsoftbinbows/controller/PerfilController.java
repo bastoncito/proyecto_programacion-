@@ -3,10 +3,13 @@ package michaelsoftbinbows.controller;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import michaelsoftbinbows.entities.Logro;
 import michaelsoftbinbows.entities.Usuario;
 import michaelsoftbinbows.services.AuthService;
 import michaelsoftbinbows.services.GestorLogrosService;
+import michaelsoftbinbows.services.LogroService;
 import michaelsoftbinbows.services.UsuarioService;
 import michaelsoftbinbows.util.UsuarioValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,12 @@ public class PerfilController {
   @Autowired private GestorLogrosService gestorLogrosService;
   @Autowired private AuthService authservice;
 
+    @Autowired
+    private AuthService authService;
+
+    @Autowired
+    private LogroService logroService;
+
   /**
    * Constructor de clase.
    *
@@ -35,43 +44,54 @@ public class PerfilController {
    *
    * @param usuarioService Service para acciones de Usuario
    * @param passwordEncoder encriptador de contraseñas BCrypt
+   * 
+   * 
    */
   public PerfilController(UsuarioService usuarioService, PasswordEncoder passwordEncoder) {
     this.usuarioService = usuarioService;
     this.passwordEncoder = passwordEncoder;
   }
 
-  /**
-   * Muestra el perfil de usuario.
-   *
-   * @param model modelo para añadir atributos a la página
-   * @return template de perfil
-   */
-  @GetMapping("/perfil")
-  public String mostrarPerfil(Model model) {
-    System.out.println("LOG: Método 'mostrarPerfil' llamado.");
-    Usuario usuarioActual = authservice.getCurrentUser();
+/**
+     * Muestra la página de perfil del usuario logueado.
+     */
+    @GetMapping("/perfil")
+    public String mostrarPerfil(Model model) {
+        
+        // Obtenemos el correo del usuario actual
+        String correo = authService.getCurrentUser().getCorreoElectronico();
+        
+        // --- LÓGICA DE LOGIN ---
+        // 1. Ejecutamos la lógica de racha y logros pendientes (previene LazyInitializationException)
+        usuarioService.manejarLogicaDeLogin(correo);
+        
+        // 2. Volvemos a cargar el usuario, ahora con sus logros actualizados
+        Usuario usuario = usuarioService.buscarPorCorreo(correo);
 
-    if (usuarioActual == null) {
-      return "redirect:/login?error=userNotFound";
+        
+        // --- PREPARAR DATOS PARA LA VISTA ---
+        
+        // 1. Obtenemos TODOS los logros que existen en la BD (para la cuadrícula)
+        List<Logro> allAchievements = logroService.obtenerTodos();
+
+        // 2. Obtenemos la lista de logros que el usuario SÍ tiene
+        List<Logro> unlockedAchievements = usuario.getLogros();
+
+        // 3. Creamos un Set (un conjunto) solo con los IDs de los logros desbloqueados
+        //    (Tu HTML espera esto: unlockedAchievementsIds)
+        Set<String> unlockedIds = unlockedAchievements.stream()
+                                    .map(Logro::getId)
+                                    .collect(Collectors.toSet());
+
+        // 4. Añadimos todo al modelo
+        model.addAttribute("usuarioLogueado", usuario); // Para los formularios
+        model.addAttribute("allAchievements", allAchievements); // Para el bucle th:each
+        model.addAttribute("unlockedAchievementsIds", unlockedIds); // Para la clase .locked
+
+        model.addAttribute("activePage", "perfil"); // Para la navbar
+        
+        return "user_profile"; // El nombre de tu HTML
     }
-
-    // --- SIMULACIÓN DE DATOS DE LOGROS ---
-    // Lista de TODOS los logros disponibles en la app.
-    // 1. Obtenemos la lista completa de logros desde GestorLogros.
-    List<Logro> allAchievements = gestorLogrosService.getLogrosDisponibles();
-    // 2. Lista de los logros que el usuario SÍ ha desbloqueado.
-    // En el futuro, esta lista vendrá del objeto 'usuarioActual'.
-    // Por ahora, la simulamos con datos fijos.
-    Set<String> unlockedAchievementsIds = Set.of("COMPLETE_1_TASK", "REACH_LEVEL_5", "JOIN_APP");
-
-    model.addAttribute("allAchievements", allAchievements);
-    model.addAttribute("unlockedAchievementsIds", unlockedAchievementsIds);
-
-    model.addAttribute("usuarioLogueado", usuarioActual);
-    model.addAttribute("activePage", "perfil");
-    return "user_profile";
-  }
 
   /**
    * Procesa intentos de actualización de usuario desde su perfil.

@@ -1,7 +1,7 @@
 package michaelsoftbinbows.config;
 
 import michaelsoftbinbows.entities.Logro;
-import michaelsoftbinbows.services.GestorLogrosService;
+import michaelsoftbinbows.services.GestorLogrosService; // Importado
 import michaelsoftbinbows.services.LogroService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +20,8 @@ public class LogroDataLoader implements CommandLineRunner {
 
     @Autowired
     private LogroService logroService;
+
+    // ¡Inyectamos el Gestor de Logros!
     @Autowired
     private GestorLogrosService gestorLogrosService;
 
@@ -27,40 +29,46 @@ public class LogroDataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         System.out.println("LOG: Sincronizando logros de GestorLogros con la BD...");
         
+        // Obtenemos la lista de logros definidos en el código
         List<Logro> logrosEstaticos = gestorLogrosService.getLogrosDisponibles();
+        
         int logrosNuevos = 0;
-        int logrosActualizados = 0;
+        int logrosActualizados = 0; // Cambiaremos esto, ya no actualizamos
 
         for (Logro logroEstatico : logrosEstaticos) {
             Optional<Logro> logroEnBD_Opt = logroService.obtenerPorId(logroEstatico.getId());
 
+            // --- ¡LÓGICA CORREGIDA! ---
+
+            // CASO 1: El logro NO existe en la BD.
             if (logroEnBD_Opt.isEmpty()) {
-                // El logro no existe en la BD, lo guardamos
-                logroService.guardar(logroEstatico);
+                // Lo creamos por primera vez.
+                // Usamos el constructor de Logro para crear una nueva instancia
+                // por si la de la lista estática es compartida.
+                Logro nuevoLogro = new Logro(
+                    logroEstatico.getId(),
+                    logroEstatico.getNombre(),
+                    logroEstatico.getDescripcion(),
+                    logroEstatico.getPuntosRecompensa()
+                );
+                // (Este nuevo logro tendrá 'activo = true' e 'imagenUrl = null' por defecto)
+                
+                logroService.guardar(nuevoLogro);
                 logrosNuevos++;
-            } else {
-                // El logro ya existe, actualizamos sus datos por si cambiaron en el código
-                // PERO mantenemos su estado 'activo' (que es lo que maneja el admin)
-                Logro logroEnBD = logroEnBD_Opt.get();
-                boolean estadoActivo = logroEnBD.isActivo(); // Guardamos el estado del admin
-                String imagenUrlAdmin = logroEnBD.getImagenUrl();
-                
-                // Actualizamos desde el código estático
-                logroEnBD.setNombre(logroEstatico.getNombre());
-                logroEnBD.setDescripcion(logroEstatico.getDescripcion());
-                // ... (cualquier otro campo de GestorLogros)
-                
-                logroEnBD.setActivo(estadoActivo); // Restauramos el estado del admin
-                logroEnBD.setImagenUrl(imagenUrlAdmin);
-                logroService.guardar(logroEnBD);
-                logrosActualizados++;
+            } 
+            
+            // CASO 2: El logro SÍ existe en la BD.
+            else {
+                // NO HACEMOS NADA.
+                // La versión en la BD (logroEnBD_Opt.get()) ya existe
+                // y contiene las ediciones del admin (nombre, XP, activo, imagenUrl).
+                // No la sobrescribimos.
             }
         }
 
         System.out.println(
             "LOG: Sincronización de logros completada. " + 
-            logrosNuevos + " nuevos, " + 
-            logrosActualizados + " actualizados."
+            logrosNuevos + " nuevos logros añadidos a la BD."
         );
     }
 }

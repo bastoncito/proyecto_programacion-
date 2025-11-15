@@ -24,6 +24,7 @@ import michaelsoftbinbows.services.TareaService;
 import michaelsoftbinbows.services.TemporadaService;
 import michaelsoftbinbows.services.UsuarioService;
 import michaelsoftbinbows.services.LogroService;
+import michaelsoftbinbows.services.GestorLogrosService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -53,6 +54,7 @@ public class AdminController {
   @Autowired private TareaService tareaService; // Lógica de negocio para tareas.
   @Autowired private LogroService logroService;
   @Autowired private ConfiguracionService configuracionService; // Para ajustes del sistema como el límite del Top.
+  @Autowired private GestorLogrosService gestorLogrosService;
   
 
   /**
@@ -121,6 +123,10 @@ public class AdminController {
     // Se obtiene el usuario que está actualmente logueado para verificar sus permisos.
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     Usuario usuarioActual = ((CustomUserDetails) auth.getPrincipal()).getUsuario();
+    
+    // Logros revisar
+    usuarioService.manejarLogicaDeLogin(usuarioActual.getCorreoElectronico());
+    
 
     // Primera barrera de seguridad: si el usuario no tiene el rol adecuado, se le redirige.
     if (usuarioActual.getRol() != Rol.ADMIN && usuarioActual.getRol() != Rol.MODERADOR) {

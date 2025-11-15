@@ -170,8 +170,6 @@
           <div class="card-body">
             <!-- Grid de logros -->
             <div class="achievements-grid">
-              <!-- Iteración sobre todos los logros disponibles -->
-              <!-- Añade clase 'locked' si el logro no está desbloqueado -->
               <div
                 th:each="logro : ${allAchievements}"
                 class="achievement-item"
@@ -181,14 +179,21 @@
                 th:data-exp="${logro.getPuntosRecompensa()}"
                 th:data-unlocked="${unlockedAchievementsIds.contains(logro.getId())}"
               >
-                <!-- Imagen del logro -->
                 <img
-                  th:src="@{'/images/logros/' + ${logro.getId()} + '.png'}"
+                  th:if="${logro.imagenUrl != null and !logro.imagenUrl.isEmpty()}"
+                  th:src="${logro.imagenUrl}"
                   th:alt="${logro.getNombre()}"
+                  style="width: 100%; height: 100%; object-fit: cover;"
                 />
+              
+                <i
+                  th:unless="${logro.imagenUrl != null and !logro.imagenUrl.isEmpty()}"
+                  class='bx bxs-star'
+                  style="font-size: 36px;"
+                  th:styleappend="${unlockedAchievementsIds.contains(logro.getId()) ? 'color: var(--color-principal);' : ''}"
+                ></i>
               </div>
             </div>
-
             <!-- Tooltip que se mostrará al pasar el mouse sobre los logros -->
             <div id="achievement-tooltip">
               <div id="tooltip-title" class="tooltip-title"></div>

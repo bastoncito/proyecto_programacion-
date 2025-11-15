@@ -2,9 +2,9 @@ package michaelsoftbinbows.services;
 
 import jakarta.transaction.Transactional;
 import java.time.ZoneId;
-import java.time.LocalDateTime; // Importar LocalDateTime
-import java.util.List; // Importar List
-import michaelsoftbinbows.entities.Logro; // Importar Logro
+import java.time.LocalDateTime;
+import java.util.List;
+import michaelsoftbinbows.entities.Logro;
 import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.entities.Usuario;
 import michaelsoftbinbows.exceptions.RegistroInvalidoException;
@@ -42,7 +42,7 @@ public class UsuarioTareaService {
     usuarioService.verificarSubidaDeNivel(u);
     usuarioService.actualizarLigaDelUsuario(u);
 
-    // --- 2. ¡NUEVO! BUCLE DE REACCIÓN EN CADENA DE LOGROS ---
+    // --- 2. BUCLE DE REACCIÓN EN CADENA DE LOGROS ---
     while (true) {
       // Revisa si hay logros nuevos con los stats actuales
       // (Aquí usamos 'verificarLogros' en lugar de 'actualizarLogros', 

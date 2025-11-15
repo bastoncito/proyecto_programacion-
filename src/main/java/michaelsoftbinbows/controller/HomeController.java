@@ -16,6 +16,7 @@ import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.entities.Usuario;
 import michaelsoftbinbows.services.AuthService;
 import michaelsoftbinbows.services.ConfiguracionService;
+import michaelsoftbinbows.services.GestorLogrosService;
 import michaelsoftbinbows.services.TareaService;
 import michaelsoftbinbows.services.UsuarioService;
 import michaelsoftbinbows.services.WeatherService;
@@ -38,6 +39,7 @@ public class HomeController {
   @Autowired private TareaService tareaService;
   @Autowired private SalonFamaRepository salonFamaRepository;
   @Autowired private AuthService authservice;
+  @Autowired private GestorLogrosService gestorLogrosService;
 
   /**
    * Redirige al login si se entra a la dirección.
@@ -173,8 +175,8 @@ public class HomeController {
     boolean desafioCompletado = tareaSemanal.isPresent() && tareaSemanal.get().isCompletada();
     model.addAttribute("desafioCompletado", desafioCompletado);
 
-    usuarioService.verificarPerdidaRacha(usuarioActual);
-    usuarioService.guardarEnBd(usuarioActual);
+    // Logros revisar
+    usuarioService.manejarLogicaDeLogin(usuarioActual.getCorreoElectronico());
 
     return "home";
   }

@@ -550,4 +550,31 @@ public class UsuarioService {
         }
         return conteoTotal;
     }
+
+/**
+   * Maneja toda la lógica que debe ocurrir al cargar un usuario (login).
+   * Al ser @Transactional, mantiene la sesión de BD abierta
+   * y previene LazyInitializationException.
+   *
+   * @param correo El correo del usuario que acaba de iniciar sesión.
+   */
+  @Transactional
+  public void manejarLogicaDeLogin(String correo) {
+      // Volvemos a cargar el usuario DESDE DENTRO de la transacción.
+      // Esto nos da un objeto "managed" (conectado) y previene el error.
+      Usuario usuario = this.buscarPorCorreo(correo);
+      if (usuario == null) {
+          System.err.println("Error en manejarLogicaDeLogin: No se encontró usuario con correo " + correo);
+          return; 
+      }
+
+      // 2. Actualiza la racha
+      this.actualizarRacha(usuario);
+      
+      // 3. Dispara el gatillo de logros (ahora PUEDE acceder a usuario.getTareas)
+      gestorLogrosService.actualizarLogrosParaUsuario(usuario);
+      
+      // 4. Guarda todos los cambios
+      this.guardarEnBd(usuario);
+  }
 }

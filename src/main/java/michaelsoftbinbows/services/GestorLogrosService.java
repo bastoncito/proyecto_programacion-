@@ -10,6 +10,7 @@ import michaelsoftbinbows.entities.Logro;
 import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.entities.Usuario;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Servicio que gestiona la lógica de negocio de los logros.
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class GestorLogrosService {
 
+  @Autowired private LogroService logroService;
   private static final List<Logro> LOGROS_DISPONIBLES = new ArrayList<>();
 
   static {
@@ -83,13 +85,25 @@ public class GestorLogrosService {
    */
   public List<Logro> verificarLogros(Usuario usuario) {
     List<Logro> nuevosLogrosDesbloqueados = new ArrayList<>();
+    
+    // 1. Obtenemos la lista MAESTRA desde la BD (que sabe si están activos)
+    List<Logro> logrosDesdeBD = logroService.obtenerTodos();
 
-    for (Logro logroPotencial : LOGROS_DISPONIBLES) {
-      // Usamos la lista persistente (@ManyToMany)
+    // 2. Iteramos sobre la lista de la BD, no la estática
+    for (Logro logroPotencial : logrosDesdeBD) {
+      
+      // Si el logro está DESACTIVADO por el admin, lo saltamos.
+      if (!logroPotencial.isActivo()) {
+        continue;
+      }
+      // ------------------------------------
+
+      // Si el usuario ya tiene el logro, lo saltamos
       if (usuario.getLogros().contains(logroPotencial)) {
         continue;
       }
 
+      // Si cumple la lógica, lo añadimos
       if (condicionCumplida(usuario, logroPotencial)) {
         nuevosLogrosDesbloqueados.add(logroPotencial);
       }
@@ -186,15 +200,23 @@ public class GestorLogrosService {
 
   /**
    * Calcula y devuelve TODOS los logros que un usuario ha cumplido.
-   * Lo usaremos para contar cuántos logros tiene cada usuario para el Top 5.
-   *
-   * @param usuario El objeto Usuario a evaluar
-   * @return Lista de todos los logros que cumplen la condición
    */
   public List<Logro> getTodosLogrosCumplidos(Usuario usuario) {
     List<Logro> logrosCumplidos = new ArrayList<>();
-    // Iteramos sobre la lista estática
-    for (Logro logroPotencial : LOGROS_DISPONIBLES) {
+    
+    // 1. Obtenemos la lista MAESTRA desde la BD
+    List<Logro> logrosDesdeBD = logroService.obtenerTodos();
+
+    // 2. ¡CAMBIO! Iteramos sobre la lista de la BD
+    for (Logro logroPotencial : logrosDesdeBD) {
+      
+      // ¡AÑADIDO! El contador tampoco debe contar logros desactivados
+      // (Aunque para "Total Completados" esto es debatible, 
+      // lo más consistente es que solo cuente logros "ganables").
+      if (!logroPotencial.isActivo()) {
+          continue;
+      }
+      
       // Verificamos la lógica de cada uno
       if (condicionCumplida(usuario, logroPotencial)) {
         logrosCumplidos.add(logroPotencial);

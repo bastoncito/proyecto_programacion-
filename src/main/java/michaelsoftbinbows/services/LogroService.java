@@ -7,6 +7,7 @@ import michaelsoftbinbows.entities.Logro;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 /**
  * Servicio para gestionar la lógica de negocio de los Logros. Proporciona métodos CRUD para
  * interactuar con el repositorio de logros.
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 public class LogroService {
 
   @Autowired private LogroRepository logroRepository;
+  
 
   /**
    * Obtiene la lista de todos los logros disponibles.
