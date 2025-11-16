@@ -1,4 +1,3 @@
-// Lógica del tooltip inteligente movida desde user_profile.html
 document.addEventListener("DOMContentLoaded", function () {
   const tooltip = document.getElementById("achievement-tooltip");
   const tooltipTitle = document.getElementById("tooltip-title");
@@ -14,6 +13,9 @@ document.addEventListener("DOMContentLoaded", function () {
     tooltip.removeAttribute("data-current-item");
   };
 
+  // Manejo de scroll para mejorar experiencia en móvil
+  window.addEventListener('scroll', hideTooltip, { passive: true });
+
   // Listener para cerrar el tooltip si se hace clic fuera de él
   document.addEventListener("click", function (e) {
     if (
@@ -28,20 +30,20 @@ document.addEventListener("DOMContentLoaded", function () {
   achievementItems.forEach((item) => {
     // Mostrar tooltip al pasar el mouse
     item.addEventListener("mouseenter", (e) => {
-      const target = e.currentTarget; // Llenar datos...
-      fillTooltipData(target); // Posicionar...
-      positionTooltip(target); // Mostrar.
-      if (tooltip) tooltip.classList.add("visible"); // Mostrar tooltip
+      const target = e.currentTarget;
+      fillTooltipData(target);
+      positionTooltip(target);
+      if (tooltip) tooltip.classList.add("visible");
     });
 
-    // Para quitar el hover en escritorio
+    // Comportamiento hover para escritorio
     item.addEventListener("mouseleave", () => {
       if (tooltip && !tooltip.hasAttribute("data-current-item")) {
-        tooltip.classList.remove("visible");
+        hideTooltip();
       }
     });
 
-    // Para el clic en móvil (y escritorio)
+    // Comportamiento táctil para móvil y clic en escritorio  
     item.addEventListener("click", function (e) {
       e.stopPropagation();
       const target = e.currentTarget;
@@ -63,22 +65,18 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   /**
-   * Llena el tooltip con los datos del logro
+   * Llena el tooltip con los datos del logro (sin cambios)
    * @param {HTMLElement} target - Elemento del logro
    */
   function fillTooltipData(target) {
     if (!tooltip) return;
     const isUnlocked = target.dataset.unlocked === "true";
-    // Título del logro
     if (tooltipTitle) tooltipTitle.textContent = target.dataset.title;
-    // Descripción - cambia según si está desbloqueado o no
     if (tooltipDesc)
       tooltipDesc.textContent = isUnlocked
         ? target.dataset.desc
         : "Requisito: " + target.dataset.desc;
-
     const exp = parseInt(target.dataset.exp, 10);
-    // Experiencia - solo muestra si es mayor a 0
     if (exp > 0) {
       if (tooltipExp) {
         tooltipExp.textContent = `+${exp} XP`;
@@ -87,7 +85,6 @@ document.addEventListener("DOMContentLoaded", function () {
     } else if (tooltipExp) {
       tooltipExp.style.display = "none";
     }
-    // Fecha de desbloqueo - solo muestra si está desbloqueado
     if (isUnlocked) {
       if (tooltipDate) {
         // Leemos la fecha real desde el atributo data-date
@@ -108,64 +105,44 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   /**
-   * Posiciona el tooltip de forma inteligente, evitando que se salga de la pantalla.
+   * Posiciona el tooltip de forma inteligente usando coordenadas de la ventana (viewport).
+   * Funciona tanto para elementos normales como para elementos 'sticky'.
    * @param {HTMLElement} target - El elemento del logro que activó el tooltip.
    */
   function positionTooltip(target) {
     if (!tooltip) return;
-    const tooltipWidth = tooltip.offsetWidth;
-    const tooltipHeight = tooltip.offsetHeight;
 
-    // Obtenemos el contenedor con position:relative
-    const container = target.offsetParent;
-    if (!container) return; // Salida segura si no hay contenedor
-
-    // Coordenadas del ícono y del contenedor relativas a la ventana (viewport)
+    // getBoundingClientRect() da la posición RELATIVA A LA VENTANA.
     const targetRect = target.getBoundingClientRect();
-    const containerRect = container.getBoundingClientRect();
+    const tooltipHeight = tooltip.offsetHeight;
+    const tooltipWidth = tooltip.offsetWidth;
 
     // --- 1. CÁLCULO DE POSICIÓN VERTICAL (top) ---
     let top;
-    // Decide si hay espacio para mostrar el tooltip arriba del ícono
-    if (targetRect.top - tooltipHeight - 10 > 0) {
-      // Posición 'top' relativa al contenedor
-      top = target.offsetTop - tooltipHeight - 10;
+    // ¿Hay espacio arriba del icono? (respecto a la ventana)
+    if (targetRect.top > tooltipHeight + 10) {
+      top = targetRect.top - tooltipHeight - 10; // Posicionar arriba
       tooltip.classList.remove("arrow-up");
       tooltip.classList.add("arrow-down");
     } else {
-      // O lo muestra abajo
-      top = target.offsetTop + target.offsetHeight + 10;
+      top = targetRect.bottom + 10; // Posicionar abajo
       tooltip.classList.remove("arrow-down");
       tooltip.classList.add("arrow-up");
     }
 
-    // --- 2. CÁLCULO DE POSICIÓN HORIZONTAL (left) CON AJUSTE DE BORDES ---
-    // a) Posición 'left' ideal (centrado sobre el ícono), relativa al contenedor
-    let left = target.offsetLeft + target.offsetWidth / 2 - tooltipWidth / 2;
+    // --- 2. CÁLCULO DE POSICIÓN HORIZONTAL (left) ---
+    let left = targetRect.left + targetRect.width / 2 - tooltipWidth / 2;
 
-    // b) Calculamos la posición absoluta (en la pantalla) que tendría el tooltip
-    const absoluteLeft = containerRect.left + left;
-
-    // c) Corregimos si se sale por la izquierda
-    if (absoluteLeft < 10) {
-      // 10px de margen
-      // Recalculamos 'left' para que el borde izquierdo absoluto sea 10
-      left = 10 - containerRect.left;
-    }
-    // d) Corregimos si se sale por la derecha
-    else if (absoluteLeft + tooltipWidth > window.innerWidth - 10) {
-      // Recalculamos 'left' para que el borde derecho absoluto sea el borde de la ventana - 10
-      left = window.innerWidth - tooltipWidth - 10 - containerRect.left;
+    // Ajustar si se sale por los bordes de la ventana
+    if (left < 10) {
+      left = 10;
+    } else if (left + tooltipWidth > window.innerWidth - 10) {
+      left = window.innerWidth - tooltipWidth - 10;
     }
 
     // --- 3. CÁLCULO DE LA POSICIÓN DE LA FLECHA ---
-    // La flecha debe apuntar al centro del ícono, sin importar dónde se movió el tooltip.
-    // Calculamos el centro absoluto del ícono
     const iconCenterAbsoluteX = targetRect.left + targetRect.width / 2;
-    // Calculamos la posición absoluta final del tooltip
-    const tooltipFinalAbsoluteX = containerRect.left + left;
-    // La posición de la flecha es la diferencia
-    const arrowLeft = iconCenterAbsoluteX - tooltipFinalAbsoluteX;
+    const arrowLeft = iconCenterAbsoluteX - left;
 
     // --- 4. APLICAR TODOS LOS ESTILOS CALCULADOS ---
     tooltip.style.top = `${top}px`;
