@@ -98,11 +98,12 @@ public class PerfilController {
     }
 
     try {
-      usuarioActual.setNombreUsuario(nuevoUsuario);
-      usuarioActual.setCorreoElectronico(nuevoCorreo);
-      usuarioActual.setCiudad(nuevaCiudad);
-
-      usuarioService.actualizarUsuario(usuarioActual.getCorreoElectronico(), nuevoUsuario, nuevoCorreo, usuarioActual.getRol(), nuevaCiudad);
+      usuarioService.actualizarUsuario(
+          usuarioActual.getCorreoElectronico(),
+          nuevoUsuario,
+          nuevoCorreo,
+          usuarioActual.getRol(),
+          nuevaCiudad);
 
       model.addAttribute("exitoInfo", "Información actualizada correctamente.");
 

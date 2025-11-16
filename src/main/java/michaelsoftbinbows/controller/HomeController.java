@@ -18,6 +18,7 @@ import michaelsoftbinbows.services.AuthService;
 import michaelsoftbinbows.services.ConfiguracionService;
 import michaelsoftbinbows.services.TareaService;
 import michaelsoftbinbows.services.UsuarioService;
+import michaelsoftbinbows.services.UsuarioTareaService;
 import michaelsoftbinbows.services.WeatherService;
 import michaelsoftbinbows.util.Dificultad;
 import michaelsoftbinbows.util.SistemaNiveles;
@@ -36,6 +37,7 @@ public class HomeController {
   @Autowired private WeatherService weatherService;
   @Autowired private ConfiguracionService configuracionService;
   @Autowired private TareaService tareaService;
+  @Autowired private UsuarioTareaService usuarioTareaService;
   @Autowired private SalonFamaRepository salonFamaRepository;
   @Autowired private AuthService authservice;
 
@@ -58,7 +60,16 @@ public class HomeController {
   @GetMapping("/home")
   public String mostrarHome(Model model) {
     System.out.println("LOG: El método 'mostrarMain' ha sido llamado por una petición a /home.");
-    Usuario usuarioActual = usuarioService.buscarPorCorreo(authservice.getCurrentUser().getCorreoElectronico());
+    // Obtener usuario con colecciones cargadas dentro de contexto transaccional
+    Usuario usuarioActual = usuarioService.buscarPorCorreoConTareas(authservice.getCurrentUser().getCorreoElectronico());
+    
+    if (usuarioActual == null) {
+      return "redirect:/login?error=userNotFound";
+    }
+    
+    // Verificar racha y tareas expiradas
+    usuarioService.verificarPerdidaRacha(usuarioActual);
+    usuarioTareaService.verificarTareasExpiradas(usuarioActual.getId());
 
     model.addAttribute("usuario", usuarioActual);
     model.addAttribute("tareas", usuarioActual.getTareasPendientes());
@@ -143,7 +154,9 @@ public class HomeController {
         tareaDto.nombre = tareaRecomendada.getNombre();
         tareaDto.descripcion = tareaRecomendada.getDescripcion();
         tareaDto.dificultad = Dificultad.obtenerDificultadPorExp(tareaRecomendada.getExp());
-        tareaService.crear(tareaDto, expSiguienteNivel);
+        tareaService.crear(tareaDto, usuarioActual.getId());
+        // IMPORTANTE: Recargar el usuario desde la BD para obtener la tarea recién creada
+        usuarioActual = usuarioService.buscarPorCorreo(usuarioActual.getCorreoElectronico());
       } catch (Exception e) {
         System.err.println("Error al agregar tarea recomendada por clima: " + e.getMessage());
       }
@@ -173,7 +186,6 @@ public class HomeController {
     boolean desafioCompletado = tareaSemanal.isPresent() && tareaSemanal.get().isCompletada();
     model.addAttribute("desafioCompletado", desafioCompletado);
 
-    usuarioService.verificarPerdidaRacha(usuarioActual);
     usuarioService.guardarEnBd(usuarioActual);
 
     return "home";

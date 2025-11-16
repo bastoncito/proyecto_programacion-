@@ -203,7 +203,7 @@ public class UsuarioService {
    * @param usuario El usuario a guardar.
    * @throws RegistroInvalidoException Si el correo es nulo o vacío.
    */
-  public void guardarEnBd(Usuario usuario){
+  public void guardarEnBd(Usuario usuario) {
     usuarioRepository.save(usuario);
   }
 
@@ -231,17 +231,19 @@ public class UsuarioService {
     if (!usuarioValidator.correoValido(nuevoCorreo)) {
       throw new IllegalArgumentException("Correo electrónico no válido: " + nuevoCorreo);
     }
-    if(usuarioRepository.findByNombreUsuario(nuevoNombre).isPresent()
-        && !usuario.getNombreUsuario().equals(nuevoNombre)){
+    if (usuarioRepository.findByNombreUsuario(nuevoNombre).isPresent()
+        && !usuario.getNombreUsuario().equals(nuevoNombre)) {
       throw new RegistroInvalidoException("El nombre de usuario ya existe: " + nuevoNombre);
     }
-    if(usuarioRepository.findByCorreoElectronico(nuevoCorreo).isPresent()
-        && !usuario.getCorreoElectronico().equals(nuevoCorreo)){
-      throw new RegistroInvalidoException("El correo electrónico ya está registrado: " + nuevoCorreo);
+    if (usuarioRepository.findByCorreoElectronico(nuevoCorreo).isPresent()
+        && !usuario.getCorreoElectronico().equals(nuevoCorreo)) {
+      throw new RegistroInvalidoException(
+          "El correo electrónico ya está registrado: " + nuevoCorreo);
     }
     usuario.setNombreUsuario(nuevoNombre);
     usuario.setCorreoElectronico(nuevoCorreo);
     usuario.setRol(nuevoRol);
+    usuario.setCiudad(ciudad);
     usuarioRepository.save(usuario);
   }
 
@@ -286,15 +288,19 @@ public class UsuarioService {
 
   // Metodos para manejar las tareas de los usuarios
   /**
-   * Busca un usuario por correo y fuerza la carga de su lista de tareas.
+   * Busca un usuario por correo y fuerza la carga de su lista de tareas dentro de un contexto
+   * transaccional.
    *
    * @param correo El correo del usuario.
    * @return El Usuario con sus tareas cargadas, o null.
    */
+  @Transactional
   public Usuario buscarPorCorreoConTareas(String correo) {
     Usuario usuario = usuarioRepository.findByCorreoElectronico(correo).orElse(null);
     if (usuario != null) {
-      usuario.getTareas(); // Fuerza la carga de tareas
+      // Fuerza la inicialización de las colecciones dentro del contexto transaccional
+      usuario.getTareas().size();
+      usuario.getTareasCompletadas().size();
     }
     return usuario;
   }
@@ -448,6 +454,7 @@ public class UsuarioService {
    * Método unificado y robusto para actualizar la racha del usuario. Se encarga de incrementar,
    * reiniciar o mantener la racha según la fecha. Debe ser llamado cada vez que se completa una
    * tarea.
+   *
    * @param usuario El usuario cuya racha se va a actualizar.
    */
   public void actualizarRacha(Usuario usuario) {
@@ -476,9 +483,11 @@ public class UsuarioService {
     usuario.setFechaRacha(hoy);
   }
 
+  @Transactional
   /**
    * Verifica si un usuario ha perdido su racha debido a inactividad y la reinicia si es necesario.
    * Utilizado específicamente en el Home.
+   *
    * @param usuario Usuario para verificar la racha
    */
   public void verificarPerdidaRacha(Usuario usuario) {
