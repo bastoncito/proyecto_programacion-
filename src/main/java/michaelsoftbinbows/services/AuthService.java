@@ -1,5 +1,6 @@
 package michaelsoftbinbows.services;
 
+import jakarta.transaction.Transactional;
 import michaelsoftbinbows.data.UsuarioRepository;
 import michaelsoftbinbows.entities.Usuario;
 import michaelsoftbinbows.security.CustomUserDetails;
@@ -15,14 +16,20 @@ public class AuthService {
   @Autowired UsuarioRepository usuarioRepository;
 
   /**
-   * Obtiene el usuario actualmente autenticado en el contexto de seguridad.
+   * Obtiene el usuario actualmente autenticado en el contexto de seguridad con todas sus
+   * colecciones cargadas (Transactional).
    *
-   * @return Objeto Usuario del usuario autenticado.
+   * @return Objeto Usuario del usuario autenticado con tareas inicializadas.
    */
+  @Transactional
   public Usuario getCurrentUser() {
-    return ((CustomUserDetails)
-            SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-        .getUsuario();
+    Usuario usuario =
+        ((CustomUserDetails)
+                SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+            .getUsuario();
+    // Fuerza la carga de las colecciones LAZY mientras estamos en contexto transaccional
+    usuario.getTareas().size(); // Inicializa la colección de tareas
+    return usuario;
   }
 
   /**

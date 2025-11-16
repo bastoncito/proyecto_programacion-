@@ -301,43 +301,6 @@ public class Usuario {
             .count();
   }
 
-  /* Recibe una Tarea como parámetro y la agrega a la lista de tareas del usuario.
-  public void agregarTarea(Tarea tarea) {
-    tareas.add(tarea);
-  }
-
-  public void removerTarea(Tarea tarea) {
-    tareas.remove(tarea);
-  }
-  */
-  /**
-   * Cancela (elimina) una tarea pendiente de la lista del usuario.
-   *
-   * @param nombreTarea El nombre de la tarea a cancelar.
-   * @throws RegistroInvalidoException Si la tarea no se encuentra.
-   */
-  public void cancelarTarea(String nombreTarea) throws RegistroInvalidoException {
-    Tarea tarea = buscarTareaPorNombre(nombreTarea);
-    if (tarea == null) {
-      throw new RegistroInvalidoException(
-          "La tarea '"
-              + nombreTarea
-              + "' no se encuentra en la lista de tareas pendientes de este usuario.");
-    }
-
-    tareas.remove(tarea);
-    tarea.setUsuario(null);
-    System.out.println("La tarea '" + nombreTarea + "' ha sido eliminada. No has ganado puntos.");
-  }
-
-  /*
-   * (Por hacer) Comprueba y desbloquea logros basados en el estado actual del usuario.
-   */
-  // ARREGLO: Renombrado método
-  private void comprobarYdesbloquearLogros() {
-    // por hacer
-  }
-
   /**
    * Busca una tarea PENDIENTE por su nombre. Una tarea es PENDIENTE si getFechaCompletada()
    * devuelve null.

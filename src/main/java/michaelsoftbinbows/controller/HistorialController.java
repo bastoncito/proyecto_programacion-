@@ -5,7 +5,6 @@ import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.entities.Usuario;
 import michaelsoftbinbows.services.AuthService;
 import michaelsoftbinbows.services.UsuarioService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,7 +32,8 @@ public class HistorialController {
         "LOG: El método 'mostrarHistorial' ha sido llamado desde HistorialController.");
 
     // 1. Obtener el usuario actual de forma segura
-    Usuario usuarioActual = usuarioService.buscarPorCorreo(authservice.getCurrentUser().getCorreoElectronico());
+    Usuario usuarioActual =
+        usuarioService.buscarPorCorreo(authservice.getCurrentUser().getCorreoElectronico());
 
     // 2. Manejar el caso en que el usuario no se encuentre
     if (usuarioActual == null) {
