@@ -1,15 +1,13 @@
 package michaelsoftbinbows.entities;
 
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import java.util.Locale;
-
-
 
 
 /**
@@ -26,10 +24,11 @@ public class Logro {
   private String imagenUrl;
 
 
-  @ManyToMany(mappedBy = "logros")
-  private List<Usuario> usuarios = new ArrayList<>();
 
-  /**    * Constructor vacío requerido por JPA.     */
+  @OneToMany(mappedBy = "logro", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<UsuarioLogro> usuarioLogros = new ArrayList<>();
+
+  /** * Constructor vacío requerido por JPA.     */
   public Logro() {
     this.id = "";
     this.nombre = "";
@@ -40,48 +39,32 @@ public class Logro {
   }
 
   /**
-   * Constructor de la clase Logro. Valida todos los parámetros antes de crear el objeto. Si alguna
-   * validación falla, lanza una excepción para prevenir la creación de un objeto en estado
-   * inválido.
-   *
-   * @param id El identificador único del logro (sin espacios, se convertirá a mayúsculas).
-   * @param nombre El nombre visible para el usuario (ej. "¡Primeros Pasos!").
-   * @param descripcion La explicación de cómo se obtiene el logro.
-   * @param experienciaRecompensa La cantidad de EXP que otorga el logro (puede ser 0).
+   * Constructor de la clase Logro.
    */
   public Logro(String id, String nombre, String descripcion, int experienciaRecompensa) {
 
-    // Validacion de ID: sin espacios y en mayúsculas (por convención).
     if (id == null || id.trim().isEmpty() || id.contains(" ")) {
       throw new IllegalArgumentException(
           "El ID del logro no puede ser nulo, vacío o contener espacios.");
     }
-
-    // Validacion del Nombre: no puede estar vacío y debe tener una longitud razonable.
     if (nombre == null || nombre.trim().isEmpty() || nombre.length() > 100) {
       throw new IllegalArgumentException(
           "El nombre del logro no puede estar vacío y debe tener 100 caracteres o menos.");
     }
-
-    // Validacion de la Descripción: no puede estar vacía.
     if (descripcion == null || descripcion.trim().isEmpty() || descripcion.length() > 500) {
       throw new IllegalArgumentException(
           "La descripción del logro no puede estar vacía y debe tener 500 caracteres o menos.");
     }
-
-    // Validacion de la experienciaRecompensa: no puede ser negativa.
     if (experienciaRecompensa < 0) {
       throw new IllegalArgumentException("La recompensa en puntos no puede ser negativa.");
     }
 
-    // Si el objeto no lanzo excepciones se crea
     this.id = id.trim().toUpperCase(Locale.getDefault());
     this.nombre = nombre.trim();
     this.descripcion = descripcion.trim();
     this.experienciaRecompensa = experienciaRecompensa;
     this.activo = true;
   }
-
 
   // GETTERS
   public String getId() {
@@ -100,10 +83,15 @@ public class Logro {
     return experienciaRecompensa;
   }
 
-  public boolean isActivo() { 
-    return activo; 
+  public boolean isActivo() {
+    return activo;
   }
 
+  public List<UsuarioLogro> getUsuarioLogros() {
+      return usuarioLogros;
+  }
+
+  // SETTERS
   public void setNombre(String nombre) {
     this.nombre = nombre;
   }
@@ -112,8 +100,8 @@ public class Logro {
     this.descripcion = descripcion;
   }
  
-  public void setActivo(boolean activo) { 
-    this.activo = activo; 
+  public void setActivo(boolean activo) {
+    this.activo = activo;
   }
 
   public String getImagenUrl() { return imagenUrl; }
@@ -123,16 +111,20 @@ public class Logro {
     this.experienciaRecompensa = experiencia;
   }
 
-  @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Logro logro = (Logro) o;
-        return Objects.equals(id, logro.id);
-    }
+  public void setUsuarioLogros(List<UsuarioLogro> usuarioLogros) {
+      this.usuarioLogros = usuarioLogros;
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Logro logro = (Logro) o;
+    return Objects.equals(id, logro.id);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id);
+  }
 }

@@ -4,9 +4,12 @@ import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.Map;
+import java.time.format.DateTimeFormatter;
 
 import michaelsoftbinbows.entities.Logro;
 import michaelsoftbinbows.entities.Usuario;
+import michaelsoftbinbows.entities.UsuarioLogro;
 import michaelsoftbinbows.services.AuthService;
 import michaelsoftbinbows.services.GestorLogrosService;
 import michaelsoftbinbows.services.LogroService;
@@ -52,46 +55,53 @@ public class PerfilController {
     this.passwordEncoder = passwordEncoder;
   }
 
-/**
-     * Muestra la página de perfil del usuario logueado.
-     */
-    @GetMapping("/perfil")
-    public String mostrarPerfil(Model model) {
+  /**
+  * Muestra la página de perfil del usuario logueado.
+  */
+  @GetMapping("/perfil")
+  public String mostrarPerfil(Model model) {
         
-        // Obtenemos el correo del usuario actual
-        String correo = authService.getCurrentUser().getCorreoElectronico();
-        
-        // --- LÓGICA DE LOGIN ---
-        // 1. Ejecutamos la lógica de racha y logros pendientes (previene LazyInitializationException)
-        usuarioService.manejarLogicaDeLogin(correo);
-        
-        // 2. Volvemos a cargar el usuario, ahora con sus logros actualizados
-        Usuario usuario = usuarioService.buscarPorCorreo(correo);
+    String correo = authService.getCurrentUser().getCorreoElectronico();
+    
+    // 1. Ejecuta la lógica de login (previene LazyInitializationException)
+    usuarioService.manejarLogicaDeLogin(correo);
+    
+    // 2. Volvemos a cargar el usuario con todos sus datos actualizados
+    Usuario usuario = usuarioService.buscarPorCorreo(correo);
 
-        
-        // --- PREPARAR DATOS PARA LA VISTA ---
-        
-        // 1. Obtenemos TODOS los logros que existen en la BD (para la cuadrícula)
-        List<Logro> allAchievements = logroService.obtenerTodos();
+    
+    // --- PREPARAR DATOS PARA LA VISTA ---
+    
+    // 1. Obtenemos TODOS los logros que existen en la BD (para la cuadrícula)
+    //    Nos aseguramos de que solo sean los "activos"
+    List<Logro> allAchievements = logroService.obtenerTodosActivos();
 
-        // 2. Obtenemos la lista de logros que el usuario SÍ tiene
-        List<Logro> unlockedAchievements = usuario.getLogros();
+    // 2. Obtenemos las asociaciones de logros del usuario (UsuarioLogro)
+    List<UsuarioLogro> unlockedAssociations = usuario.getUsuarioLogros();
 
-        // 3. Creamos un Set (un conjunto) solo con los IDs de los logros desbloqueados
-        //    (Tu HTML espera esto: unlockedAchievementsIds)
-        Set<String> unlockedIds = unlockedAchievements.stream()
-                                    .map(Logro::getId)
-                                    .collect(Collectors.toSet());
+    // 3. Creamos un Map (diccionario) de las asociaciones desbloqueadas
+    Map<String, UsuarioLogro> unlockedMap = unlockedAssociations.stream()
+            .collect(Collectors.toMap(
+                ul -> ul.getLogro().getId(), // La clave (ej. "REACH_GOLD")
+                ul -> ul,                  // El valor (el objeto UsuarioLogro)
+                (existing, replacement) -> existing // ¡LA SOLUCIÓN!
+            ));
+    
+    // 4. Creamos un Set (conjunto) solo con los IDs de los logros desbloqueados
 
-        // 4. Añadimos todo al modelo
-        model.addAttribute("usuarioLogueado", usuario); // Para los formularios
-        model.addAttribute("allAchievements", allAchievements); // Para el bucle th:each
-        model.addAttribute("unlockedAchievementsIds", unlockedIds); // Para la clase .locked
+    Set<String> unlockedIds = unlockedMap.keySet();
 
-        model.addAttribute("activePage", "perfil"); // Para la navbar
-        
-        return "user_profile"; // El nombre de tu HTML
-    }
+
+    // 5. Añadimos todo al modelo
+    model.addAttribute("usuarioLogueado", usuario); // Para los formularios
+    model.addAttribute("allAchievements", allAchievements); // Para el bucle th:each
+    model.addAttribute("unlockedAchievementsIds", unlockedIds); // Para la clase .locked
+    model.addAttribute("unlockedMap", unlockedMap); // ¡Para poder buscar la fecha!
+
+    model.addAttribute("activePage", "perfil"); // Para la navbar
+    
+    return "user_profile";
+  }
 
   /**
    * Procesa intentos de actualización de usuario desde su perfil.

@@ -90,9 +90,17 @@ document.addEventListener("DOMContentLoaded", function () {
     // Fecha de desbloqueo - solo muestra si está desbloqueado
     if (isUnlocked) {
       if (tooltipDate) {
-        // Por ahora fijamos una fecha simulada.
-        tooltipDate.textContent = "Desbloqueado el 28/09/2025";
-        tooltipDate.style.display = "block";
+        // Leemos la fecha real desde el atributo data-date
+        const fecha = target.dataset.date;
+        
+        // Nos aseguramos de que la fecha exista antes de mostrarla
+        if (fecha) {
+            tooltipDate.textContent = `Desbloqueado el ${fecha}`;
+            tooltipDate.style.display = "block";
+        } else {
+            // Oculta la fecha si está desbloqueado pero no hay fecha (por si acaso)
+            tooltipDate.style.display = "none";
+        }
       }
     } else if (tooltipDate) {
       tooltipDate.style.display = "none";

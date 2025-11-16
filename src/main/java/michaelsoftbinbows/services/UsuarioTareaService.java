@@ -34,48 +34,30 @@ public class UsuarioTareaService {
     tarea.setFechaCompletada(LocalDateTime.now(ZoneId.systemDefault()));
     int expTarea = tarea.getExp();
 
-    usuarioService.actualizarRacha(u);
+    // (La racha ya no se actualiza aquí, ¡correcto!)
     usuarioService.sumarExperienciaTarea(u, expTarea);
     u.setPuntosLiga(u.getPuntosLiga() + expTarea);
 
-    // Recalcular stats por primera vez
+    // --- 2. RECALCULAR STATS (PRIMERA PASADA) ---
     usuarioService.verificarSubidaDeNivel(u);
     usuarioService.actualizarLigaDelUsuario(u);
 
-    // --- 2. BUCLE DE REACCIÓN EN CADENA DE LOGROS ---
-    while (true) {
-      // Revisa si hay logros nuevos con los stats actuales
-      // (Aquí usamos 'verificarLogros' en lugar de 'actualizarLogros', 
-      //  ya que 'actualizarLogros' como lo hicimos antes causaría un bucle infinito)
-      
-      // Corregimos el plan anterior: Usamos verificarLogros.
-      List<Logro> nuevosLogros = gestorLogrosService.verificarLogros(u);
+    // --- 3. ¡BUCLE "while" ELIMINADO! ---
+    // Llamamos al gatillo de logros UNA SOLA VEZ.
+    // Este método (actualizarLogrosParaUsuario) revisará y añadirá
+    // todos los logros que el usuario cumpla en este momento
+    // (incluyendo Tareas, Nivel y Liga).
+    gestorLogrosService.actualizarLogrosParaUsuario(u);
 
-      if (nuevosLogros.isEmpty()) {
-        // Si no hay logros nuevos, la cadena se detiene. Salir del bucle.
-        break;
-      }
-
-      // Si hay logros nuevos, aplicamos sus recompensas
-      for (Logro nuevoLogro : nuevosLogros) {
-        System.out.println("LOG: ¡'" + u.getNombreUsuario() + 
-                         "' desbloqueó el logro: " + nuevoLogro.getNombre() + "!");
-                         
-        u.getLogros().add(nuevoLogro); // Añadir a la lista persistente
-        
-        // Añadimos la XP del logro
-        usuarioService.sumarExperienciaTarea(u, nuevoLogro.getPuntosRecompensa());
-      }
-
-      // Como la XP cambió, debemos RE-VERIFICAR el nivel y la liga
-      // antes de que el bucle se repita.
-      usuarioService.verificarSubidaDeNivel(u);
-      usuarioService.actualizarLigaDelUsuario(u);
-
-      // El bucle 'while(true)' se repite para ver si este NUEVO nivel/liga desbloquea OTRO logro.
-    }
+    // --- 4. RECALCULAR STATS (SEGUNDA PASADA) ---
+    // ¡IMPORTANTE! Volvemos a verificar la subida de nivel
+    // DESPUÉS de que los logros hayan dado su propia XP.
+    usuarioService.verificarSubidaDeNivel(u);
+    // También recalculamos la liga, por si la XP del logro
+    // fue suficiente para subir de liga (aunque los puntos no cuenten).
+    usuarioService.actualizarLigaDelUsuario(u);
     
-    // --- 3. GUARDADO FINAL ---
+    // --- 5. GUARDADO FINAL ---
     System.out.println(
         "¡'"
             + u.getNombreUsuario()
@@ -87,6 +69,7 @@ public class UsuarioTareaService {
     System.out.println("Experiencia total: " + u.getExperiencia());
 
     tareaService.guardar(tarea);
-    usuarioService.guardarEnBd(u); // Guarda todo: XP, nivel, liga Y todos los logros
+    // Guarda al usuario con su nueva XP, Nivel, Liga Y todos los logros desbloqueados
+    usuarioService.guardarEnBd(u); 
   }
 }

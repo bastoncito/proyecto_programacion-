@@ -18,7 +18,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 import michaelsoftbinbows.exceptions.RegistroInvalidoException;
 import michaelsoftbinbows.model.Rol;
@@ -71,12 +73,8 @@ public class Usuario {
       orphanRemoval = true)
   private List<Tarea> tareas = new ArrayList<>();
 
-  @ManyToMany(fetch = FetchType.EAGER)
-  @JoinTable(
-      name = "usuario_logros", // Nombre de la nueva tabla intermedia
-      joinColumns = @JoinColumn(name = "usuario_id"),
-      inverseJoinColumns = @JoinColumn(name = "logro_id"))
-  private List<Logro> logros = new ArrayList<>();
+  @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<UsuarioLogro> usuarioLogros = new ArrayList<>();
 
   private String ciudad;
 
@@ -85,13 +83,8 @@ public class Usuario {
     // Constructor vacío
   }
 
-  /**
+/**
    * Constructor principal para crear un nuevo Usuario.
-   *
-   * @param nombreUsuario El nombre de usuario (debe ser único).
-   * @param correoElectronico El correo electrónico (debe ser único).
-   * @param contrasena La contraseña (en texto plano, se hasheará en el servicio).
-   * @throws RegistroInvalidoException Si alguno de los campos es inválido.
    */
   public Usuario(String nombreUsuario, String correoElectronico, String contrasena)
       throws RegistroInvalidoException {
@@ -99,7 +92,7 @@ public class Usuario {
     setCorreoElectronico(correoElectronico);
     setContrasena(contrasena);
     this.tareas = new ArrayList<>();
-    this.logros = new ArrayList<>();
+    this.usuarioLogros = new ArrayList<>();
     this.experiencia = 0;
     this.nivelExperiencia = 1;
     this.racha = 0;
@@ -235,13 +228,31 @@ public class Usuario {
     this.liga = "Bronce";
   }
 
-  /**
-   * Devuelve una copia de la lista de logros que el usuario ha desbloqueado.
+/**
+   * Devuelve la lista de asociaciones UsuarioLogro (que incluye la fecha de completado).
    *
-   * @return Una lista nueva (para evitar alterar la original) de objetos Logro.
+   * @return Una lista de objetos UsuarioLogro.
    */
+  public List<UsuarioLogro> getUsuarioLogros() {
+    return this.usuarioLogros;
+  }
+
+  /**
+   * Devuelve una lista simple de los Logros que el usuario ha desbloqueado.
+   * Este es un método "helper" que "desenvuelve" la lista de UsuarioLogro.
+   * Es útil para comprobaciones como `getLogros().contains(logro)`.
+   *
+   * @return Una lista de objetos Logro.
+   */
+  @Transient
   public List<Logro> getLogros() {
-    return this.logros;
+    if (this.usuarioLogros == null) {
+        return new ArrayList<>();
+    }
+    // Transforma la lista de "UsuarioLogro" en una lista de "Logro"
+    return this.usuarioLogros.stream()
+                       .map(UsuarioLogro::getLogro)
+                       .collect(Collectors.toList());
   }
 
   /**

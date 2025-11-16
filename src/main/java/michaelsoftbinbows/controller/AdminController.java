@@ -244,19 +244,12 @@ public class AdminController {
 
       case "logros":
         System.out.println("DEBUG: Cargando datos para la vista 'logros'.");
-        
-        // (Datos que ya teníamos)
         model.addAttribute("totalLogros", logroService.getConteoTotalLogros());
         model.addAttribute("logrosActivos", logroService.getConteoLogrosActivos());
         model.addAttribute("listaDeLogros", logroService.obtenerTodos());
-
-        // --- ¡NUEVO! Cargas los datos calculados desde UsuarioService ---
-        // 1. Añade el conteo total para la tarjeta de estadísticas
         model.addAttribute("totalCompletados", usuarioService.getConteoTotalLogrosCompletados());
-
-        // 2. Añade la lista del Top 5 Jugadores
         model.addAttribute("top5Jugadores", usuarioService.getTop5JugadoresPorLogros());
-        
+        model.addAttribute("topLogrosStats", logroService.getTop5LogrosMasCompletados());
         break;
 
       case "usuarios":

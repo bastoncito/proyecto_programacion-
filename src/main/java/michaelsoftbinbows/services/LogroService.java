@@ -3,9 +3,12 @@ package michaelsoftbinbows.services;
 import java.util.List;
 import java.util.Optional;
 import michaelsoftbinbows.data.LogroRepository;
+import michaelsoftbinbows.dto.LogroStatsDto;
 import michaelsoftbinbows.entities.Logro;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Pageable;
 
 
 /**
@@ -17,7 +20,6 @@ public class LogroService {
 
   @Autowired private LogroRepository logroRepository;
   
-
   /**
    * Obtiene la lista de todos los logros disponibles.
    *
@@ -25,6 +27,18 @@ public class LogroService {
    */
   public List<Logro> obtenerTodos() {
     return logroRepository.findAll();
+  }
+
+  /**
+   * Obtiene la lista de todos los logros que están marcados como 'activos'.
+   * Esto es útil para las vistas de usuario (como el perfil) donde
+   * no queremos mostrar logros que el admin ha desactivado.
+   *
+   * @return Una lista de objetos Logro activos.
+   */
+  public List<Logro> obtenerTodosActivos() {
+    // Asumimos que tu LogroRepository tiene este método
+    return logroRepository.findAllByActivo(true); 
   }
 
   /**
@@ -70,5 +84,16 @@ public class LogroService {
    */
   public long getConteoLogrosActivos() {
     return logroRepository.countByActivo(true);
+  }
+
+  /**
+   * Obtiene una lista del Top 5 de logros más completados por los usuarios.
+   *
+   * @return Lista de LogroStatsDto (nombre y conteo).
+   */
+  public List<LogroStatsDto> getTop5LogrosMasCompletados() {
+    // Creamos un "Pageable" que pide la página 0 y un tamaño de 5.
+    Pageable top5 = PageRequest.of(0, 5);
+    return logroRepository.findTopLogrosCompletados(top5);
   }
 }

@@ -178,6 +178,10 @@
                 th:data-desc="${logro.getDescripcion()}"
                 th:data-exp="${logro.getPuntosRecompensa()}"
                 th:data-unlocked="${unlockedAchievementsIds.contains(logro.getId())}"
+                
+                th:data-date="${unlockedMap.containsKey(logro.getId()) ? 
+                              #temporals.format(unlockedMap.get(logro.getId()).fechaCompletada, 'dd/MM/yyyy') : 
+                              null}"
               >
                 <img
                   th:if="${logro.imagenUrl != null and !logro.imagenUrl.isEmpty()}"
@@ -185,14 +189,15 @@
                   th:alt="${logro.getNombre()}"
                   style="width: 100%; height: 100%; object-fit: cover;"
                 />
-              
+                
                 <i
                   th:unless="${logro.imagenUrl != null and !logro.imagenUrl.isEmpty()}"
                   class='bx bxs-star'
                   style="font-size: 36px;"
                   th:styleappend="${unlockedAchievementsIds.contains(logro.getId()) ? 'color: var(--color-principal);' : ''}"
                 ></i>
-              </div>
+
+              </div> 
             </div>
             <!-- Tooltip que se mostrará al pasar el mouse sobre los logros -->
             <div id="achievement-tooltip">

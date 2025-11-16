@@ -756,7 +756,17 @@
 
     <!-- Script para gestionar la animación de carga -->
     <script th:src="@{/js/loader-main.js}"></script>
+    <script th:if="${vistaActual == 'logros'}" th:inline="javascript">
+      /* <![CDATA[ */
+      // Pasamos los datos de Thymeleaf a una variable global
+      // para que el script externo (admin_charts.js) pueda leerlos.
+      window.logrosChartData = /*[[${topLogrosStats}]]*/ [];
+      /* ]]> */
+    </script>
+    
+    <script th:src="@{/js/admin_charts.js}"></script>
     <!-- Incluimos el fragmento de la barra de navegación inferior -->
     <div th:replace="~{fragments :: navbar}"></div>
+    
   </body>
 </html>

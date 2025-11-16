@@ -573,7 +573,7 @@ public class UsuarioService {
       
       // 3. Dispara el gatillo de logros (ahora PUEDE acceder a usuario.getTareas)
       gestorLogrosService.actualizarLogrosParaUsuario(usuario);
-      
+      this.verificarSubidaDeNivel(usuario);
       // 4. Guarda todos los cambios
       this.guardarEnBd(usuario);
   }

@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.time.temporal.ChronoUnit;
-
+import michaelsoftbinbows.entities.UsuarioLogro;
 import michaelsoftbinbows.entities.Logro;
 import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.entities.Usuario;
@@ -85,25 +85,22 @@ public class GestorLogrosService {
    */
   public List<Logro> verificarLogros(Usuario usuario) {
     List<Logro> nuevosLogrosDesbloqueados = new ArrayList<>();
-    
-    // 1. Obtenemos la lista MAESTRA desde la BD (que sabe si están activos)
     List<Logro> logrosDesdeBD = logroService.obtenerTodos();
 
-    // 2. Iteramos sobre la lista de la BD, no la estática
     for (Logro logroPotencial : logrosDesdeBD) {
       
-      // Si el logro está DESACTIVADO por el admin, lo saltamos.
       if (!logroPotencial.isActivo()) {
-        continue;
-      }
-      // ------------------------------------
-
-      // Si el usuario ya tiene el logro, lo saltamos
-      if (usuario.getLogros().contains(logroPotencial)) {
-        continue;
+        continue; // Saltar logros desactivados
       }
 
-      // Si cumple la lógica, lo añadimos
+      // Revisamos la lista de asociaciones 'UsuarioLogro'.
+      boolean yaLoTiene = usuario.getUsuarioLogros().stream()
+                            .anyMatch(asociacion -> asociacion.getLogro().equals(logroPotencial));
+      
+      if (yaLoTiene) {
+        continue;
+      }
+
       if (condicionCumplida(usuario, logroPotencial)) {
         nuevosLogrosDesbloqueados.add(logroPotencial);
       }
@@ -207,12 +204,10 @@ public class GestorLogrosService {
     // 1. Obtenemos la lista MAESTRA desde la BD
     List<Logro> logrosDesdeBD = logroService.obtenerTodos();
 
-    // 2. ¡CAMBIO! Iteramos sobre la lista de la BD
+    // 2. Iteramos sobre la lista de la BD
     for (Logro logroPotencial : logrosDesdeBD) {
       
-      // ¡AÑADIDO! El contador tampoco debe contar logros desactivados
-      // (Aunque para "Total Completados" esto es debatible, 
-      // lo más consistente es que solo cuente logros "ganables").
+      // El contador tampoco debe contar logros desactivados
       if (!logroPotencial.isActivo()) {
           continue;
       }
@@ -225,41 +220,33 @@ public class GestorLogrosService {
     return logrosCumplidos;
   }
 
-  /**
+/**
    * Comprueba el estado de un usuario contra todos los logros
    * y desbloquea los que haya ganado.
-   *
-   * @param usuario El usuario que debe ser revisado.
-   * @return true si se desbloqueó al menos un logro, false si no.
    */
   public boolean actualizarLogrosParaUsuario(Usuario usuario) {
-    // 1. Llama a tu método existente para ver qué logros NUEVOS ha ganado
     List<Logro> nuevosLogrosDesbloqueados = this.verificarLogros(usuario);
 
     if (nuevosLogrosDesbloqueados.isEmpty()) {
-      // No hay nada que hacer
       return false;
     }
 
-    // 2. Si hay logros nuevos, los añadimos al usuario
     for (Logro nuevoLogro : nuevosLogrosDesbloqueados) {
-      // 2a. Añadir a la lista persistente (@ManyToMany)
-      usuario.getLogros().add(nuevoLogro);
+      
+      // 1. Creamos la asociación UsuarioLogro
+      UsuarioLogro nuevaAsociacion = new UsuarioLogro(usuario, nuevoLogro);
+      
+      // 2. Añadimos la asociación a la lista del usuario
+      usuario.getUsuarioLogros().add(nuevaAsociacion);
 
       // 2b. Añadir la recompensa de XP del logro
       int xpActual = usuario.getExperiencia();
       int xpLogro = nuevoLogro.getPuntosRecompensa();
       usuario.setExperiencia(xpActual + xpLogro);
       
-      // (Aquí también podrías recalcular el nivel si la XP subió)
-      // SistemaNiveles.actualizarNivel(usuario);
-
       System.out.println("LOG: ¡'" + usuario.getNombreUsuario() + 
                          "' desbloqueó el logro: " + nuevoLogro.getNombre() + "!");
     }
-
-    // 3. Devolvemos 'true' para que el servicio que llamó
-    //    sepa que debe guardar al usuario.
     return true;
   }
 }
