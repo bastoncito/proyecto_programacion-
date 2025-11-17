@@ -23,12 +23,24 @@ public class AuthService {
    */
   @Transactional
   public Usuario getCurrentUser() {
-    Usuario usuario =
-        ((CustomUserDetails)
-                SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-            .getUsuario();
-    // Fuerza la carga de las colecciones LAZY mientras estamos en contexto transaccional
-    usuario.getTareas().size(); // Inicializa la colección de tareas
+    // Obtenemos los detalles desde el contexto de seguridad
+    CustomUserDetails userDetails =
+        (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    // Recuperamos la entidad Usuario gestionada por JPA desde el repositorio. Esto asegura
+    // que las colecciones LAZY puedan inicializarse dentro del contexto transaccional.
+    Long usuarioId = userDetails.getUsuario().getId();
+    Usuario usuario = usuarioRepository.findById(usuarioId).orElse(null);
+    if (usuario != null) {
+      // Inicializar colecciones necesarias para las vistas
+      var unused = usuario.getTareas().size();
+      // Si la aplicación usa tareas completadas separadas, inicializarlas también
+      try {
+        unused = usuario.getTareasCompletadas().size();
+      } catch (Exception e) {
+        // Ignorar si no existe ese método o la lista está vacía; solo buscamos inicializar
+      }
+    }
     return usuario;
   }
 

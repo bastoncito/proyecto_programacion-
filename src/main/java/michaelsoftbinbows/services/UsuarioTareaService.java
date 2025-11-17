@@ -3,9 +3,6 @@ package michaelsoftbinbows.services;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.LocalDateTime;
-import java.util.List;
-import michaelsoftbinbows.entities.Logro;
 import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.entities.Usuario;
 import michaelsoftbinbows.exceptions.RegistroInvalidoException;
@@ -22,15 +19,14 @@ public class UsuarioTareaService {
   public void completarTarea(Long usuarioId, Long tareaId) throws RegistroInvalidoException {
     Usuario u = usuarioService.obtenerPorId(usuarioId).get();
     Tarea tarea = tareaService.obtenerPorId(tareaId).get();
-    
-    
+
     if (!tarea.getUsuario().getId().equals(u.getId())) {
       throw new IllegalArgumentException("La tarea no pertenece al usuario");
     }
     if (tarea.getFechaCompletada() != null) {
       throw new RegistroInvalidoException("La tarea ya ha sido completada");
     }
-    
+
     // --- 1. APLICAR CAMBIOS INICIALES DE LA TAREA ---
     tarea.setFechaCompletada(LocalDateTime.now(ZoneId.systemDefault()));
     int expTarea = tarea.getExp();
@@ -57,7 +53,7 @@ public class UsuarioTareaService {
     // También recalculamos la liga, por si la XP del logro
     // fue suficiente para subir de liga (aunque los puntos no cuenten).
     usuarioService.actualizarLigaDelUsuario(u);
-    
+
     // --- 5. GUARDADO FINAL ---
     System.out.println(
         "¡'"
@@ -71,7 +67,7 @@ public class UsuarioTareaService {
 
     tareaService.guardar(tarea);
     // Guarda al usuario con su nueva XP, Nivel, Liga Y todos los logros desbloqueados
-    usuarioService.guardarEnBd(u); 
+    usuarioService.guardarEnBd(u);
   }
 
   /**

@@ -8,9 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import michaelsoftbinbows.dto.TopJugadorLogrosDto;
 import michaelsoftbinbows.data.UsuarioRepository;
+import michaelsoftbinbows.dto.TopJugadorLogrosDto;
 import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.entities.Usuario;
 import michaelsoftbinbows.exceptions.EdicionInvalidaException;
@@ -303,8 +302,8 @@ public class UsuarioService {
     Usuario usuario = usuarioRepository.findByCorreoElectronico(correo).orElse(null);
     if (usuario != null) {
       // Fuerza la inicialización de las colecciones dentro del contexto transaccional
-      usuario.getTareas().size();
-      usuario.getTareasCompletadas().size();
+      var unused = usuario.getTareas().size();
+      unused = usuario.getTareasCompletadas().size();
     }
     return usuario;
   }
@@ -354,10 +353,12 @@ public class UsuarioService {
    * @param correo correo electrónico del usuario
    * @return lista de tareas pendientes
    */
+  @Transactional
   public List<Tarea> obtenerTareasPendientes(String correo) {
-    Optional<Usuario> usuarioOpt = usuarioRepository.findByCorreoElectronico(correo);
-    if (usuarioOpt.isPresent()) {
-      Usuario usuario = usuarioOpt.get();
+    // Usamos buscarPorCorreoConTareas para asegurarnos de que las colecciones LAZY
+    // estén inicializadas dentro del contexto transaccional.
+    Usuario usuario = buscarPorCorreoConTareas(correo);
+    if (usuario != null) {
       return usuario.getTareasPendientes();
     }
     return new ArrayList<>();
@@ -512,78 +513,78 @@ public class UsuarioService {
   }
 
   /**
-     * Obtiene el Top 5 de jugadores ordenados por la cantidad de logros completados.
-     * Este método calcula el conteo en Java, ya que los logros son @Transient.
-     *
-     * @return Una lista de DTOs con el nombre y el conteo de logros.
-     */
-    public List<TopJugadorLogrosDto> getTop5JugadoresPorLogros() {
-        // 1. Obtenemos TODOS los usuarios de la BD
-        List<Usuario> todosLosUsuarios = usuarioRepository.findAll();
-        
-        // 2. Creamos una lista para guardar los resultados (DTOs)
-        List<TopJugadorLogrosDto> dtos = new ArrayList<>();
+   * Obtiene el Top 5 de jugadores ordenados por la cantidad de logros completados. Este método
+   * calcula el conteo en Java, ya que los logros son @Transient.
+   *
+   * @return Una lista de DTOs con el nombre y el conteo de logros.
+   */
+  public List<TopJugadorLogrosDto> getTop5JugadoresPorLogros() {
+    // 1. Obtenemos TODOS los usuarios de la BD
+    List<Usuario> todosLosUsuarios = usuarioRepository.findAll();
 
-        // 3. Iteramos y calculamos el conteo para cada uno
-        for (Usuario u : todosLosUsuarios) {
-            // ¡Aquí usamos el GestorLogrosService!
-            // Contamos cuántos logros ha cumplido este usuario según la lógica
-            int conteo = gestorLogrosService.getTodosLogrosCumplidos(u).size();
-            
-            // Creamos el DTO con el resultado
-            dtos.add(new TopJugadorLogrosDto(u.getNombreUsuario(), conteo));
-        }
+    // 2. Creamos una lista para guardar los resultados (DTOs)
+    List<TopJugadorLogrosDto> dtos = new ArrayList<>();
 
-        // 4. Ordenamos la lista de DTOs en Java (de mayor a menor)
-        dtos.sort((dto1, dto2) -> Long.compare(dto2.getTotalLogros(), dto1.getTotalLogros()));
+    // 3. Iteramos y calculamos el conteo para cada uno
+    for (Usuario u : todosLosUsuarios) {
+      // ¡Aquí usamos el GestorLogrosService!
+      // Contamos cuántos logros ha cumplido este usuario según la lógica
+      int conteo = gestorLogrosService.getTodosLogrosCumplidos(u).size();
 
-        // 5. Devolvemos solo los primeros 5
-        return dtos.stream().limit(5).collect(Collectors.toList());
+      // Creamos el DTO con el resultado
+      dtos.add(new TopJugadorLogrosDto(u.getNombreUsuario(), conteo));
     }
 
-    // --- ¡NUEVO MÉTODO PARA LA TARJETA DE CONTEO! ---
-    /**
-     * Obtiene el conteo total de todos los logros completados por todos los usuarios.
-     * (Calculado en Java para la tarjeta de estadísticas).
-     *
-     * @return un long con el conteo total.
-     */
-    public long getConteoTotalLogrosCompletados() {
-        long conteoTotal = 0;
-        // Obtenemos todos los usuarios
-        List<Usuario> todosLosUsuarios = usuarioRepository.findAll();
-        
-        // Iteramos, calculamos el conteo de cada uno y lo sumamos
-        for (Usuario u : todosLosUsuarios) {
-            conteoTotal += gestorLogrosService.getTodosLogrosCumplidos(u).size();
-        }
-        return conteoTotal;
-    }
+    // 4. Ordenamos la lista de DTOs en Java (de mayor a menor)
+    dtos.sort((dto1, dto2) -> Long.compare(dto2.getTotalLogros(), dto1.getTotalLogros()));
 
-/**
-   * Maneja toda la lógica que debe ocurrir al cargar un usuario (login).
-   * Al ser @Transactional, mantiene la sesión de BD abierta
-   * y previene LazyInitializationException.
+    // 5. Devolvemos solo los primeros 5
+    return dtos.stream().limit(5).collect(Collectors.toList());
+  }
+
+  // --- ¡NUEVO MÉTODO PARA LA TARJETA DE CONTEO! ---
+  /**
+   * Obtiene el conteo total de todos los logros completados por todos los usuarios. (Calculado en
+   * Java para la tarjeta de estadísticas).
+   *
+   * @return un long con el conteo total.
+   */
+  public long getConteoTotalLogrosCompletados() {
+    long conteoTotal = 0;
+    // Obtenemos todos los usuarios
+    List<Usuario> todosLosUsuarios = usuarioRepository.findAll();
+
+    // Iteramos, calculamos el conteo de cada uno y lo sumamos
+    for (Usuario u : todosLosUsuarios) {
+      conteoTotal += gestorLogrosService.getTodosLogrosCumplidos(u).size();
+    }
+    return conteoTotal;
+  }
+
+  /**
+   * Maneja toda la lógica que debe ocurrir al cargar un usuario (login). Al ser @Transactional,
+   * mantiene la sesión de BD abierta y previene LazyInitializationException.
    *
    * @param correo El correo del usuario que acaba de iniciar sesión.
    */
   @Transactional
   public void manejarLogicaDeLogin(String correo) {
-      // Volvemos a cargar el usuario DESDE DENTRO de la transacción.
-      // Esto nos da un objeto "managed" (conectado) y previene el error.
-      Usuario usuario = this.buscarPorCorreo(correo);
-      if (usuario == null) {
-          System.err.println("Error en manejarLogicaDeLogin: No se encontró usuario con correo " + correo);
-          return; 
-      }
+    // Volvemos a cargar el usuario DESDE DENTRO de la transacción.
+    // Esto nos da un objeto "managed" (conectado) y previene el error.
+    Usuario usuario = this.buscarPorCorreo(correo);
+    if (usuario == null) {
+      System.err.println(
+          "Error en manejarLogicaDeLogin: No se encontró usuario con correo " + correo);
+      return;
+    }
 
-      // 2. Actualiza la racha
-      this.actualizarRacha(usuario);
-      
-      // 3. Dispara el gatillo de logros (ahora PUEDE acceder a usuario.getTareas)
-      gestorLogrosService.actualizarLogrosParaUsuario(usuario);
-      this.verificarSubidaDeNivel(usuario);
-      // 4. Guarda todos los cambios
-      this.guardarEnBd(usuario);
+    // 2. Actualiza la racha
+    this.actualizarRacha(usuario);
+
+    // 3. Dispara el gatillo de logros (ahora PUEDE acceder a usuario.getTareas)
+    gestorLogrosService.actualizarLogrosParaUsuario(usuario);
+    this.verificarSubidaDeNivel(usuario);
+    // 4. Guarda todos los cambios
+    this.guardarEnBd(usuario);
   }
 }

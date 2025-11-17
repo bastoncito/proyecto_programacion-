@@ -1,14 +1,13 @@
 package michaelsoftbinbows.entities;
 
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-
 
 /**
  * Entidad que representa un Logro (Achievement) que un usuario puede desbloquear. Contiene la
@@ -23,12 +22,10 @@ public class Logro {
   private boolean activo = true;
   private String imagenUrl;
 
-
-
   @OneToMany(mappedBy = "logro", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<UsuarioLogro> usuarioLogros = new ArrayList<>();
 
-  /** * Constructor vacío requerido por JPA.     */
+  /** * Constructor vacío requerido por JPA. */
   public Logro() {
     this.id = "";
     this.nombre = "";
@@ -38,9 +35,7 @@ public class Logro {
     this.imagenUrl = null;
   }
 
-  /**
-   * Constructor de la clase Logro.
-   */
+  /** Constructor de la clase Logro. */
   public Logro(String id, String nombre, String descripcion, int experienciaRecompensa) {
 
     if (id == null || id.trim().isEmpty() || id.contains(" ")) {
@@ -88,37 +83,42 @@ public class Logro {
   }
 
   public List<UsuarioLogro> getUsuarioLogros() {
-      return usuarioLogros;
+    return usuarioLogros;
   }
 
   // SETTERS
   public void setNombre(String nombre) {
     this.nombre = nombre;
   }
-  
+
   public void setDescripcion(String descripcion) {
     this.descripcion = descripcion;
   }
- 
+
   public void setActivo(boolean activo) {
     this.activo = activo;
   }
 
-  public String getImagenUrl() { return imagenUrl; }
-  public void setImagenUrl(String imagenUrl) { this.imagenUrl = imagenUrl; }
-  
-  public void setExperienciaRecompensa(int experiencia){
+  public String getImagenUrl() {
+    return imagenUrl;
+  }
+
+  public void setImagenUrl(String imagenUrl) {
+    this.imagenUrl = imagenUrl;
+  }
+
+  public void setExperienciaRecompensa(int experiencia) {
     this.experienciaRecompensa = experiencia;
   }
 
   public void setUsuarioLogros(List<UsuarioLogro> usuarioLogros) {
-      this.usuarioLogros = usuarioLogros;
+    this.usuarioLogros = usuarioLogros;
   }
 
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (o == null || !(o instanceof Logro)) return false;
     Logro logro = (Logro) o;
     return Objects.equals(id, logro.id);
   }

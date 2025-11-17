@@ -2,16 +2,13 @@ package michaelsoftbinbows.controller;
 
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.Map;
-import java.time.format.DateTimeFormatter;
-
 import michaelsoftbinbows.entities.Logro;
 import michaelsoftbinbows.entities.Usuario;
 import michaelsoftbinbows.entities.UsuarioLogro;
 import michaelsoftbinbows.services.AuthService;
-import michaelsoftbinbows.services.GestorLogrosService;
 import michaelsoftbinbows.services.LogroService;
 import michaelsoftbinbows.services.UsuarioService;
 import michaelsoftbinbows.util.UsuarioValidator;
@@ -32,14 +29,10 @@ public class PerfilController {
   private final UsuarioService usuarioService;
   private final PasswordEncoder passwordEncoder;
   private UsuarioValidator usuarioValidator = new UsuarioValidator();
-  @Autowired private GestorLogrosService gestorLogrosService;
-  @Autowired private AuthService authservice;
 
-    @Autowired
-    private AuthService authService;
+  @Autowired private AuthService authService;
 
-    @Autowired
-    private LogroService logroService;
+  @Autowired private LogroService logroService;
 
   /**
    * Constructor de clase.
@@ -48,31 +41,26 @@ public class PerfilController {
    *
    * @param usuarioService Service para acciones de Usuario
    * @param passwordEncoder encriptador de contraseñas BCrypt
-   * 
-   * 
    */
   public PerfilController(UsuarioService usuarioService, PasswordEncoder passwordEncoder) {
     this.usuarioService = usuarioService;
     this.passwordEncoder = passwordEncoder;
   }
 
-  /**
-  * Muestra la página de perfil del usuario logueado.
-  */
+  /** Muestra la página de perfil del usuario logueado. */
   @GetMapping("/perfil")
   public String mostrarPerfil(Model model) {
-        
+
     String correo = authService.getCurrentUser().getCorreoElectronico();
-    
+
     // 1. Ejecuta la lógica de login (previene LazyInitializationException)
     usuarioService.manejarLogicaDeLogin(correo);
-    
-    // 2. Volvemos a cargar el usuario con todos sus datos actualizados
-    Usuario usuario = usuarioService.buscarPorCorreo(correo);
 
-    
+    // 2. Volvemos a cargar el usuario con todos sus datos actualizados (incluye tareas)
+    Usuario usuario = usuarioService.buscarPorCorreoConTareas(correo);
+
     // --- PREPARAR DATOS PARA LA VISTA ---
-    
+
     // 1. Obtenemos TODOS los logros que existen en la BD (para la cuadrícula)
     //    Nos aseguramos de que solo sean los "activos"
     List<Logro> allAchievements = logroService.obtenerTodosActivos();
@@ -81,17 +69,18 @@ public class PerfilController {
     List<UsuarioLogro> unlockedAssociations = usuario.getUsuarioLogros();
 
     // 3. Creamos un Map (diccionario) de las asociaciones desbloqueadas
-    Map<String, UsuarioLogro> unlockedMap = unlockedAssociations.stream()
-            .collect(Collectors.toMap(
-                ul -> ul.getLogro().getId(), // La clave (ej. "REACH_GOLD")
-                ul -> ul,                  // El valor (el objeto UsuarioLogro)
-                (existing, replacement) -> existing // ¡LA SOLUCIÓN!
-            ));
-    
+    Map<String, UsuarioLogro> unlockedMap =
+        unlockedAssociations.stream()
+            .collect(
+                Collectors.toMap(
+                    ul -> ul.getLogro().getId(), // La clave (ej. "REACH_GOLD")
+                    ul -> ul, // El valor (el objeto UsuarioLogro)
+                    (existing, replacement) -> existing // ¡LA SOLUCIÓN!
+                    ));
+
     // 4. Creamos un Set (conjunto) solo con los IDs de los logros desbloqueados
 
     Set<String> unlockedIds = unlockedMap.keySet();
-
 
     // 5. Añadimos todo al modelo
     model.addAttribute("usuarioLogueado", usuario); // Para los formularios
@@ -100,7 +89,7 @@ public class PerfilController {
     model.addAttribute("unlockedMap", unlockedMap); // ¡Para poder buscar la fecha!
 
     model.addAttribute("activePage", "perfil"); // Para la navbar
-    
+
     return "user_profile";
   }
 
@@ -121,7 +110,7 @@ public class PerfilController {
       RedirectAttributes redirectAttributes) {
 
     System.out.println("LOG: Intentando actualizar perfil.");
-    Usuario usuarioActual = authservice.getCurrentUser();
+    Usuario usuarioActual = authService.getCurrentUser();
 
     if (usuarioActual == null) {
         redirectAttributes.addFlashAttribute("errorInfo", "Error crítico: No se encontró el usuario.");
@@ -139,7 +128,7 @@ public class PerfilController {
       redirectAttributes.addFlashAttribute("exitoInfo", "Información actualizada correctamente.");
 
       // Actualizar el contexto de seguridad
-      authservice.actualizarSesion(usuarioActual.getId());
+      authService.actualizarSesion(usuarioActual.getId());
 
     } catch (Exception e) {
       System.out.println("LOG: Error al actualizar perfil: " + e.getMessage());
@@ -165,7 +154,7 @@ public class PerfilController {
       RedirectAttributes redirectAttributes) {
 
     System.out.println("LOG: Intentando cambiar contrasena.");
-    Usuario usuarioActual = authservice.getCurrentUser();
+    Usuario usuarioActual = authService.getCurrentUser();
 
     if (usuarioActual == null) {
       redirectAttributes.addFlashAttribute("errorPassword", "Error crítico: No se encontró el usuario.");
@@ -186,7 +175,7 @@ public class PerfilController {
 
       usuarioActual.setContrasena(passwordEncoder.encode(contrasenaNueva));
       usuarioService.guardarEnBd(usuarioActual);
-      authservice.actualizarSesion(usuarioActual.getId());
+      authService.actualizarSesion(usuarioActual.getId());
       redirectAttributes.addFlashAttribute("exitoPassword", "Contrasena actualizada correctamente.");
 
     } catch (Exception e) {
@@ -204,7 +193,7 @@ public class PerfilController {
    */
   @PostMapping("/perfil/borrar-cuenta")
   public String borrarCuenta(HttpSession session) {
-    Usuario usuarioActual = authservice.getCurrentUser();
+    Usuario usuarioActual = authService.getCurrentUser();
 
     if (usuarioActual != null) {
       try {
