@@ -82,14 +82,19 @@ public class PerfilController {
 
     Set<String> unlockedIds = unlockedMap.keySet();
 
-    // 5. Añadimos todo al modelo
+    // 5. Calculamos los contadores de logros
+    int logrosObtenidosCount = unlockedIds.size();
+    int logrosTotalesCount = allAchievements.size();
+
+    // 6. Añadimos todo al modelo
     model.addAttribute("usuarioLogueado", usuario); // Para los formularios
     model.addAttribute("allAchievements", allAchievements); // Para el bucle th:each
     model.addAttribute("unlockedAchievementsIds", unlockedIds); // Para la clase .locked
     model.addAttribute("unlockedMap", unlockedMap); // ¡Para poder buscar la fecha!
-
     model.addAttribute("activePage", "perfil"); // Para la navbar
-
+    //Para mostrar logros obtenidos/totales
+    model.addAttribute("logrosObtenidosCount", logrosObtenidosCount);
+    model.addAttribute("logrosTotalesCount", logrosTotalesCount);
     return "user_profile";
   }
 
