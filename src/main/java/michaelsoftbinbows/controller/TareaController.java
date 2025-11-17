@@ -1,5 +1,7 @@
 package michaelsoftbinbows.controller;
 
+import java.util.Optional;  
+import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.dto.TareaDto;
 import michaelsoftbinbows.exceptions.RegistroInvalidoException;
 import michaelsoftbinbows.exceptions.TareaInvalidaException;
@@ -51,8 +53,22 @@ public class TareaController {
   public String completarTarea(Model model, @RequestParam("nombreTarea") String nombreTarea)
       throws RegistroInvalidoException {
     Long idUsuario = authservice.getCurrentUser().getId();
-    usuarioTareaService.completarTarea(
-        idUsuario, tareaService.obtenerPorNombreYUsuarioId(nombreTarea, idUsuario).get().getId());
+
+    // Llamamos al método del TareaService para buscar la tarea PENDIENTE.
+    Optional<Tarea> tareaPendienteOpt = 
+        tareaService.obtenerTareaPendientePorNombreYUsuarioId(nombreTarea, idUsuario);
+
+    // Verificamos si la tarea pendiente realmente existe.
+    if (tareaPendienteOpt.isPresent()) {
+      // Si existe, obtenemos su ID y llamamos al servicio para completarla.
+      Long idTarea = tareaPendienteOpt.get().getId();
+      usuarioTareaService.completarTarea(idUsuario, idTarea);
+    } else {
+      // Si no se encuentra una tarea pendiente con ese nombre, lanzamos un error.
+      throw new RegistroInvalidoException(
+          "No se encontró una tarea pendiente con el nombre: " + nombreTarea);
+    }
+    
     return "redirect:/home";
   }
 

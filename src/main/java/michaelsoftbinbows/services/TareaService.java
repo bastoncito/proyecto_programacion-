@@ -92,13 +92,13 @@ public class TareaService {
     }
     Tarea tarea = new Tarea(tareaDto.nombre, tareaDto.descripcion, tareaDto.dificultad);
     // This will handle duplicate validation and bidirectional relationship
-    if (tareaRepository.existsByNombreAndUsuarioId(tarea.getNombre(), userId)) {
+    if (tareaRepository.existsByNombreAndUsuarioIdAndFechaCompletadaIsNull(tarea.getNombre(), userId)) {
       throw new TareaInvalidaException(
           "Tarea \"" + tarea.getNombre() + "\" ya existente.",
           tarea.getNombre(),
           tarea.getDescripcion());
     }
-    if (tareaRepository.existsByDescripcionAndUsuarioId(tarea.getDescripcion(), userId)) {
+    if (tareaRepository.existsByDescripcionAndUsuarioIdAndFechaCompletadaIsNull(tarea.getDescripcion(), userId)) {
       throw new TareaInvalidaException(
           "Tarea con descripción \"" + tarea.getDescripcion() + "\" ya existe.",
           tarea.getNombre(),
@@ -133,7 +133,7 @@ public class TareaService {
       throw new RegistroInvalidoException(
           "Error: No se encontró la tarea '" + nombreOriginal + "' para actualizar.");
     }
-    if (tareaRepository.existsByNombreAndUsuarioId(tareaActualizada.nombre, usuarioId)
+    if (tareaRepository.existsByNombreAndUsuarioIdAndFechaCompletadaIsNull(tareaActualizada.nombre, usuarioId)
         && !nombreOriginal.equalsIgnoreCase(tareaActualizada.nombre)) {
       throw new RegistroInvalidoException(
           "Ya existe otra tarea con el nombre '"
@@ -266,5 +266,16 @@ public class TareaService {
     }
 
     return base.stream().filter(t -> t.getClimaCompatible().equalsIgnoreCase(clima)).toList();
+  }
+
+  /**
+   * Obtiene una tarea PENDIENTE por su nombre y el ID del usuario.
+   *
+   * @param nombre nombre de la Tarea
+   * @param usuarioId Id del usuario asociado
+   * @return Optional con la tarea pendiente si se encuentra
+   */
+  public Optional<Tarea> obtenerTareaPendientePorNombreYUsuarioId(String nombre, Long usuarioId) {
+    return tareaRepository.findByNombreAndUsuarioIdAndFechaCompletadaIsNull(nombre, usuarioId);
   }
 }

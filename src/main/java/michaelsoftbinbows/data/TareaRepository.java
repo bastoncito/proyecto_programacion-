@@ -74,4 +74,31 @@ public interface TareaRepository extends JpaRepository<Tarea, Long> {
    * @return Lista de tareas del usuario
    */
   List<Tarea> findAllByUsuarioId(Long usuarioId);
+
+  /**
+   * Busca una tarea PENDIENTE por su nombre y el ID del usuario.
+   *
+   * @param nombre Nombre de la tarea.
+   * @param usuarioId ID del usuario.
+   * @return Optional con la tarea pendiente si se encuentra.
+   */
+  Optional<Tarea> findByNombreAndUsuarioIdAndFechaCompletadaIsNull(String nombre, Long usuarioId);
+  
+  /**
+   * Verifica si ya existe una tarea PENDIENTE con el mismo nombre para un usuario.
+   *
+   * @param nombre Nombre de la tarea.
+   * @param usuarioId ID del usuario.
+   * @return true si existe, false en caso contrario.
+   */
+  boolean existsByNombreAndUsuarioIdAndFechaCompletadaIsNull(String nombre, Long usuarioId);
+
+  /**
+   * Verifica si ya existe una tarea PENDIENTE con la misma descripción para un usuario.
+   *
+   * @param descripcion Descripción de la tarea.
+   * @param usuarioId ID del usuario.
+   * @return true si existe, false en caso contrario.
+   */
+  boolean existsByDescripcionAndUsuarioIdAndFechaCompletadaIsNull(String descripcion, Long usuarioId);
 }

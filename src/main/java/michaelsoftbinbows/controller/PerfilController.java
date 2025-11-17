@@ -23,6 +23,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /** Controller para el apartado de perfil. */
 @Controller
@@ -109,23 +110,22 @@ public class PerfilController {
    * @param nuevoUsuario nuevo nombre de usuario
    * @param nuevoCorreo nuevo correo
    * @param nuevaCiudad nueva ciudad
-   * @param model modelo para añadir atributos a la página
-   * @return template de perfil
+   * @param redirectAttributes para pasar mensajes a través de la redirección
+   * @return redirección al template de perfil
    */
   @PostMapping("/perfil/actualizar")
   public String actualizarPerfil(
       @RequestParam("usuario") String nuevoUsuario,
       @RequestParam("correo") String nuevoCorreo,
       @RequestParam("ciudad") String nuevaCiudad,
-      Model model) {
+      RedirectAttributes redirectAttributes) {
 
     System.out.println("LOG: Intentando actualizar perfil.");
     Usuario usuarioActual = authservice.getCurrentUser();
 
     if (usuarioActual == null) {
-      model.addAttribute("errorInfo", "Error crítico: No se encontró el usuario.");
-      model.addAttribute("usuarioLogueado", new Usuario());
-      return "user_profile";
+        redirectAttributes.addFlashAttribute("errorInfo", "Error crítico: No se encontró el usuario.");
+      return "redirect:/perfil";
     }
 
     try {
@@ -136,18 +136,16 @@ public class PerfilController {
           usuarioActual.getRol(),
           nuevaCiudad);
 
-      model.addAttribute("exitoInfo", "Información actualizada correctamente.");
+      redirectAttributes.addFlashAttribute("exitoInfo", "Información actualizada correctamente.");
 
       // Actualizar el contexto de seguridad
       authservice.actualizarSesion(usuarioActual.getId());
 
     } catch (Exception e) {
       System.out.println("LOG: Error al actualizar perfil: " + e.getMessage());
-      model.addAttribute("errorInfo", e.getMessage());
+      redirectAttributes.addFlashAttribute("errorInfo", e.getMessage());
     }
-
-    model.addAttribute("usuarioLogueado", usuarioActual);
-    return "user_profile";
+    return "redirect:/perfil";
   }
 
   /**
@@ -156,23 +154,22 @@ public class PerfilController {
    * @param contrasenaActual contraseña actual del usuario
    * @param contrasenaNueva contraseña nueva del usuario
    * @param contrasenaRepetida confirmación de la contraseña nueva
-   * @param model modelo para añadir atributos a la página
-   * @return template de perfil
+   * @param redirectAttributes para pasar mensajes a través de la redirección
+   * @return redirección al template de perfil
    */
   @PostMapping("/perfil/cambiar-contrasena")
   public String cambiarContrasena(
       @RequestParam("contrasenaActual") String contrasenaActual,
       @RequestParam("contrasenaNueva") String contrasenaNueva,
       @RequestParam("contrasenaRepetida") String contrasenaRepetida,
-      Model model) {
+      RedirectAttributes redirectAttributes) {
 
     System.out.println("LOG: Intentando cambiar contrasena.");
     Usuario usuarioActual = authservice.getCurrentUser();
 
     if (usuarioActual == null) {
-      model.addAttribute("errorPassword", "Error crítico: No se encontró el usuario.");
-      model.addAttribute("usuarioLogueado", new Usuario());
-      return "user_profile";
+      redirectAttributes.addFlashAttribute("errorPassword", "Error crítico: No se encontró el usuario.");
+      return "redirect:/perfil" ;
     }
 
     try {
@@ -190,14 +187,13 @@ public class PerfilController {
       usuarioActual.setContrasena(passwordEncoder.encode(contrasenaNueva));
       usuarioService.guardarEnBd(usuarioActual);
       authservice.actualizarSesion(usuarioActual.getId());
-      model.addAttribute("exitoPassword", "Contrasena actualizada correctamente.");
+      redirectAttributes.addFlashAttribute("exitoPassword", "Contrasena actualizada correctamente.");
 
     } catch (Exception e) {
-      model.addAttribute("errorPassword", e.getMessage());
+      redirectAttributes.addFlashAttribute("errorPassword", e.getMessage());
     }
 
-    model.addAttribute("usuarioLogueado", usuarioActual);
-    return "user_profile";
+    return "redirect:/perfil";
   }
 
   /**
