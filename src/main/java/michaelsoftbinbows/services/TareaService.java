@@ -8,6 +8,7 @@ import michaelsoftbinbows.data.TareaRepository;
 import michaelsoftbinbows.data.UsuarioRepository;
 import michaelsoftbinbows.dto.TareaDto;
 import michaelsoftbinbows.entities.Tarea;
+import michaelsoftbinbows.entities.Usuario;
 import michaelsoftbinbows.exceptions.RegistroInvalidoException;
 import michaelsoftbinbows.exceptions.TareaInvalidaException;
 import michaelsoftbinbows.util.Dificultad;
@@ -197,22 +198,46 @@ public class TareaService {
   }
 
   /**
-   * Elimina una tarea por el ID del usuario y el nombre de la tarea.
-   *
-   * @param usuarioId Id del usuario al que pertenece la tarea
-   * @param nombreTarea Nombre de la tarea a eliminar
-   */
+ * Elimina una tarea pendiente por el ID del usuario y el nombre de la tarea.
+ * 
+ * La búsqueda se realiza entre las tareas del usuario que no han sido completadas
+ * (fechaCompletada es null) y el nombre debe coincidir (case-insensitive).
+ * 
+ * Este método utiliza una transacción para asegurar la consistencia de los datos
+ * y aprovecha la configuración orphanRemoval=true para eliminar automáticamente
+ * la tarea de la base de datos al removerla de la colección del usuario.
+ *
+ * @param usuarioId ID del usuario al que pertenece la tarea
+ * @param nombreTarea Nombre de la tarea pendiente a eliminar (case-insensitive)
+ * @throws IllegalArgumentException Si el usuario no existe o si no se encuentra 
+ * una tarea pendiente con el nombre especificado
+ */
   @Transactional
   public void eliminarPorUsuarioYNombreTarea(Long usuarioId, String nombreTarea) {
-    if (tareaRepository.existsByNombreAndUsuarioId(nombreTarea, usuarioId) == false) {
-      throw new IllegalArgumentException(
-          "Tarea '" + nombreTarea + "' no encontrada para el usuario con ID " + usuarioId + ".");
-    }
-    Optional<Tarea> tareaOpt = tareaRepository.findByNombreAndUsuarioId(nombreTarea, usuarioId);
-    String nombreUsuario = tareaOpt.get().getUsuario().getNombreUsuario();
-    tareaRepository.delete(tareaOpt.get());
-    System.out.println(
-        "Tarea '" + nombreTarea + "' del usuario '" + nombreUsuario + "'' eliminada exitosamente.");
+      // 1. Busca al usuario para asegurarte de que existe
+      Usuario usuario = usuarioRepository.findById(usuarioId)
+          .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + usuarioId));
+
+      // 2. Busca la tarea a eliminar DENTRO de la lista de tareas del usuario
+      Optional<Tarea> tareaParaEliminarOpt = usuario.getTareas().stream()
+          .filter(t -> t.getNombre().equalsIgnoreCase(nombreTarea) && t.getFechaCompletada() == null)
+          .findFirst();
+
+      if (tareaParaEliminarOpt.isPresent()) {
+          Tarea tareaParaEliminar = tareaParaEliminarOpt.get();
+          
+          // 3. Elimina la tarea de la colección del usuario
+          usuario.getTareas().remove(tareaParaEliminar);
+
+          // 4. Guarda el usuario. Gracias a orphanRemoval=true, JPA borrará la tarea de la BD.
+          usuarioRepository.save(usuario);
+          
+          System.out.println(
+              "Tarea '" + nombreTarea + "' del usuario '" + usuario.getNombreUsuario() + "' eliminada exitosamente.");
+      } else {
+          throw new IllegalArgumentException(
+              "Tarea pendiente '" + nombreTarea + "' no encontrada para el usuario.");
+      }
   }
 
   private Tarea crearTareaBase(String nombre, String descripcion, String dificultad, String clima) {

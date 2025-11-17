@@ -30,14 +30,16 @@ public class TareaController {
    *
    * @param model modelo para añadir atributos
    * @param nombreTarea nombre de tarea a eliminar
+   * @param redirectAttributes Atributos para pasar mensajes de éxito durante la redirección
    * @return redirect al home
    * @throws RegistroInvalidoException si la tarea no se puede eliminar
    */
   @PostMapping("/eliminar-tarea")
-  public String eliminarTarea(Model model, @RequestParam("nombreTarea") String nombreTarea)
+  public String eliminarTarea(Model model, @RequestParam("nombreTarea") String nombreTarea, RedirectAttributes redirectAttributes)
       throws RegistroInvalidoException {
     Long id = authservice.getCurrentUser().getId();
     tareaService.eliminarPorUsuarioYNombreTarea(id, nombreTarea);
+    redirectAttributes.addFlashAttribute("successMessage", "Tarea '" + nombreTarea + "' eliminada correctamente.");
     return "redirect:/home";
   }
 
@@ -46,11 +48,12 @@ public class TareaController {
    *
    * @param model modelo para añadir atributos
    * @param nombreTarea nombre de la tarea a completar
+   * @param redirectAttributes Atributos para pasar mensajes de éxito durante la redirección
    * @return redirect al home
    * @throws RegistroInvalidoException si la tarea no se puede completar
    */
   @PostMapping("/completar-tarea")
-  public String completarTarea(Model model, @RequestParam("nombreTarea") String nombreTarea)
+  public String completarTarea(Model model, @RequestParam("nombreTarea") String nombreTarea, RedirectAttributes redirectAttributes)
       throws RegistroInvalidoException {
     Long idUsuario = authservice.getCurrentUser().getId();
 
@@ -63,6 +66,7 @@ public class TareaController {
       // Si existe, obtenemos su ID y llamamos al servicio para completarla.
       Long idTarea = tareaPendienteOpt.get().getId();
       usuarioTareaService.completarTarea(idUsuario, idTarea);
+      redirectAttributes.addFlashAttribute("successMessage", "¡Felicidades! Has completado la tarea '" + nombreTarea + "'.");
     } else {
       // Si no se encuentra una tarea pendiente con ese nombre, lanzamos un error.
       throw new RegistroInvalidoException(

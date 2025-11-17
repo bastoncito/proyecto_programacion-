@@ -139,25 +139,32 @@ document.addEventListener('DOMContentLoaded', function () {
   setupCharCounter('nombre', 'nombre-chars', 50);
   setupCharCounter('descripcion', 'descripcion-chars', 100);
 
-  // --- LÓGICA PARA ABRIR MODAL CON ERROR Y MOSTRAR TOAST ---
+// --- LÓGICA PARA ABRIR MODAL CON ERROR Y MOSTRAR TOAST ---
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('showCreateTaskModal') === 'true' && createTaskModal) {
     createTaskModal.style.display = 'flex';
   }
 
-  // Apuntamos al ID correcto del toast global
-  const successToast = document.getElementById('global-success-toast');
+  // Selecciona todos los toasts que tengan la clase 'global-toast'
+  const globalToasts = document.querySelectorAll('.global-toast');
 
-  if (successToast) {
-    // La lógica para desaparecer después de 3 segundos
-    setTimeout(() => {
-      successToast.style.transition = 'opacity 0.5s ease';
-      successToast.style.opacity = '0';
-
-      // Esperamos a que la transición termine para poner display: none
+  // Función reutilizable para manejar la desaparición de un toast
+  const handleToast = (toastElement) => {
+    if (toastElement) {
+      // La lógica para desaparecer después de 3 segundos
       setTimeout(() => {
-        successToast.style.display = 'none';
-      }, 500);
-    }, 3000);
-  }
+        toastElement.style.transition = 'opacity 0.5s ease';
+        toastElement.style.opacity = '0';
+
+        // Esperamos a que la transición termine para poner display: none
+        setTimeout(() => {
+          toastElement.style.display = 'none';
+        }, 500); // Este tiempo debe coincidir con la duración de la transición CSS
+      }, 3000);
+    }
+  };
+
+  // Aplica la lógica a cada toast encontrado en la página
+  globalToasts.forEach(handleToast);
+
 });

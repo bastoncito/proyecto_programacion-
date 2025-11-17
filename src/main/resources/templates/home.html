@@ -422,14 +422,17 @@
       </div>
     </div>
 
-    <!-- Toast global para la aplicación -->
+    <!-- Toasts global para la aplicación -->
+
+    <!-- Toast de Éxito -->
     <div class="toast-container">
       <div th:if="${successMessage}" class="toast success global-toast" id="global-success-toast">
         <span class="toast-icon">✅</span>
         <span th:text="${successMessage}"></span>
         <button class="toast-close" onclick="this.parentElement.style.display='none'">×</button>
       </div>
-      
+
+      <!-- Toast de Error -->
       <div th:if="${errorMessage}" class="toast error global-toast" id="global-error-toast">
         <span class="toast-icon">❌</span>
         <span th:text="${errorMessage}"></span>
