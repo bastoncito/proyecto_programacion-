@@ -31,9 +31,10 @@ public class HistorialController {
     System.out.println(
         "LOG: El método 'mostrarHistorial' ha sido llamado desde HistorialController.");
 
-    // 1. Obtener el usuario actual de forma segura
+    // 1. Obtener el usuario actual de forma segura (con tareas cargadas)
     Usuario usuarioActual =
-        usuarioService.buscarPorCorreo(authservice.getCurrentUser().getCorreoElectronico());
+        usuarioService.buscarPorCorreoConTareas(
+            authservice.getCurrentUser().getCorreoElectronico());
 
     // 2. Manejar el caso en que el usuario no se encuentre
     if (usuarioActual == null) {

@@ -63,12 +63,14 @@ public class HomeController {
   public String mostrarHome(Model model) {
     System.out.println("LOG: El método 'mostrarMain' ha sido llamado por una petición a /home.");
     // Obtener usuario con colecciones cargadas dentro de contexto transaccional
-    Usuario usuarioActual = usuarioService.buscarPorCorreoConTareas(authservice.getCurrentUser().getCorreoElectronico());
-    
+    Usuario usuarioActual =
+        usuarioService.buscarPorCorreoConTareas(
+            authservice.getCurrentUser().getCorreoElectronico());
+
     if (usuarioActual == null) {
       return "redirect:/login?error=userNotFound";
     }
-    
+
     // Verificar racha y tareas expiradas
     usuarioService.verificarPerdidaRacha(usuarioActual);
     usuarioTareaService.verificarTareasExpiradas(usuarioActual.getId());

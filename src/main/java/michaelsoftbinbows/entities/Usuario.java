@@ -10,17 +10,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.JoinColumn;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.stream.Collectors;
 import michaelsoftbinbows.exceptions.RegistroInvalidoException;
 import michaelsoftbinbows.model.Rol;
@@ -73,8 +68,12 @@ public class Usuario {
       orphanRemoval = true)
   private List<Tarea> tareas = new ArrayList<>();
 
-  @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<UsuarioLogro> usuarioLogros = new ArrayList<>();
+  @OneToMany(
+      mappedBy = "usuario",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true,
+      fetch = FetchType.EAGER)
+  private List<UsuarioLogro> usuarioLogros = new ArrayList<>();
 
   private String ciudad;
 
@@ -83,9 +82,7 @@ public class Usuario {
     // Constructor vacío
   }
 
-/**
-   * Constructor principal para crear un nuevo Usuario.
-   */
+  /** Constructor principal para crear un nuevo Usuario. */
   public Usuario(String nombreUsuario, String correoElectronico, String contrasena)
       throws RegistroInvalidoException {
     setNombreUsuario(nombreUsuario);
@@ -228,7 +225,7 @@ public class Usuario {
     this.liga = "Bronce";
   }
 
-/**
+  /**
    * Devuelve la lista de asociaciones UsuarioLogro (que incluye la fecha de completado).
    *
    * @return Una lista de objetos UsuarioLogro.
@@ -238,21 +235,19 @@ public class Usuario {
   }
 
   /**
-   * Devuelve una lista simple de los Logros que el usuario ha desbloqueado.
-   * Este es un método "helper" que "desenvuelve" la lista de UsuarioLogro.
-   * Es útil para comprobaciones como `getLogros().contains(logro)`.
+   * Devuelve una lista simple de los Logros que el usuario ha desbloqueado. Este es un método
+   * "helper" que "desenvuelve" la lista de UsuarioLogro. Es útil para comprobaciones como
+   * `getLogros().contains(logro)`.
    *
    * @return Una lista de objetos Logro.
    */
   @Transient
   public List<Logro> getLogros() {
     if (this.usuarioLogros == null) {
-        return new ArrayList<>();
+      return new ArrayList<>();
     }
     // Transforma la lista de "UsuarioLogro" en una lista de "Logro"
-    return this.usuarioLogros.stream()
-                       .map(UsuarioLogro::getLogro)
-                       .collect(Collectors.toList());
+    return this.usuarioLogros.stream().map(UsuarioLogro::getLogro).collect(Collectors.toList());
   }
 
   /**

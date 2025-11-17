@@ -5,11 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import michaelsoftbinbows.dto.TareaDto;
+import michaelsoftbinbows.entities.Logro;
 import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.entities.Usuario;
-import michaelsoftbinbows.entities.Logro;
-import michaelsoftbinbows.dto.TopJugadorLogrosDto;
-import michaelsoftbinbows.entities.Logro;
 import michaelsoftbinbows.exceptions.AdminCrearTareaException;
 import michaelsoftbinbows.exceptions.AdminCrearUsuarioException;
 import michaelsoftbinbows.exceptions.AdminGuardarTareaException;
@@ -19,12 +17,11 @@ import michaelsoftbinbows.exceptions.TareaInvalidaException;
 import michaelsoftbinbows.model.Rol;
 import michaelsoftbinbows.security.CustomUserDetails;
 import michaelsoftbinbows.services.ConfiguracionService;
+import michaelsoftbinbows.services.LogroService;
 import michaelsoftbinbows.services.SeguridadService;
 import michaelsoftbinbows.services.TareaService;
 import michaelsoftbinbows.services.TemporadaService;
 import michaelsoftbinbows.services.UsuarioService;
-import michaelsoftbinbows.services.LogroService;
-import michaelsoftbinbows.services.GestorLogrosService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -52,10 +49,12 @@ public class AdminController {
   @Autowired private SeguridadService seguridadService; // Reglas de permisos y roles.
   @Autowired private TemporadaService temporadaService; // Lógica para el reseteo de temporadas.
   @Autowired private TareaService tareaService; // Lógica de negocio para tareas.
+  @Autowired private michaelsoftbinbows.services.AuthService authservice;
   @Autowired private LogroService logroService;
-  @Autowired private ConfiguracionService configuracionService; // Para ajustes del sistema como el límite del Top.
-  @Autowired private GestorLogrosService gestorLogrosService;
-  
+
+  @Autowired
+  private ConfiguracionService
+      configuracionService; // Para ajustes del sistema como el límite del Top.
 
   /**
    * Método de ayuda para registrar un nuevo usuario con la contraseña ya encriptada. Centraliza la
@@ -120,13 +119,11 @@ public class AdminController {
       @RequestParam(name = "errorLogro", required = false) String errorLogro,
       Model model) {
 
-    // Se obtiene el usuario que está actualmente logueado para verificar sus permisos.
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    Usuario usuarioActual = ((CustomUserDetails) auth.getPrincipal()).getUsuario();
-    
+    // Obtenemos el usuario gestionado desde el AuthService (asegura entidad gestionada)
+    Usuario usuarioActual = authservice.getCurrentUser();
+
     // Logros revisar
     usuarioService.manejarLogicaDeLogin(usuarioActual.getCorreoElectronico());
-    
 
     // Primera barrera de seguridad: si el usuario no tiene el rol adecuado, se le redirige.
     if (usuarioActual.getRol() != Rol.ADMIN && usuarioActual.getRol() != Rol.MODERADOR) {
@@ -201,7 +198,7 @@ public class AdminController {
               + nombreTareaParaEditar
               + "' del usuario: "
               + correoUsuarioParaEditar);
-      Usuario usuarioDeLaTarea = usuarioService.buscarPorCorreo(correoUsuarioParaEditar);
+      Usuario usuarioDeLaTarea = usuarioService.buscarPorCorreoConTareas(correoUsuarioParaEditar);
       if (usuarioDeLaTarea != null
           && seguridadService.puedeGestionarTareasDe(usuarioActual, usuarioDeLaTarea)) {
         Tarea tareaParaEditar = usuarioDeLaTarea.buscarTareaPorNombre(nombreTareaParaEditar);
@@ -213,15 +210,19 @@ public class AdminController {
     }
 
     if (logroIdParaEditar != null) {
-      System.out.println("DEBUG: Se ha solicitado abrir el modal para editar el logro: " + logroIdParaEditar);
-      
+      System.out.println(
+          "DEBUG: Se ha solicitado abrir el modal para editar el logro: " + logroIdParaEditar);
+
       // Buscamos el logro en la BD usando el servicio
-      logroService.obtenerPorId(logroIdParaEditar).ifPresent(logro -> {
-          model.addAttribute("logroParaEditar", logro);
-      });
-      
+      logroService
+          .obtenerPorId(logroIdParaEditar)
+          .ifPresent(
+              logro -> {
+                model.addAttribute("logroParaEditar", logro);
+              });
+
       if (errorLogro != null) {
-          model.addAttribute("errorLogro", errorLogro);
+        model.addAttribute("errorLogro", errorLogro);
       }
     }
 
@@ -353,9 +354,7 @@ public class AdminController {
   @GetMapping("/admin/eliminar")
   public String eliminarUsuario(
       @RequestParam("correo") String correoAeliminar, RedirectAttributes redirectAttributes) {
-    Usuario actor =
-        ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-            .getUsuario();
+    Usuario actor = authservice.getCurrentUser();
     Usuario objetivo = usuarioService.buscarPorCorreo(correoAeliminar);
 
     System.out.println(
@@ -407,9 +406,7 @@ public class AdminController {
       @RequestParam("nombreTarea") String nombreTarea,
       RedirectAttributes redirectAttributes) {
 
-    Usuario actor =
-        ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-            .getUsuario();
+    Usuario actor = authservice.getCurrentUser();
     Usuario objetivo = usuarioService.buscarPorCorreo(correoUsuario);
 
     if (!seguridadService.puedeGestionarTareasDe(actor, objetivo)) {
@@ -505,9 +502,7 @@ public class AdminController {
       @RequestParam("rol") Rol rol,
       RedirectAttributes redirectAttributes)
       throws AdminCrearUsuarioException {
-    Usuario actor =
-        ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-            .getUsuario();
+    Usuario actor = authservice.getCurrentUser();
 
     if (!seguridadService.puedeAsignarRol(actor, rol)) {
       redirectAttributes.addFlashAttribute(
@@ -692,19 +687,19 @@ public class AdminController {
   @GetMapping("/admin/logros/toggle")
   public String toggleLogroActivo(
       @RequestParam("id") String id, RedirectAttributes redirectAttributes) {
-        
+
     // 1. Buscamos el logro en el servicio
     Optional<Logro> logroOpt = logroService.obtenerPorId(id);
 
     if (logroOpt.isPresent()) {
       Logro logro = logroOpt.get();
-      
+
       // 2. Invertimos su estado
       logro.setActivo(!logro.isActivo());
-      
+
       // 3. Guardamos los cambios
       logroService.guardar(logro);
-      
+
       String estado = logro.isActivo() ? "activado" : "desactivado";
       redirectAttributes.addFlashAttribute(
           "success", "Logro '" + logro.getNombre() + "' ha sido " + estado + ".");
@@ -768,5 +763,4 @@ public class AdminController {
         "success", "Logro '" + logro.getNombre() + "' guardado correctamente.");
     return "redirect:/admin?vista=logros";
   }
-
 }

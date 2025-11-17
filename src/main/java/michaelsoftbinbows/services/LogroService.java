@@ -7,9 +7,8 @@ import michaelsoftbinbows.dto.LogroStatsDto;
 import michaelsoftbinbows.entities.Logro;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
-
+import org.springframework.stereotype.Service;
 
 /**
  * Servicio para gestionar la lógica de negocio de los Logros. Proporciona métodos CRUD para
@@ -19,7 +18,7 @@ import org.springframework.data.domain.Pageable;
 public class LogroService {
 
   @Autowired private LogroRepository logroRepository;
-  
+
   /**
    * Obtiene la lista de todos los logros disponibles.
    *
@@ -30,15 +29,15 @@ public class LogroService {
   }
 
   /**
-   * Obtiene la lista de todos los logros que están marcados como 'activos'.
-   * Esto es útil para las vistas de usuario (como el perfil) donde
-   * no queremos mostrar logros que el admin ha desactivado.
+   * Obtiene la lista de todos los logros que están marcados como 'activos'. Esto es útil para las
+   * vistas de usuario (como el perfil) donde no queremos mostrar logros que el admin ha
+   * desactivado.
    *
    * @return Una lista de objetos Logro activos.
    */
   public List<Logro> obtenerTodosActivos() {
     // Asumimos que tu LogroRepository tiene este método
-    return logroRepository.findAllByActivo(true); 
+    return logroRepository.findAllByActivo(true);
   }
 
   /**
@@ -72,6 +71,7 @@ public class LogroService {
 
   /**
    * Obtiene el conteo total de logros definidos en la BD.
+   *
    * @return long el número total de logros.
    */
   public long getConteoTotalLogros() {
@@ -80,6 +80,7 @@ public class LogroService {
 
   /**
    * Obtiene el conteo de logros que están marcados como 'activos'.
+   *
    * @return long el número de logros activos.
    */
   public long getConteoLogrosActivos() {
