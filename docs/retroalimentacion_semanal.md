@@ -147,7 +147,7 @@ Trabajo colaborativo con rotación de roles por hitos, usando Discord para coord
 
 ### Trabajo realizado:
 - **Hans Reicher:** 
-- **Matías Gómez:** 
+- **Matías Gómez:** Actualizar documentación cambio roles, Mover scripts del HTML a archivos propios, Arreglar bugs conocidos y agregar features pequeñas.
 - **Diego Pezoa:** 
 - **Bastián Reyes:** 
 
