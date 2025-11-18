@@ -82,13 +82,20 @@
               </div>
               <div class="form-group">
                 <label for="ciudad">Ciudad (para el clima)</label>
-                <input
-                  type="text"
-                  id="ciudad"
-                  name="ciudad"
-                  th:value="${usuarioLogueado.ciudad}"
-                  placeholder="Ej: Curico,CL"
-                />
+                <div class="input-with-status">
+                  <input
+                    type="text"
+                    id="ciudad"
+                    name="ciudad"
+                    th:value="${usuarioLogueado.ciudad}"
+                    placeholder="Ej: Curico,CL"
+                    autocomplete="off"
+                    th:data-validation-url="@{/api/geocoding/validate}"
+                  />
+                  <span id="city-validation-status" class="validation-status">
+                    <i class="bx"></i>
+                  </span>
+                </div>
               </div>
               <button type="submit" class="btn btn-primary">
                 Guardar Cambios

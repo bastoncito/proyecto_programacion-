@@ -309,3 +309,57 @@ body {
   padding-top: 8px;
   border-top: 1px solid rgba(255, 255, 255, 0.2); /* Línea separadora */
 }
+/* =================================================================== */
+/* 6. ESTILOS PARA VALIDACIÓN DE CIUDAD                                */
+/* =================================================================== */
+
+.input-with-status {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-status input {
+  width: 100%;
+}
+
+/* El span contenedor posiciona el ícono y controla su visibilidad */
+.validation-status {
+  position: absolute;
+  right: 15px;
+  opacity: 0; /* Oculto por defecto */
+  transition: opacity 0.3s ease;
+  /* Hacemos que el ícono no se pueda seleccionar con el mouse */
+  pointer-events: none; 
+}
+
+.validation-status.visible {
+  opacity: 1; /* Lo hacemos visible cuando sea necesario */
+}
+
+/* El ícono <i> dentro del span */
+.validation-status i {
+  font-size: 1.5em;
+  vertical-align: middle; /* Ayuda a centrarlo verticalmente */
+  transition: color 0.3s ease;
+}
+
+/* Colores y animación según el estado */
+.validation-status.loading i {
+  color: var(--color-texto-secundario);
+  animation: spin 1s linear infinite; /* Aplicamos la animación de giro */
+}
+
+.validation-status.valid i {
+  color: var(--color-verde-exito);
+}
+
+.validation-status.invalid i {
+  color: var(--color-rojo-peligro);
+}
+
+/* La animación de giro (la mantenemos por si la usamos) */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

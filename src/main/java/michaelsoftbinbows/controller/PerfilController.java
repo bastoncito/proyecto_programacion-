@@ -11,6 +11,7 @@ import michaelsoftbinbows.entities.UsuarioLogro;
 import michaelsoftbinbows.services.AuthService;
 import michaelsoftbinbows.services.LogroService;
 import michaelsoftbinbows.services.UsuarioService;
+import michaelsoftbinbows.services.GeocodingService;
 import michaelsoftbinbows.util.UsuarioValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,6 +29,7 @@ public class PerfilController {
 
   private final UsuarioService usuarioService;
   private final PasswordEncoder passwordEncoder;
+  private final GeocodingService geocodingService;
   private UsuarioValidator usuarioValidator = new UsuarioValidator();
 
   @Autowired private AuthService authService;
@@ -42,9 +44,10 @@ public class PerfilController {
    * @param usuarioService Service para acciones de Usuario
    * @param passwordEncoder encriptador de contraseñas BCrypt
    */
-  public PerfilController(UsuarioService usuarioService, PasswordEncoder passwordEncoder) {
+  public PerfilController(UsuarioService usuarioService, PasswordEncoder passwordEncoder,   GeocodingService geocodingService) {
     this.usuarioService = usuarioService;
     this.passwordEncoder = passwordEncoder;
+    this.geocodingService = geocodingService;
   }
 
   /** Muestra la página de perfil del usuario logueado. */
@@ -120,6 +123,15 @@ public class PerfilController {
     if (usuarioActual == null) {
         redirectAttributes.addFlashAttribute("errorInfo", "Error crítico: No se encontró el usuario.");
       return "redirect:/perfil";
+    }
+
+    // Si el campo de ciudad no está vacío, lo validamos.
+    if (nuevaCiudad != null && !nuevaCiudad.trim().isEmpty()) {
+      if (!geocodingService.isValidCity(nuevaCiudad)) {
+        redirectAttributes.addFlashAttribute("errorInfo", "La ciudad '" + nuevaCiudad + "' no es válida o no fue encontrada.");
+        // Devolvemos al usuario a la página de perfil con el error.
+        return "redirect:/perfil";
+      }
     }
 
     try {

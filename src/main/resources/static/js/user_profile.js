@@ -64,8 +64,65 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  // --- LÓGICA PARA VALIDACIÓN DE CIUDAD ---
+
+  const cityInput = document.getElementById('ciudad');
+  const cityStatus = document.getElementById('city-validation-status');
+  const cityIcon = cityStatus ? cityStatus.querySelector('i') : null; // Obtenemos el ícono <i>
+  let debounceTimer;
+
+  if (cityInput && cityStatus && cityIcon) {
+    
+    const validateCity = () => {
+      const cityName = cityInput.value.trim();
+      const validationUrl = cityInput.dataset.validationUrl;
+
+      // Si el campo está vacío, simplemente ocultamos el ícono.
+      if (cityName === '') {
+        cityStatus.classList.remove('visible', 'loading', 'valid', 'invalid');
+        return;
+      }
+
+      // Mostrar estado de carga
+      cityStatus.classList.remove('valid', 'invalid');
+      cityStatus.classList.add('loading', 'visible');
+      cityIcon.className = 'bx bx-loader-alt'; // Usamos la clase para el spinner
+
+      fetch(`${validationUrl}?city=${encodeURIComponent(cityName)}`)
+        .then(response => {
+          if (!response.ok) throw new Error('Error de red');
+          return response.json();
+        })
+        .then(data => {
+          // Quitar el estado de carga
+          cityStatus.classList.remove('loading');
+
+          // Mostrar el resultado correcto (éxito o error)
+          if (data.valid) {
+            cityStatus.classList.add('valid');
+            cityIcon.className = 'bx bx-check'; // Clase para el ícono de check
+          } else {
+            cityStatus.classList.add('invalid');
+            cityIcon.className = 'bx bx-x'; // Clase para el ícono de 'x'
+          }
+        })
+        .catch(error => {
+          console.error('Error en la validación:', error);
+          cityStatus.classList.remove('loading');
+          cityStatus.classList.add('invalid');
+          cityIcon.className = 'bx bx-x'; // Mostramos 'x' también si hay un error de red
+        });
+    };
+
+    // Listener que evita muchas peticiones
+    cityInput.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(validateCity, 500); // Espera 500ms después de la última tecla
+    });
+  }
+
   /**
-   * Llena el tooltip con los datos del logro (sin cambios)
+   * Llena el tooltip con los datos del logro
    * @param {HTMLElement} target - Elemento del logro
    */
   function fillTooltipData(target) {
