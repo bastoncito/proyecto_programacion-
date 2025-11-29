@@ -273,14 +273,14 @@ public class TareaService {
       base.add(t3);
     }
 
-    // ARREGLO: Declaración de t4 movida más cerca de su uso.
+    // Declaración de t4 movida más cerca de su uso.
     Tarea t4 =
         crearTareaBase("Ver una película", "Relájate viendo una película", "Fácil", "Lluvia");
     if (t4 != null) {
       base.add(t4);
     }
 
-    // ARREGLO: Declaración de t5 movida más cerca de su uso.
+    // Declaración de t5 movida más cerca de su uso.
     Tarea t5 = crearTareaBase("Jardinería", "Cuida tus plantas", "Medio", "Soleado");
     if (t5 != null) {
       base.add(t5);

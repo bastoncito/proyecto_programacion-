@@ -542,7 +542,7 @@ public class UsuarioService {
     return dtos.stream().limit(5).collect(Collectors.toList());
   }
 
-  // --- ¡NUEVO MÉTODO PARA LA TARJETA DE CONTEO! ---
+  // --- MÉTODO PARA LA TARJETA DE CONTEO ---
   /**
    * Obtiene el conteo total de todos los logros completados por todos los usuarios. (Calculado en
    * Java para la tarjeta de estadísticas).

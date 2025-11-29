@@ -57,6 +57,9 @@ public class Usuario {
   @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
   private int puntosMesPasado;
 
+  //CAMPO A TRABAJAR EN FUTURO
+  private String avatarUrl;
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -216,6 +219,14 @@ public class Usuario {
 
   public void setPuntosMesPasado(int puntosMesPasado) {
     this.puntosMesPasado = puntosMesPasado;
+  }
+
+  public String getAvatarUrl() {
+      return avatarUrl;
+  }
+
+  public void setAvatarUrl(String avatarUrl) {
+      this.avatarUrl = avatarUrl;
   }
 
   /** Resetea los puntos de liga del usuario al inicio de una nueva temporada. */

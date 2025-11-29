@@ -21,6 +21,7 @@
     <link rel="stylesheet" th:href="@{/styles/home.css}" />
     <link rel="stylesheet" th:href="@{/styles/navbar.css}" />
     <link rel="stylesheet" th:href="@{/styles/loader.css}" />
+    <link rel="stylesheet" th:href="@{/styles/gestor_amigos.css}" />
 
     <script th:src="@{/js/loader-init.js}"></script>
   </head>
@@ -170,6 +171,15 @@
                 correo@ejemplo.com
               </p>
             </div>
+
+            <!-- BOTÓN GESTOR DE AMIGOS -->
+            <!-- Nota: style position:relative para que el badge se posicione sobre el icono -->
+            <a href="#" id="openFriendsModal" class="add-friend-btn" title="Gestor de Amigos" style="position: relative;">
+              <i class='bx bxs-user-plus'></i>
+              <!-- Badge de contador principal -->
+              <span id="home-requests-badge" class="badge-count" style="display: none; position: absolute; top: -5px; right: -5px; border: 2px solid white;">0</span>
+            </a>
+
             <div class="level-badge">
               <span
                 class="level-number"
@@ -339,6 +349,9 @@
           </div>
         </div>  
     </main>
+
+    <!-- MODAL GESTOR DE AMIGOS (Cargado desde Fragmento) -->
+    <div th:replace="~{gestor_amigos_fragment :: friendsModal}"></div>
 
     <!-- MODAL PARA VER/COMPLETAR/ELIMINAR TAREA -->
     <div class="modal" id="taskModal">

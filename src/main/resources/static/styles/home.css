@@ -184,6 +184,28 @@ body {
   color: var(--color-texto-secundario);
 }
 
+.add-friend-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;            /* Mismo ancho que .level-badge */
+  height: 40px;           /* Mismo alto que .level-badge */
+  border-radius: 50%;     /* Circular */
+  background-color: var(--color-bordes-sutiles); /* Fondo suave para diferenciarlo */
+  color: var(--color-oscuro);
+  text-decoration: none;  /* Quitar subrayado del link */
+  font-size: 1.4em;       /* Tamaño del ícono ajustado */
+  flex-shrink: 0;         /* Evita que se aplaste */
+  transition: var(--transicion-suave);
+  cursor: pointer;
+}
+
+.add-friend-btn:hover {
+  background-color: var(--color-principal); /* Color amarillo al pasar el mouse */
+  color: var(--color-oscuro);
+  transform: scale(1.05); /* Pequeño efecto de zoom */
+}
+
 /* La insignia circular que muestra el nivel del usuario. */
 .level-badge {
   background-color: var(--color-oscuro);

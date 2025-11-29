@@ -59,4 +59,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
    * @return Una Lista con los 3 mejores Usuarios.
    */
   List<Usuario> findTop3ByOrderByPuntosLigaDesc();
+  
+  // Busca usuarios cuyo nombre contenga el texto (query), ignorando mayúsculas/minúsculas.
+  List<Usuario> findByNombreUsuarioContainingIgnoreCase(String nombreUsuario);
 }

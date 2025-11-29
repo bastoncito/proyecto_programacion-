@@ -1,0 +1,329 @@
+/* =========================================
+   1. VARIABLES (Consistentes con tu App)
+   ========================================= */
+:root {
+  --color-principal: #ffc839;       /* Amarillo */
+  --color-principal-hover: #e6b332;
+  --color-oscuro: #212529;          /* Negro suave */
+  --color-blanco: #fff;
+  --color-claro: #f5f5f5;           /* Gris claro */
+  --color-bordes-sutiles: #eef2f5;
+  --color-verde-exito: #28a745;
+  --color-rojo-peligro: #d9534f;
+  --color-texto-principal: #212529;
+  --color-texto-secundario: #868e96;
+  --sombra-suave: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --border-radius-suave: 12px;
+  --transicion-suave: all 0.3s ease;
+}
+
+/* =========================================
+   2. LAYOUT GENERAL (Fondo Negro)
+   ========================================= */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+  background-color: #121212; /* Fondo negro para resaltar el área de trabajo */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column; /* Para acomodar la navbar al final */
+  padding-bottom: 80px; /* Espacio para la navbar */
+}
+
+/* Centrado del contenido */
+.profile-container {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+/* La Tarjeta Blanca Central */
+.profile-card-wrapper {
+  background-color: var(--color-blanco);
+  width: 100%;
+  max-width: 800px;
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* =========================================
+   3. COMPONENTES DEL PERFIL
+   ========================================= */
+.back-btn {
+  align-self: flex-start;
+  background-color: var(--color-oscuro);
+  color: var(--color-blanco);
+  border: none;
+  padding: 10px 24px;
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.3s ease;
+}
+
+.back-btn:hover {
+  color: var(--color-principal);
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  border-bottom: 2px solid var(--color-bordes-sutiles);
+  padding-bottom: 30px;
+}
+
+.user-basic-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.user-avatar-large {
+  width: 100px;
+  height: 100px;
+  background-color: var(--color-bordes-sutiles);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 40px;
+  color: #90a4ae;
+  flex-shrink: 0;
+  overflow: hidden; /* Para que la imagen no se salga */
+}
+
+.user-text-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-name-large {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-oscuro);
+  line-height: 1.2;
+}
+
+.user-level-info {
+  font-size: 16px;
+  color: var(--color-texto-secundario);
+  font-weight: 500;
+}
+
+.user-streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 5px;
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--color-oscuro);
+}
+
+.user-streak i {
+  color: #ff6b35;
+  font-size: 22px;
+}
+
+.league-display {
+  background-color: var(--color-oscuro);
+  color: var(--color-principal);
+  padding: 30px;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 220px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.league-icon {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.league-name {
+  font-size: 22px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.league-subtext {
+  font-size: 14px;
+  color: rgba(255,255,255,0.7);
+  margin-top: 5px;
+}
+
+/* =========================================
+   4. ESTADÍSTICAS
+   ========================================= */
+.stats-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.stat-card {
+  background-color: var(--color-blanco);
+  border: 1px solid var(--color-bordes-sutiles);
+  border-radius: var(--border-radius-suave);
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--sombra-suave);
+  transition: transform 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.stat-info { display: flex; flex-direction: column; }
+.stat-label { font-size: 14px; color: var(--color-texto-secundario); font-weight: 500; }
+.stat-number { font-size: 28px; font-weight: 700; color: var(--color-oscuro); }
+.stat-icon-wrapper { width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; }
+.icon-tasks { background-color: #e8f5e9; color: #28a745; }
+.icon-xp { background-color: #fff8e1; color: #ffc839; }
+
+/* =========================================
+   5. LOGROS
+   ========================================= */
+.achievements-section {
+  background-color: var(--color-claro);
+  padding: 25px;
+  border-radius: 16px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-oscuro);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  gap: 15px;
+}
+
+.achievement-item {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  background-color: var(--color-bordes-sutiles);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.achievement-item:hover {
+  transform: scale(1.1);
+  z-index: 10;
+}
+
+.achievement-item img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+}
+
+/* Tooltip Inteligente */
+#achievement-tooltip {
+  position: fixed;
+  background-color: var(--color-oscuro);
+  color: var(--color-blanco);
+  padding: 10px 15px;
+  border-radius: 8px;
+  z-index: 9999;
+  width: 220px;
+  text-align: center;
+  font-size: 0.9em;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  pointer-events: none;
+}
+
+/* Flecha del tooltip */
+#achievement-tooltip::after {
+  content: "";
+  position: absolute;
+  left: var(--arrow-left, 50%);
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+}
+
+#achievement-tooltip.arrow-down::after {
+  top: 100%;
+  border-color: var(--color-oscuro) transparent transparent transparent;
+}
+
+#achievement-tooltip.arrow-up::after {
+  bottom: 100%;
+  border-color: transparent transparent var(--color-oscuro) transparent;
+}
+
+#achievement-tooltip.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.tooltip-title { font-weight: 700; margin-bottom: 5px; }
+.tooltip-description { font-size: 0.9em; opacity: 0.8; }
+.tooltip-exp { font-weight: 700; font-size: 0.95em; color: var(--color-verde-exito); margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.2); }
+
+/* =========================================
+   6. BOTONES DE ACCIÓN
+   ========================================= */
+.action-buttons-container {
+  display: flex;
+  justify-content: center;
+  padding-top: 10px;
+}
+
+.btn-action {
+  padding: 12px 40px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: var(--transicion-suave);
+  border: none;
+  text-decoration: none; /* Importante si es <a> */
+}
+
+.btn-add { background-color: var(--color-oscuro); color: var(--color-blanco); }
+.btn-add:hover { background-color: var(--color-principal); color: var(--color-oscuro); }
+.btn-delete { background-color: transparent; border: 2px solid var(--color-rojo-peligro); color: var(--color-rojo-peligro); }
+.btn-delete:hover { background-color: var(--color-rojo-peligro); color: white; }

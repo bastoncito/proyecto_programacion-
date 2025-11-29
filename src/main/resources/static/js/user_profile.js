@@ -85,17 +85,15 @@ document.addEventListener("DOMContentLoaded", function () {
     } else if (tooltipExp) {
       tooltipExp.style.display = "none";
     }
+    
+    // Manejo de fecha (opcional, si viene del backend)
     if (isUnlocked) {
       if (tooltipDate) {
-        // Leemos la fecha real desde el atributo data-date
         const fecha = target.dataset.date;
-        
-        // Nos aseguramos de que la fecha exista antes de mostrarla
         if (fecha) {
             tooltipDate.textContent = `Desbloqueado el ${fecha}`;
             tooltipDate.style.display = "block";
         } else {
-            // Oculta la fecha si está desbloqueado pero no hay fecha (por si acaso)
             tooltipDate.style.display = "none";
         }
       }
@@ -106,20 +104,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
   /**
    * Posiciona el tooltip de forma inteligente usando coordenadas de la ventana (viewport).
-   * Funciona tanto para elementos normales como para elementos 'sticky'.
    * @param {HTMLElement} target - El elemento del logro que activó el tooltip.
    */
   function positionTooltip(target) {
     if (!tooltip) return;
 
-    // getBoundingClientRect() da la posición RELATIVA A LA VENTANA.
     const targetRect = target.getBoundingClientRect();
     const tooltipHeight = tooltip.offsetHeight;
     const tooltipWidth = tooltip.offsetWidth;
 
     // --- 1. CÁLCULO DE POSICIÓN VERTICAL (top) ---
     let top;
-    // ¿Hay espacio arriba del icono? (respecto a la ventana)
     if (targetRect.top > tooltipHeight + 10) {
       top = targetRect.top - tooltipHeight - 10; // Posicionar arriba
       tooltip.classList.remove("arrow-up");
@@ -133,7 +128,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // --- 2. CÁLCULO DE POSICIÓN HORIZONTAL (left) ---
     let left = targetRect.left + targetRect.width / 2 - tooltipWidth / 2;
 
-    // Ajustar si se sale por los bordes de la ventana
     if (left < 10) {
       left = 10;
     } else if (left + tooltipWidth > window.innerWidth - 10) {
