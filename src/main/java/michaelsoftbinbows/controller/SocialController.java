@@ -78,22 +78,22 @@ public class SocialController {
     try {
       PerfilUsuarioDto perfil = socialService.obtenerPerfilCompleto(id);
       model.addAttribute("perfil", perfil);
-      
+
       // La variable ligaAnterior ahora es redundante si usas puntosMesPasado en la vista,
       // pero la dejamos por si acaso la usas en otro lado del template antiguo.
       model.addAttribute("ligaAnterior", calcularLigaPorPuntos(perfil.getPuntosMesPasado()));
-      
+
       return "view_user_profile";
     } catch (IllegalArgumentException e) {
       return "redirect:/home?error=UsuarioNoEncontrado";
     }
   }
-  
+
   private String calcularLigaPorPuntos(int puntos) {
-      if (puntos >= 5000) return "Diamante";
-      if (puntos >= 3000) return "Platino";
-      if (puntos >= 1500) return "Oro";
-      if (puntos >= 500) return "Plata";
-      return "Bronce";
+    if (puntos >= 5000) return "Diamante";
+    if (puntos >= 3000) return "Platino";
+    if (puntos >= 1500) return "Oro";
+    if (puntos >= 500) return "Plata";
+    return "Bronce";
   }
 }

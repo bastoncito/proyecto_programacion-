@@ -1,8 +1,8 @@
 package michaelsoftbinbows.controller;
 
-import java.util.Optional;  
-import michaelsoftbinbows.entities.Tarea;
+import java.util.Optional;
 import michaelsoftbinbows.dto.TareaDto;
+import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.exceptions.RegistroInvalidoException;
 import michaelsoftbinbows.exceptions.TareaInvalidaException;
 import michaelsoftbinbows.services.AuthService;
@@ -35,11 +35,15 @@ public class TareaController {
    * @throws RegistroInvalidoException si la tarea no se puede eliminar
    */
   @PostMapping("/eliminar-tarea")
-  public String eliminarTarea(Model model, @RequestParam("nombreTarea") String nombreTarea, RedirectAttributes redirectAttributes)
+  public String eliminarTarea(
+      Model model,
+      @RequestParam("nombreTarea") String nombreTarea,
+      RedirectAttributes redirectAttributes)
       throws RegistroInvalidoException {
     Long id = authservice.getCurrentUser().getId();
     tareaService.eliminarPorUsuarioYNombreTarea(id, nombreTarea);
-    redirectAttributes.addFlashAttribute("successMessage", "Tarea '" + nombreTarea + "' eliminada correctamente.");
+    redirectAttributes.addFlashAttribute(
+        "successMessage", "Tarea '" + nombreTarea + "' eliminada correctamente.");
     return "redirect:/home";
   }
 
@@ -53,12 +57,15 @@ public class TareaController {
    * @throws RegistroInvalidoException si la tarea no se puede completar
    */
   @PostMapping("/completar-tarea")
-  public String completarTarea(Model model, @RequestParam("nombreTarea") String nombreTarea, RedirectAttributes redirectAttributes)
+  public String completarTarea(
+      Model model,
+      @RequestParam("nombreTarea") String nombreTarea,
+      RedirectAttributes redirectAttributes)
       throws RegistroInvalidoException {
     Long idUsuario = authservice.getCurrentUser().getId();
 
     // Llamamos al método del TareaService para buscar la tarea PENDIENTE.
-    Optional<Tarea> tareaPendienteOpt = 
+    Optional<Tarea> tareaPendienteOpt =
         tareaService.obtenerTareaPendientePorNombreYUsuarioId(nombreTarea, idUsuario);
 
     // Verificamos si la tarea pendiente realmente existe.
@@ -66,13 +73,14 @@ public class TareaController {
       // Si existe, obtenemos su ID y llamamos al servicio para completarla.
       Long idTarea = tareaPendienteOpt.get().getId();
       usuarioTareaService.completarTarea(idUsuario, idTarea);
-      redirectAttributes.addFlashAttribute("successMessage", "¡Felicidades! Has completado la tarea '" + nombreTarea + "'.");
+      redirectAttributes.addFlashAttribute(
+          "successMessage", "¡Felicidades! Has completado la tarea '" + nombreTarea + "'.");
     } else {
       // Si no se encuentra una tarea pendiente con ese nombre, lanzamos un error.
       throw new RegistroInvalidoException(
           "No se encontró una tarea pendiente con el nombre: " + nombreTarea);
     }
-    
+
     return "redirect:/home";
   }
 

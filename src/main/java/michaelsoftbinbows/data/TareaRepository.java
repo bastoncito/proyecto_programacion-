@@ -83,7 +83,7 @@ public interface TareaRepository extends JpaRepository<Tarea, Long> {
    * @return Optional con la tarea pendiente si se encuentra.
    */
   Optional<Tarea> findByNombreAndUsuarioIdAndFechaCompletadaIsNull(String nombre, Long usuarioId);
-  
+
   /**
    * Verifica si ya existe una tarea PENDIENTE con el mismo nombre para un usuario.
    *
@@ -100,5 +100,6 @@ public interface TareaRepository extends JpaRepository<Tarea, Long> {
    * @param usuarioId ID del usuario.
    * @return true si existe, false en caso contrario.
    */
-  boolean existsByDescripcionAndUsuarioIdAndFechaCompletadaIsNull(String descripcion, Long usuarioId);
+  boolean existsByDescripcionAndUsuarioIdAndFechaCompletadaIsNull(
+      String descripcion, Long usuarioId);
 }

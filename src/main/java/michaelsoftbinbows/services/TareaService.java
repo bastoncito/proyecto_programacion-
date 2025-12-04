@@ -93,13 +93,15 @@ public class TareaService {
     }
     Tarea tarea = new Tarea(tareaDto.nombre, tareaDto.descripcion, tareaDto.dificultad);
     // This will handle duplicate validation and bidirectional relationship
-    if (tareaRepository.existsByNombreAndUsuarioIdAndFechaCompletadaIsNull(tarea.getNombre(), userId)) {
+    if (tareaRepository.existsByNombreAndUsuarioIdAndFechaCompletadaIsNull(
+        tarea.getNombre(), userId)) {
       throw new TareaInvalidaException(
           "Tarea \"" + tarea.getNombre() + "\" ya existente.",
           tarea.getNombre(),
           tarea.getDescripcion());
     }
-    if (tareaRepository.existsByDescripcionAndUsuarioIdAndFechaCompletadaIsNull(tarea.getDescripcion(), userId)) {
+    if (tareaRepository.existsByDescripcionAndUsuarioIdAndFechaCompletadaIsNull(
+        tarea.getDescripcion(), userId)) {
       throw new TareaInvalidaException(
           "Tarea con descripción \"" + tarea.getDescripcion() + "\" ya existe.",
           tarea.getNombre(),
@@ -134,7 +136,8 @@ public class TareaService {
       throw new RegistroInvalidoException(
           "Error: No se encontró la tarea '" + nombreOriginal + "' para actualizar.");
     }
-    if (tareaRepository.existsByNombreAndUsuarioIdAndFechaCompletadaIsNull(tareaActualizada.nombre, usuarioId)
+    if (tareaRepository.existsByNombreAndUsuarioIdAndFechaCompletadaIsNull(
+            tareaActualizada.nombre, usuarioId)
         && !nombreOriginal.equalsIgnoreCase(tareaActualizada.nombre)) {
       throw new RegistroInvalidoException(
           "Ya existe otra tarea con el nombre '"
@@ -198,46 +201,55 @@ public class TareaService {
   }
 
   /**
- * Elimina una tarea pendiente por el ID del usuario y el nombre de la tarea.
- * 
- * La búsqueda se realiza entre las tareas del usuario que no han sido completadas
- * (fechaCompletada es null) y el nombre debe coincidir (case-insensitive).
- * 
- * Este método utiliza una transacción para asegurar la consistencia de los datos
- * y aprovecha la configuración orphanRemoval=true para eliminar automáticamente
- * la tarea de la base de datos al removerla de la colección del usuario.
- *
- * @param usuarioId ID del usuario al que pertenece la tarea
- * @param nombreTarea Nombre de la tarea pendiente a eliminar (case-insensitive)
- * @throws IllegalArgumentException Si el usuario no existe o si no se encuentra 
- * una tarea pendiente con el nombre especificado
- */
+   * Elimina una tarea pendiente por el ID del usuario y el nombre de la tarea.
+   *
+   * <p>La búsqueda se realiza entre las tareas del usuario que no han sido completadas
+   * (fechaCompletada es null) y el nombre debe coincidir (case-insensitive).
+   *
+   * <p>Este método utiliza una transacción para asegurar la consistencia de los datos y aprovecha
+   * la configuración orphanRemoval=true para eliminar automáticamente la tarea de la base de datos
+   * al removerla de la colección del usuario.
+   *
+   * @param usuarioId ID del usuario al que pertenece la tarea
+   * @param nombreTarea Nombre de la tarea pendiente a eliminar (case-insensitive)
+   * @throws IllegalArgumentException Si el usuario no existe o si no se encuentra una tarea
+   *     pendiente con el nombre especificado
+   */
   @Transactional
   public void eliminarPorUsuarioYNombreTarea(Long usuarioId, String nombreTarea) {
-      // 1. Busca al usuario para asegurarte de que existe
-      Usuario usuario = usuarioRepository.findById(usuarioId)
-          .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + usuarioId));
+    // 1. Busca al usuario para asegurarte de que existe
+    Usuario usuario =
+        usuarioRepository
+            .findById(usuarioId)
+            .orElseThrow(
+                () -> new IllegalArgumentException("Usuario no encontrado con ID: " + usuarioId));
 
-      // 2. Busca la tarea a eliminar DENTRO de la lista de tareas del usuario
-      Optional<Tarea> tareaParaEliminarOpt = usuario.getTareas().stream()
-          .filter(t -> t.getNombre().equalsIgnoreCase(nombreTarea) && t.getFechaCompletada() == null)
-          .findFirst();
+    // 2. Busca la tarea a eliminar DENTRO de la lista de tareas del usuario
+    Optional<Tarea> tareaParaEliminarOpt =
+        usuario.getTareas().stream()
+            .filter(
+                t -> t.getNombre().equalsIgnoreCase(nombreTarea) && t.getFechaCompletada() == null)
+            .findFirst();
 
-      if (tareaParaEliminarOpt.isPresent()) {
-          Tarea tareaParaEliminar = tareaParaEliminarOpt.get();
-          
-          // 3. Elimina la tarea de la colección del usuario
-          usuario.getTareas().remove(tareaParaEliminar);
+    if (tareaParaEliminarOpt.isPresent()) {
+      Tarea tareaParaEliminar = tareaParaEliminarOpt.get();
 
-          // 4. Guarda el usuario. Gracias a orphanRemoval=true, JPA borrará la tarea de la BD.
-          usuarioRepository.save(usuario);
-          
-          System.out.println(
-              "Tarea '" + nombreTarea + "' del usuario '" + usuario.getNombreUsuario() + "' eliminada exitosamente.");
-      } else {
-          throw new IllegalArgumentException(
-              "Tarea pendiente '" + nombreTarea + "' no encontrada para el usuario.");
-      }
+      // 3. Elimina la tarea de la colección del usuario
+      usuario.getTareas().remove(tareaParaEliminar);
+
+      // 4. Guarda el usuario. Gracias a orphanRemoval=true, JPA borrará la tarea de la BD.
+      usuarioRepository.save(usuario);
+
+      System.out.println(
+          "Tarea '"
+              + nombreTarea
+              + "' del usuario '"
+              + usuario.getNombreUsuario()
+              + "' eliminada exitosamente.");
+    } else {
+      throw new IllegalArgumentException(
+          "Tarea pendiente '" + nombreTarea + "' no encontrada para el usuario.");
+    }
   }
 
   private Tarea crearTareaBase(String nombre, String descripcion, String dificultad, String clima) {

@@ -92,7 +92,7 @@ public class PerfilController {
     model.addAttribute("unlockedAchievementsIds", unlockedIds); // Para la clase .locked
     model.addAttribute("unlockedMap", unlockedMap); // ¡Para poder buscar la fecha!
     model.addAttribute("activePage", "perfil"); // Para la navbar
-    //Para mostrar logros obtenidos/totales
+    // Para mostrar logros obtenidos/totales
     model.addAttribute("logrosObtenidosCount", logrosObtenidosCount);
     model.addAttribute("logrosTotalesCount", logrosTotalesCount);
     return "user_profile";
@@ -118,7 +118,8 @@ public class PerfilController {
     Usuario usuarioActual = authService.getCurrentUser();
 
     if (usuarioActual == null) {
-        redirectAttributes.addFlashAttribute("errorInfo", "Error crítico: No se encontró el usuario.");
+      redirectAttributes.addFlashAttribute(
+          "errorInfo", "Error crítico: No se encontró el usuario.");
       return "redirect:/perfil";
     }
 
@@ -162,8 +163,9 @@ public class PerfilController {
     Usuario usuarioActual = authService.getCurrentUser();
 
     if (usuarioActual == null) {
-      redirectAttributes.addFlashAttribute("errorPassword", "Error crítico: No se encontró el usuario.");
-      return "redirect:/perfil" ;
+      redirectAttributes.addFlashAttribute(
+          "errorPassword", "Error crítico: No se encontró el usuario.");
+      return "redirect:/perfil";
     }
 
     try {
@@ -181,7 +183,8 @@ public class PerfilController {
       usuarioActual.setContrasena(passwordEncoder.encode(contrasenaNueva));
       usuarioService.guardarEnBd(usuarioActual);
       authService.actualizarSesion(usuarioActual.getId());
-      redirectAttributes.addFlashAttribute("exitoPassword", "Contrasena actualizada correctamente.");
+      redirectAttributes.addFlashAttribute(
+          "exitoPassword", "Contrasena actualizada correctamente.");
 
     } catch (Exception e) {
       redirectAttributes.addFlashAttribute("errorPassword", e.getMessage());

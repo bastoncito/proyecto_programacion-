@@ -23,6 +23,8 @@
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <script th:src="@{/js/loader-init.js}"></script>
   </head>
   <body>
@@ -96,22 +98,24 @@
           </div>
           <div class="card-body">
             <div id="resumen-semanal">
-              <div class="summary-placeholder">
-                <i class="bx bxs-bar-chart-alt-2"></i>
-                <h2>Resumen Gráfico Semanal</h2>
+              <div class="chart-container">
+                <canvas id="chartSemanal"></canvas>
+              </div>
+              <div class="chart-stats">
                 <p>
-                  Próximamente: Un gráfico con las tareas completadas en los
-                  últimos 7 días.
+                  <strong>Tareas completadas esta semana:</strong>
+                  <span id="totalSemanal">0</span>
                 </p>
               </div>
             </div>
             <div id="resumen-mensual" style="display: none">
-              <div class="summary-placeholder">
-                <i class="bx bxs-calendar"></i>
-                <h2>Resumen Gráfico Mensual</h2>
+              <div class="chart-container">
+                <canvas id="chartMensual"></canvas>
+              </div>
+              <div class="chart-stats">
                 <p>
-                  Próximamente: Un gráfico detallado con tu productividad a lo
-                  largo de todo el mes.
+                  <strong>Tareas completadas este mes:</strong>
+                  <span id="totalMensual">0</span>
                 </p>
               </div>
             </div>

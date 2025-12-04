@@ -13,8 +13,7 @@ import org.springframework.stereotype.Repository;
 public interface SolicitudAmistadRepository extends JpaRepository<SolicitudAmistad, Long> {
 
   // 1. Buscar solicitudes recibidas que estén PENDIENTES
-  List<SolicitudAmistad> findByReceptorAndEstado(
-      Usuario receptor, SolicitudAmistad.Estado estado);
+  List<SolicitudAmistad> findByReceptorAndEstado(Usuario receptor, SolicitudAmistad.Estado estado);
 
   // 2. Buscar si existe CUALQUIER registro entre dos personas
   @Query(

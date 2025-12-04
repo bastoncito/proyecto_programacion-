@@ -57,7 +57,7 @@ public class Usuario {
   @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
   private int puntosMesPasado;
 
-  //CAMPO A TRABAJAR EN FUTURO
+  // CAMPO A TRABAJAR EN FUTURO
   private String avatarUrl;
 
   @Id
@@ -222,11 +222,11 @@ public class Usuario {
   }
 
   public String getAvatarUrl() {
-      return avatarUrl;
+    return avatarUrl;
   }
 
   public void setAvatarUrl(String avatarUrl) {
-      this.avatarUrl = avatarUrl;
+    this.avatarUrl = avatarUrl;
   }
 
   /** Resetea los puntos de liga del usuario al inicio de una nueva temporada. */
