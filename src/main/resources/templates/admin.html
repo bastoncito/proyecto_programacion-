@@ -21,6 +21,7 @@
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" th:href="@{/styles/avatars.css}" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script th:src="@{/js/loader-init.js}"></script>
   </head>
@@ -72,8 +73,13 @@
               <p th:text="${usuarioActual.correoElectronico}"></p>
               <p th:text="${usuarioActual.rol}"></p>
             </div>
-            <div class="user-avatar"></div>
-            <!-- Placeholder para una imagen de perfil -->
+            <div class="user-avatar">
+              <div class="auto-avatar" 
+                  style="width: 40px; height: 40px; font-size: 1rem;"
+                  th:data-nombre="${usuarioActual.nombreUsuario}"
+                  th:data-url="${usuarioActual.avatarUrl}">
+              </div>
+            </div>
           </div>
         </div>
 
@@ -763,7 +769,7 @@
       window.logrosChartData = /*[[${topLogrosStats}]]*/ [];
       /* ]]> */
     </script>
-    
+    <script th:src="@{/js/avatar-core.js}"></script>
     <script th:src="@{/js/admin_charts.js}"></script>
     <!-- Incluimos el fragmento de la barra de navegación inferior -->
     <div th:replace="~{fragments :: navbar}"></div>

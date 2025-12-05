@@ -102,7 +102,12 @@
                     <span class="top-jugador-rank" th:text="'#' + ${iterStat.count}">#1</span>
                     
                     <div class="top-jugador-avatar">
-                        </div>
+                      <div class="auto-avatar" 
+                          style="width: 40px; height: 40px; font-size: 0.9rem;"
+                          th:data-nombre="${jugador.nombreUsuario}"
+                          th:data-url="${jugador.avatarUrl}">
+                      </div>
+                    </div>
                     
                     <div class="top-jugador-info">
                         <span class="top-jugador-nombre" th:text="${jugador.nombreUsuario}">

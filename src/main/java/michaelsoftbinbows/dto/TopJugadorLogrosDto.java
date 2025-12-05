@@ -1,17 +1,19 @@
 package michaelsoftbinbows.dto;
 
 /**
- * DTO (Data Transfer Object) para transportar los datos del Top 5 de jugadores por logros. Es una
- * clase simple solo con getters y un constructor.
+ * DTO actualizado para incluir el avatar del usuario.
  */
 public class TopJugadorLogrosDto {
 
   private String nombreUsuario;
   private long totalLogros;
+  private String avatarUrl;
 
-  public TopJugadorLogrosDto(String nombreUsuario, long totalLogros) {
+  // Constructor actualizado
+  public TopJugadorLogrosDto(String nombreUsuario, long totalLogros, String avatarUrl) {
     this.nombreUsuario = nombreUsuario;
     this.totalLogros = totalLogros;
+    this.avatarUrl = avatarUrl;
   }
 
   // Getters
@@ -21,5 +23,9 @@ public class TopJugadorLogrosDto {
 
   public long getTotalLogros() {
     return totalLogros;
+  }
+
+  public String getAvatarUrl() {
+    return avatarUrl;
   }
 }

@@ -97,15 +97,12 @@ body {
 .user-avatar-large {
   width: 100px;
   height: 100px;
-  background-color: var(--color-bordes-sutiles);
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 40px;
-  color: #90a4ae;
   flex-shrink: 0;
-  overflow: hidden; /* Para que la imagen no se salga */
+  overflow: hidden;
 }
 
 .user-text-details {

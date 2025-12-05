@@ -513,10 +513,7 @@ public class UsuarioService {
   }
 
   /**
-   * Obtiene el Top 5 de jugadores ordenados por la cantidad de logros completados. Este método
-   * calcula el conteo en Java, ya que los logros son @Transient.
-   *
-   * @return Una lista de DTOs con el nombre y el conteo de logros.
+   * Obtiene el Top 5 de jugadores ordenados por la cantidad de logros completados.
    */
   public List<TopJugadorLogrosDto> getTop5JugadoresPorLogros() {
     // 1. Obtenemos TODOS los usuarios de la BD
@@ -527,12 +524,12 @@ public class UsuarioService {
 
     // 3. Iteramos y calculamos el conteo para cada uno
     for (Usuario u : todosLosUsuarios) {
-      // ¡Aquí usamos el GestorLogrosService!
-      // Contamos cuántos logros ha cumplido este usuario según la lógica
+      // Contamos cuántos logros ha cumplido este usuario
       int conteo = gestorLogrosService.getTodosLogrosCumplidos(u).size();
 
-      // Creamos el DTO con el resultado
-      dtos.add(new TopJugadorLogrosDto(u.getNombreUsuario(), conteo));
+      // --- CAMBIO AQUÍ ---
+      // Ahora pasamos el tercer parámetro: u.getAvatarUrl()
+      dtos.add(new TopJugadorLogrosDto(u.getNombreUsuario(), conteo, u.getAvatarUrl()));
     }
 
     // 4. Ordenamos la lista de DTOs en Java (de mayor a menor)

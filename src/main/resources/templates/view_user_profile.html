@@ -10,6 +10,7 @@
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
   <link rel="stylesheet" th:href="@{/styles/navbar.css}" />
   <link rel="stylesheet" th:href="@{/styles/view_user_profile.css}" />
+  <link rel="stylesheet" th:href="@{/styles/avatars.css}" />
 </head>
 <body>
 
@@ -28,10 +29,11 @@
       <div class="profile-header">
         <div class="user-basic-info">
           <div class="user-avatar-large">
-            <img th:if="${perfil.avatarUrl != null}" 
-                 th:src="${perfil.avatarUrl}" 
-                 style="width: 100%; height: 100%; object-fit: cover;" />
-            <i th:unless="${perfil.avatarUrl != null}" class='bx bxs-user'></i>
+            <div class="auto-avatar" 
+                style="width: 100%; height: 100%; font-size: 3rem;"
+                th:data-nombre="${perfil.nombreUsuario}"
+                th:data-url="${perfil.avatarUrl}">
+            </div>
           </div>
           
           <div class="user-text-details">
@@ -137,6 +139,8 @@
   </div>
 
   <script th:src="@{/js/user_profile.js}"></script>
+  <script th:src="@{/js/avatar-core.js}"></script>
+
   
   <script>
     // Recuperamos el token del input oculto

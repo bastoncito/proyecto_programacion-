@@ -22,6 +22,7 @@
     <link rel="stylesheet" th:href="@{/styles/navbar.css}" />
     <link rel="stylesheet" th:href="@{/styles/loader.css}" />
     <link rel="stylesheet" th:href="@{/styles/gestor_amigos.css}" />
+    <link rel="stylesheet" th:href="@{/styles/avatars.css}" />
 
     <script th:src="@{/js/loader-init.js}"></script>
   </head>
@@ -162,7 +163,13 @@
         <!-- Perfil de Usuario -->
         <div class="info-section">
           <div class="profile-header">
-            <div class="profile-avatar"><i class="bx bxs-user"></i></div>
+            <div class="profile-avatar">
+              <div class="auto-avatar" 
+                  style="width: 50px; height: 50px; font-size: 1.2rem;"
+                  th:data-nombre="${usuario.nombreUsuario}"
+                  th:data-url="${usuario.avatarUrl}">
+              </div>
+            </div>
             <div class="profile-details">
               <h2 class="username" th:text="${usuario.nombreUsuario}">
                 Nombre de Usuario
@@ -456,6 +463,8 @@
     <!-- SCRIPTS pantalla de carga y modales -->
     <script th:src="@{/js/home.js}"></script>
     <script th:src="@{/js/loader-main.js}"></script>
+    <script th:src="@{/js/avatar-core.js}"></script>
+    
 
     <div th:replace="~{fragments :: navbar}"></div>
   </body>
