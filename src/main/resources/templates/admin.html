@@ -671,17 +671,10 @@
         <h2>Editar Logro</h2>
         <div class="section-line"></div>
         
-        <form th:action="@{/admin/logros/guardar}" method="post" class="edit-form">
-          <input
-            type="hidden"
-            th:name="${_csrf.parameterName}"
-            th:value="${_csrf.token}"
-          />
-          <input
-            type="hidden"
-            name="id"
-            th:value="${logroParaEditar.id}"
-          />
+        <form th:action="@{/admin/logros/guardar}" method="post" class="edit-form" enctype="multipart/form-data">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+          
+          <input type="hidden" name="id" th:value="${logroParaEditar?.id}" />
 
           <div class="form-group">
             <label for="editNombreLogro">Nombre del Logro</label>
@@ -689,7 +682,7 @@
               type="text"
               id="editNombreLogro"
               name="nombre"
-              th:value="${logroParaEditar.nombre}"
+              th:value="${logroParaEditar?.nombre}"
               required
             />
           </div>
@@ -701,20 +694,25 @@
               name="descripcion"
               rows="3"
               style="resize: vertical; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; font-family: 'Poppins', sans-serif;"
-              th:text="${logroParaEditar.descripcion}"
+              th:text="${logroParaEditar?.descripcion}"
               required
             ></textarea>
           </div>
 
           <div class="form-group">
-            <label for="editImagenUrlLogro">URL del Ícono/Imagen</label>
-            <input
-              type="text"
-              id="editImagenUrlLogro"
-              name="imagenUrl"
-              th:value="${logroParaEditar.imagenUrl}"
-              placeholder="https://ejemplo.com/imagen.png"
-            />
+            <label>Icono / Imagen del Logro</label>
+            
+            <div th:if="${logroParaEditar?.imagenUrl != null}" style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                <img th:src="${logroParaEditar.imagenUrl}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;">
+                <span style="font-size: 12px; color: #666;">Imagen actual</span>
+                
+                <label style="font-size: 13px; cursor: pointer; color: #d9534f; margin-left: auto;">
+                    <input type="checkbox" name="eliminarImagen" value="true"> Eliminar imagen (Usar default)
+                </label>
+            </div>
+
+            <input type="file" id="archivoImagen" name="archivoImagen" accept="image/png, image/jpeg, image/jpg" />
+            <small style="color: #888; font-size: 12px;">Deja vacío para mantener la actual.</small>
           </div>
 
           <div class="form-group">
@@ -723,7 +721,7 @@
               type="number"
               id="editExperienciaLogro"
               name="experienciaRecompensa"
-              th:value="${logroParaEditar.getPuntosRecompensa()}"
+              th:value="${logroParaEditar?.getPuntosRecompensa()}"
               min="0"
               step="10"
               required

@@ -32,6 +32,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.util.StringUtils;
+import java.nio.file.*;
+import java.io.IOException;
+import java.util.UUID;
+
 
 /**
  * Controlador para el panel de administración. Maneja la visualización y gestión de usuarios,
@@ -51,6 +57,9 @@ public class AdminController {
   @Autowired private TareaService tareaService; // Lógica de negocio para tareas.
   @Autowired private michaelsoftbinbows.services.AuthService authservice;
   @Autowired private LogroService logroService;
+
+  // Definimos una subcarpeta específica para mantener orden
+  private static final String UPLOAD_DIR_LOGROS = "uploads/logros/";
 
   @Autowired
   private ConfiguracionService
@@ -722,45 +731,94 @@ public class AdminController {
    * @param redirectAttributes Para enviar mensajes de feedback.
    * @return Redirección a la vista de logros.
    */
-  @PostMapping("/admin/logros/guardar")
+@PostMapping("/admin/logros/guardar")
   public String guardarLogroEditado(
       @RequestParam("id") String id,
       @RequestParam("nombre") String nombre,
       @RequestParam("descripcion") String descripcion,
-      @RequestParam("imagenUrl") String imagenUrl,
       @RequestParam("experienciaRecompensa") int experienciaRecompensa,
+      // Nuevo: Recibimos el archivo en lugar del String
+      @RequestParam(value = "archivoImagen", required = false) MultipartFile archivo,
+      // Nuevo: Opción para borrar la imagen y volver al default
+      @RequestParam(value = "eliminarImagen", required = false) boolean eliminarImagen,
       RedirectAttributes redirectAttributes) {
 
-    // 1. Validamos los datos
+    // 1. Validaciones básicas
     if (nombre == null || nombre.trim().isEmpty()) {
       redirectAttributes.addFlashAttribute("errorLogro", "El nombre no puede estar vacío.");
-      // Devolvemos al usuario al modal de edición
       return "redirect:/admin?vista=logros&editarLogroId=" + id;
     }
-    if (experienciaRecompensa < 0) {
-      redirectAttributes.addFlashAttribute("errorLogro", "La experiencia no puede ser negativa.");
-      return "redirect:/admin?vista=logros&editarLogroId=" + id;
-    }
-
-    // 2. Buscamos el logro
+    
     Optional<Logro> logroOpt = logroService.obtenerPorId(id);
     if (logroOpt.isEmpty()) {
-      redirectAttributes.addFlashAttribute("error", "Error: No se encontró el logro a guardar.");
+      redirectAttributes.addFlashAttribute("error", "Error: No se encontró el logro.");
       return "redirect:/admin?vista=logros";
     }
 
-    // 3. Actualizamos el objeto Logro
     Logro logro = logroOpt.get();
     logro.setNombre(nombre.trim());
     logro.setDescripcion(descripcion.trim());
     logro.setExperienciaRecompensa(experienciaRecompensa);
-    logro.setImagenUrl(imagenUrl.trim()); // Guardamos la nueva URL
 
-    // 4. Guardamos en la base de datos
-    logroService.guardar(logro);
+    try {
+        // 2. Lógica de Imagen
+        
+        // CASO A: El admin marcó "Eliminar imagen actual"
+        if (eliminarImagen) {
+            borrarImagenLogro(logro.getImagenUrl());
+            logro.setImagenUrl(null); // Esto activará el icono por defecto en el HTML
+        }
+        // CASO B: El admin subió una imagen nueva
+        else if (archivo != null && !archivo.isEmpty()) {
+            // Validar que sea imagen
+            if (!archivo.getContentType().startsWith("image/")) {
+                 redirectAttributes.addFlashAttribute("errorLogro", "El archivo debe ser una imagen.");
+                 return "redirect:/admin?vista=logros&editarLogroId=" + id;
+            }
 
-    redirectAttributes.addFlashAttribute(
-        "success", "Logro '" + logro.getNombre() + "' guardado correctamente.");
+            // Crear directorio si no existe
+            Path uploadPath = Paths.get(UPLOAD_DIR_LOGROS);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            // Borrar la anterior si tenía
+            borrarImagenLogro(logro.getImagenUrl());
+
+            // Guardar la nueva
+            String extension = StringUtils.getFilenameExtension(archivo.getOriginalFilename());
+            String nombreUnico = "logro_" + id + "_" + UUID.randomUUID().toString() + "." + extension;
+            
+            Path rutaCompleta = uploadPath.resolve(nombreUnico);
+            Files.copy(archivo.getInputStream(), rutaCompleta, StandardCopyOption.REPLACE_EXISTING);
+
+            // Guardar la URL pública
+            logro.setImagenUrl("/uploads/logros/" + nombreUnico);
+        }
+        // CASO C: No subió nada ni borró -> Se mantiene la imagen que ya tenía
+
+        logroService.guardar(logro);
+        redirectAttributes.addFlashAttribute("success", "Logro actualizado correctamente.");
+
+    } catch (IOException e) {
+        e.printStackTrace();
+        redirectAttributes.addFlashAttribute("errorLogro", "Error al guardar la imagen: " + e.getMessage());
+        return "redirect:/admin?vista=logros&editarLogroId=" + id;
+    }
+
     return "redirect:/admin?vista=logros";
+  }
+
+  // --- HELPER PARA BORRAR IMAGEN FÍSICA ---
+  private void borrarImagenLogro(String urlImagen) {
+      if (urlImagen != null && urlImagen.startsWith("/uploads/")) {
+          try {
+              String nombreArchivo = urlImagen.replace("/uploads/logros/", "");
+              Path rutaArchivo = Paths.get(UPLOAD_DIR_LOGROS).resolve(nombreArchivo);
+              Files.deleteIfExists(rutaArchivo);
+          } catch (IOException e) {
+              System.err.println("Error al borrar imagen antigua de logro: " + e.getMessage());
+          }
+      }
   }
 }

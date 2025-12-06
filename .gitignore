@@ -39,3 +39,15 @@ out/
 # Libraries and JAR files
 *.jar              
 lib/ 
+
+### Configuración de Imágenes ###
+
+# 1. Ignorar TODO lo que esté dentro de uploads (Fotos de usuarios privadas)
+/uploads/*
+
+# 2. EXCEPCIÓN: ¡Sí subir la carpeta de logros! (Imágenes compartidas)
+!/uploads/logros/
+
+# 3. EXCEPCIÓN: Mantener los archivos .gitkeep (Para que Git cree las carpetas vacías)
+!/uploads/.gitkeep
+!/uploads/logros/.gitkeep
