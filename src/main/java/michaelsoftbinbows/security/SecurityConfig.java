@@ -27,7 +27,7 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             auth ->
                 auth.requestMatchers(
-                        "/", "/styles/**", "/images/**", "/js/**", "/login", "/register", "/api/**")
+                        "/", "/styles/**", "/images/**", "/js/**", "/uploads/**", "/login", "/register", "/api/**")
                     .permitAll() // public endpoints
                     .requestMatchers("/admin/**")
                     .hasAnyAuthority("ROLE_ADMIN", "ROLE_MODERADOR")
