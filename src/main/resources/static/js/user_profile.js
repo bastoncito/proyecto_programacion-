@@ -1,11 +1,96 @@
 document.addEventListener("DOMContentLoaded", function () {
+  // ==========================================
+  // LÓGICA DE VALIDACIÓN DE CIUDAD
+  // ==========================================
+  const cityInput = document.getElementById("ciudad");
+  const statusIcon = document.getElementById("city-status-icon");
+  const feedbackText = document.getElementById("city-feedback");
+  let typingTimer;
+
+  // Solo ejecutamos esto si existe el input de ciudad (estamos en modo edición)
+  if (cityInput) {
+    cityInput.addEventListener("input", function () {
+      // Reiniciar timer y mostrar carga
+      clearTimeout(typingTimer);
+      showLoadingState();
+
+      // Esperar 800ms
+      typingTimer = setTimeout(() => {
+        const ciudad = cityInput.value.trim();
+        if (ciudad.length > 2) {
+          validarCiudad(ciudad);
+        } else {
+          hideStatus();
+        }
+      }, 800);
+    });
+  }
+
+  // --- Funciones Auxiliares de Ciudad (DENTRO del EventListener) ---
+
+  function validarCiudad(ciudad) {
+    fetch(`/api/weather?city=${encodeURIComponent(ciudad)}`)
+      .then((response) => {
+        if (response.ok) return response.json();
+        throw new Error("Ciudad no encontrada");
+      })
+      .then((data) => {
+        showSuccessState(data.name, data.sys.country);
+      })
+      .catch((error) => {
+        showErrorState();
+      });
+  }
+
+  // Estados visuales
+  function showLoadingState() {
+    if (!statusIcon) return;
+    statusIcon.className = "bx bx-loader-alt bx-spin";
+    statusIcon.style.color = "#888";
+    statusIcon.style.display = "block";
+    if (feedbackText) feedbackText.style.display = "none";
+  }
+
+  function showSuccessState(nombreOficial, pais) {
+    if (!statusIcon) return;
+    statusIcon.className = "bx bxs-check-circle";
+    statusIcon.style.color = "#28a745";
+    statusIcon.style.display = "block";
+
+    if (feedbackText) {
+      feedbackText.textContent = `Detectado: ${nombreOficial}, ${pais}`;
+      feedbackText.style.color = "#28a745";
+      feedbackText.style.display = "block";
+    }
+  }
+
+  function showErrorState() {
+    if (!statusIcon) return;
+    statusIcon.className = "bx bxs-x-circle";
+    statusIcon.style.color = "#dc3545";
+    statusIcon.style.display = "block";
+
+    if (feedbackText) {
+      feedbackText.textContent = "Ciudad no encontrada. Prueba: Ciudad,Pais";
+      feedbackText.style.color = "#dc3545";
+      feedbackText.style.display = "block";
+    }
+  }
+
+  function hideStatus() {
+    if (statusIcon) statusIcon.style.display = "none";
+    if (feedbackText) feedbackText.style.display = "none";
+  }
+
+  // ==========================================
+  // LÓGICA DE TOOLTIPS DE LOGROS
+  // ==========================================
   const tooltip = document.getElementById("achievement-tooltip");
   const tooltipTitle = document.getElementById("tooltip-title");
   const tooltipDesc = document.getElementById("tooltip-desc");
   const tooltipExp = document.getElementById("tooltip-exp");
   const tooltipDate = document.getElementById("tooltip-date");
   const achievementItems = document.querySelectorAll(".achievement-item");
-
   // Función para ocultar el tooltip
   const hideTooltip = () => {
     if (!tooltip) return;

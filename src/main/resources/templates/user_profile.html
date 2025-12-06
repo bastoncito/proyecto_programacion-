@@ -83,13 +83,24 @@
               </div>
               <div class="form-group">
                 <label for="ciudad">Ciudad (para el clima)</label>
-                <input
-                  type="text"
-                  id="ciudad"
-                  name="ciudad"
-                  th:value="${usuarioLogueado.ciudad}"
-                  placeholder="Ej: Curico,CL"
-                />
+                
+                <!-- Contenedor relativo -->
+                <div style="position: relative;">
+                    <input
+                      type="text"
+                      id="ciudad"
+                      name="ciudad"
+                      th:value="${usuarioLogueado.ciudad}"
+                      placeholder="Ej: Curico,CL"
+                      autocomplete="off"
+                      style="width: 100%; box-sizing: border-box; padding-right: 40px;" 
+                    />
+                    <i id="city-status-icon" class='bx' 
+                      style="position: absolute; right: 15px; top: 0; bottom: 0; margin: auto; height: 20px; font-size: 20px; display: none; line-height: 1;">
+                    </i>
+                </div>
+
+                <small id="city-feedback" style="font-size: 12px; margin-top: 4px; display: none;"></small>
               </div>
               <button type="submit" class="btn btn-primary">
                 Guardar Cambios

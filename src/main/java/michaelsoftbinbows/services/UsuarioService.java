@@ -17,11 +17,13 @@ import michaelsoftbinbows.exceptions.RegistroInvalidoException;
 import michaelsoftbinbows.model.Rol;
 import michaelsoftbinbows.util.SistemaNiveles;
 import michaelsoftbinbows.util.UsuarioValidator;
+import michaelsoftbinbows.services.WeatherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.json.JSONObject;
 
 /**
  * Servicio para la lógica de negocio principal relacionada con los Usuarios. Gestiona la creación,
@@ -33,6 +35,7 @@ public class UsuarioService {
   @Autowired private UsuarioRepository usuarioRepository;
   @Autowired private ConfiguracionService configuracionService;
   @Autowired private GestorLogrosService gestorLogrosService;
+  @Autowired private WeatherService weatherService; 
   private UsuarioValidator usuarioValidator = new UsuarioValidator();
 
   /**
@@ -221,7 +224,7 @@ public class UsuarioService {
    * @throws RegistroInvalidoException Si los nuevos datos son inválidos.
    */
   public void actualizarUsuario(
-      String correoOriginal, String nuevoNombre, String nuevoCorreo, Rol nuevoRol, String ciudad)
+      String correoOriginal, String nuevoNombre, String nuevoCorreo, Rol nuevoRol, String ciudadInput)
       throws RegistroInvalidoException {
     Usuario usuario = buscarPorCorreo(correoOriginal);
     if (usuario == null) {
@@ -243,10 +246,35 @@ public class UsuarioService {
       throw new RegistroInvalidoException(
           "El correo electrónico ya está registrado: " + nuevoCorreo);
     }
+
+    if (ciudadInput != null && !ciudadInput.trim().isEmpty()) {
+        try {
+            // Llamada a la API con lo que escribió el usuario (ej: "Curico")
+            String jsonResponse = weatherService.getWeatherByCity(ciudadInput);
+            
+            // Parseamos la respuesta
+            JSONObject json = new JSONObject(jsonResponse);
+            
+            // Obtenemos el nombre OFICIAL y el PAÍS (ej: "Curicó" y "CL")
+            String nombreOficial = json.getString("name");
+            String pais = json.getJSONObject("sys").getString("country");
+            
+            // Guardamos el formato correcto: "Curicó, CL"
+            usuario.setCiudad(nombreOficial + "," + pais);
+            
+        } catch (Exception e) {
+            // Si la API falla, lanzamos error para que el usuario sepa
+            // que escribió mal la ciudad.
+            throw new IllegalArgumentException("Error: La ciudad '" + ciudadInput + "' no fue encontrada. Intenta agregar el código de país (ej: Curico,CL).");
+        }
+    } else {
+        // Si dejó el campo vacío, borramos la ciudad
+        usuario.setCiudad(null);
+    }
     usuario.setNombreUsuario(nuevoNombre);
     usuario.setCorreoElectronico(nuevoCorreo);
     usuario.setRol(nuevoRol);
-    usuario.setCiudad(ciudad);
+
     usuarioRepository.save(usuario);
   }
 
