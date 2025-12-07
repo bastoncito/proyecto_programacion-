@@ -1,9 +1,12 @@
 package michaelsoftbinbows.controller;
 
+import java.io.IOException;
+import java.nio.file.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import michaelsoftbinbows.dto.TareaDto;
 import michaelsoftbinbows.entities.Logro;
 import michaelsoftbinbows.entities.Tarea;
@@ -11,9 +14,11 @@ import michaelsoftbinbows.entities.Usuario;
 import michaelsoftbinbows.exceptions.AdminCrearTareaException;
 import michaelsoftbinbows.exceptions.AdminCrearUsuarioException;
 import michaelsoftbinbows.exceptions.AdminGuardarTareaException;
-import michaelsoftbinbows.exceptions.EdicionInvalidaException;
+import michaelsoftbinbows.exceptions.EdicionTareaException;
+import michaelsoftbinbows.exceptions.EdicionUsuarioException;
 import michaelsoftbinbows.exceptions.RegistroInvalidoException;
 import michaelsoftbinbows.exceptions.TareaInvalidaException;
+import michaelsoftbinbows.exceptions.TareaPertenenciaException;
 import michaelsoftbinbows.model.Rol;
 import michaelsoftbinbows.security.CustomUserDetails;
 import michaelsoftbinbows.services.ConfiguracionService;
@@ -28,16 +33,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.util.StringUtils;
-import java.nio.file.*;
-import java.io.IOException;
-import java.util.UUID;
-
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * Controlador para el panel de administración. Maneja la visualización y gestión de usuarios,
@@ -296,7 +297,7 @@ public class AdminController {
       @RequestParam(name = "nuevaContrasena", required = false) String nuevaContrasena,
       @RequestParam(name = "confirmarContrasena", required = false) String confirmarContrasena,
       RedirectAttributes redirectAttributes)
-      throws EdicionInvalidaException {
+      throws EdicionUsuarioException {
 
     System.out.println("\n--- INICIO PROCESO DE EDICIÓN DE USUARIO ---");
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -347,8 +348,8 @@ public class AdminController {
       redirectAttributes.addFlashAttribute(
           "success", "Usuario '" + nuevoNombre + "' actualizado correctamente.");
       System.out.println("SUCCESS: Usuario actualizado exitosamente en la base de datos.");
-    } catch (IllegalArgumentException | RegistroInvalidoException e) {
-      throw new EdicionInvalidaException(e.getMessage(), correoOriginal);
+    } catch (IllegalArgumentException e) {
+      throw new EdicionUsuarioException(e.getMessage(), correoOriginal);
     }
     return "redirect:/admin";
   }
@@ -413,7 +414,8 @@ public class AdminController {
   public String eliminarTareaDeUsuario(
       @RequestParam("correoUsuario") String correoUsuario,
       @RequestParam("nombreTarea") String nombreTarea,
-      RedirectAttributes redirectAttributes) {
+      RedirectAttributes redirectAttributes)
+      throws TareaPertenenciaException {
 
     Usuario actor = authservice.getCurrentUser();
     Usuario objetivo = usuarioService.buscarPorCorreo(correoUsuario);
@@ -424,27 +426,22 @@ public class AdminController {
       return "redirect:/acceso-denegado";
     }
 
-    try {
-      tareaService.eliminarPorUsuarioYNombreTarea(objetivo.getId(), nombreTarea);
-      redirectAttributes.addFlashAttribute(
-          "success",
-          "Tarea '"
-              + nombreTarea
-              + "' del usuario '"
-              + objetivo.getNombreUsuario()
-              + "' ha sido eliminada.");
-      System.out.println(
-          "LOG: El admin '"
-              + actor.getNombreUsuario()
-              + "' eliminó la tarea '"
-              + nombreTarea
-              + "' del usuario '"
-              + objetivo.getNombreUsuario()
-              + "'.");
-    } catch (Exception e) {
-      redirectAttributes.addFlashAttribute("error", e.getMessage());
-      System.err.println("ERROR al eliminar tarea: " + e.getMessage());
-    }
+    tareaService.eliminarPorUsuarioYNombreTarea(objetivo.getId(), nombreTarea);
+    redirectAttributes.addFlashAttribute(
+        "success",
+        "Tarea '"
+            + nombreTarea
+            + "' del usuario '"
+            + objetivo.getNombreUsuario()
+            + "' ha sido eliminada.");
+    System.out.println(
+        "LOG: El admin '"
+            + actor.getNombreUsuario()
+            + "' eliminó la tarea '"
+            + nombreTarea
+            + "' del usuario '"
+            + objetivo.getNombreUsuario()
+            + "'.");
     redirectAttributes.addAttribute("vista", "tareas");
     redirectAttributes.addAttribute("correo", correoUsuario);
     return "redirect:/admin";
@@ -480,7 +477,7 @@ public class AdminController {
       tareaActualizada.dificultad = nuevaDificultad;
       tareaService.actualizarTarea(idUsuario, nombreOriginal, tareaActualizada);
       redirectAttributes.addFlashAttribute("success", "Tarea actualizada correctamente.");
-    } catch (TareaInvalidaException | RegistroInvalidoException e) {
+    } catch (TareaInvalidaException | EdicionTareaException e) {
       throw new AdminGuardarTareaException(
           e.getMessage(),
           usuarioService.buscarPorCorreo(correoUsuario),
@@ -592,20 +589,14 @@ public class AdminController {
    * @return redirect admin
    */
   @GetMapping("/admin/temporada/reset-manual")
-  public String forzarReseteoTemporada(RedirectAttributes redirectAttributes) {
+  public String forzarReseteoTemporada(RedirectAttributes redirectAttributes) throws Exception {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     String actor = auth.getName();
     System.out.println(
         "LOG: El admin '" + actor + "' está forzando un reseteo de temporada manual.");
-    try {
-      temporadaService.forzarReseteoManual();
-      System.out.println("SUCCESS: Reseteo de temporada forzado con éxito por '" + actor + "'.");
-      redirectAttributes.addFlashAttribute("success", "¡Reseteo de temporada forzado con éxito!");
-    } catch (Exception e) {
-      System.err.println("ERROR: Falló el reseteo de temporada manual. Causa: " + e.getMessage());
-      redirectAttributes.addFlashAttribute(
-          "error", "Error al forzar el reseteo: " + e.getMessage());
-    }
+    temporadaService.forzarReseteoManual();
+    System.out.println("SUCCESS: Reseteo de temporada forzado con éxito por '" + actor + "'.");
+    redirectAttributes.addFlashAttribute("success", "¡Reseteo de temporada forzado con éxito!");
     return "redirect:/admin?vista=top";
   }
 
@@ -618,18 +609,13 @@ public class AdminController {
    */
   @GetMapping("/admin/top/set-limite")
   public String setLimiteTop(
-      @RequestParam("limite") int limite, RedirectAttributes redirectAttributes) {
+      @RequestParam("limite") int limite, RedirectAttributes redirectAttributes) throws Exception {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     String actor = auth.getName();
     System.out.println(
         "LOG: El admin '" + actor + "' está cambiando el límite del Top a: " + limite);
-    try {
-      configuracionService.setLimiteTop(limite);
-      redirectAttributes.addFlashAttribute("success", "Límite del Top guardado en " + limite + ".");
-    } catch (Exception e) {
-      System.err.println("ERROR: Falló al guardar el límite del Top. Causa: " + e.getMessage());
-      redirectAttributes.addFlashAttribute("error", "Error al guardar el límite.");
-    }
+    configuracionService.setLimiteTop(limite);
+    redirectAttributes.addFlashAttribute("success", "Límite del Top guardado en " + limite + ".");
     return "redirect:/admin?vista=top&limite=" + limite;
   }
 
@@ -731,7 +717,7 @@ public class AdminController {
    * @param redirectAttributes Para enviar mensajes de feedback.
    * @return Redirección a la vista de logros.
    */
-@PostMapping("/admin/logros/guardar")
+  @PostMapping("/admin/logros/guardar")
   public String guardarLogroEditado(
       @RequestParam("id") String id,
       @RequestParam("nombre") String nombre,
@@ -748,7 +734,7 @@ public class AdminController {
       redirectAttributes.addFlashAttribute("errorLogro", "El nombre no puede estar vacío.");
       return "redirect:/admin?vista=logros&editarLogroId=" + id;
     }
-    
+
     Optional<Logro> logroOpt = logroService.obtenerPorId(id);
     if (logroOpt.isEmpty()) {
       redirectAttributes.addFlashAttribute("error", "Error: No se encontró el logro.");
@@ -761,49 +747,50 @@ public class AdminController {
     logro.setExperienciaRecompensa(experienciaRecompensa);
 
     try {
-        // 2. Lógica de Imagen
-        
-        // CASO A: El admin marcó "Eliminar imagen actual"
-        if (eliminarImagen) {
-            borrarImagenLogro(logro.getImagenUrl());
-            logro.setImagenUrl(null); // Esto activará el icono por defecto en el HTML
+      // 2. Lógica de Imagen
+
+      // CASO A: El admin marcó "Eliminar imagen actual"
+      if (eliminarImagen) {
+        borrarImagenLogro(logro.getImagenUrl());
+        logro.setImagenUrl(null); // Esto activará el icono por defecto en el HTML
+      }
+      // CASO B: El admin subió una imagen nueva
+      else if (archivo != null && !archivo.isEmpty()) {
+        // Validar que sea imagen
+        if (!archivo.getContentType().startsWith("image/")) {
+          redirectAttributes.addFlashAttribute("errorLogro", "El archivo debe ser una imagen.");
+          return "redirect:/admin?vista=logros&editarLogroId=" + id;
         }
-        // CASO B: El admin subió una imagen nueva
-        else if (archivo != null && !archivo.isEmpty()) {
-            // Validar que sea imagen
-            if (!archivo.getContentType().startsWith("image/")) {
-                 redirectAttributes.addFlashAttribute("errorLogro", "El archivo debe ser una imagen.");
-                 return "redirect:/admin?vista=logros&editarLogroId=" + id;
-            }
 
-            // Crear directorio si no existe
-            Path uploadPath = Paths.get(UPLOAD_DIR_LOGROS);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-
-            // Borrar la anterior si tenía
-            borrarImagenLogro(logro.getImagenUrl());
-
-            // Guardar la nueva
-            String extension = StringUtils.getFilenameExtension(archivo.getOriginalFilename());
-            String nombreUnico = "logro_" + id + "_" + UUID.randomUUID().toString() + "." + extension;
-            
-            Path rutaCompleta = uploadPath.resolve(nombreUnico);
-            Files.copy(archivo.getInputStream(), rutaCompleta, StandardCopyOption.REPLACE_EXISTING);
-
-            // Guardar la URL pública
-            logro.setImagenUrl("/uploads/logros/" + nombreUnico);
+        // Crear directorio si no existe
+        Path uploadPath = Paths.get(UPLOAD_DIR_LOGROS);
+        if (!Files.exists(uploadPath)) {
+          Files.createDirectories(uploadPath);
         }
-        // CASO C: No subió nada ni borró -> Se mantiene la imagen que ya tenía
 
-        logroService.guardar(logro);
-        redirectAttributes.addFlashAttribute("success", "Logro actualizado correctamente.");
+        // Borrar la anterior si tenía
+        borrarImagenLogro(logro.getImagenUrl());
+
+        // Guardar la nueva
+        String extension = StringUtils.getFilenameExtension(archivo.getOriginalFilename());
+        String nombreUnico = "logro_" + id + "_" + UUID.randomUUID().toString() + "." + extension;
+
+        Path rutaCompleta = uploadPath.resolve(nombreUnico);
+        Files.copy(archivo.getInputStream(), rutaCompleta, StandardCopyOption.REPLACE_EXISTING);
+
+        // Guardar la URL pública
+        logro.setImagenUrl("/uploads/logros/" + nombreUnico);
+      }
+      // CASO C: No subió nada ni borró -> Se mantiene la imagen que ya tenía
+
+      logroService.guardar(logro);
+      redirectAttributes.addFlashAttribute("success", "Logro actualizado correctamente.");
 
     } catch (IOException e) {
-        e.printStackTrace();
-        redirectAttributes.addFlashAttribute("errorLogro", "Error al guardar la imagen: " + e.getMessage());
-        return "redirect:/admin?vista=logros&editarLogroId=" + id;
+      e.printStackTrace();
+      redirectAttributes.addFlashAttribute(
+          "errorLogro", "Error al guardar la imagen: " + e.getMessage());
+      return "redirect:/admin?vista=logros&editarLogroId=" + id;
     }
 
     return "redirect:/admin?vista=logros";
@@ -811,14 +798,14 @@ public class AdminController {
 
   // --- HELPER PARA BORRAR IMAGEN FÍSICA ---
   private void borrarImagenLogro(String urlImagen) {
-      if (urlImagen != null && urlImagen.startsWith("/uploads/")) {
-          try {
-              String nombreArchivo = urlImagen.replace("/uploads/logros/", "");
-              Path rutaArchivo = Paths.get(UPLOAD_DIR_LOGROS).resolve(nombreArchivo);
-              Files.deleteIfExists(rutaArchivo);
-          } catch (IOException e) {
-              System.err.println("Error al borrar imagen antigua de logro: " + e.getMessage());
-          }
+    if (urlImagen != null && urlImagen.startsWith("/uploads/")) {
+      try {
+        String nombreArchivo = urlImagen.replace("/uploads/logros/", "");
+        Path rutaArchivo = Paths.get(UPLOAD_DIR_LOGROS).resolve(nombreArchivo);
+        Files.deleteIfExists(rutaArchivo);
+      } catch (IOException e) {
+        System.err.println("Error al borrar imagen antigua de logro: " + e.getMessage());
       }
+    }
   }
 }

@@ -5,7 +5,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.entities.Usuario;
-import michaelsoftbinbows.exceptions.RegistroInvalidoException;
+import michaelsoftbinbows.exceptions.EdicionTareaException;
+import michaelsoftbinbows.exceptions.TareaPertenenciaException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,15 +17,16 @@ public class UsuarioTareaService {
   @Autowired GestorLogrosService gestorLogrosService;
 
   @Transactional
-  public void completarTarea(Long usuarioId, Long tareaId) throws RegistroInvalidoException {
+  public void completarTarea(Long usuarioId, Long tareaId) throws EdicionTareaException {
     Usuario u = usuarioService.obtenerPorId(usuarioId).get();
     Tarea tarea = tareaService.obtenerPorId(tareaId).get();
 
     if (!tarea.getUsuario().getId().equals(u.getId())) {
-      throw new IllegalArgumentException("La tarea no pertenece al usuario");
+      throw new TareaPertenenciaException(
+          "La tarea no pertenece al usuario", usuarioId, tarea.getNombre());
     }
     if (tarea.getFechaCompletada() != null) {
-      throw new RegistroInvalidoException("La tarea ya ha sido completada");
+      throw new EdicionTareaException("La tarea ya ha sido completada", tarea.getId());
     }
 
     // --- 1. APLICAR CAMBIOS INICIALES DE LA TAREA ---

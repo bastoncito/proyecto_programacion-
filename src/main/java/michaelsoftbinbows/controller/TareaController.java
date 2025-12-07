@@ -3,8 +3,9 @@ package michaelsoftbinbows.controller;
 import java.util.Optional;
 import michaelsoftbinbows.dto.TareaDto;
 import michaelsoftbinbows.entities.Tarea;
-import michaelsoftbinbows.exceptions.RegistroInvalidoException;
+import michaelsoftbinbows.exceptions.EdicionTareaException;
 import michaelsoftbinbows.exceptions.TareaInvalidaException;
+import michaelsoftbinbows.exceptions.TareaPertenenciaException;
 import michaelsoftbinbows.services.AuthService;
 import michaelsoftbinbows.services.TareaService;
 import michaelsoftbinbows.services.UsuarioService;
@@ -32,14 +33,14 @@ public class TareaController {
    * @param nombreTarea nombre de tarea a eliminar
    * @param redirectAttributes Atributos para pasar mensajes de éxito durante la redirección
    * @return redirect al home
-   * @throws RegistroInvalidoException si la tarea no se puede eliminar
+   * @throws TareaPertenenciaException si la tarea no se encuentra o no pertenece al usuario
    */
   @PostMapping("/eliminar-tarea")
   public String eliminarTarea(
       Model model,
       @RequestParam("nombreTarea") String nombreTarea,
       RedirectAttributes redirectAttributes)
-      throws RegistroInvalidoException {
+      throws TareaPertenenciaException {
     Long id = authservice.getCurrentUser().getId();
     tareaService.eliminarPorUsuarioYNombreTarea(id, nombreTarea);
     redirectAttributes.addFlashAttribute(
@@ -54,14 +55,16 @@ public class TareaController {
    * @param nombreTarea nombre de la tarea a completar
    * @param redirectAttributes Atributos para pasar mensajes de éxito durante la redirección
    * @return redirect al home
-   * @throws RegistroInvalidoException si la tarea no se puede completar
+   * @throws EdicionTareaException si la tarea no se puede completar
+   * @throws TareaPertenenciaException si la tarea no pertenece al usuario
+   * @throws TareaInvalidaException si la tarea pendiente no se encuentra
    */
   @PostMapping("/completar-tarea")
   public String completarTarea(
       Model model,
       @RequestParam("nombreTarea") String nombreTarea,
       RedirectAttributes redirectAttributes)
-      throws RegistroInvalidoException {
+      throws EdicionTareaException, TareaPertenenciaException, TareaInvalidaException {
     Long idUsuario = authservice.getCurrentUser().getId();
 
     // Llamamos al método del TareaService para buscar la tarea PENDIENTE.
@@ -77,8 +80,8 @@ public class TareaController {
           "successMessage", "¡Felicidades! Has completado la tarea '" + nombreTarea + "'.");
     } else {
       // Si no se encuentra una tarea pendiente con ese nombre, lanzamos un error.
-      throw new RegistroInvalidoException(
-          "No se encontró una tarea pendiente con el nombre: " + nombreTarea);
+      throw new TareaInvalidaException(
+          "No se encontró una tarea pendiente con el nombre: " + nombreTarea, nombreTarea, "");
     }
 
     return "redirect:/home";

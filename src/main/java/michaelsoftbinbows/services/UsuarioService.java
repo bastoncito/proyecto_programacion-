@@ -12,18 +12,17 @@ import michaelsoftbinbows.data.UsuarioRepository;
 import michaelsoftbinbows.dto.TopJugadorLogrosDto;
 import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.entities.Usuario;
-import michaelsoftbinbows.exceptions.EdicionInvalidaException;
+import michaelsoftbinbows.exceptions.EdicionUsuarioException;
 import michaelsoftbinbows.exceptions.RegistroInvalidoException;
 import michaelsoftbinbows.model.Rol;
 import michaelsoftbinbows.util.SistemaNiveles;
 import michaelsoftbinbows.util.UsuarioValidator;
-import michaelsoftbinbows.services.WeatherService;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.json.JSONObject;
 
 /**
  * Servicio para la lógica de negocio principal relacionada con los Usuarios. Gestiona la creación,
@@ -35,7 +34,7 @@ public class UsuarioService {
   @Autowired private UsuarioRepository usuarioRepository;
   @Autowired private ConfiguracionService configuracionService;
   @Autowired private GestorLogrosService gestorLogrosService;
-  @Autowired private WeatherService weatherService; 
+  @Autowired private WeatherService weatherService;
   private UsuarioValidator usuarioValidator = new UsuarioValidator();
 
   /**
@@ -66,37 +65,12 @@ public class UsuarioService {
    *
    * @param usuario El usuario a guardar.
    * @return El usuario guardado.
-   * @throws EdicionInvalidaException Si el nombre de usuario es inválido.
+   * @throws EdicionUsuarioException Si el nombre de usuario es inválido.
    * @throws RegistroInvalidoException Si la contraseña, nombre o correo ya existen o son inválidos.
    */
   public Usuario guardarUsuario(Usuario usuario)
-      throws EdicionInvalidaException, RegistroInvalidoException {
-    // Delegar validaciones sintácticas a UsuarioValidator
-    if (!usuarioValidator.nombreUsuarioValido(usuario.getNombreUsuario())) {
-      throw new IllegalArgumentException(
-          "Nombre de usuario no válido: " + usuario.getNombreUsuario());
-    }
-    if (!usuarioValidator.correoValido(usuario.getCorreoElectronico())) {
-      throw new IllegalArgumentException(
-          "Correo electrónico no válido: " + usuario.getCorreoElectronico());
-    }
-    // validarContrasena devuelve null cuando está bien, o un mensaje de error
-    String resultado = usuarioValidator.validarContrasena(usuario.getContrasena());
-    if (resultado != null) {
-      // Usamos RegistroInvalidoException para problemas con la contraseña
-      throw new RegistroInvalidoException(resultado);
-    }
-
-    // Verificar unicidad de nombre de usuario y correo
-    if (usuarioRepository.findByNombreUsuario(usuario.getNombreUsuario()).isPresent()) {
-      throw new RegistroInvalidoException(
-          "El nombre de usuario ya existe: " + usuario.getNombreUsuario());
-    }
-    if (usuarioRepository.findByCorreoElectronico(usuario.getCorreoElectronico()).isPresent()) {
-      throw new RegistroInvalidoException(
-          "El correo electrónico ya está registrado: " + usuario.getCorreoElectronico());
-    }
-
+      throws EdicionUsuarioException, RegistroInvalidoException {
+    validarUsuarioCompleto(usuario, true);
     return usuarioRepository.save(usuario);
   }
 
@@ -122,17 +96,7 @@ public class UsuarioService {
   }
 
   /**
-   * Obtiene un usuario por su correo electrónico.
-   *
-   * @param correo El correo del usuario.
-   * @return Un Optional con el usuario si existe.
-   */
-  public Optional<Usuario> obtenerPorCorreo(String correo) {
-    return usuarioRepository.findByCorreoElectronico(correo);
-  }
-
-  /**
-   * Busca un usuario por correo electrónico.
+   * Busca un usuario por su correo electrónico.
    *
    * @param correo El correo del usuario.
    * @return El Usuario o null si no se encuentra.
@@ -150,17 +114,16 @@ public class UsuarioService {
     return usuarioRepository.count();
   }
 
-  @Transactional
   /**
-   * Guarda un usuario sin validar la contraseña (útil para admin cuando la contraseña ya está
-   * hasheada).
+   * Valida todos los campos de un usuario (nombre, correo, contraseña, unicidad). Método privado
+   * reutilizado para evitar duplicación de código.
    *
-   * @param usuario El usuario a guardar.
-   * @return El usuario guardado.
-   * @throws RegistroInvalidoException Si el nombre de usuario o correo son inválidos o ya existen.
+   * @param usuario El usuario a validar.
+   * @param validarContrasena Si se debe validar la contraseña (false para admin updates).
+   * @throws RegistroInvalidoException Si algún campo es inválido o ya existe.
    */
-  public Usuario guardarSinValidarContrasena(Usuario usuario) throws RegistroInvalidoException {
-    // Valida nombre y correo (NO la contraseña, ya está hasheada)
+  private void validarUsuarioCompleto(Usuario usuario, boolean validarContrasena)
+      throws RegistroInvalidoException {
     if (!usuarioValidator.nombreUsuarioValido(usuario.getNombreUsuario())) {
       throw new IllegalArgumentException(
           "Nombre de usuario no válido: " + usuario.getNombreUsuario());
@@ -169,15 +132,35 @@ public class UsuarioService {
       throw new IllegalArgumentException(
           "Correo electrónico no válido: " + usuario.getCorreoElectronico());
     }
-    // Verificar unicidad de nombre de usuario y correo
+
+    if (validarContrasena) {
+      String resultado = usuarioValidator.validarContrasena(usuario.getContrasena());
+      if (resultado != null) {
+        throw new RegistroInvalidoException(resultado);
+      }
+    }
+
     if (usuarioRepository.findByNombreUsuario(usuario.getNombreUsuario()).isPresent()) {
-      throw new michaelsoftbinbows.exceptions.RegistroInvalidoException(
-          "Nombre de usuario ya existe: " + usuario.getNombreUsuario());
+      throw new RegistroInvalidoException(
+          "El nombre de usuario ya existe: " + usuario.getNombreUsuario());
     }
     if (usuarioRepository.findByCorreoElectronico(usuario.getCorreoElectronico()).isPresent()) {
-      throw new michaelsoftbinbows.exceptions.RegistroInvalidoException(
-          "Correo electrónico ya registrado: " + usuario.getCorreoElectronico());
+      throw new RegistroInvalidoException(
+          "El correo electrónico ya está registrado: " + usuario.getCorreoElectronico());
     }
+  }
+
+  @Transactional
+  /**
+   * Guarda un usuario sin validar la contraseña (útil para admin cuando la contraseña ya está
+   * hasheada). Realiza validación completa excepto en la contraseña.
+   *
+   * @param usuario El usuario a guardar.
+   * @return El usuario guardado.
+   * @throws RegistroInvalidoException Si el nombre de usuario o correo son inválidos o ya existen.
+   */
+  public Usuario guardarSinValidarContrasena(Usuario usuario) throws RegistroInvalidoException {
+    validarUsuarioCompleto(usuario, false);
     return usuarioRepository.save(usuario);
   }
 
@@ -204,10 +187,11 @@ public class UsuarioService {
 
   @Transactional
   /**
-   * Guarda una entidad Usuario directamente en la base de datos (BD).
+   * Guarda una entidad Usuario directamente en la base de datos (BD). Solo se debe usar
+   * internamente después de que validaciones ya han sido realizadas (ej: después de actualizar
+   * racha). Para uso externo, prefiere guardarUsuario() o guardarSinValidarContrasena().
    *
    * @param usuario El usuario a guardar.
-   * @throws RegistroInvalidoException Si el correo es nulo o vacío.
    */
   public void guardarEnBd(Usuario usuario) {
     usuarioRepository.save(usuario);
@@ -221,55 +205,66 @@ public class UsuarioService {
    * @param nuevoNombre El nuevo nombre de usuario.
    * @param nuevoCorreo El nuevo correo electrónico.
    * @param nuevoRol El nuevo rol a asignar.
-   * @throws RegistroInvalidoException Si los nuevos datos son inválidos.
+   * @throws EdicionUsuarioException Si los nuevos datos son inválidos.
    */
   public void actualizarUsuario(
-      String correoOriginal, String nuevoNombre, String nuevoCorreo, Rol nuevoRol, String ciudadInput)
-      throws RegistroInvalidoException {
+      String correoOriginal,
+      String nuevoNombre,
+      String nuevoCorreo,
+      Rol nuevoRol,
+      String ciudadInput)
+      throws EdicionUsuarioException {
     Usuario usuario = buscarPorCorreo(correoOriginal);
     if (usuario == null) {
-      throw new IllegalArgumentException("No se encontró el usuario con el correo original.");
+      throw new EdicionUsuarioException(
+          "No se encontró el usuario con el correo original.", correoOriginal);
     }
     // Validaciones básicas
     if (!usuarioValidator.nombreUsuarioValido(nuevoNombre)) {
-      throw new IllegalArgumentException("Nombre de usuario no válido: " + nuevoNombre);
+      throw new EdicionUsuarioException(
+          "Nombre de usuario no válido: " + nuevoNombre, correoOriginal);
     }
     if (!usuarioValidator.correoValido(nuevoCorreo)) {
-      throw new IllegalArgumentException("Correo electrónico no válido: " + nuevoCorreo);
+      throw new EdicionUsuarioException(
+          "Correo electrónico no válido: " + nuevoCorreo, correoOriginal);
     }
     if (usuarioRepository.findByNombreUsuario(nuevoNombre).isPresent()
         && !usuario.getNombreUsuario().equals(nuevoNombre)) {
-      throw new RegistroInvalidoException("El nombre de usuario ya existe: " + nuevoNombre);
+      throw new EdicionUsuarioException(
+          "El nombre de usuario ya existe: " + nuevoNombre, correoOriginal);
     }
     if (usuarioRepository.findByCorreoElectronico(nuevoCorreo).isPresent()
         && !usuario.getCorreoElectronico().equals(nuevoCorreo)) {
-      throw new RegistroInvalidoException(
-          "El correo electrónico ya está registrado: " + nuevoCorreo);
+      throw new EdicionUsuarioException(
+          "El correo electrónico ya está registrado: " + nuevoCorreo, correoOriginal);
     }
 
     if (ciudadInput != null && !ciudadInput.trim().isEmpty()) {
-        try {
-            // Llamada a la API con lo que escribió el usuario (ej: "Curico")
-            String jsonResponse = weatherService.getWeatherByCity(ciudadInput);
-            
-            // Parseamos la respuesta
-            JSONObject json = new JSONObject(jsonResponse);
-            
-            // Obtenemos el nombre OFICIAL y el PAÍS (ej: "Curicó" y "CL")
-            String nombreOficial = json.getString("name");
-            String pais = json.getJSONObject("sys").getString("country");
-            
-            // Guardamos el formato correcto: "Curicó, CL"
-            usuario.setCiudad(nombreOficial + "," + pais);
-            
-        } catch (Exception e) {
-            // Si la API falla, lanzamos error para que el usuario sepa
-            // que escribió mal la ciudad.
-            throw new IllegalArgumentException("Error: La ciudad '" + ciudadInput + "' no fue encontrada. Intenta agregar el código de país (ej: Curico,CL).");
-        }
+      try {
+        // Llamada a la API con lo que escribió el usuario (ej: "Curico")
+        String jsonResponse = weatherService.getWeatherByCity(ciudadInput);
+
+        // Parseamos la respuesta
+        JSONObject json = new JSONObject(jsonResponse);
+
+        // Obtenemos el nombre OFICIAL y el PAÍS (ej: "Curicó" y "CL")
+        String nombreOficial = json.getString("name");
+        String pais = json.getJSONObject("sys").getString("country");
+
+        // Guardamos el formato correcto: "Curicó, CL"
+        usuario.setCiudad(nombreOficial + "," + pais);
+
+      } catch (Exception e) {
+        // Si la API falla, lanzamos error para que el usuario sepa
+        // que escribió mal la ciudad.
+        throw new IllegalArgumentException(
+            "Error: La ciudad '"
+                + ciudadInput
+                + "' no fue encontrada. Intenta agregar el código de país (ej: Curico,CL).");
+      }
     } else {
-        // Si dejó el campo vacío, borramos la ciudad
-        usuario.setCiudad(null);
+      // Si dejó el campo vacío, borramos la ciudad
+      usuario.setCiudad(null);
     }
     usuario.setNombreUsuario(nuevoNombre);
     usuario.setCorreoElectronico(nuevoCorreo);
@@ -284,17 +279,17 @@ public class UsuarioService {
    *
    * @param correo El correo del usuario a modificar.
    * @param nuevaContrasena La nueva contraseña (en texto plano, se hasheará aquí).
-   * @throws RegistroInvalidoException Si la nueva contraseña no es válida.
+   * @throws EdicionUsuarioException Si la nueva contraseña no es válida.
    */
   public void actualizarContrasenaUsuario(String correo, String nuevaContrasena)
-      throws RegistroInvalidoException {
+      throws EdicionUsuarioException {
     Usuario usuario = buscarPorCorreo(correo);
     if (usuario == null) {
       throw new IllegalArgumentException("No se encontró el usuario con el correo proporcionado.");
     }
     String resultado = usuarioValidator.validarContrasena(nuevaContrasena);
     if (resultado != null) {
-      throw new RegistroInvalidoException(resultado);
+      throw new EdicionUsuarioException(resultado, correo);
     }
     // Hashea la nueva contrasena antes de guardar
     org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder encoder =
@@ -337,31 +332,19 @@ public class UsuarioService {
   }
 
   /**
-   * Guarda un usuario y se asegura de que sus tareas asociadas también se persistan.
+   * Guarda un usuario con validación completa, asegurando que sus tareas asociadas estén
+   * correctamente vinculadas. Usado principalmente en migraciones de datos.
    *
    * @param usuario El usuario a guardar.
    * @return El usuario guardado.
-   * @throws EdicionInvalidaException Si el nombre es inválido.
-   * @throws RegistroInvalidoException Si la contraseña o correo son inválidos.
+   * @throws RegistroInvalidoException Si la validación falla.
    */
   @Transactional
-  public Usuario guardarConTareas(Usuario usuario)
-      throws EdicionInvalidaException, RegistroInvalidoException {
-    // Delegar validaciones sintácticas a UsuarioValidator
-    if (!usuarioValidator.nombreUsuarioValido(usuario.getNombreUsuario())) {
-      throw new IllegalArgumentException(
-          "Nombre de usuario no válido: " + usuario.getNombreUsuario());
-    }
-    if (!usuarioValidator.correoValido(usuario.getCorreoElectronico())) {
-      throw new IllegalArgumentException(
-          "Correo electrónico no válido: " + usuario.getCorreoElectronico());
-    }
-    String resultado = usuarioValidator.validarContrasena(usuario.getContrasena());
-    if (resultado != null) {
-      throw new RegistroInvalidoException(resultado);
-    }
+  public Usuario guardarConTareas(Usuario usuario) throws RegistroInvalidoException {
+    validarUsuarioCompleto(usuario, true);
 
     // Asocia las tareas pendientes y completadas al usuario antes de guardar
+    // Esto es necesario para migraciones donde las tareas vienen sin usuario asignado
     if (usuario.getTareas() != null) {
       usuario.getTareas().forEach(t -> t.setUsuario(usuario));
     }
@@ -540,9 +523,7 @@ public class UsuarioService {
     usuario.setExperiencia(usuario.getExperiencia() + expTarea);
   }
 
-  /**
-   * Obtiene el Top 5 de jugadores ordenados por la cantidad de logros completados.
-   */
+  /** Obtiene el Top 5 de jugadores ordenados por la cantidad de logros completados. */
   public List<TopJugadorLogrosDto> getTop5JugadoresPorLogros() {
     // 1. Obtenemos TODOS los usuarios de la BD
     List<Usuario> todosLosUsuarios = usuarioRepository.findAll();

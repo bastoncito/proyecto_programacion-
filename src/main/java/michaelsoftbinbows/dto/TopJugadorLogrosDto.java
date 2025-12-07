@@ -1,8 +1,6 @@
 package michaelsoftbinbows.dto;
 
-/**
- * DTO actualizado para incluir el avatar del usuario.
- */
+/** DTO actualizado para incluir el avatar del usuario. */
 public class TopJugadorLogrosDto {
 
   private String nombreUsuario;

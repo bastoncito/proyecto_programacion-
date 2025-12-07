@@ -8,6 +8,7 @@ import michaelsoftbinbows.dto.TareaDto;
 import michaelsoftbinbows.dto.UsuarioDto;
 import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.entities.Usuario;
+import michaelsoftbinbows.exceptions.EdicionTareaException;
 import michaelsoftbinbows.exceptions.RegistroInvalidoException;
 import michaelsoftbinbows.services.TareaService;
 import michaelsoftbinbows.services.UsuarioService;
@@ -304,7 +305,7 @@ public class ApiController {
     }
     try {
       usuarioTareaService.completarTarea(idUsuario, idTarea);
-    } catch (RegistroInvalidoException e) {
+    } catch (EdicionTareaException e) {
       return ResponseEntity.status(400).body(e.getMessage());
     }
     return ResponseEntity.ok().body("Tarea completada correctamente");

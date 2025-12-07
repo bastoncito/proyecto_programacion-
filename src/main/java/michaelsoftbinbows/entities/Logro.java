@@ -37,23 +37,6 @@ public class Logro {
 
   /** Constructor de la clase Logro. */
   public Logro(String id, String nombre, String descripcion, int experienciaRecompensa) {
-
-    if (id == null || id.trim().isEmpty() || id.contains(" ")) {
-      throw new IllegalArgumentException(
-          "El ID del logro no puede ser nulo, vacío o contener espacios.");
-    }
-    if (nombre == null || nombre.trim().isEmpty() || nombre.length() > 100) {
-      throw new IllegalArgumentException(
-          "El nombre del logro no puede estar vacío y debe tener 100 caracteres o menos.");
-    }
-    if (descripcion == null || descripcion.trim().isEmpty() || descripcion.length() > 500) {
-      throw new IllegalArgumentException(
-          "La descripción del logro no puede estar vacía y debe tener 500 caracteres o menos.");
-    }
-    if (experienciaRecompensa < 0) {
-      throw new IllegalArgumentException("La recompensa en puntos no puede ser negativa.");
-    }
-
     this.id = id.trim().toUpperCase(Locale.getDefault());
     this.nombre = nombre.trim();
     this.descripcion = descripcion.trim();

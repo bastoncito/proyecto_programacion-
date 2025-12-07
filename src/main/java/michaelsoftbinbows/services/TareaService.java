@@ -9,8 +9,9 @@ import michaelsoftbinbows.data.UsuarioRepository;
 import michaelsoftbinbows.dto.TareaDto;
 import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.entities.Usuario;
-import michaelsoftbinbows.exceptions.RegistroInvalidoException;
+import michaelsoftbinbows.exceptions.EdicionTareaException;
 import michaelsoftbinbows.exceptions.TareaInvalidaException;
+import michaelsoftbinbows.exceptions.TareaPertenenciaException;
 import michaelsoftbinbows.util.Dificultad;
 import michaelsoftbinbows.util.TareaValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,6 @@ public class TareaService {
 
   @Autowired private TareaRepository tareaRepository;
   @Autowired private UsuarioRepository usuarioRepository;
-  @Autowired private GestorLogrosService gestorLogrosService;
   private TareaValidator tareaValidator = new TareaValidator();
 
   /**
@@ -126,23 +126,24 @@ public class TareaService {
    *     los setters).
    */
   public void actualizarTarea(Long usuarioId, String nombreOriginal, TareaDto tareaActualizada)
-      throws RegistroInvalidoException, TareaInvalidaException {
+      throws EdicionTareaException, TareaInvalidaException {
     // Buscamos la tarea que queremos actualizar.
     if (tareaActualizada == null) {
-      throw new RegistroInvalidoException(
-          "Error: Los datos de la tarea actualizada no pueden ser nulos.");
+      throw new EdicionTareaException(
+          "Error: Los datos de la tarea actualizada no pueden ser nulos.", null);
     }
     if (tareaRepository.existsByNombreAndUsuarioId(nombreOriginal, usuarioId) == false) {
-      throw new RegistroInvalidoException(
-          "Error: No se encontró la tarea '" + nombreOriginal + "' para actualizar.");
+      throw new EdicionTareaException(
+          "Error: No se encontró la tarea '" + nombreOriginal + "' para actualizar.", null);
     }
     if (tareaRepository.existsByNombreAndUsuarioIdAndFechaCompletadaIsNull(
             tareaActualizada.nombre, usuarioId)
         && !nombreOriginal.equalsIgnoreCase(tareaActualizada.nombre)) {
-      throw new RegistroInvalidoException(
+      throw new EdicionTareaException(
           "Ya existe otra tarea con el nombre '"
               + tareaActualizada.nombre
-              + "'. Elige un nombre diferente.");
+              + "'. Elige un nombre diferente.",
+          null);
     }
     String error = tareaValidator.nombreTareaValido(tareaActualizada.nombre);
     if (error != null) {
@@ -194,7 +195,7 @@ public class TareaService {
   @Transactional
   public void eliminar(Long id) {
     if (tareaRepository.existsById(id) == false) {
-      throw new IllegalArgumentException("Tarea con ID " + id + " no encontrada.");
+      throw new TareaPertenenciaException("Tarea con ID " + id + " no encontrada.", null);
     }
     tareaRepository.deleteById(id);
     System.out.println("Tarea con ID " + id + " eliminada exitosamente.");
@@ -222,7 +223,9 @@ public class TareaService {
         usuarioRepository
             .findById(usuarioId)
             .orElseThrow(
-                () -> new IllegalArgumentException("Usuario no encontrado con ID: " + usuarioId));
+                () ->
+                    new TareaPertenenciaException(
+                        "Usuario no encontrado con ID: " + usuarioId, usuarioId, nombreTarea));
 
     // 2. Busca la tarea a eliminar DENTRO de la lista de tareas del usuario
     Optional<Tarea> tareaParaEliminarOpt =
@@ -247,8 +250,10 @@ public class TareaService {
               + usuario.getNombreUsuario()
               + "' eliminada exitosamente.");
     } else {
-      throw new IllegalArgumentException(
-          "Tarea pendiente '" + nombreTarea + "' no encontrada para el usuario.");
+      throw new TareaPertenenciaException(
+          "Tarea pendiente '" + nombreTarea + "' no encontrada para el usuario.",
+          usuarioId,
+          nombreTarea);
     }
   }
 

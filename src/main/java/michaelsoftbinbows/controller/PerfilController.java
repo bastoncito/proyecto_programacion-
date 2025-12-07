@@ -14,6 +14,9 @@ import java.util.stream.Collectors;
 import michaelsoftbinbows.entities.Logro;
 import michaelsoftbinbows.entities.Usuario;
 import michaelsoftbinbows.entities.UsuarioLogro;
+import michaelsoftbinbows.exceptions.CambioContrasenaException;
+import michaelsoftbinbows.exceptions.EdicionUsuarioException;
+import michaelsoftbinbows.exceptions.PerfilActualizacionException;
 import michaelsoftbinbows.services.AuthService;
 import michaelsoftbinbows.services.LogroService;
 import michaelsoftbinbows.services.UsuarioService;
@@ -116,13 +119,15 @@ public class PerfilController {
    * @param nuevaCiudad nueva ciudad
    * @param redirectAttributes para pasar mensajes a través de la redirección
    * @return redirección al template de perfil
+   * @throws PerfilActualizacionException si hay error en la actualización
    */
   @PostMapping("/perfil/actualizar")
   public String actualizarPerfil(
       @RequestParam("usuario") String nuevoUsuario,
       @RequestParam("correo") String nuevoCorreo,
       @RequestParam("ciudad") String nuevaCiudad,
-      RedirectAttributes redirectAttributes) {
+      RedirectAttributes redirectAttributes)
+      throws PerfilActualizacionException {
 
     System.out.println("LOG: Intentando actualizar perfil.");
     Usuario usuarioActual = authService.getCurrentUser();
@@ -140,16 +145,15 @@ public class PerfilController {
           nuevoCorreo,
           usuarioActual.getRol(),
           nuevaCiudad);
-
-      redirectAttributes.addFlashAttribute("exitoInfo", "Información actualizada correctamente.");
-
-      // Actualizar el contexto de seguridad
-      authService.actualizarSesion(usuarioActual.getId());
-
-    } catch (Exception e) {
-      System.out.println("LOG: Error al actualizar perfil: " + e.getMessage());
-      redirectAttributes.addFlashAttribute("errorInfo", e.getMessage());
+    } catch (EdicionUsuarioException e) {
+      throw new PerfilActualizacionException(e.getMessage());
     }
+
+    redirectAttributes.addFlashAttribute("exitoInfo", "Información actualizada correctamente.");
+
+    // Actualizar el contexto de seguridad
+    authService.actualizarSesion(usuarioActual.getId());
+
     return "redirect:/perfil";
   }
 
@@ -161,44 +165,38 @@ public class PerfilController {
    * @param contrasenaRepetida confirmación de la contraseña nueva
    * @param redirectAttributes para pasar mensajes a través de la redirección
    * @return redirección al template de perfil
+   * @throws CambioContrasenaException si hay error en el cambio de contraseña
    */
   @PostMapping("/perfil/cambiar-contrasena")
   public String cambiarContrasena(
       @RequestParam("contrasenaActual") String contrasenaActual,
       @RequestParam("contrasenaNueva") String contrasenaNueva,
       @RequestParam("contrasenaRepetida") String contrasenaRepetida,
-      RedirectAttributes redirectAttributes) {
+      RedirectAttributes redirectAttributes)
+      throws CambioContrasenaException {
 
     System.out.println("LOG: Intentando cambiar contrasena.");
     Usuario usuarioActual = authService.getCurrentUser();
 
     if (usuarioActual == null) {
-      redirectAttributes.addFlashAttribute(
-          "errorPassword", "Error crítico: No se encontró el usuario.");
-      return "redirect:/perfil";
+      throw new CambioContrasenaException("Error crítico: No se encontró el usuario.");
     }
 
-    try {
-      if (!passwordEncoder.matches(contrasenaActual, usuarioActual.getContrasena())) {
-        throw new Exception("La contrasena actual es incorrecta.");
-      }
-      if (!contrasenaNueva.equals(contrasenaRepetida)) {
-        throw new Exception("Las contrasenas nuevas no coinciden.");
-      }
-      String resultado = usuarioValidator.validarContrasena(contrasenaNueva);
-      if (resultado != null) {
-        throw new Exception(resultado);
-      }
-
-      usuarioActual.setContrasena(passwordEncoder.encode(contrasenaNueva));
-      usuarioService.guardarEnBd(usuarioActual);
-      authService.actualizarSesion(usuarioActual.getId());
-      redirectAttributes.addFlashAttribute(
-          "exitoPassword", "Contrasena actualizada correctamente.");
-
-    } catch (Exception e) {
-      redirectAttributes.addFlashAttribute("errorPassword", e.getMessage());
+    if (!passwordEncoder.matches(contrasenaActual, usuarioActual.getContrasena())) {
+      throw new CambioContrasenaException("La contrasena actual es incorrecta.");
     }
+    if (!contrasenaNueva.equals(contrasenaRepetida)) {
+      throw new CambioContrasenaException("Las contrasenas nuevas no coinciden.");
+    }
+    String resultado = usuarioValidator.validarContrasena(contrasenaNueva);
+    if (resultado != null) {
+      throw new CambioContrasenaException(resultado);
+    }
+
+    usuarioActual.setContrasena(passwordEncoder.encode(contrasenaNueva));
+    usuarioService.guardarEnBd(usuarioActual);
+    authService.actualizarSesion(usuarioActual.getId());
+    redirectAttributes.addFlashAttribute("exitoPassword", "Contrasena actualizada correctamente.");
 
     return "redirect:/perfil";
   }
@@ -210,122 +208,123 @@ public class PerfilController {
    * @return redirect al login (logout) o a perfil si hay un error
    */
   @PostMapping("/perfil/borrar-cuenta")
-  public String borrarCuenta(HttpSession session) {
+  public String borrarCuenta(HttpSession session) throws Exception {
     Usuario usuarioActual = authService.getCurrentUser();
 
     if (usuarioActual != null) {
-      try {
-        usuarioService.eliminarUsuario(usuarioActual.getId());
-        SecurityContextHolder.clearContext();
-        session.invalidate();
-      } catch (Exception e) {
-        return "redirect:/perfil?error=deleteFailed";
-      }
+      usuarioService.eliminarUsuario(usuarioActual.getId());
+      SecurityContextHolder.clearContext();
+      session.invalidate();
     }
     return "redirect:/login?logout";
   }
 
   @PostMapping("/perfil/avatar/subir")
-  public String subirAvatar(@RequestParam("archivo") MultipartFile archivo, RedirectAttributes redirectAttributes) {
-      Usuario usuarioActual = authService.getCurrentUser();
-      
-      // 1. Validaciones básicas
-      if (archivo.isEmpty()) {
-          redirectAttributes.addFlashAttribute("errorInfo", "Por favor selecciona un archivo.");
-          return "redirect:/perfil";
-      }
-      
-      // Validar formato (solo imágenes)
-      String contentType = archivo.getContentType();
-      if (contentType == null || !contentType.startsWith("image/")) {
-          redirectAttributes.addFlashAttribute("errorInfo", "Solo se permiten archivos de imagen (JPG, PNG).");
-          return "redirect:/perfil";
-      }
+  public String subirAvatar(
+      @RequestParam("archivo") MultipartFile archivo, RedirectAttributes redirectAttributes) {
+    Usuario usuarioActual = authService.getCurrentUser();
 
-      try {
-          // 2. Crear el directorio si no existe
-          Path uploadPath = Paths.get(UPLOAD_DIR);
-          if (!Files.exists(uploadPath)) {
-              Files.createDirectories(uploadPath);
-          }
-
-          // Antes de subir el nuevo, limpiamos la casa
-          if (usuarioActual.getAvatarUrl() != null) {
-              borrarFotoDelDisco(usuarioActual.getAvatarUrl());
-          }
-
-          // 3. Generar nombre único para evitar colisiones (ej: usuario123_uuid.png)
-          // Usamos UUID para que el navegador no cachee la imagen vieja si subes una nueva
-          String extension = StringUtils.getFilenameExtension(archivo.getOriginalFilename());
-          String nombreArchivo = "avatar_" + usuarioActual.getId() + "_" + UUID.randomUUID().toString() + "." + extension;
-
-          // 4. Guardar el archivo en el disco
-          Path rutaCompleta = uploadPath.resolve(nombreArchivo);
-          Files.copy(archivo.getInputStream(), rutaCompleta, StandardCopyOption.REPLACE_EXISTING);
-
-          // 5. Borrar avatar anterior si existía (opcional, para no llenar el disco)
-          // (Lógica simple: si tenía avatar, podrías borrar el archivo viejo aquí)
-
-          // 6. Guardar la URL en la base de datos
-          // IMPORTANTE: La URL debe ser accesible desde el navegador. 
-          // Configuraremos Spring para que "/uploads/**" apunte a la carpeta física.
-          String urlPublica = "/uploads/" + nombreArchivo;
-          
-          usuarioActual.setAvatarUrl(urlPublica);
-          usuarioService.guardarEnBd(usuarioActual);
-          
-          // Actualizar sesión
-          authService.actualizarSesion(usuarioActual.getId());
-
-          redirectAttributes.addFlashAttribute("exitoInfo", "¡Avatar actualizado con éxito!");
-
-      } catch (IOException e) {
-          e.printStackTrace();
-          redirectAttributes.addFlashAttribute("errorInfo", "Error al subir la imagen: " + e.getMessage());
-      }
-
+    // 1. Validaciones básicas
+    if (archivo.isEmpty()) {
+      redirectAttributes.addFlashAttribute("errorInfo", "Por favor selecciona un archivo.");
       return "redirect:/perfil";
+    }
+
+    // Validar formato (solo imágenes)
+    String contentType = archivo.getContentType();
+    if (contentType == null || !contentType.startsWith("image/")) {
+      redirectAttributes.addFlashAttribute(
+          "errorInfo", "Solo se permiten archivos de imagen (JPG, PNG).");
+      return "redirect:/perfil";
+    }
+
+    try {
+      // 2. Crear el directorio si no existe
+      Path uploadPath = Paths.get(UPLOAD_DIR);
+      if (!Files.exists(uploadPath)) {
+        Files.createDirectories(uploadPath);
+      }
+
+      // Antes de subir el nuevo, limpiamos la casa
+      if (usuarioActual.getAvatarUrl() != null) {
+        borrarFotoDelDisco(usuarioActual.getAvatarUrl());
+      }
+
+      // 3. Generar nombre único para evitar colisiones (ej: usuario123_uuid.png)
+      // Usamos UUID para que el navegador no cachee la imagen vieja si subes una nueva
+      String extension = StringUtils.getFilenameExtension(archivo.getOriginalFilename());
+      String nombreArchivo =
+          "avatar_" + usuarioActual.getId() + "_" + UUID.randomUUID().toString() + "." + extension;
+
+      // 4. Guardar el archivo en el disco
+      Path rutaCompleta = uploadPath.resolve(nombreArchivo);
+      Files.copy(archivo.getInputStream(), rutaCompleta, StandardCopyOption.REPLACE_EXISTING);
+
+      // 5. Borrar avatar anterior si existía (opcional, para no llenar el disco)
+      // (Lógica simple: si tenía avatar, podrías borrar el archivo viejo aquí)
+
+      // 6. Guardar la URL en la base de datos
+      // IMPORTANTE: La URL debe ser accesible desde el navegador.
+      // Configuraremos Spring para que "/uploads/**" apunte a la carpeta física.
+      String urlPublica = "/uploads/" + nombreArchivo;
+
+      usuarioActual.setAvatarUrl(urlPublica);
+      usuarioService.guardarEnBd(usuarioActual);
+
+      // Actualizar sesión
+      authService.actualizarSesion(usuarioActual.getId());
+
+      redirectAttributes.addFlashAttribute("exitoInfo", "¡Avatar actualizado con éxito!");
+
+    } catch (IOException e) {
+      e.printStackTrace();
+      redirectAttributes.addFlashAttribute(
+          "errorInfo", "Error al subir la imagen: " + e.getMessage());
+    }
+
+    return "redirect:/perfil";
   }
 
   @PostMapping("/perfil/avatar/eliminar")
   public String eliminarAvatar(RedirectAttributes redirectAttributes) {
-      Usuario usuarioActual = authService.getCurrentUser();
-      
-      if (usuarioActual != null) {
+    Usuario usuarioActual = authService.getCurrentUser();
 
-        borrarFotoDelDisco(usuarioActual.getAvatarUrl());
-        
-          // 1. Ponemos null en la BD
-          usuarioActual.setAvatarUrl(null);
-          usuarioService.guardarEnBd(usuarioActual);
-          
-          // 2. Actualizamos la sesión para que se refleje inmediatamente
-          authService.actualizarSesion(usuarioActual.getId());
-          
-          redirectAttributes.addFlashAttribute("exitoInfo", "Avatar eliminado. Se usarán tus iniciales.");
-      }
-      
-      return "redirect:/perfil";
+    if (usuarioActual != null) {
+
+      borrarFotoDelDisco(usuarioActual.getAvatarUrl());
+
+      // 1. Ponemos null en la BD
+      usuarioActual.setAvatarUrl(null);
+      usuarioService.guardarEnBd(usuarioActual);
+
+      // 2. Actualizamos la sesión para que se refleje inmediatamente
+      authService.actualizarSesion(usuarioActual.getId());
+
+      redirectAttributes.addFlashAttribute(
+          "exitoInfo", "Avatar eliminado. Se usarán tus iniciales.");
+    }
+
+    return "redirect:/perfil";
   }
 
   // --- METODO PARA BORRAR EL ARCHIVO FÍSICO DE LA IMAGEN ---
   private void borrarFotoDelDisco(String urlAvatar) {
-      if (urlAvatar != null && !urlAvatar.isEmpty()) {
-          try {
-              // La URL es "/uploads/nombre.png", pero el archivo está en "uploads/nombre.png"
-              // Quitamos la primera barra "/" si es necesario o extraemos el nombre
-              String nombreArchivo = urlAvatar.replace("/uploads/", "");
-              
-              Path rutaArchivo = Paths.get(UPLOAD_DIR).resolve(nombreArchivo);
-              
-              // Borramos el archivo si existe
-              Files.deleteIfExists(rutaArchivo);
-              System.out.println("LOG: Archivo borrado correctamente: " + nombreArchivo);
-              
-          } catch (IOException e) {
-              System.err.println("LOG: No se pudo borrar el archivo antiguo: " + e.getMessage());
-              // No lanzamos error para no interrumpir el flujo del usuario
-          }
+    if (urlAvatar != null && !urlAvatar.isEmpty()) {
+      try {
+        // La URL es "/uploads/nombre.png", pero el archivo está en "uploads/nombre.png"
+        // Quitamos la primera barra "/" si es necesario o extraemos el nombre
+        String nombreArchivo = urlAvatar.replace("/uploads/", "");
+
+        Path rutaArchivo = Paths.get(UPLOAD_DIR).resolve(nombreArchivo);
+
+        // Borramos el archivo si existe
+        Files.deleteIfExists(rutaArchivo);
+        System.out.println("LOG: Archivo borrado correctamente: " + nombreArchivo);
+
+      } catch (IOException e) {
+        System.err.println("LOG: No se pudo borrar el archivo antiguo: " + e.getMessage());
+        // No lanzamos error para no interrumpir el flujo del usuario
       }
+    }
   }
 }
