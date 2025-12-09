@@ -1,0 +1,24 @@
+/* avatars.css - Estilos globales para fotos de perfil */
+
+.avatar-circle {
+  width: 45px;          /* Tamaño por defecto (se puede sobrescribir inline) */
+  height: 45px;
+  border-radius: 50%;   /* Círculo perfecto */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+  color: white;         /* Color del texto (iniciales) */
+  font-size: 16px;      /* Tamaño letra base */
+  flex-shrink: 0;       /* Evita que se aplaste en flexbox */
+  object-fit: cover;    /* Para que las imágenes reales no se deformen */
+  text-transform: uppercase;
+}
+
+/* Colores de fondo para avatares sin imagen */
+.bg-blue   { background-color: #3498db; }
+.bg-pink   { background-color: #e91e63; }
+.bg-orange { background-color: #ff9800; }
+.bg-green  { background-color: #2ecc71; }
+.bg-purple { background-color: #9b59b6; }
+.bg-dark   { background-color: #34495e; }

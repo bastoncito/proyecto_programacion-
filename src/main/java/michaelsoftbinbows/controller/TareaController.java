@@ -1,13 +1,16 @@
 package michaelsoftbinbows.controller;
 
+import java.util.Optional;
+import michaelsoftbinbows.dto.TareaDto;
 import michaelsoftbinbows.entities.Tarea;
-import michaelsoftbinbows.exceptions.RegistroInvalidoException;
+import michaelsoftbinbows.exceptions.EdicionTareaException;
 import michaelsoftbinbows.exceptions.TareaInvalidaException;
-import michaelsoftbinbows.security.CustomUserDetails;
+import michaelsoftbinbows.exceptions.TareaPertenenciaException;
+import michaelsoftbinbows.services.AuthService;
+import michaelsoftbinbows.services.TareaService;
 import michaelsoftbinbows.services.UsuarioService;
+import michaelsoftbinbows.services.UsuarioTareaService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,22 +22,29 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class TareaController {
 
   @Autowired private UsuarioService usuarioService;
+  @Autowired private TareaService tareaService;
+  @Autowired private AuthService authservice;
+  @Autowired private UsuarioTareaService usuarioTareaService;
 
   /**
    * Elimina una tarea específica de un usuario.
    *
    * @param model modelo para añadir atributos
    * @param nombreTarea nombre de tarea a eliminar
+   * @param redirectAttributes Atributos para pasar mensajes de éxito durante la redirección
    * @return redirect al home
-   * @throws RegistroInvalidoException si la tarea no se puede eliminar
+   * @throws TareaPertenenciaException si la tarea no se encuentra o no pertenece al usuario
    */
   @PostMapping("/eliminar-tarea")
-  public String eliminarTarea(Model model, @RequestParam("nombreTarea") String nombreTarea)
-      throws RegistroInvalidoException {
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-    String correo = userDetails.getUsername();
-    usuarioService.eliminarTarea(correo, nombreTarea);
+  public String eliminarTarea(
+      Model model,
+      @RequestParam("nombreTarea") String nombreTarea,
+      RedirectAttributes redirectAttributes)
+      throws TareaPertenenciaException {
+    Long id = authservice.getCurrentUser().getId();
+    tareaService.eliminarPorUsuarioYNombreTarea(id, nombreTarea);
+    redirectAttributes.addFlashAttribute(
+        "successMessage", "Tarea '" + nombreTarea + "' eliminada correctamente.");
     return "redirect:/home";
   }
 
@@ -43,17 +53,37 @@ public class TareaController {
    *
    * @param model modelo para añadir atributos
    * @param nombreTarea nombre de la tarea a completar
+   * @param redirectAttributes Atributos para pasar mensajes de éxito durante la redirección
    * @return redirect al home
-   * @throws RegistroInvalidoException si la tarea no se puede completar
+   * @throws EdicionTareaException si la tarea no se puede completar
+   * @throws TareaPertenenciaException si la tarea no pertenece al usuario
+   * @throws TareaInvalidaException si la tarea pendiente no se encuentra
    */
   @PostMapping("/completar-tarea")
-  public String completarTarea(Model model, @RequestParam("nombreTarea") String nombreTarea)
-      throws RegistroInvalidoException {
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-    String correo = userDetails.getUsername();
+  public String completarTarea(
+      Model model,
+      @RequestParam("nombreTarea") String nombreTarea,
+      RedirectAttributes redirectAttributes)
+      throws EdicionTareaException, TareaPertenenciaException, TareaInvalidaException {
+    Long idUsuario = authservice.getCurrentUser().getId();
 
-    usuarioService.completarTarea(correo, nombreTarea);
+    // Llamamos al método del TareaService para buscar la tarea PENDIENTE.
+    Optional<Tarea> tareaPendienteOpt =
+        tareaService.obtenerTareaPendientePorNombreYUsuarioId(nombreTarea, idUsuario);
+
+    // Verificamos si la tarea pendiente realmente existe.
+    if (tareaPendienteOpt.isPresent()) {
+      // Si existe, obtenemos su ID y llamamos al servicio para completarla.
+      Long idTarea = tareaPendienteOpt.get().getId();
+      usuarioTareaService.completarTarea(idUsuario, idTarea);
+      redirectAttributes.addFlashAttribute(
+          "successMessage", "¡Felicidades! Has completado la tarea '" + nombreTarea + "'.");
+    } else {
+      // Si no se encuentra una tarea pendiente con ese nombre, lanzamos un error.
+      throw new TareaInvalidaException(
+          "No se encontró una tarea pendiente con el nombre: " + nombreTarea, nombreTarea, "");
+    }
+
     return "redirect:/home";
   }
 
@@ -75,19 +105,19 @@ public class TareaController {
       @RequestParam("dificultad") String dificultad,
       RedirectAttributes redirectAttributes)
       throws TareaInvalidaException {
-
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-    String correo = userDetails.getUsername();
+    Long id = authservice.getCurrentUser().getId();
+    String correo = authservice.getCurrentUser().getCorreoElectronico();
 
     int tareasPendientes = usuarioService.obtenerTareasPendientes(correo).size();
     if (tareasPendientes >= 4) {
       throw new TareaInvalidaException(
           "No puedes agregar más de 4 tareas pendientes.", nombre, descripcion);
     }
-
-    Tarea nuevaTarea = new Tarea(nombre, descripcion, dificultad);
-    usuarioService.agregarTareaAusuario(correo, nuevaTarea);
+    TareaDto tareaDto = new TareaDto();
+    tareaDto.nombre = nombre;
+    tareaDto.descripcion = descripcion;
+    tareaDto.dificultad = dificultad;
+    tareaService.crear(tareaDto, id);
 
     redirectAttributes.addFlashAttribute(
         "successMessage", "¡Tarea '" + nombre + "' agregada con éxito!");

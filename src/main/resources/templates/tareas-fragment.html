@@ -15,6 +15,7 @@
             <li th:each="usuario : ${listaDeUsuarios}">
               <a
                 th:href="@{/admin(vista='tareas', correo=${usuario.correoElectronico})}"
+                data-no-loader
                 th:text="${usuario.nombreUsuario}"
                 th:class="${usuarioSeleccionado != null && usuario.correoElectronico == usuarioSeleccionado.correoElectronico ? 'active' : ''}"
               >
@@ -81,11 +82,13 @@
                     <a
                       th:href="@{/admin(vista='tareas', correo=${usuarioSeleccionado.correoElectronico}, editarTareaNombre=${tarea.nombre}, editarTareaUsuario=${usuarioSeleccionado.correoElectronico})}"
                       class="btn-edit"
+                      data-no-loader
                       >Editar</a
                     >
                     <a
                       th:href="@{/admin/tareas/eliminar(correoUsuario=${usuarioSeleccionado.correoElectronico}, nombreTarea=${tarea.nombre})}"
                       class="btn-delete"
+                      data-no-loader
                       onclick="return confirm('¿Estás seguro de que quieres eliminar esta tarea?');"
                       >Eliminar</a
                     >

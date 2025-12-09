@@ -1,0 +1,216 @@
+/* =================================================================== */
+/* 7. ESTILOS PARA EL GESTOR DE AMIGOS (MODAL)                       */
+/* =================================================================== */
+
+/* Contenedor específico del modal de amigos */
+.friends-modal-card {
+  background-color: var(--color-blanco);
+  width: 90%;
+  max-width: 650px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh; /* Para que no se salga de pantallas pequeñas */
+}
+
+.friends-header {
+  background-color: var(--color-principal);
+  padding: 15px 25px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-oscuro);
+  flex-shrink: 0;
+}
+
+.friends-header i { font-size: 24px; }
+.friends-header h2 { margin: 0; font-size: 18px; font-weight: 700; }
+
+/* Tabs de navegación */
+.friends-tabs {
+  display: flex;
+  background-color: #fff;
+  border-bottom: 1px solid var(--color-bordes-sutiles);
+  flex-shrink: 0;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 15px 10px;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-texto-secundario);
+  cursor: pointer;
+  position: relative;
+  transition: var(--transicion-suave);
+}
+
+.tab-btn:hover {
+  background-color: #f9f9f9;
+  color: var(--color-texto-principal);
+}
+
+.tab-btn.active {
+  color: var(--color-oscuro);
+  border-bottom: 3px solid var(--color-principal);
+}
+
+.badge-count {
+  background-color: var(--color-rojo-peligro);
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: 5px;
+  vertical-align: middle;
+}
+
+/* Contenido de las pestañas */
+.friends-tab-content {
+  padding: 20px 25px;
+  display: none;
+  animation: fadeIn 0.3s ease;
+  overflow-y: auto; /* Scroll interno */
+  flex-grow: 1;
+}
+
+.friends-tab-content.active-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Barra de búsqueda dentro del modal */
+.search-bar-container {
+  position: relative;
+  width: 100%;
+  margin-bottom: 5px;
+  flex-shrink: 0;
+}
+
+.search-bar-container i {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-texto-secundario);
+  font-size: 18px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 15px 12px 45px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.3s;
+  background-color: #fafafa;
+}
+
+.search-input:focus {
+  border-color: var(--color-principal);
+  background-color: #fff;
+}
+
+/* Tarjetas de usuario en la lista */
+.friend-card {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  border: 1px solid var(--color-bordes-sutiles);
+  border-radius: 10px;
+  background-color: #fff;
+  transition: var(--transicion-suave);
+  width: 100%;
+  gap: 15px;
+}
+
+.friend-card:hover {
+  border-color: #ddd;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.user-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--color-oscuro);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-meta {
+  font-size: 12px;
+  color: var(--color-texto-secundario);
+  margin-top: 2px;
+}
+
+.league-highlight { font-weight: 500; }
+.league-highlight.Diamante { color: #4fc3f7; } 
+.league-highlight.Platino { color: #2ecc71; }
+.league-highlight.Oro { color: #f1c40f; }
+.league-highlight.Plata { color: #bdc3c7; font-weight: 700;}
+.league-highlight.Bronce { color: #d35400; }
+
+/* Botones de acción pequeños */
+.friend-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-small {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--transicion-suave);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid #ccc;
+  color: var(--color-texto-secundario);
+}
+.btn-outline:hover {
+  border-color: var(--color-oscuro);
+  color: var(--color-oscuro);
+}
+
+.btn-primary-small {
+  background-color: var(--color-oscuro);
+  color: white;
+  gap: 5px;
+}
+.btn-primary-small:hover {
+  background-color: #000;
+}
+
+.btn-danger-small {
+  background-color: var(--color-rojo-peligro);
+  color: white;
+  gap: 5px;
+}
+.btn-danger-small:hover {
+  background-color: #c9302c;
+}

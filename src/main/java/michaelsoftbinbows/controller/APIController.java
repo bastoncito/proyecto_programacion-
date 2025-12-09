@@ -8,10 +8,13 @@ import michaelsoftbinbows.dto.TareaDto;
 import michaelsoftbinbows.dto.UsuarioDto;
 import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.entities.Usuario;
+import michaelsoftbinbows.exceptions.EdicionTareaException;
 import michaelsoftbinbows.exceptions.RegistroInvalidoException;
 import michaelsoftbinbows.services.TareaService;
 import michaelsoftbinbows.services.UsuarioService;
+import michaelsoftbinbows.services.UsuarioTareaService;
 import michaelsoftbinbows.util.Dificultad;
+import michaelsoftbinbows.util.UsuarioValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,6 +36,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApiController {
   private final UsuarioService usuarioService;
   private final TareaService tareaService;
+  private final UsuarioTareaService usuarioTareaService;
+  private final UsuarioValidator usuarioValidator = new UsuarioValidator();
 
   /**
    * Constructor de clase.
@@ -42,9 +47,13 @@ public class ApiController {
    * @param usuarioService para manejar acciones de Usuario
    * @param tareaService para manejar acciones de Tarea
    */
-  public ApiController(UsuarioService usuarioService, TareaService tareaService) {
+  public ApiController(
+      UsuarioService usuarioService,
+      TareaService tareaService,
+      UsuarioTareaService usuarioTareaService) {
     this.usuarioService = usuarioService;
     this.tareaService = tareaService;
+    this.usuarioTareaService = usuarioTareaService;
   }
 
   /**
@@ -94,7 +103,7 @@ public class ApiController {
   public ResponseEntity<Object> crearUsuario(@RequestBody UsuarioDto usuarioDto)
       throws RegistroInvalidoException {
     String contrasena = usuarioDto.contrasena;
-    String validacion = usuarioService.validarContrasena(contrasena);
+    String validacion = usuarioValidator.validarContrasena(contrasena);
     if (validacion != null) {
       return ResponseEntity.status(400).body(validacion);
     }
@@ -142,7 +151,8 @@ public class ApiController {
           u.getCorreoElectronico(),
           usuarioDto.nombreUsuario,
           usuarioDto.correoElectronico,
-          usuarioDto.rol);
+          usuarioDto.rol,
+          u.getCiudad());
       if (usuarioDto.contrasena != null && !usuarioDto.contrasena.trim().isEmpty()) {
         usuarioService.actualizarContrasenaUsuario(u.getCorreoElectronico(), usuarioDto.contrasena);
       }
@@ -160,7 +170,7 @@ public class ApiController {
    */
   @DeleteMapping("/usuarios/{idUsuario}")
   public ResponseEntity<Object> eliminarUsuario(@PathVariable("idUsuario") long idUsuario) {
-    usuarioService.eliminar(idUsuario);
+    usuarioService.eliminarUsuario(idUsuario);
     return ResponseEntity.ok().body("Usuario eliminado correctamente");
   }
 
@@ -280,7 +290,6 @@ public class ApiController {
     if (usuarioOpt.isEmpty()) {
       return ResponseEntity.status(404).body("Usuario no encontrado");
     }
-    Usuario u = usuarioOpt.get();
 
     Optional<Tarea> tareaOpt = tareaService.obtenerPorId(idTarea);
     if (tareaOpt.isEmpty()) {
@@ -295,8 +304,8 @@ public class ApiController {
       return ResponseEntity.status(400).body("La tarea ya ha sido completada");
     }
     try {
-      usuarioService.completarTarea(u.getCorreoElectronico(), t.getNombre());
-    } catch (RegistroInvalidoException e) {
+      usuarioTareaService.completarTarea(idUsuario, idTarea);
+    } catch (EdicionTareaException e) {
       return ResponseEntity.status(400).body(e.getMessage());
     }
     return ResponseEntity.ok().body("Tarea completada correctamente");
@@ -319,7 +328,6 @@ public class ApiController {
     if (usuarioOpt.isEmpty()) {
       return ResponseEntity.status(404).body("Usuario no encontrado");
     }
-    Usuario u = usuarioOpt.get();
 
     Optional<Tarea> tareaOpt = tareaService.obtenerPorId(idTarea);
     if (tareaOpt.isEmpty()) {
@@ -331,17 +339,17 @@ public class ApiController {
       return ResponseEntity.status(400).body("La tarea no pertenece al usuario especificado");
     }
     try {
+      // no se especifica dificultad, se mantiene la actual
       String currentDificultad = tareaDto.dificultad;
       if (currentDificultad == null) {
         currentDificultad = Dificultad.obtenerDificultadPorExp(t.getExp());
       }
-
-      Tarea tareaActualizada =
-          new Tarea(
-              tareaDto.nombre != null ? tareaDto.nombre : t.getNombre(),
-              tareaDto.descripcion != null ? tareaDto.descripcion : t.getDescripcion(),
-              currentDificultad);
-      u.actualizarTarea(t.getNombre(), tareaActualizada);
+      // mantenemos los valores actuales si no se especifican nuevos
+      tareaDto.nombre = tareaDto.nombre != null ? tareaDto.nombre : t.getNombre();
+      tareaDto.descripcion =
+          tareaDto.descripcion != null ? tareaDto.descripcion : t.getDescripcion();
+      tareaDto.dificultad = currentDificultad;
+      tareaService.actualizarTarea(idUsuario, t.getNombre(), tareaDto);
       return ResponseEntity.ok().body(tareaService.obtenerPorId(idTarea).get());
     } catch (Exception e) {
       return ResponseEntity.status(400).body(e.getMessage());

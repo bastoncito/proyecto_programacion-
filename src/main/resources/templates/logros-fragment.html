@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <body>
+    <div th:fragment="contenidoLogros">
+      
+      <div class="section-title">Sistema de Logros</div>
+      <div class="section-line"></div>
+
+      <div class="logros-stats-grid">
+        
+        <div class="stat-card">
+          <div class="stat-card-info">
+            <span class="stat-card-title">Total Logros</span>
+            <span class="stat-card-value" th:text="${totalLogros}">0</span>
+          </div>
+          <div class="stat-card-icon icon-trophy">
+            <i class='bx bxs-trophy'></i>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-info">
+            <span class="stat-card-title">Logros Activos</span>
+            <span class="stat-card-value" th:text="${logrosActivos}">0</span>
+          </div>
+          <div class="stat-card-icon icon-graph">
+            <i class='bx bx-line-chart'></i>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-info">
+            <span class="stat-card-title">Total Completados</span>
+            <span class="stat-card-value" th:text="${totalCompletados}">0</span>
+          </div>
+          <div class="stat-card-icon icon-completed">
+            <i class='bx bxs-bar-chart-square'></i>
+          </div>
+        </div>
+      </div> 
+      <div class="logros-main-container">
+        
+        <div class="logros-panel-lista">
+          <div class="panel-header">
+            <span>Lista de Logros</span>
+            </div>
+            
+          <div class="logro-list-container">
+                      
+              <div class="logro-card" th:each="logro : ${listaDeLogros}">
+                
+                <div class="logro-card-icon">
+                    <img th:if="${logro.imagenUrl != null && !logro.imagenUrl.isEmpty()}" 
+                        th:src="${logro.imagenUrl}" 
+                        alt="Icono del logro" 
+                        style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;" />
+                    
+                    <i th:unless="${logro.imagenUrl != null && !logro.imagenUrl.isEmpty()}" 
+                      class='bx bxs-star' 
+                      style="font-size: 30px;"></i>
+                </div>
+
+                <div class="logro-card-info">
+                  <span class="logro-card-nombre" th:text="${logro.nombre}">Nombre del Logro</span>
+                  <span class="logro-card-xp" th:text="|${logro.getPuntosRecompensa()} XP|">100 XP</span>
+                </div>
+
+                <div class="logro-card-actions">
+                  
+                  <a th:href="@{/admin(vista='logros', editarLogroId=${logro.id})}"
+                    class="btn-edit">
+                    Editar
+                  </a>
+                  
+                  <a th:href="@{/admin/logros/toggle(id=${logro.id})}"
+                    class="btn-icon"
+                    th:classappend="${logro.isActivo() ? 'btn-icon-activo' : 'btn-icon-inactivo'}"
+                    th:title="${logro.isActivo() ? 'Desactivar Logro' : 'Activar Logro'}">
+                    
+                    <i th:if="${logro.isActivo()}" class='bx bx-toggle-right'></i>
+                    <i th:unless="${logro.isActivo()}" class='bx bx-toggle-left'></i>
+                  </a>
+                  
+                  </div>
+              </div> <div th:if="${listaDeLogros.isEmpty()}" class="empty-list-message">
+                <p>No se encontraron logros en la base de datos.</p>
+                <p style="font-size: 14px; color: #868e96;">Asegúrate de que la aplicación se inició correctamente para sincronizar los logros.</p>
+              </div>
+          </div> 
+        </div> 
+        
+        <div class="logros-panel-columna-derecha">
+    
+          <div class="logros-panel-detalle">
+              <div class="panel-header">
+                  <span>Top Jugadores</span>
+              </div>
+              <div class="top-jugadores-list">        
+                <div class="top-jugador-item" 
+                    th:each="jugador, iterStat : ${top5Jugadores}">
+                    
+                    <span class="top-jugador-rank" th:text="'#' + ${iterStat.count}">#1</span>
+                    
+                    <div class="top-jugador-avatar">
+                      <div class="auto-avatar" 
+                          style="width: 40px; height: 40px; font-size: 0.9rem;"
+                          th:data-nombre="${jugador.nombreUsuario}"
+                          th:data-url="${jugador.avatarUrl}">
+                      </div>
+                    </div>
+                    
+                    <div class="top-jugador-info">
+                        <span class="top-jugador-nombre" th:text="${jugador.nombreUsuario}">
+                          Ana García
+                        </span>
+                        <span class="top-jugador-subtext" th:text="|${jugador.totalLogros} logros|">
+                          47 logros
+                        </span>
+                    </div>
+                </div>
+
+                <div th:if="${top5Jugadores == null || top5Jugadores.isEmpty()}" class="empty-list-message" style="padding: 20px 0;">
+                  <p style="font-size: 14px;">No hay datos de jugadores.</p>
+                </div>
+
+              </div>
+          </div> <div class="logros-panel-detalle">
+              <div class="panel-header">
+                  <span>Logros Más Completados</span>
+              </div>
+              <div class="chart-container" style="padding: 20px;">
+                  <canvas id="graficoLogrosCompletados"></canvas>
+              </div>
+            </div>
+          </div>  
+      </div> 
+    </div> 
+  </body>
+</html>

@@ -1,13 +1,26 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
   <body>
-    <!-- Fragmento de la animacion de carga -->
+    <!-- Fragmento de la animacion de carga (Versión Definitiva) -->
     <div th:fragment="loadingScreen">
-      <!-- El contenedor principal que cubre toda la pantalla -->
       <div id="loader-wrapper">
-        <!-- El spinner animado que gira en el centro -->
         <div class="loader"></div>
       </div>
+
+      <!--
+        Este script se ejecuta INMEDIATAMENTE después de que 'loader-wrapper' es parseado.
+        Su única misión es mostrar el loader si venimos de una navegación.
+        NO se espera a que el DOM esté completo.
+      -->
+      <script>
+        (function() {
+          if (sessionStorage.getItem('isLoading') === 'true') {
+            document.getElementById('loader-wrapper').style.display = 'flex';
+            // Limpiamos la bandera para que un refresco (F5) no reactive el loader.
+            sessionStorage.removeItem('isLoading');
+          }
+        })();
+      </script>
     </div>
 
     <!-- Fragmento de la barra de navegación -->
@@ -50,7 +63,7 @@
 
       <!-- Enlace a Admin (SOLO PARA ADMINS/MODS) -->
       <a
-        sec:authorize="hasAnyRole('ADMIN', 'MODERADOR')"
+        sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MODERADOR')"
         th:href="@{/admin}"
         th:classappend="${activePage == 'admin' ? 'active' : ''}"
       >

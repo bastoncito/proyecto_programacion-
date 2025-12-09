@@ -12,7 +12,6 @@
     />
     <!-- Rutas gestionadas por Thymeleaf -->
     <link rel="stylesheet" th:href="@{/styles/login.css}" />
-    <link rel="stylesheet" th:href="@{/styles/loader.css}" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -21,8 +20,6 @@
     />
   </head>
   <body>
-    <!-- Insertamos el fragmento de la pantalla de carga para mantener el código limpio y reutilizable. -->
-    <div th:replace="~{fragments :: loadingScreen}"></div>
 
     <!-- Este es el contenedor principal que centra todo en la pantalla. -->
     <div class="container">
@@ -88,20 +85,19 @@
         <a th:href="@{/register}" class="btn-register">Registrarse</a>
       </div>
     </div>
-
-    <!-- Un pequeño script para mejorar la experiencia de usuario. -->
+    <!-- SCRIPT PARA ACTIVAR EL LOADER EN LA SIGUIENTE PÁGINA -->
     <script>
-      // Espera a que todo el contenido de la página se haya cargado.
-      document.addEventListener("DOMContentLoaded", function () {
-        const loader = document.getElementById("loader-wrapper");
-        if (loader) {
-          // Oculta la animación de carga después de medio segundo.
-          // Esto evita que desaparezca bruscamente y se ve más suave.
-          setTimeout(() => {
-            loader.style.display = "none";
-          }, 500);
+      document.addEventListener('DOMContentLoaded', function() {
+        const loginForm = document.querySelector('.login-section form');
+        if (loginForm) {
+          loginForm.addEventListener('submit', function() {
+            // Justo antes de que el formulario se envíe, dejamos una señal
+            // para que la siguiente página sepa que debe mostrar el loader.
+            sessionStorage.setItem('isLoading', 'true');
+          });
         }
       });
     </script>
+
   </body>
 </html>

@@ -1,17 +1,23 @@
 package michaelsoftbinbows.services;
 
 import jakarta.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import michaelsoftbinbows.data.UsuarioRepository;
+import michaelsoftbinbows.dto.TopJugadorLogrosDto;
 import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.entities.Usuario;
-import michaelsoftbinbows.exceptions.EdicionInvalidaException;
+import michaelsoftbinbows.exceptions.EdicionUsuarioException;
 import michaelsoftbinbows.exceptions.RegistroInvalidoException;
-import michaelsoftbinbows.exceptions.TareaInvalidaException;
 import michaelsoftbinbows.model.Rol;
+import michaelsoftbinbows.util.SistemaNiveles;
+import michaelsoftbinbows.util.UsuarioValidator;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +33,9 @@ public class UsuarioService {
 
   @Autowired private UsuarioRepository usuarioRepository;
   @Autowired private ConfiguracionService configuracionService;
+  @Autowired private GestorLogrosService gestorLogrosService;
+  @Autowired private WeatherService weatherService;
+  private UsuarioValidator usuarioValidator = new UsuarioValidator();
 
   /**
    * Obtiene una lista de todos los usuarios registrados.
@@ -44,65 +53,39 @@ public class UsuarioService {
    * @return Un Optional con el usuario si existe.
    */
   public Optional<Usuario> obtenerPorId(Long id) {
+    if (id == null) {
+      return Optional.empty();
+    }
     return usuarioRepository.findById(id);
   }
 
+  @Transactional
   /**
    * Guarda un nuevo usuario, validando todos sus campos.
    *
    * @param usuario El usuario a guardar.
    * @return El usuario guardado.
-   * @throws EdicionInvalidaException Si el nombre de usuario es inválido.
+   * @throws EdicionUsuarioException Si el nombre de usuario es inválido.
    * @throws RegistroInvalidoException Si la contraseña, nombre o correo ya existen o son inválidos.
    */
-  public Usuario guardar(Usuario usuario)
-      throws EdicionInvalidaException, RegistroInvalidoException {
-    // Validación nombre de usuario
-    if (usuario.getNombreUsuario() == null
-        || usuario.getNombreUsuario().trim().isEmpty()
-        || usuario.getNombreUsuario().length() < 3
-        || usuario.getNombreUsuario().length() > 30) {
-      throw new IllegalArgumentException(
-          "Nombre de usuario no válido: " + usuario.getNombreUsuario());
-    }
-    // Validación correo electrónico
-    if (usuario.getCorreoElectronico() == null || !correoValdo(usuario.getCorreoElectronico())) {
-      throw new IllegalArgumentException(
-          "Correo electrónico no válido: " + usuario.getCorreoElectronico());
-    }
-    // Validación contrasena
-    String resultado = validarContrasena(usuario.getContrasena());
-    if (resultado != null) {
-      throw new IllegalArgumentException(resultado);
-    }
-    if (usuario.getNombreUsuario() == null || usuario.getNombreUsuario().trim().isEmpty()) {
-      throw new EdicionInvalidaException("Error", usuario.getCorreoElectronico());
-    }
-    if (usuario.getContrasena() == null || usuario.getContrasena().length() < 8) {
-      throw new RegistroInvalidoException("La contrasena debe tener al menos 8 caracteres.");
-    }
-
-    // Verificar unicidad de nombre de usuario y correo
-    if (usuarioRepository.findByNombreUsuario(usuario.getNombreUsuario()).isPresent()) {
-      throw new RegistroInvalidoException(
-          "El nombre de usuario ya existe: " + usuario.getNombreUsuario());
-    }
-    if (usuarioRepository.findByCorreoElectronico(usuario.getCorreoElectronico()).isPresent()) {
-      throw new RegistroInvalidoException(
-          "El correo electrónico ya está registrado: " + usuario.getCorreoElectronico());
-    }
-
+  public Usuario guardarUsuario(Usuario usuario)
+      throws EdicionUsuarioException, RegistroInvalidoException {
+    validarUsuarioCompleto(usuario, true);
     return usuarioRepository.save(usuario);
   }
 
+  @Transactional
   /**
    * Elimina un usuario por su ID.
    *
    * @param id El ID del usuario a eliminar.
    * @throws IllegalArgumentException si el usuario no existe.
    */
-  public void eliminar(Long id) {
+  public void eliminarUsuario(Long id) {
     System.out.println("LOG: Servicio eliminar llamado con ID: " + id);
+    if (id == null) {
+      throw new IllegalArgumentException("El ID no puede ser nulo.");
+    }
     if (usuarioRepository.existsById(id)) {
       usuarioRepository.deleteById(id);
       System.out.println("LOG: Usuario borrado en la base de datos.");
@@ -113,91 +96,7 @@ public class UsuarioService {
   }
 
   /**
-   * Obtiene un usuario por su correo electrónico.
-   *
-   * @param correo El correo del usuario.
-   * @return Un Optional con el usuario si existe.
-   */
-  public Optional<Usuario> obtenerPorCorreo(String correo) {
-    return usuarioRepository.findByCorreoElectronico(correo);
-  }
-
-  /**
-   * Comprueba si un usuario ya existe en la base de datos por su ID.
-   *
-   * @param usuario El usuario a comprobar.
-   * @return true si existe, false si no.
-   */
-  public boolean existe(Usuario usuario) {
-    return usuarioRepository.existsById(usuario.getId());
-  }
-
-  // Método para validar el formato del correo electrónico
-  private static boolean correoValdo(String correo) {
-    if (correo == null || correo.trim().isEmpty()) {
-      return false;
-    }
-    String regex =
-        "[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,5}";
-    // [a-zA-Z0-9_]+ UNO O MAS, caracter (letras o numeros o '_')
-    // ([.][a-zA-Z0-9_]+)* CERO O MAS, punto '.' seguido de almenos un caracter
-    // @ UN simbolo arroba
-    // [a-zA-Z0-9_]+ UNO O MAS, caracter (letras o numeros o '_')
-    // ([.][a-zA-Z0-9_]+)* CERO O MAS, punto '.' seguido de almenos un caracter
-    // [.][a-zA-Z]{2,5} UN punto '.', seguido de DOS A CINCO letras
-    return correo.matches(regex);
-  }
-
-  /**
-   * Valida la fortaleza de una contraseña.
-   *
-   * @param contrasena La contraseña a validar.
-   * @return null si la contraseña es válida, o un String con el mensaje de error si no lo es.
-   */
-  public String validarContrasena(String contrasena) {
-    if (contrasena == null || contrasena.trim().isEmpty()) {
-      return "La contrasena no puede estar vacía";
-    }
-
-    // ARREGLO: 'if' debe usar llaves
-    if (contrasena.length() < 8) {
-      return "La contrasena debe tener al menos 8 caracteres";
-    }
-
-    // ARREGLO: 'if' debe usar llaves
-    if (contrasena.contains(" ")) {
-      return "La contrasena no puede contener espacios";
-    }
-
-    boolean tieneMayuscula = Pattern.compile("[A-Z]").matcher(contrasena).find();
-    boolean tieneMinuscula = Pattern.compile("[a-z]").matcher(contrasena).find();
-    boolean tieneDigito = Pattern.compile("\\d").matcher(contrasena).find();
-    boolean tieneCaracterEspecial =
-        Pattern.compile("[!@#$%^&*()_+\\-=\\[\\]{}|;:'\",.<>/?]").matcher(contrasena).find();
-
-    if (!tieneMayuscula || !tieneMinuscula || !tieneDigito || !tieneCaracterEspecial) {
-      StringBuilder errores = new StringBuilder();
-      // ARREGLO: 'if' debe usar llaves
-      if (!tieneMayuscula) {
-        errores.append("- Debe contener al menos una mayúscula\n");
-      }
-      // ARREGLO: 'if' debe usar llaves
-      if (!tieneMinuscula) {
-        errores.append("- Debe contener al menos una minúscula\n");
-      }
-      if (!tieneDigito) {
-        errores.append("- Debe contener al menos un dígito\n");
-      }
-      if (!tieneCaracterEspecial) {
-        errores.append("- Debe contener al menos un carácter especial (!@#$%^&* etc.)\n");
-      }
-      return "La contrasena es demasiado débil. Requisitos:\n" + errores.toString();
-    }
-    return null; // Contrasena válida
-  }
-
-  /**
-   * Busca un usuario por correo electrónico.
+   * Busca un usuario por su correo electrónico.
    *
    * @param correo El correo del usuario.
    * @return El Usuario o null si no se encuentra.
@@ -216,51 +115,89 @@ public class UsuarioService {
   }
 
   /**
+   * Valida todos los campos de un usuario (nombre, correo, contraseña, unicidad). Método privado
+   * reutilizado para evitar duplicación de código.
+   *
+   * @param usuario El usuario a validar.
+   * @param validarContrasena Si se debe validar la contraseña (false para admin updates).
+   * @throws RegistroInvalidoException Si algún campo es inválido o ya existe.
+   */
+  private void validarUsuarioCompleto(Usuario usuario, boolean validarContrasena)
+      throws RegistroInvalidoException {
+    if (!usuarioValidator.nombreUsuarioValido(usuario.getNombreUsuario())) {
+      throw new IllegalArgumentException(
+          "Nombre de usuario no válido: " + usuario.getNombreUsuario());
+    }
+    if (!usuarioValidator.correoValido(usuario.getCorreoElectronico())) {
+      throw new IllegalArgumentException(
+          "Correo electrónico no válido: " + usuario.getCorreoElectronico());
+    }
+
+    if (validarContrasena) {
+      String resultado = usuarioValidator.validarContrasena(usuario.getContrasena());
+      if (resultado != null) {
+        throw new RegistroInvalidoException(resultado);
+      }
+    }
+
+    if (usuarioRepository.findByNombreUsuario(usuario.getNombreUsuario()).isPresent()) {
+      throw new RegistroInvalidoException(
+          "El nombre de usuario ya existe: " + usuario.getNombreUsuario());
+    }
+    if (usuarioRepository.findByCorreoElectronico(usuario.getCorreoElectronico()).isPresent()) {
+      throw new RegistroInvalidoException(
+          "El correo electrónico ya está registrado: " + usuario.getCorreoElectronico());
+    }
+  }
+
+  @Transactional
+  /**
    * Guarda un usuario sin validar la contraseña (útil para admin cuando la contraseña ya está
-   * hasheada).
+   * hasheada). Realiza validación completa excepto en la contraseña.
    *
    * @param usuario El usuario a guardar.
    * @return El usuario guardado.
    * @throws RegistroInvalidoException Si el nombre de usuario o correo son inválidos o ya existen.
    */
   public Usuario guardarSinValidarContrasena(Usuario usuario) throws RegistroInvalidoException {
-    // Valida nombre y correo, pero NO la contrasena (ya está hasheada)
-    if (usuario.getNombreUsuario() == null
-        || usuario.getNombreUsuario().trim().isEmpty()
-        || usuario.getNombreUsuario().length() < 3
-        || usuario.getNombreUsuario().length() > 30) {
-      throw new IllegalArgumentException(
-          "Nombre de usuario no válido: " + usuario.getNombreUsuario());
-    }
-    if (usuario.getCorreoElectronico() == null || !correoValdo(usuario.getCorreoElectronico())) {
-      throw new IllegalArgumentException(
-          "Correo electrónico no válido: " + usuario.getCorreoElectronico());
-    }
-    // Verificar unicidad de nombre de usuario y correo
-    if (usuarioRepository.findByNombreUsuario(usuario.getNombreUsuario()).isPresent()) {
-      throw new michaelsoftbinbows.exceptions.RegistroInvalidoException(
-          "Nombre de usuario ya existe: " + usuario.getNombreUsuario());
-    }
-    if (usuarioRepository.findByCorreoElectronico(usuario.getCorreoElectronico()).isPresent()) {
-      throw new michaelsoftbinbows.exceptions.RegistroInvalidoException(
-          "Correo electrónico ya registrado: " + usuario.getCorreoElectronico());
-    }
+    validarUsuarioCompleto(usuario, false);
     return usuarioRepository.save(usuario);
   }
 
   /**
-   * Guarda una entidad Usuario directamente en la base de datos (BD).
+   * Comprueba si la experiencia total del usuario es suficiente para subir al siguiente nivel.
+   * Utiliza un bucle por si se ganan múltiples niveles a la vez.
+   */
+  public void verificarSubidaDeNivel(Usuario usuario) {
+    int nivelExperiencia = usuario.getNivelExperiencia();
+    int experiencia = usuario.getExperiencia();
+    int expSiguienteNivel = SistemaNiveles.experienciaParaNivel(nivelExperiencia + 1);
+
+    // El usuario subira de nivel hasta donde su experiencia le permita
+    while (experiencia >= expSiguienteNivel) {
+      nivelExperiencia++;
+      usuario.setNivelExperiencia(nivelExperiencia);
+      experiencia -= expSiguienteNivel;
+      usuario.setExperiencia(experiencia);
+      System.out.println("¡FELICIDADES! ¡Has subido al nivel " + nivelExperiencia + "!");
+      // Se calcula la experiencia necesaria para el proximo nivel
+      expSiguienteNivel = SistemaNiveles.experienciaParaNivel(nivelExperiencia + 1);
+    }
+  }
+
+  @Transactional
+  /**
+   * Guarda una entidad Usuario directamente en la base de datos (BD). Solo se debe usar
+   * internamente después de que validaciones ya han sido realizadas (ej: después de actualizar
+   * racha). Para uso externo, prefiere guardarUsuario() o guardarSinValidarContrasena().
    *
    * @param usuario El usuario a guardar.
-   * @throws RegistroInvalidoException Si el correo es nulo o vacío.
    */
-  public void guardarEnBd(Usuario usuario) throws RegistroInvalidoException {
-    if (usuario.getCorreoElectronico() == null || usuario.getCorreoElectronico().isEmpty()) {
-      throw new RegistroInvalidoException("Correo electrónico no válido");
-    }
+  public void guardarEnBd(Usuario usuario) {
     usuarioRepository.save(usuario);
   }
 
+  @Transactional
   /**
    * Actualiza los datos de un usuario (nombre, correo, rol) desde el panel de admin.
    *
@@ -268,47 +205,91 @@ public class UsuarioService {
    * @param nuevoNombre El nuevo nombre de usuario.
    * @param nuevoCorreo El nuevo correo electrónico.
    * @param nuevoRol El nuevo rol a asignar.
-   * @throws RegistroInvalidoException Si los nuevos datos son inválidos.
+   * @throws EdicionUsuarioException Si los nuevos datos son inválidos.
    */
   public void actualizarUsuario(
-      String correoOriginal, String nuevoNombre, String nuevoCorreo, Rol nuevoRol)
-      throws RegistroInvalidoException {
+      String correoOriginal,
+      String nuevoNombre,
+      String nuevoCorreo,
+      Rol nuevoRol,
+      String ciudadInput)
+      throws EdicionUsuarioException {
     Usuario usuario = buscarPorCorreo(correoOriginal);
     if (usuario == null) {
-      throw new IllegalArgumentException("No se encontró el usuario con el correo original.");
+      throw new EdicionUsuarioException(
+          "No se encontró el usuario con el correo original.", correoOriginal);
     }
     // Validaciones básicas
-    if (nuevoNombre == null
-        || nuevoNombre.trim().isEmpty()
-        || nuevoNombre.length() < 3
-        || nuevoNombre.length() > 30) {
-      throw new IllegalArgumentException("Nombre de usuario no válido: " + nuevoNombre);
+    if (!usuarioValidator.nombreUsuarioValido(nuevoNombre)) {
+      throw new EdicionUsuarioException(
+          "Nombre de usuario no válido: " + nuevoNombre, correoOriginal);
     }
-    if (nuevoCorreo == null || !correoValdo(nuevoCorreo)) {
-      throw new IllegalArgumentException("Correo electrónico no válido: " + nuevoCorreo);
+    if (!usuarioValidator.correoValido(nuevoCorreo)) {
+      throw new EdicionUsuarioException(
+          "Correo electrónico no válido: " + nuevoCorreo, correoOriginal);
+    }
+    if (usuarioRepository.findByNombreUsuario(nuevoNombre).isPresent()
+        && !usuario.getNombreUsuario().equals(nuevoNombre)) {
+      throw new EdicionUsuarioException(
+          "El nombre de usuario ya existe: " + nuevoNombre, correoOriginal);
+    }
+    if (usuarioRepository.findByCorreoElectronico(nuevoCorreo).isPresent()
+        && !usuario.getCorreoElectronico().equals(nuevoCorreo)) {
+      throw new EdicionUsuarioException(
+          "El correo electrónico ya está registrado: " + nuevoCorreo, correoOriginal);
+    }
+
+    if (ciudadInput != null && !ciudadInput.trim().isEmpty()) {
+      try {
+        // Llamada a la API con lo que escribió el usuario (ej: "Curico")
+        String jsonResponse = weatherService.getWeatherByCity(ciudadInput);
+
+        // Parseamos la respuesta
+        JSONObject json = new JSONObject(jsonResponse);
+
+        // Obtenemos el nombre OFICIAL y el PAÍS (ej: "Curicó" y "CL")
+        String nombreOficial = json.getString("name");
+        String pais = json.getJSONObject("sys").getString("country");
+
+        // Guardamos el formato correcto: "Curicó, CL"
+        usuario.setCiudad(nombreOficial + "," + pais);
+
+      } catch (Exception e) {
+        // Si la API falla, lanzamos error para que el usuario sepa
+        // que escribió mal la ciudad.
+        throw new IllegalArgumentException(
+            "Error: La ciudad '"
+                + ciudadInput
+                + "' no fue encontrada. Intenta agregar el código de país (ej: Curico,CL).");
+      }
+    } else {
+      // Si dejó el campo vacío, borramos la ciudad
+      usuario.setCiudad(null);
     }
     usuario.setNombreUsuario(nuevoNombre);
     usuario.setCorreoElectronico(nuevoCorreo);
     usuario.setRol(nuevoRol);
+
     usuarioRepository.save(usuario);
   }
 
+  @Transactional
   /**
    * Actualiza la contraseña de un usuario desde el panel de admin.
    *
    * @param correo El correo del usuario a modificar.
    * @param nuevaContrasena La nueva contraseña (en texto plano, se hasheará aquí).
-   * @throws RegistroInvalidoException Si la nueva contraseña no es válida.
+   * @throws EdicionUsuarioException Si la nueva contraseña no es válida.
    */
   public void actualizarContrasenaUsuario(String correo, String nuevaContrasena)
-      throws RegistroInvalidoException {
+      throws EdicionUsuarioException {
     Usuario usuario = buscarPorCorreo(correo);
     if (usuario == null) {
       throw new IllegalArgumentException("No se encontró el usuario con el correo proporcionado.");
     }
-    String resultado = validarContrasena(nuevaContrasena);
+    String resultado = usuarioValidator.validarContrasena(nuevaContrasena);
     if (resultado != null) {
-      throw new RegistroInvalidoException(resultado);
+      throw new EdicionUsuarioException(resultado, correo);
     }
     // Hashea la nueva contrasena antes de guardar
     org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder encoder =
@@ -317,6 +298,7 @@ public class UsuarioService {
     usuarioRepository.save(usuario);
   }
 
+  @Transactional
   /**
    * Elimina un usuario usando su correo electrónico.
    *
@@ -332,7 +314,8 @@ public class UsuarioService {
 
   // Metodos para manejar las tareas de los usuarios
   /**
-   * Busca un usuario por correo y fuerza la carga de su lista de tareas.
+   * Busca un usuario por correo y fuerza la carga de su lista de tareas dentro de un contexto
+   * transaccional.
    *
    * @param correo El correo del usuario.
    * @return El Usuario con sus tareas cargadas, o null.
@@ -341,99 +324,27 @@ public class UsuarioService {
   public Usuario buscarPorCorreoConTareas(String correo) {
     Usuario usuario = usuarioRepository.findByCorreoElectronico(correo).orElse(null);
     if (usuario != null) {
-      usuario.getTareas(); // Fuerza la carga de tareas
+      // Fuerza la inicialización de las colecciones dentro del contexto transaccional
+      var unused = usuario.getTareas().size();
+      unused = usuario.getTareasCompletadas().size();
     }
     return usuario;
   }
 
   /**
-   * Agrega una nueva tarea a un usuario específico por su correo.
-   *
-   * @param correo El correo del usuario.
-   * @param tarea La tarea a agregar.
-   * @throws TareaInvalidaException Si la tarea ya existe en la lista del usuario.
-   */
-  @Transactional
-  public void agregarTareaAusuario(String correo, Tarea tarea) throws TareaInvalidaException {
-    Usuario usuario =
-        usuarioRepository
-            .findByCorreoElectronico(correo)
-            .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-    usuario.agregarTarea(tarea);
-    usuarioRepository.save(usuario);
-  }
-
-  /**
-   * Marca una tarea de un usuario como completada.
-   *
-   * @param correo El correo del usuario.
-   * @param nombreTarea El nombre de la tarea a completar.
-   * @throws RegistroInvalidoException Si la tarea no se encuentra o ya está completada.
-   */
-  @Transactional
-  public void completarTarea(String correo, String nombreTarea) throws RegistroInvalidoException {
-    Usuario usuario =
-        usuarioRepository
-            .findByCorreoElectronico(correo)
-            .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-
-    usuario.completarTarea(nombreTarea); // accedes a la colección dentro de la transacción
-    this.actualizarLigaDelUsuario(usuario);
-    usuarioRepository.save(usuario);
-  }
-
-  /**
-   * Elimina una tarea pendiente de la lista de un usuario.
-   *
-   * @param correo El correo del usuario.
-   * @param nombreTarea El nombre de la tarea a eliminar.
-   * @throws RegistroInvalidoException Si la tarea no se encuentra.
-   */
-  @Transactional
-  public void eliminarTarea(String correo, String nombreTarea) throws RegistroInvalidoException {
-    Usuario usuario =
-        usuarioRepository
-            .findByCorreoElectronico(correo)
-            .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-    usuario.cancelarTarea(nombreTarea); // Acceso seguro a la colección
-    usuarioRepository.save(usuario);
-  }
-
-  /**
-   * Guarda un usuario y se asegura de que sus tareas asociadas también se persistan.
+   * Guarda un usuario con validación completa, asegurando que sus tareas asociadas estén
+   * correctamente vinculadas. Usado principalmente en migraciones de datos.
    *
    * @param usuario El usuario a guardar.
    * @return El usuario guardado.
-   * @throws EdicionInvalidaException Si el nombre es inválido.
-   * @throws RegistroInvalidoException Si la contraseña o correo son inválidos.
+   * @throws RegistroInvalidoException Si la validación falla.
    */
   @Transactional
-  public Usuario guardarConTareas(Usuario usuario)
-      throws EdicionInvalidaException, RegistroInvalidoException {
-    // Validaciones básicas
-    if (usuario.getNombreUsuario() == null
-        || usuario.getNombreUsuario().trim().isEmpty()
-        || usuario.getNombreUsuario().length() < 3
-        || usuario.getNombreUsuario().length() > 30) {
-      throw new IllegalArgumentException(
-          "Nombre de usuario no válido: " + usuario.getNombreUsuario());
-    }
-    if (usuario.getCorreoElectronico() == null || !correoValdo(usuario.getCorreoElectronico())) {
-      throw new IllegalArgumentException(
-          "Correo electrónico no válido: " + usuario.getCorreoElectronico());
-    }
-    String resultado = validarContrasena(usuario.getContrasena());
-    if (resultado != null) {
-      throw new IllegalArgumentException(resultado);
-    }
-    if (usuario.getNombreUsuario() == null || usuario.getNombreUsuario().trim().isEmpty()) {
-      throw new EdicionInvalidaException("Error", usuario.getCorreoElectronico());
-    }
-    if (usuario.getContrasena() == null || usuario.getContrasena().length() < 8) {
-      throw new RegistroInvalidoException("La contrasena debe tener al menos 8 caracteres.");
-    }
+  public Usuario guardarConTareas(Usuario usuario) throws RegistroInvalidoException {
+    validarUsuarioCompleto(usuario, true);
 
     // Asocia las tareas pendientes y completadas al usuario antes de guardar
+    // Esto es necesario para migraciones donde las tareas vienen sin usuario asignado
     if (usuario.getTareas() != null) {
       usuario.getTareas().forEach(t -> t.setUsuario(usuario));
     }
@@ -453,10 +364,12 @@ public class UsuarioService {
    * @param correo correo electrónico del usuario
    * @return lista de tareas pendientes
    */
+  @Transactional
   public List<Tarea> obtenerTareasPendientes(String correo) {
-    Optional<Usuario> usuarioOpt = usuarioRepository.findByCorreoElectronico(correo);
-    if (usuarioOpt.isPresent()) {
-      Usuario usuario = usuarioOpt.get();
+    // Usamos buscarPorCorreoConTareas para asegurarnos de que las colecciones LAZY
+    // estén inicializadas dentro del contexto transaccional.
+    Usuario usuario = buscarPorCorreoConTareas(correo);
+    if (usuario != null) {
       return usuario.getTareasPendientes();
     }
     return new ArrayList<>();
@@ -483,7 +396,7 @@ public class UsuarioService {
    * Calcula y actualiza la liga de un usuario basándose en sus puntosLiga. Esta lógica ahora usa
    * valores dinámicos del ConfiguracionService.
    */
-  private void actualizarLigaDelUsuario(Usuario usuario) {
+  public void actualizarLigaDelUsuario(Usuario usuario) {
 
     // 1. Obtenemos los límites de la base de datos.
     // (Estos métodos 'getLimiteLiga' los crearemos en ConfiguracionService)
@@ -551,5 +464,133 @@ public class UsuarioService {
     // 4. Guardamos TODOS los cambios en la base de datos
     usuarioRepository.saveAll(todosLosUsuarios);
     System.out.println("LOG: Recálculo global de ligas terminado.");
+  }
+
+  /**
+   * Método unificado y robusto para actualizar la racha del usuario. Se encarga de incrementar,
+   * reiniciar o mantener la racha según la fecha. Debe ser llamado cada vez que se completa una
+   * tarea.
+   *
+   * @param usuario El usuario cuya racha se va a actualizar.
+   */
+  public void actualizarRacha(Usuario usuario) {
+    LocalDate hoy = LocalDate.now(ZoneId.systemDefault());
+    LocalDate fechaUltimaRacha = usuario.getFechaRacha(); // Usamos el nombre de tu campo
+
+    // CASO 1: Es la primera tarea que el usuario completa en su vida O la racha es 0.
+    if (fechaUltimaRacha == null || usuario.getRacha() == 0) {
+      usuario.setRacha(1);
+    } else {
+      // Calculamos los días de diferencia entre la última vez y hoy.
+      long diasDiferencia = ChronoUnit.DAYS.between(fechaUltimaRacha, hoy);
+      // CASO 2: Completó otra tarea hoy. La racha no cambia.
+      if (diasDiferencia == 0) {
+        // No se hace nada, la racha ya se contó para hoy.
+        System.out.println("Racha diaria ya registrada. No se incrementa.");
+        return; // Salimos del método para no actualizar la fecha innecesariamente
+      } // CASO 3: La última tarea fue ayer. ¡La racha continúa!
+      else if (diasDiferencia == 1) {
+        System.out.println(
+            "LOG: La racha del Usuario " + usuario.getNombreUsuario() + " ha aumentado.");
+        usuario.setRacha(usuario.getRacha() + 1); // Incrementamos la racha existente
+      } // CASO 4: La racha se rompió (pasó más de 1 día). Se reinicia a 1.
+    }
+    // Actualizamos la fecha de la racha a hoy.
+    usuario.setFechaRacha(hoy);
+  }
+
+  @Transactional
+  /**
+   * Verifica si un usuario ha perdido su racha debido a inactividad y la reinicia si es necesario.
+   * Utilizado específicamente en el Home.
+   *
+   * @param usuario Usuario para verificar la racha
+   */
+  public void verificarPerdidaRacha(Usuario usuario) {
+    LocalDate hoy = LocalDate.now(ZoneId.systemDefault());
+    LocalDate fechaUltimaRacha = usuario.getFechaRacha();
+
+    if (fechaUltimaRacha != null && usuario.getRacha() > 0) {
+      long diasDiferencia = ChronoUnit.DAYS.between(fechaUltimaRacha, hoy);
+      if (diasDiferencia > 1) {
+        System.out.println("LOG: " + usuario.getNombreUsuario() + " ha perdido su racha.");
+        usuario.setRacha(0);
+      }
+    }
+  }
+
+  public void sumarExperienciaTarea(Usuario usuario, int expTarea) {
+    usuario.setExperiencia(usuario.getExperiencia() + expTarea);
+  }
+
+  /** Obtiene el Top 5 de jugadores ordenados por la cantidad de logros completados. */
+  public List<TopJugadorLogrosDto> getTop5JugadoresPorLogros() {
+    // 1. Obtenemos TODOS los usuarios de la BD
+    List<Usuario> todosLosUsuarios = usuarioRepository.findAll();
+
+    // 2. Creamos una lista para guardar los resultados (DTOs)
+    List<TopJugadorLogrosDto> dtos = new ArrayList<>();
+
+    // 3. Iteramos y calculamos el conteo para cada uno
+    for (Usuario u : todosLosUsuarios) {
+      // Contamos cuántos logros ha cumplido este usuario
+      int conteo = gestorLogrosService.getTodosLogrosCumplidos(u).size();
+
+      // --- CAMBIO AQUÍ ---
+      // Ahora pasamos el tercer parámetro: u.getAvatarUrl()
+      dtos.add(new TopJugadorLogrosDto(u.getNombreUsuario(), conteo, u.getAvatarUrl()));
+    }
+
+    // 4. Ordenamos la lista de DTOs en Java (de mayor a menor)
+    dtos.sort((dto1, dto2) -> Long.compare(dto2.getTotalLogros(), dto1.getTotalLogros()));
+
+    // 5. Devolvemos solo los primeros 5
+    return dtos.stream().limit(5).collect(Collectors.toList());
+  }
+
+  // --- MÉTODO PARA LA TARJETA DE CONTEO ---
+  /**
+   * Obtiene el conteo total de todos los logros completados por todos los usuarios. (Calculado en
+   * Java para la tarjeta de estadísticas).
+   *
+   * @return un long con el conteo total.
+   */
+  public long getConteoTotalLogrosCompletados() {
+    long conteoTotal = 0;
+    // Obtenemos todos los usuarios
+    List<Usuario> todosLosUsuarios = usuarioRepository.findAll();
+
+    // Iteramos, calculamos el conteo de cada uno y lo sumamos
+    for (Usuario u : todosLosUsuarios) {
+      conteoTotal += gestorLogrosService.getTodosLogrosCumplidos(u).size();
+    }
+    return conteoTotal;
+  }
+
+  /**
+   * Maneja toda la lógica que debe ocurrir al cargar un usuario (login). Al ser @Transactional,
+   * mantiene la sesión de BD abierta y previene LazyInitializationException.
+   *
+   * @param correo El correo del usuario que acaba de iniciar sesión.
+   */
+  @Transactional
+  public void manejarLogicaDeLogin(String correo) {
+    // Volvemos a cargar el usuario DESDE DENTRO de la transacción.
+    // Esto nos da un objeto "managed" (conectado) y previene el error.
+    Usuario usuario = this.buscarPorCorreo(correo);
+    if (usuario == null) {
+      System.err.println(
+          "Error en manejarLogicaDeLogin: No se encontró usuario con correo " + correo);
+      return;
+    }
+
+    // 2. Actualiza la racha
+    this.actualizarRacha(usuario);
+
+    // 3. Dispara el gatillo de logros (ahora PUEDE acceder a usuario.getTareas)
+    gestorLogrosService.actualizarLogrosParaUsuario(usuario);
+    this.verificarSubidaDeNivel(usuario);
+    // 4. Guarda todos los cambios
+    this.guardarEnBd(usuario);
   }
 }

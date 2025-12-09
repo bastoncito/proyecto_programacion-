@@ -1,20 +1,30 @@
 package michaelsoftbinbows.controller;
 
+import java.io.IOException;
+import java.nio.file.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import michaelsoftbinbows.dto.TareaDto;
+import michaelsoftbinbows.entities.Logro;
 import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.entities.Usuario;
 import michaelsoftbinbows.exceptions.AdminCrearTareaException;
 import michaelsoftbinbows.exceptions.AdminCrearUsuarioException;
 import michaelsoftbinbows.exceptions.AdminGuardarTareaException;
-import michaelsoftbinbows.exceptions.EdicionInvalidaException;
+import michaelsoftbinbows.exceptions.EdicionTareaException;
+import michaelsoftbinbows.exceptions.EdicionUsuarioException;
 import michaelsoftbinbows.exceptions.RegistroInvalidoException;
 import michaelsoftbinbows.exceptions.TareaInvalidaException;
+import michaelsoftbinbows.exceptions.TareaPertenenciaException;
 import michaelsoftbinbows.model.Rol;
 import michaelsoftbinbows.security.CustomUserDetails;
 import michaelsoftbinbows.services.ConfiguracionService;
+import michaelsoftbinbows.services.LogroService;
 import michaelsoftbinbows.services.SeguridadService;
+import michaelsoftbinbows.services.TareaService;
 import michaelsoftbinbows.services.TemporadaService;
 import michaelsoftbinbows.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +33,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
@@ -43,6 +55,12 @@ public class AdminController {
   @Autowired private UsuarioService usuarioService; // Lógica de negocio para usuarios.
   @Autowired private SeguridadService seguridadService; // Reglas de permisos y roles.
   @Autowired private TemporadaService temporadaService; // Lógica para el reseteo de temporadas.
+  @Autowired private TareaService tareaService; // Lógica de negocio para tareas.
+  @Autowired private michaelsoftbinbows.services.AuthService authservice;
+  @Autowired private LogroService logroService;
+
+  // Definimos una subcarpeta específica para mantener orden
+  private static final String UPLOAD_DIR_LOGROS = "uploads/logros/";
 
   @Autowired
   private ConfiguracionService
@@ -59,7 +77,7 @@ public class AdminController {
   public void registrarUsuario(Usuario usuario) throws RegistroInvalidoException {
     String encodedPassword = passwordEncoder.encode(usuario.getContrasena());
     usuario.setContrasena(encodedPassword);
-    usuarioService.guardarEnBd(usuario);
+    usuarioService.guardarSinValidarContrasena(usuario);
   }
 
   /**
@@ -107,11 +125,15 @@ public class AdminController {
       @RequestParam(name = "mostrarConfig", required = false) boolean mostrarConfig,
       @RequestParam(name = "preselectUser", required = false) String preselectedUserEmail,
       @RequestParam(name = "errorConfig", required = false) String errorConfig,
+      @RequestParam(name = "editarLogroId", required = false) String logroIdParaEditar,
+      @RequestParam(name = "errorLogro", required = false) String errorLogro,
       Model model) {
 
-    // Se obtiene el usuario que está actualmente logueado para verificar sus permisos.
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    Usuario usuarioActual = ((CustomUserDetails) auth.getPrincipal()).getUsuario();
+    // Obtenemos el usuario gestionado desde el AuthService (asegura entidad gestionada)
+    Usuario usuarioActual = authservice.getCurrentUser();
+
+    // Logros revisar
+    usuarioService.manejarLogicaDeLogin(usuarioActual.getCorreoElectronico());
 
     // Primera barrera de seguridad: si el usuario no tiene el rol adecuado, se le redirige.
     if (usuarioActual.getRol() != Rol.ADMIN && usuarioActual.getRol() != Rol.MODERADOR) {
@@ -186,7 +208,7 @@ public class AdminController {
               + nombreTareaParaEditar
               + "' del usuario: "
               + correoUsuarioParaEditar);
-      Usuario usuarioDeLaTarea = usuarioService.buscarPorCorreo(correoUsuarioParaEditar);
+      Usuario usuarioDeLaTarea = usuarioService.buscarPorCorreoConTareas(correoUsuarioParaEditar);
       if (usuarioDeLaTarea != null
           && seguridadService.puedeGestionarTareasDe(usuarioActual, usuarioDeLaTarea)) {
         Tarea tareaParaEditar = usuarioDeLaTarea.buscarTareaPorNombre(nombreTareaParaEditar);
@@ -194,6 +216,23 @@ public class AdminController {
           model.addAttribute("tareaParaEditar", tareaParaEditar);
           model.addAttribute("usuarioDeLaTarea", usuarioDeLaTarea);
         }
+      }
+    }
+
+    if (logroIdParaEditar != null) {
+      System.out.println(
+          "DEBUG: Se ha solicitado abrir el modal para editar el logro: " + logroIdParaEditar);
+
+      // Buscamos el logro en la BD usando el servicio
+      logroService
+          .obtenerPorId(logroIdParaEditar)
+          .ifPresent(
+              logro -> {
+                model.addAttribute("logroParaEditar", logro);
+              });
+
+      if (errorLogro != null) {
+        model.addAttribute("errorLogro", errorLogro);
       }
     }
 
@@ -213,6 +252,17 @@ public class AdminController {
         model.addAttribute("listaTop10", usuarioService.getTopUsuarios(limiteActual));
         model.addAttribute("limiteActual", limiteActual);
         break;
+
+      case "logros":
+        System.out.println("DEBUG: Cargando datos para la vista 'logros'.");
+        model.addAttribute("totalLogros", logroService.getConteoTotalLogros());
+        model.addAttribute("logrosActivos", logroService.getConteoLogrosActivos());
+        model.addAttribute("listaDeLogros", logroService.obtenerTodos());
+        model.addAttribute("totalCompletados", usuarioService.getConteoTotalLogrosCompletados());
+        model.addAttribute("top5Jugadores", usuarioService.getTop5JugadoresPorLogros());
+        model.addAttribute("topLogrosStats", logroService.getTop5LogrosMasCompletados());
+        break;
+
       case "usuarios":
         // No hay carga extra para la vista de usuarios.
         break;
@@ -247,7 +297,7 @@ public class AdminController {
       @RequestParam(name = "nuevaContrasena", required = false) String nuevaContrasena,
       @RequestParam(name = "confirmarContrasena", required = false) String confirmarContrasena,
       RedirectAttributes redirectAttributes)
-      throws EdicionInvalidaException {
+      throws EdicionUsuarioException {
 
     System.out.println("\n--- INICIO PROCESO DE EDICIÓN DE USUARIO ---");
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -284,7 +334,7 @@ public class AdminController {
     System.out.println(
         "LOG: Permisos verificados. Intentando aplicar cambios en la capa de datos...");
     try {
-      usuarioService.actualizarUsuario(correoOriginal, nuevoNombre, nuevoCorreo, nuevoRol);
+      usuarioService.actualizarUsuario(correoOriginal, nuevoNombre, nuevoCorreo, nuevoRol, null);
 
       if (nuevaContrasena != null && !nuevaContrasena.isEmpty()) {
         System.out.println("LOG: Se ha detectado un intento de cambio de contraseña.");
@@ -298,8 +348,8 @@ public class AdminController {
       redirectAttributes.addFlashAttribute(
           "success", "Usuario '" + nuevoNombre + "' actualizado correctamente.");
       System.out.println("SUCCESS: Usuario actualizado exitosamente en la base de datos.");
-    } catch (IllegalArgumentException | RegistroInvalidoException e) {
-      throw new EdicionInvalidaException(e.getMessage(), correoOriginal);
+    } catch (IllegalArgumentException e) {
+      throw new EdicionUsuarioException(e.getMessage(), correoOriginal);
     }
     return "redirect:/admin";
   }
@@ -314,9 +364,7 @@ public class AdminController {
   @GetMapping("/admin/eliminar")
   public String eliminarUsuario(
       @RequestParam("correo") String correoAeliminar, RedirectAttributes redirectAttributes) {
-    Usuario actor =
-        ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-            .getUsuario();
+    Usuario actor = authservice.getCurrentUser();
     Usuario objetivo = usuarioService.buscarPorCorreo(correoAeliminar);
 
     System.out.println(
@@ -366,11 +414,10 @@ public class AdminController {
   public String eliminarTareaDeUsuario(
       @RequestParam("correoUsuario") String correoUsuario,
       @RequestParam("nombreTarea") String nombreTarea,
-      RedirectAttributes redirectAttributes) {
+      RedirectAttributes redirectAttributes)
+      throws TareaPertenenciaException {
 
-    Usuario actor =
-        ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-            .getUsuario();
+    Usuario actor = authservice.getCurrentUser();
     Usuario objetivo = usuarioService.buscarPorCorreo(correoUsuario);
 
     if (!seguridadService.puedeGestionarTareasDe(actor, objetivo)) {
@@ -379,27 +426,22 @@ public class AdminController {
       return "redirect:/acceso-denegado";
     }
 
-    try {
-      usuarioService.eliminarTarea(correoUsuario, nombreTarea);
-      redirectAttributes.addFlashAttribute(
-          "success",
-          "Tarea '"
-              + nombreTarea
-              + "' del usuario '"
-              + objetivo.getNombreUsuario()
-              + "' ha sido eliminada.");
-      System.out.println(
-          "LOG: El admin '"
-              + actor.getNombreUsuario()
-              + "' eliminó la tarea '"
-              + nombreTarea
-              + "' del usuario '"
-              + objetivo.getNombreUsuario()
-              + "'.");
-    } catch (RegistroInvalidoException e) {
-      redirectAttributes.addFlashAttribute("error", e.getMessage());
-      System.err.println("ERROR al eliminar tarea: " + e.getMessage());
-    }
+    tareaService.eliminarPorUsuarioYNombreTarea(objetivo.getId(), nombreTarea);
+    redirectAttributes.addFlashAttribute(
+        "success",
+        "Tarea '"
+            + nombreTarea
+            + "' del usuario '"
+            + objetivo.getNombreUsuario()
+            + "' ha sido eliminada.");
+    System.out.println(
+        "LOG: El admin '"
+            + actor.getNombreUsuario()
+            + "' eliminó la tarea '"
+            + nombreTarea
+            + "' del usuario '"
+            + objetivo.getNombreUsuario()
+            + "'.");
     redirectAttributes.addAttribute("vista", "tareas");
     redirectAttributes.addAttribute("correo", correoUsuario);
     return "redirect:/admin";
@@ -427,14 +469,20 @@ public class AdminController {
       RedirectAttributes redirectAttributes)
       throws AdminGuardarTareaException {
 
-    Usuario usuario = usuarioService.buscarPorCorreo(correoUsuario);
+    Long idUsuario = usuarioService.buscarPorCorreo(correoUsuario).getId();
     try {
-      Tarea tareaActualizada = new Tarea(nuevoNombre, nuevaDescripcion, nuevaDificultad);
-      usuario.actualizarTarea(nombreOriginal, tareaActualizada);
-      usuarioService.guardarEnBd(usuario);
+      TareaDto tareaActualizada = new TareaDto();
+      tareaActualizada.nombre = nuevoNombre;
+      tareaActualizada.descripcion = nuevaDescripcion;
+      tareaActualizada.dificultad = nuevaDificultad;
+      tareaService.actualizarTarea(idUsuario, nombreOriginal, tareaActualizada);
       redirectAttributes.addFlashAttribute("success", "Tarea actualizada correctamente.");
-    } catch (TareaInvalidaException | RegistroInvalidoException e) {
-      throw new AdminGuardarTareaException(e.getMessage(), usuario, nuevoNombre, nuevaDescripcion);
+    } catch (TareaInvalidaException | EdicionTareaException e) {
+      throw new AdminGuardarTareaException(
+          e.getMessage(),
+          usuarioService.buscarPorCorreo(correoUsuario),
+          nuevoNombre,
+          nuevaDescripcion);
     }
     redirectAttributes.addAttribute("vista", "tareas");
     redirectAttributes.addAttribute("correo", correoUsuario);
@@ -460,9 +508,7 @@ public class AdminController {
       @RequestParam("rol") Rol rol,
       RedirectAttributes redirectAttributes)
       throws AdminCrearUsuarioException {
-    Usuario actor =
-        ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-            .getUsuario();
+    Usuario actor = authservice.getCurrentUser();
 
     if (!seguridadService.puedeAsignarRol(actor, rol)) {
       redirectAttributes.addFlashAttribute(
@@ -518,13 +564,15 @@ public class AdminController {
     }
 
     try {
-      Tarea nuevaTarea = new Tarea(nombre, descripcion, dificultad);
-      usuario.agregarTarea(nuevaTarea);
-      usuarioService.guardarEnBd(usuario);
+      TareaDto tareaDto = new TareaDto();
+      tareaDto.nombre = nombre;
+      tareaDto.descripcion = descripcion;
+      tareaDto.dificultad = dificultad;
+      tareaService.crear(tareaDto, usuario.getId());
       redirectAttributes.addFlashAttribute(
           "success",
           "Tarea '" + nombre + "' anadida exitosamente a " + usuario.getNombreUsuario() + ".");
-    } catch (TareaInvalidaException | RegistroInvalidoException e) {
+    } catch (TareaInvalidaException e) {
       throw new AdminCrearTareaException(e.getMessage());
     }
     redirectAttributes.addAttribute("vista", "tareas");
@@ -541,20 +589,14 @@ public class AdminController {
    * @return redirect admin
    */
   @GetMapping("/admin/temporada/reset-manual")
-  public String forzarReseteoTemporada(RedirectAttributes redirectAttributes) {
+  public String forzarReseteoTemporada(RedirectAttributes redirectAttributes) throws Exception {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     String actor = auth.getName();
     System.out.println(
         "LOG: El admin '" + actor + "' está forzando un reseteo de temporada manual.");
-    try {
-      temporadaService.forzarReseteoManual();
-      System.out.println("SUCCESS: Reseteo de temporada forzado con éxito por '" + actor + "'.");
-      redirectAttributes.addFlashAttribute("success", "¡Reseteo de temporada forzado con éxito!");
-    } catch (Exception e) {
-      System.err.println("ERROR: Falló el reseteo de temporada manual. Causa: " + e.getMessage());
-      redirectAttributes.addFlashAttribute(
-          "error", "Error al forzar el reseteo: " + e.getMessage());
-    }
+    temporadaService.forzarReseteoManual();
+    System.out.println("SUCCESS: Reseteo de temporada forzado con éxito por '" + actor + "'.");
+    redirectAttributes.addFlashAttribute("success", "¡Reseteo de temporada forzado con éxito!");
     return "redirect:/admin?vista=top";
   }
 
@@ -567,18 +609,13 @@ public class AdminController {
    */
   @GetMapping("/admin/top/set-limite")
   public String setLimiteTop(
-      @RequestParam("limite") int limite, RedirectAttributes redirectAttributes) {
+      @RequestParam("limite") int limite, RedirectAttributes redirectAttributes) throws Exception {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     String actor = auth.getName();
     System.out.println(
         "LOG: El admin '" + actor + "' está cambiando el límite del Top a: " + limite);
-    try {
-      configuracionService.setLimiteTop(limite);
-      redirectAttributes.addFlashAttribute("success", "Límite del Top guardado en " + limite + ".");
-    } catch (Exception e) {
-      System.err.println("ERROR: Falló al guardar el límite del Top. Causa: " + e.getMessage());
-      redirectAttributes.addFlashAttribute("error", "Error al guardar el límite.");
-    }
+    configuracionService.setLimiteTop(limite);
+    redirectAttributes.addFlashAttribute("success", "Límite del Top guardado en " + limite + ".");
     return "redirect:/admin?vista=top&limite=" + limite;
   }
 
@@ -633,5 +670,142 @@ public class AdminController {
     redirectAttributes.addFlashAttribute(
         "success", "Límites de liga actualizados. Todas las ligas han sido recalculadas.");
     return "redirect:/admin?vista=top&limite=" + limiteActual;
+  }
+
+  /**
+   * Maneja la petición para cambiar el estado (activo/inactivo) de un logro.
+   *
+   * @param id El ID del logro a modificar.
+   * @param redirectAttributes Para enviar mensajes de feedback a la vista.
+   * @return Redirección a la vista de logros.
+   */
+  @GetMapping("/admin/logros/toggle")
+  public String toggleLogroActivo(
+      @RequestParam("id") String id, RedirectAttributes redirectAttributes) {
+
+    // 1. Buscamos el logro en el servicio
+    Optional<Logro> logroOpt = logroService.obtenerPorId(id);
+
+    if (logroOpt.isPresent()) {
+      Logro logro = logroOpt.get();
+
+      // 2. Invertimos su estado
+      logro.setActivo(!logro.isActivo());
+
+      // 3. Guardamos los cambios
+      logroService.guardar(logro);
+
+      String estado = logro.isActivo() ? "activado" : "desactivado";
+      redirectAttributes.addFlashAttribute(
+          "success", "Logro '" + logro.getNombre() + "' ha sido " + estado + ".");
+    } else {
+      redirectAttributes.addFlashAttribute("error", "No se encontró el logro con ID: " + id);
+    }
+
+    // 4. Redirigimos de vuelta a la pestaña de logros
+    return "redirect:/admin?vista=logros";
+  }
+
+  /**
+   * Procesa el formulario para guardar los cambios de un logro editado.
+   *
+   * @param id El ID del logro a guardar.
+   * @param nombre El nuevo nombre para el logro.
+   * @param descripcion La nueva descripción.
+   * @param imagenUrl La nueva URL de la imagen/icono.
+   * @param experienciaRecompensa La nueva cantidad de XP.
+   * @param redirectAttributes Para enviar mensajes de feedback.
+   * @return Redirección a la vista de logros.
+   */
+  @PostMapping("/admin/logros/guardar")
+  public String guardarLogroEditado(
+      @RequestParam("id") String id,
+      @RequestParam("nombre") String nombre,
+      @RequestParam("descripcion") String descripcion,
+      @RequestParam("experienciaRecompensa") int experienciaRecompensa,
+      // Nuevo: Recibimos el archivo en lugar del String
+      @RequestParam(value = "archivoImagen", required = false) MultipartFile archivo,
+      // Nuevo: Opción para borrar la imagen y volver al default
+      @RequestParam(value = "eliminarImagen", required = false) boolean eliminarImagen,
+      RedirectAttributes redirectAttributes) {
+
+    // 1. Validaciones básicas
+    if (nombre == null || nombre.trim().isEmpty()) {
+      redirectAttributes.addFlashAttribute("errorLogro", "El nombre no puede estar vacío.");
+      return "redirect:/admin?vista=logros&editarLogroId=" + id;
+    }
+
+    Optional<Logro> logroOpt = logroService.obtenerPorId(id);
+    if (logroOpt.isEmpty()) {
+      redirectAttributes.addFlashAttribute("error", "Error: No se encontró el logro.");
+      return "redirect:/admin?vista=logros";
+    }
+
+    Logro logro = logroOpt.get();
+    logro.setNombre(nombre.trim());
+    logro.setDescripcion(descripcion.trim());
+    logro.setExperienciaRecompensa(experienciaRecompensa);
+
+    try {
+      // 2. Lógica de Imagen
+
+      // CASO A: El admin marcó "Eliminar imagen actual"
+      if (eliminarImagen) {
+        borrarImagenLogro(logro.getImagenUrl());
+        logro.setImagenUrl(null); // Esto activará el icono por defecto en el HTML
+      }
+      // CASO B: El admin subió una imagen nueva
+      else if (archivo != null && !archivo.isEmpty()) {
+        // Validar que sea imagen
+        if (!archivo.getContentType().startsWith("image/")) {
+          redirectAttributes.addFlashAttribute("errorLogro", "El archivo debe ser una imagen.");
+          return "redirect:/admin?vista=logros&editarLogroId=" + id;
+        }
+
+        // Crear directorio si no existe
+        Path uploadPath = Paths.get(UPLOAD_DIR_LOGROS);
+        if (!Files.exists(uploadPath)) {
+          Files.createDirectories(uploadPath);
+        }
+
+        // Borrar la anterior si tenía
+        borrarImagenLogro(logro.getImagenUrl());
+
+        // Guardar la nueva
+        String extension = StringUtils.getFilenameExtension(archivo.getOriginalFilename());
+        String nombreUnico = "logro_" + id + "_" + UUID.randomUUID().toString() + "." + extension;
+
+        Path rutaCompleta = uploadPath.resolve(nombreUnico);
+        Files.copy(archivo.getInputStream(), rutaCompleta, StandardCopyOption.REPLACE_EXISTING);
+
+        // Guardar la URL pública
+        logro.setImagenUrl("/uploads/logros/" + nombreUnico);
+      }
+      // CASO C: No subió nada ni borró -> Se mantiene la imagen que ya tenía
+
+      logroService.guardar(logro);
+      redirectAttributes.addFlashAttribute("success", "Logro actualizado correctamente.");
+
+    } catch (IOException e) {
+      e.printStackTrace();
+      redirectAttributes.addFlashAttribute(
+          "errorLogro", "Error al guardar la imagen: " + e.getMessage());
+      return "redirect:/admin?vista=logros&editarLogroId=" + id;
+    }
+
+    return "redirect:/admin?vista=logros";
+  }
+
+  // --- HELPER PARA BORRAR IMAGEN FÍSICA ---
+  private void borrarImagenLogro(String urlImagen) {
+    if (urlImagen != null && urlImagen.startsWith("/uploads/")) {
+      try {
+        String nombreArchivo = urlImagen.replace("/uploads/logros/", "");
+        Path rutaArchivo = Paths.get(UPLOAD_DIR_LOGROS).resolve(nombreArchivo);
+        Files.deleteIfExists(rutaArchivo);
+      } catch (IOException e) {
+        System.err.println("Error al borrar imagen antigua de logro: " + e.getMessage());
+      }
+    }
   }
 }

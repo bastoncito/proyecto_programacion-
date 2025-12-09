@@ -12,6 +12,7 @@
     <!-- Estilos y fuentes unificadas -->
     <link rel="stylesheet" th:href="@{/styles/ranking.css}" />
     <link rel="stylesheet" th:href="@{/styles/navbar.css}" />
+    <link rel="stylesheet" th:href="@{/styles/loader.css}" />
     <!-- Iconos de Boxicons -->
     <link
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
@@ -24,8 +25,12 @@
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <script th:src="@{/js/loader-init.js}"></script>
   </head>
   <body>
+    <!-- Pantalla de carga -->
+    <div th:replace="~{fragments :: loadingScreen}"></div>
+
     <main class="grid-container">
       <!-- Columna Izquierda: Contenido principal (Ranking y Requisitos) -->
       <div class="left-column">
@@ -266,5 +271,7 @@
 
     <!-- Barra de navegación inferior -->
     <div th:replace="~{fragments :: navbar}"></div>
+    <!-- Pantalla de carga -->
+    <script th:src="@{/js/loader-main.js}"></script>
   </body>
 </html>

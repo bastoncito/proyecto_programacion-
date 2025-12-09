@@ -157,13 +157,10 @@ body {
   width: 50px;
   height: 50px;
   flex-shrink: 0;
-  background-color: var(--color-bordes-sutiles);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
+  
+  display: flex; 
+  align-items: center; 
   justify-content: center;
-  font-size: 24px;
-  color: #90a4ae;
 }
 .profile-details {
   flex-grow: 1;
@@ -182,6 +179,28 @@ body {
 .profile-details .user-email {
   font-size: 0.85em;
   color: var(--color-texto-secundario);
+}
+
+.add-friend-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;            /* Mismo ancho que .level-badge */
+  height: 40px;           /* Mismo alto que .level-badge */
+  border-radius: 50%;     /* Circular */
+  background-color: var(--color-bordes-sutiles); /* Fondo suave para diferenciarlo */
+  color: var(--color-oscuro);
+  text-decoration: none;  /* Quitar subrayado del link */
+  font-size: 1.4em;       /* Tamaño del ícono ajustado */
+  flex-shrink: 0;         /* Evita que se aplaste */
+  transition: var(--transicion-suave);
+  cursor: pointer;
+}
+
+.add-friend-btn:hover {
+  background-color: var(--color-principal); /* Color amarillo al pasar el mouse */
+  color: var(--color-oscuro);
+  transform: scale(1.05); /* Pequeño efecto de zoom */
 }
 
 /* La insignia circular que muestra el nivel del usuario. */

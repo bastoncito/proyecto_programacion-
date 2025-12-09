@@ -59,7 +59,7 @@ public class JsonMigrator implements CommandLineRunner {
         List<Usuario> usuarios = gson.fromJson(reader, new TypeToken<List<Usuario>>() {}.getType());
         for (Usuario usuario : usuarios) {
           // Verifica si ya existe un usuario con ese correo
-          if (usuarioService.obtenerPorCorreo(usuario.getCorreoElectronico()).isEmpty()) {
+          if (usuarioService.buscarPorCorreo(usuario.getCorreoElectronico()) == null) {
             usuario.setId(null); // Deja que JPA genere el id
 
             if (usuario.getTareas() != null) {

@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" th:href="@{/styles/historial_tareas.css}" />
     <link rel="stylesheet" th:href="@{/styles/navbar.css}" />
+    <link rel="stylesheet" th:href="@{/styles/loader.css}" />
 
     <link
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
@@ -22,8 +23,14 @@
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script th:src="@{/js/loader-init.js}"></script>
   </head>
   <body>
+    <!-- Pantalla de carga -->
+    <div th:replace="~{fragments :: loadingScreen}"></div>
+
     <main class="grid-container">
       <!-- Columna izquierda para escritorio -->
       <div class="left-column">
@@ -76,12 +83,14 @@
                 href="javascript:void(0);"
                 id="tab-semanal"
                 class="active"
+                data-no-loader
                 onclick="mostrarResumen('semanal')"
                 >Semanal</a
               >
               <a
                 href="javascript:void(0);"
                 id="tab-mensual"
+                data-no-loader
                 onclick="mostrarResumen('mensual')"
                 >Mensual</a
               >
@@ -89,22 +98,24 @@
           </div>
           <div class="card-body">
             <div id="resumen-semanal">
-              <div class="summary-placeholder">
-                <i class="bx bxs-bar-chart-alt-2"></i>
-                <h2>Resumen Gráfico Semanal</h2>
+              <div class="chart-container">
+                <canvas id="chartSemanal"></canvas>
+              </div>
+              <div class="chart-stats">
                 <p>
-                  Próximamente: Un gráfico con las tareas completadas en los
-                  últimos 7 días.
+                  <strong>Tareas completadas esta semana:</strong>
+                  <span id="totalSemanal">0</span>
                 </p>
               </div>
             </div>
             <div id="resumen-mensual" style="display: none">
-              <div class="summary-placeholder">
-                <i class="bx bxs-calendar"></i>
-                <h2>Resumen Gráfico Mensual</h2>
+              <div class="chart-container">
+                <canvas id="chartMensual"></canvas>
+              </div>
+              <div class="chart-stats">
                 <p>
-                  Próximamente: Un gráfico detallado con tu productividad a lo
-                  largo de todo el mes.
+                  <strong>Tareas completadas este mes:</strong>
+                  <span id="totalMensual">0</span>
                 </p>
               </div>
             </div>
@@ -192,22 +203,9 @@
 
     <div th:replace="~{fragments :: navbar}"></div>
 
-    <!-- Script para que los resumenes semanales puedan cambiar entre semana y mensual -->
-    <!-- Posiblemente se cambiara para cuando tengamos esa feat -->
-    <script>
-      function mostrarResumen(vista) {
-        document.getElementById("resumen-semanal").style.display = "none";
-        document.getElementById("resumen-mensual").style.display = "none";
-        document.getElementById("tab-semanal").classList.remove("active");
-        document.getElementById("tab-mensual").classList.remove("active");
-        if (vista === "semanal") {
-          document.getElementById("resumen-semanal").style.display = "block";
-          document.getElementById("tab-semanal").classList.add("active");
-        } else if (vista === "mensual") {
-          document.getElementById("resumen-mensual").style.display = "block";
-          document.getElementById("tab-mensual").classList.add("active");
-        }
-      }
-    </script>
+    <!-- Pantalla de carga -->
+    <script th:src="@{/js/loader-main.js}"></script>
+    <!-- Script para que los resúmenes puedan cambiar entre semanal y mensual -->
+    <script th:src="@{/js/historial_tareas.js}"></script>
   </body>
 </html>

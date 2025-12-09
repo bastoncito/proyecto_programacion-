@@ -22,12 +22,28 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
   Optional<Usuario> findByCorreoElectronico(String correo);
 
   /**
+   * Verifica si existe un usuario con el correo electrónico dado.
+   *
+   * @param correoElectronico Correo a verificar
+   * @return true si existe, false en caso contrario
+   */
+  boolean existsByCorreoElectronico(String correoElectronico);
+
+  /**
    * Busca un usuario por su nombre de usuario.
    *
    * @param usernameOrEmail El nombre de usuario a buscar.
    * @return Un Optional que contiene al Usuario si se encuentra.
    */
-  Optional<Usuario> findByNombreUsuario(String usernameOrEmail);
+  Optional<Usuario> findByNombreUsuario(String username);
+
+  /**
+   * Verifica si existe un usuario con el nombre de usuario dado.
+   *
+   * @param nombreUsuario Nombre a verificar
+   * @return true si existe, false en caso contrario
+   */
+  boolean existsByNombreUsuario(String nombreUsuario);
 
   /**
    * Busca una página de usuarios ordenados por puntos de liga en orden descendente.
@@ -43,4 +59,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
    * @return Una Lista con los 3 mejores Usuarios.
    */
   List<Usuario> findTop3ByOrderByPuntosLigaDesc();
+
+  // Busca usuarios cuyo nombre contenga el texto (query), ignorando mayúsculas/minúsculas.
+  List<Usuario> findByNombreUsuarioContainingIgnoreCase(String nombreUsuario);
 }

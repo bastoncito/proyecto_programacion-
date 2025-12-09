@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="'Perfil de ' + ${perfil.nombreUsuario}">Ver Perfil</title>
+  
+  <!-- Estilos Globales -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/styles/navbar.css}" />
+  <link rel="stylesheet" th:href="@{/styles/view_user_profile.css}" />
+  <link rel="stylesheet" th:href="@{/styles/avatars.css}" />
+</head>
+<body>
+
+  <!-- TOKEN DE SEGURIDAD (CSRF) NECESARIO PARA POST -->
+  <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+  <div class="profile-container">
+    <div class="profile-card-wrapper">
+      
+      <!-- Botón Volver -->
+      <a th:href="@{/home}" class="back-btn">
+        <i class='bx bx-arrow-back'></i> Volver
+      </a>
+
+      <!-- Cabecera de Perfil -->
+      <div class="profile-header">
+        <div class="user-basic-info">
+          <div class="user-avatar-large">
+            <div class="auto-avatar" 
+                style="width: 100%; height: 100%; font-size: 3rem;"
+                th:data-nombre="${perfil.nombreUsuario}"
+                th:data-url="${perfil.avatarUrl}">
+            </div>
+          </div>
+          
+          <div class="user-text-details">
+            <span class="user-name-large" th:text="${perfil.nombreUsuario}">Usuario</span>
+            <span class="user-level-info" th:text="'Nivel ' + ${perfil.nivel}">Nivel 1</span>
+            <span class="user-streak">
+              <i class='bx bxs-hot'></i> <span th:text="${perfil.racha}">0</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="league-display">
+          <img th:if="${perfil.ligaActual != null}"
+               th:src="@{'/images/copa-' + ${perfil.ligaActual.toLowerCase()} + '.png'}"
+               style="max-width: 80px; margin-bottom: 10px;"
+               alt="Copa" />
+          <i th:unless="${perfil.ligaActual != null}" class='bx bxs-trophy league-icon'></i>
+          <span class="league-name" th:text="${perfil.ligaActual}">Bronce</span>
+          <span class="league-subtext" th:text="'Puntaje Mes Ant.: ' + ${perfil.puntosMesPasado}">Puntaje Mes Ant.: 0</span>
+        </div>
+      </div>
+
+      <!-- Estadísticas -->
+      <div class="stats-section">
+        <div class="stat-card">
+          <div class="stat-info">
+            <span class="stat-label">Tareas Completadas</span>
+            <span class="stat-number" th:text="${perfil.tareasCompletadas}">0</span>
+          </div>
+          <div class="stat-icon-wrapper icon-tasks">
+            <i class='bx bx-check-square'></i>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-info">
+            <span class="stat-label">XP Ganada Total</span>
+            <span class="stat-number" th:text="${perfil.experienciaTotal}">0</span>
+          </div>
+          <div class="stat-icon-wrapper icon-xp">
+            <i class='bx bxs-star'></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Logros -->
+      <div class="achievements-section">
+        <div class="section-title">
+          <i class='bx bxs-medal'></i> Logros Desbloqueados
+        </div>
+        <div class="achievements-grid">
+          <div th:each="logro : ${perfil.logrosDesbloqueados}" 
+               class="achievement-item unlocked" 
+               th:data-title="${logro.nombre}"
+               th:data-desc="${logro.descripcion}"
+               th:data-exp="${logro.puntosRecompensa}"
+               data-unlocked="true">
+               <img th:if="${logro.imagenUrl != null}" th:src="${logro.imagenUrl}" th:alt="${logro.nombre}"/>
+               <i th:unless="${logro.imagenUrl != null}" class='bx bxs-star' style="font-size: 36px; color: var(--color-principal);"></i>
+          </div>
+          <p th:if="${#lists.isEmpty(perfil.logrosDesbloqueados)}" style="color: #999; font-size: 14px; grid-column: 1 / -1; text-align: center;">Este usuario aún no ha desbloqueado logros.</p>
+        </div>
+      </div>
+
+      <!-- Botones de Acción -->
+      <div class="action-buttons-container" id="actionContainer">
+        
+        <button th:if="${perfil.estadoAmistad == 'NADA'}" 
+                class="btn-action btn-add"
+                th:onclick="'enviarSolicitud(' + ${perfil.id} + ')'">
+          <i class='bx bx-user-plus'></i> Agregar a Amigos
+        </button>
+
+        <button th:if="${perfil.estadoAmistad == 'AMIGOS'}" 
+                class="btn-action btn-delete"
+                th:onclick="'eliminarAmigo(' + ${perfil.id} + ')'">
+          <i class='bx bx-user-x'></i> Eliminar de mis Amigos
+        </button> 
+        
+        <button th:if="${perfil.estadoAmistad == 'PENDIENTE_ENVIADA'}" 
+                class="btn-action" style="background-color: #e0e0e0; color: #666; cursor: default;">
+          <i class='bx bx-time'></i> Solicitud Enviada
+        </button>
+
+        <a th:if="${perfil.estadoAmistad == 'PENDIENTE_RECIBIDA'}" 
+           th:href="@{/home(openFriends=true, tab='solicitudes')}"
+           class="btn-action" style="background-color: var(--color-principal); color: var(--color-oscuro); text-decoration: none;">
+          <i class='bx bx-envelope'></i> Ver Solicitud en Home
+        </a>
+
+      </div>
+
+    </div>
+  </div>
+
+  <div th:replace="~{fragments :: navbar}"></div>
+
+  <div id="achievement-tooltip">
+    <div id="tooltip-title" class="tooltip-title"></div>
+    <div id="tooltip-desc" class="tooltip-description"></div>
+    <div id="tooltip-exp" class="tooltip-exp"></div>
+    <div id="tooltip-date" class="tooltip-date"></div>
+  </div>
+
+  <script th:src="@{/js/user_profile.js}"></script>
+  <script th:src="@{/js/avatar-core.js}"></script>
+
+  
+  <script>
+    // Recuperamos el token del input oculto
+    const csrfToken = document.querySelector('input[name="_csrf"]')?.value;
+
+    function enviarSolicitud(receptorId) {
+        fetch('/social/solicitud/enviar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `receptorId=${receptorId}&_csrf=${csrfToken || ''}`
+        })
+        .then(response => {
+            if (response.ok) {
+                const container = document.getElementById('actionContainer');
+                container.innerHTML = `
+                    <button class="btn-action" style="background-color: #e0e0e0; color: #666; cursor: default;">
+                        <i class='bx bx-check'></i> Solicitud Enviada
+                    </button>
+                `;
+            } else {
+                alert("Error al enviar solicitud.");
+            }
+        })
+        .catch(err => console.error(err));
+    }
+
+    function eliminarAmigo(amigoId) {
+        if(!confirm("¿Seguro que quieres eliminar a este amigo?")) return;
+        
+        fetch('/social/amigo/eliminar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `amigoId=${amigoId}&_csrf=${csrfToken || ''}`
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.reload(); 
+            } else {
+                alert("Error al eliminar.");
+            }
+        })
+        .catch(err => console.error(err));
+    }
+  </script>
+
+</body>
+</html>

@@ -1,34 +1,53 @@
+/* --- ESTADO DEL LOADER --- */
+
 #loader-wrapper {
-  position: fixed; /* Se queda fijo en la pantalla, incluso si hay scroll */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 9999; /* Se asegura de que esté por encima de todo lo demás */
-  background-color: #ffffff; /* Fondo blanco sólido */
-
-  /* Usamos flexbox para centrar el spinner perfectamente */
-  display: flex;
+  z-index: 9999;
+  background-color: #ffffff;
   justify-content: center;
   align-items: center;
+
+  /* Por defecto, está completamente oculto */
+  display: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
 }
 
-/* El spinner (el círculo que gira) */
 .loader {
-  border: 8px solid #f3f3f3; /* El círculo gris claro de fondo */
-  border-top: 8px solid #ffc839; /* El color principal que gira (el amarillo de tu marca) */
-  border-radius: 50%; /* Lo convierte en un círculo perfecto */
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #ffc839;
+  border-radius: 50%;
   width: 60px;
   height: 60px;
-  animation: spin 1.5s linear infinite; /* Aplica la animación de giro */
+  animation: spin 1.5s linear infinite;
 }
 
-/* La animación que hace girar el spinner */
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* --- ESTADO DEL CONTENIDO PRINCIPAL --- */
+
+main {
+  opacity: 1;
+  transition: opacity 0.4s ease-in;
+}
+
+/* --- ESTADO DE CARGA GLOBAL (ACTIVADO CON JS) --- */
+
+/* Cuando la página está en modo "cargando"... */
+html.is-loading main {
+  /* ...ocultamos el contenido principal. */
+  opacity: 0;
+}
+
+html.is-loading #loader-wrapper {
+  /* ...mostramos el loader como un contenedor flex. */
+  display: flex;
+  opacity: 1;
 }

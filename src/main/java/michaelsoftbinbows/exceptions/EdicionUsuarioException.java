@@ -7,7 +7,7 @@ package michaelsoftbinbows.exceptions;
  *
  * <p>Guarda el correo del usuario como contexto.
  */
-public class EdicionInvalidaException extends Exception {
+public class EdicionUsuarioException extends Exception {
   private String correo;
 
   /**
@@ -16,7 +16,7 @@ public class EdicionInvalidaException extends Exception {
    * @param message por qué no se puede editar
    * @param correo correo del usuario editado
    */
-  public EdicionInvalidaException(String message, String correo) {
+  public EdicionUsuarioException(String message, String correo) {
     super(message);
     this.correo = correo;
   }

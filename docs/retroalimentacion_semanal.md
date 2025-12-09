@@ -93,7 +93,7 @@ Trabajo colaborativo con rotación de roles por hitos, usando Discord para coord
 - **Hans Reicher:** Incorporar base de datos SQL, Crear script de migración automatizada.
 - **Matías Gómez:**
 - **Diego Pezoa:** Incorporar base de datos SQL
-- **Bastián Reyes:** Incorporar base de datos SQL
+- **Bastián Reyes:** Incorporar base de datos SQL<br>Intenté avanzar lo que había hecho
 
 ---
 
@@ -142,67 +142,12 @@ Trabajo colaborativo con rotación de roles por hitos, usando Discord para coord
 ---
 
 ## SEMANA 13
-**Hito en desarrollo:** Hito 2 - Entrega
-
-### Trabajo realizado:
-- **Hans Reicher:** 
-- **Matías Gómez:** 
-- **Diego Pezoa:** 
-- **Bastián Reyes:** 
-
----
-
-## SEMANA 14
-**Hito en desarrollo:** Hito 3 - Rotación de roles
+**Hito en desarrollo:** Hito 2 - Entrega +  Rotación de roles (en realidad hecha a finales de la semana 12)
 **Roles:** Hans (QA y Documentación), Matías (Líder Técnico), Diego (Frontend), Bastián (Backend)
 
 ### Trabajo realizado:
 - **Hans Reicher:** 
-- **Matías Gómez:** 
-- **Diego Pezoa:** 
-- **Bastián Reyes:** 
-
----
-
-## SEMANA 15
-**Hito en desarrollo:** Hito 3
-
-### Trabajo realizado:
-- **Hans Reicher:** 
-- **Matías Gómez:** 
-- **Diego Pezoa:** 
-- **Bastián Reyes:** 
-
----
-
-## SEMANA 16
-**Hito en desarrollo:** Hito 3
-
-### Trabajo realizado:
-- **Hans Reicher:** 
-- **Matías Gómez:** 
-- **Diego Pezoa:** 
-- **Bastián Reyes:** 
-
----
-
-## SEMANA 17
-**Hito en desarrollo:** Hito 3
-
-### Trabajo realizado:
-- **Hans Reicher:** 
-- **Matías Gómez:** 
-- **Diego Pezoa:** 
-- **Bastián Reyes:** 
-
----
-
-## SEMANA 18
-**Hito en desarrollo:** Hito 3 - Entrega Final
-
-### Trabajo realizado:
-- **Hans Reicher:** 
-- **Matías Gómez:** 
+- **Matías Gómez:** Actualizar documentación cambio roles, Mover scripts del HTML a archivos propios, Arreglar bugs conocidos y agregar features pequeñas.
 - **Diego Pezoa:** 
 - **Bastián Reyes:** 
 
@@ -211,12 +156,12 @@ Trabajo colaborativo con rotación de roles por hitos, usando Discord para coord
 ## CONCLUSIONES GENERALES
 
 ### Fortalezas de la metodología:
-1. La rotación de roles permitió que todos adquirieran experiencia en diferentes áreas
-2. La comunicación mediante Discord y WhatsApp fue efectiva para la coordinación
-3. El uso de Kanban facilitó la visualización del progreso del proyecto
-4. 
+1. La rotación de roles permitió que todos adquirieran experiencia en diferentes áreas.
+2. La comunicación mediante Discord y WhatsApp fue efectiva para la coordinación.
+3. El uso de Kanban facilitó la visualización del progreso del proyecto.
+4. La plataforma de Trello con la metodología Kanban permite organizar y visualizar fácilmente las tareas por hacer.
 
 ### Aspectos a mejorar:
-1. 
+1. Registrar mejor las tareas que estemos realizando dentro del tablero Kanban (a veces avanzamos y no dejamos evidencia).
 2. 
 3. 

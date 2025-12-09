@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diseño Gestor de Amigos v2</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+  <style>
+    /* =========================================
+       RESET Y VARIABLES
+       ========================================= */
+    * {
+      box-sizing: border-box; /* Crucial para que el input no mida más que las tarjetas */
+    }
+
+    :root {
+      --color-principal: #ffc839;
+      --color-principal-hover: #e6b332;
+      --color-oscuro: #212529;
+      --color-blanco: #fff;
+      --color-claro: #f5f5f5;
+      --color-bordes-sutiles: #eef2f5;
+      --color-rojo-peligro: #d9534f;
+      --color-rojo-hover: #c9302c; /* Un rojo un poco más oscuro para el hover */
+      --color-texto-principal: #212529;
+      --color-texto-secundario: #868e96;
+      --sombra-suave: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --border-radius-suave: 12px;
+      --transicion-suave: all 0.3s ease;
+    }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      background-color: #333; 
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    /* =========================================
+       CONTENEDOR DEL MODAL
+       ========================================= */
+    .friends-modal-card {
+      background-color: var(--color-blanco);
+      width: 90%;
+      max-width: 650px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      position: relative;
+    }
+
+    .friends-header {
+      background-color: var(--color-principal);
+      padding: 15px 25px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--color-oscuro);
+    }
+
+    .friends-header i { font-size: 24px; }
+    .friends-header h2 { margin: 0; font-size: 18px; font-weight: 700; }
+
+    .close-modal-btn {
+      margin-left: auto;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--color-oscuro);
+      opacity: 0.7;
+    }
+
+    /* =========================================
+       NAVEGACIÓN (TABS)
+       ========================================= */
+    .friends-tabs {
+      display: flex;
+      background-color: #fff;
+      border-bottom: 1px solid var(--color-bordes-sutiles);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 15px 10px;
+      border: none;
+      background: none;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-texto-secundario);
+      cursor: pointer;
+      position: relative;
+      transition: var(--transicion-suave);
+    }
+
+    .tab-btn:hover {
+      background-color: #f9f9f9;
+      color: var(--color-texto-principal);
+    }
+
+    .tab-btn.active {
+      color: var(--color-oscuro);
+      border-bottom: 3px solid var(--color-principal);
+    }
+
+    .badge-count {
+      background-color: var(--color-rojo-peligro);
+      color: white;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      margin-left: 5px;
+      vertical-align: middle;
+    }
+
+    /* =========================================
+       CONTENIDO Y BUSCADOR
+       ========================================= */
+    .tab-content {
+      padding: 20px 25px;
+      display: none;
+      animation: fadeIn 0.3s ease;
+      min-height: 300px;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .tab-content.active-content {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Barra de Búsqueda Ajustada */
+    .search-bar-container {
+      position: relative;
+      width: 100%; /* Ocupa el 100% del contenedor padre */
+      margin-bottom: 5px; /* Pequeño margen antes de las tarjetas */
+    }
+
+    .search-bar-container i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-texto-secundario);
+      font-size: 18px;
+    }
+
+    .search-input {
+      width: 100%; /* Asegura que llene el ancho disponible */
+      padding: 12px 15px 12px 45px;
+      border-radius: 10px; /* Mismo radio que las tarjetas */
+      border: 1px solid #ddd;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      transition: border 0.3s;
+      background-color: #fafafa; /* Un fondo muy sutil para diferenciarlo */
+    }
+
+    .search-input:focus {
+      border-color: var(--color-principal);
+      background-color: #fff;
+    }
+
+    /* =========================================
+       TARJETAS DE USUARIO
+       ========================================= */
+    .friend-card {
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      border: 1px solid var(--color-bordes-sutiles);
+      border-radius: 10px;
+      background-color: #fff;
+      transition: var(--transicion-suave);
+      width: 100%; /* Asegura consistencia en ancho */
+    }
+
+    .friend-card:hover {
+      border-color: #ddd;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .avatar-circle {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      color: white;
+      font-size: 16px;
+      margin-right: 15px;
+      flex-shrink: 0;
+    }
+
+    .bg-blue { background-color: #3498db; }
+    .bg-pink { background-color: #e91e63; }
+    .bg-orange { background-color: #ff9800; }
+    .bg-green { background-color: #2ecc71; }
+    .bg-purple { background-color: #9b59b6; }
+    .bg-dark { background-color: #34495e; }
+
+    .user-info {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .user-name {
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--color-oscuro);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-meta {
+      font-size: 12px;
+      color: var(--color-texto-secundario);
+      margin-top: 2px;
+    }
+    
+    /* Colores para las ligas */
+    .league-highlight { font-weight: 500; }
+    .league-highlight.Diamante { color: #4fc3f7; } 
+    .league-highlight.Platino { color: #2ecc71; }
+    .league-highlight.Oro { color: #f1c40f; }
+    .league-highlight.Plata { color: #bdc3c7; font-weight: 700;}
+    .league-highlight.Bronce { color: #d35400; }
+
+    /* =========================================
+       BOTONES
+       ========================================= */
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-small {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: var(--transicion-suave);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid transparent;
+    }
+
+    .btn-icon-text { gap: 5px; }
+
+    /* Estilos Específicos */
+    
+    /* Botón Outline (Ver Perfil) */
+    .btn-outline {
+      background-color: transparent;
+      border: 1px solid #ccc;
+      color: var(--color-texto-secundario);
+    }
+    .btn-outline:hover {
+      border-color: var(--color-oscuro);
+      color: var(--color-oscuro);
+    }
+
+    /* Botón Primario (Aceptar / Agregar) */
+    .btn-primary {
+      background-color: var(--color-oscuro);
+      color: white;
+    }
+    .btn-primary:hover {
+      background-color: #000;
+    }
+
+    /* Botón Peligro (Rechazar) - NUEVO ESTILO ROJO */
+    .btn-danger {
+      background-color: var(--color-rojo-peligro);
+      color: white;
+    }
+    .btn-danger:hover {
+      background-color: var(--color-rojo-hover);
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="friends-modal-card">
+    
+    <div class="friends-header">
+      <i class='bx bx-group'></i>
+      <h2>Gestor de Amigos</h2>
+      <button class="close-modal-btn">&times;</button>
+    </div>
+
+    <div class="friends-tabs">
+      <button class="tab-btn active" onclick="openTab('mis-amigos')">
+        Mis Amigos (3)
+      </button>
+      <button class="tab-btn" onclick="openTab('solicitudes')">
+        Solicitudes <span class="badge-count">3</span>
+      </button>
+      <button class="tab-btn" onclick="openTab('buscar')">
+        Buscar Amigos
+      </button>
+    </div>
+
+    <div id="mis-amigos" class="tab-content active-content">
+      <div class="search-bar-container">
+        <i class='bx bx-search'></i>
+        <input type="text" class="search-input" placeholder="Buscar entre tus amigos...">
+      </div>
+
+      <div class="friend-card">
+        <div class="avatar-circle bg-blue">PS</div>
+        <div class="user-info">
+          <span class="user-name">Pedro Sánchez</span>
+          <span class="user-meta"><span class="league-highlight Diamante">Diamante</span> • 2,450 pts</span>
+        </div>
+        <div class="action-buttons">
+          <button class="btn-small btn-outline">Ver Perfil</button>
+        </div>
+      </div>
+
+      <div class="friend-card">
+        <div class="avatar-circle bg-green">LT</div>
+        <div class="user-info">
+          <span class="user-name">Laura Torres</span>
+          <span class="user-meta"><span class="league-highlight Platino">Platino</span> • 1,890 pts</span>
+        </div>
+        <div class="action-buttons">
+          <button class="btn-small btn-outline">Ver Perfil</button>
+        </div>
+      </div>
+
+      <div class="friend-card">
+        <div class="avatar-circle bg-pink">DM</div>
+        <div class="user-info">
+          <span class="user-name">Diego Morales</span>
+          <span class="user-meta"><span class="league-highlight Oro">Oro</span> • 1,520 pts</span>
+        </div>
+        <div class="action-buttons">
+          <button class="btn-small btn-outline">Ver Perfil</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="solicitudes" class="tab-content">
+      <p style="font-size: 13px; color: #868e96; margin: 0 0 10px 0;">Tienes 3 solicitudes pendientes</p>
+
+      <div class="friend-card">
+        <div class="avatar-circle bg-purple">MG</div>
+        <div class="user-info">
+          <span class="user-name">María González</span>
+          <span class="user-meta"><span class="league-highlight Platino">Platino</span> • 1,950 pts</span>
+        </div>
+        <div class="action-buttons">
+          <button class="btn-small btn-outline">Ver Perfil</button>
+          <button class="btn-small btn-primary btn-icon-text"><i class='bx bx-check'></i> Aceptar</button>
+          <button class="btn-small btn-danger btn-icon-text"><i class='bx bx-x'></i> Rechazar</button>
+        </div>
+      </div>
+
+      <div class="friend-card">
+        <div class="avatar-circle bg-orange">CR</div>
+        <div class="user-info">
+          <span class="user-name">Carlos Ruiz</span>
+          <span class="user-meta"><span class="league-highlight Oro">Oro</span> • 1,420 pts</span>
+        </div>
+        <div class="action-buttons">
+          <button class="btn-small btn-outline">Ver Perfil</button>
+          <button class="btn-small btn-primary btn-icon-text"><i class='bx bx-check'></i> Aceptar</button>
+          <button class="btn-small btn-danger btn-icon-text"><i class='bx bx-x'></i> Rechazar</button>
+        </div>
+      </div>
+
+      <div class="friend-card">
+        <div class="avatar-circle bg-blue">AM</div>
+        <div class="user-info">
+          <span class="user-name">Ana Martínez</span>
+          <span class="user-meta"><span class="league-highlight Diamante">Diamante</span> • 2,600 pts</span>
+        </div>
+        <div class="action-buttons">
+          <button class="btn-small btn-outline">Ver Perfil</button>
+          <button class="btn-small btn-primary btn-icon-text"><i class='bx bx-check'></i> Aceptar</button>
+          <button class="btn-small btn-danger btn-icon-text"><i class='bx bx-x'></i> Rechazar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="buscar" class="tab-content">
+       <div class="search-bar-container">
+        <i class='bx bx-search'></i>
+        <input type="text" class="search-input" placeholder="Buscar personas por nombre...">
+      </div>
+
+      <div class="friend-card">
+        <div class="avatar-circle bg-pink">SR</div>
+        <div class="user-info">
+          <span class="user-name">Sofía Ramírez</span>
+          <span class="user-meta"><span class="league-highlight Plata">Plata</span> • 890 pts</span>
+        </div>
+        <div class="action-buttons">
+          <button class="btn-small btn-outline">Ver Perfil</button>
+          <button class="btn-small btn-primary btn-icon-text"><i class='bx bx-user-plus'></i> Agregar</button>
+        </div>
+      </div>
+
+      <div class="friend-card">
+        <div class="avatar-circle bg-orange">JL</div>
+        <div class="user-info">
+          <span class="user-name">Javier López</span>
+          <span class="user-meta"><span class="league-highlight Bronce">Bronce</span> • 450 pts</span>
+        </div>
+        <div class="action-buttons">
+          <button class="btn-small btn-outline">Ver Perfil</button>
+          <button class="btn-small btn-primary btn-icon-text"><i class='bx bx-user-plus'></i> Agregar</button>
+        </div>
+      </div>
+
+      <div class="friend-card">
+        <div class="avatar-circle bg-dark">VC</div>
+        <div class="user-info">
+          <span class="user-name">Valentina Cruz</span>
+          <span class="user-meta"><span class="league-highlight Oro">Oro</span> • 1,600 pts</span>
+        </div>
+        <div class="action-buttons">
+          <button class="btn-small btn-outline">Ver Perfil</button>
+          <button class="btn-small btn-primary btn-icon-text"><i class='bx bx-user-plus'></i> Agregar</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function openTab(tabId) {
+      const contents = document.querySelectorAll('.tab-content');
+      contents.forEach(content => content.classList.remove('active-content'));
+
+      const buttons = document.querySelectorAll('.tab-btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+
+      document.getElementById(tabId).classList.add('active-content');
+      
+      buttons.forEach(btn => {
+        if(btn.getAttribute('onclick').includes(tabId)) {
+          btn.classList.add('active');
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>

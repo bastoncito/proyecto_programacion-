@@ -396,3 +396,57 @@ body {
 .stat-item.inactive .stat-value {
   color: var(--color-texto-secundario); /* Cambia el color del número a gris */
 }
+
+/* =================================================================== */
+/* 7. ESTILOS PARA LOS GRÁFICOS DE TAREAS                            */
+/* =================================================================== */
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: auto;
+  margin-bottom: 15px;
+  background-color: var(--color-blanco);
+  border-radius: var(--border-radius-suave);
+  padding: 15px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chart-container canvas {
+  max-width: 100%;
+  height: auto !important;
+  width: 100% !important;
+}
+
+@media (max-width: 768px) {
+  .chart-container {
+    min-height: 280px;
+  }
+}
+
+@media (min-width: 768px) {
+  .chart-container {
+    min-height: 350px;
+  }
+}
+
+.chart-stats {
+  text-align: center;
+  padding: 10px 0;
+  border-top: 1px solid var(--color-bordes-sutiles);
+}
+
+.chart-stats p {
+  margin: 0;
+  font-size: 1em;
+  color: var(--color-texto-principal);
+  font-weight: 500;
+}
+
+.chart-stats span {
+  color: var(--color-principal);
+  font-weight: 700;
+}
