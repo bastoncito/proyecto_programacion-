@@ -66,9 +66,6 @@ public class PerfilController {
 
     String correo = authService.getCurrentUser().getCorreoElectronico();
 
-    // 1. Ejecuta la lógica de login (previene LazyInitializationException)
-    usuarioService.manejarLogicaDeLogin(correo);
-
     // 2. Volvemos a cargar el usuario con todos sus datos actualizados (incluye tareas)
     Usuario usuario = usuarioService.buscarPorCorreoConTareas(correo);
 
@@ -219,6 +216,13 @@ public class PerfilController {
     return "redirect:/login?logout";
   }
 
+  /**
+   * Procesa la carga de un nuevo avatar para el usuario.
+   *
+   * @param archivo El archivo de imagen a subir.
+   * @param redirectAttributes Para pasar mensajes a través de la redirección.
+   * @return Redirección al perfil del usuario.
+   */
   @PostMapping("/perfil/avatar/subir")
   public String subirAvatar(
       @RequestParam("archivo") MultipartFile archivo, RedirectAttributes redirectAttributes) {
@@ -285,6 +289,12 @@ public class PerfilController {
     return "redirect:/perfil";
   }
 
+  /**
+   * Elimina el avatar del usuario actual.
+   *
+   * @param redirectAttributes Para pasar mensajes a través de la redirección.
+   * @return Redirección al perfil del usuario.
+   */
   @PostMapping("/perfil/avatar/eliminar")
   public String eliminarAvatar(RedirectAttributes redirectAttributes) {
     Usuario usuarioActual = authService.getCurrentUser();

@@ -13,6 +13,7 @@ import michaelsoftbinbows.entities.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/** Servicio para gestionar las funcionalidades sociales de usuarios (amigos, solicitudes). */
 @Service
 public class UsuarioSocialService {
 
@@ -21,6 +22,12 @@ public class UsuarioSocialService {
   @Autowired private SolicitudAmistadRepository solicitudRepository;
   @Autowired private AuthService authService;
 
+  /**
+   * Busca usuarios por nombre o correo.
+   *
+   * @param query Cadena de búsqueda.
+   * @return Lista de usuarios que coinciden con la búsqueda.
+   */
   public List<UsuarioBusquedaDto> buscarUsuarios(String query) {
     Usuario yo = authService.getCurrentUser();
     List<Usuario> resultados = usuarioRepository.findByNombreUsuarioContainingIgnoreCase(query);
@@ -30,6 +37,11 @@ public class UsuarioSocialService {
         .collect(Collectors.toList());
   }
 
+  /**
+   * Obtiene la lista de amigos del usuario actual.
+   *
+   * @return Lista de amigos.
+   */
   public List<UsuarioBusquedaDto> obtenerMisAmigos() {
     Usuario yo = authService.getCurrentUser();
     List<SolicitudAmistad> amistades = solicitudRepository.findAmistadesDeUsuario(yo);

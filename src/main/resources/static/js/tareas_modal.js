@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const modalDescription = document.getElementById('modalDescription');
   const modalExp = document.getElementById('modalExp');
   const modalExpire = document.getElementById('modalExpire');
+  const modalMitadVida = document.getElementById('modalMitadVida');
+  const completionStatusInfo = document.getElementById('completionStatusInfo');
 
   if (!modal) return; // nada que hacer si no existe el modal en la página
 
@@ -15,6 +17,25 @@ document.addEventListener('DOMContentLoaded', function () {
       if (modalDescription) modalDescription.textContent = btn.dataset.descripcion || '';
       if (modalExp) modalExp.textContent = (btn.dataset.experiencia || '') + (btn.dataset.experiencia ? ' XP' : '');
       if (modalExpire) modalExpire.textContent = btn.dataset.expira || '';
+      
+      // Display lifetime information
+      if (modalMitadVida) {
+        modalMitadVida.textContent = btn.dataset.mitadVida || '';
+        
+        // Calculate if task can be completed now
+        const now = new Date();
+        const mitadVidaDate = new Date(btn.dataset.mitadVida.replace(' ', 'T'));
+        
+        if (completionStatusInfo) {
+          if (now >= mitadVidaDate) {
+            completionStatusInfo.innerHTML = '<span style="color: #4CAF50;">✅ Puedes completar esta tarea ahora</span>';
+          } else {
+            const timeRemaining = Math.ceil((mitadVidaDate - now) / (1000 * 60));
+            completionStatusInfo.innerHTML = '<span style="color: #FF9800;">⏳ Falta ' + timeRemaining + ' minuto(s) para poder completar</span>';
+          }
+        }
+      }
+      
       modal.style.display = 'flex';
     });
   });

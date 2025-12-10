@@ -10,6 +10,7 @@ import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.entities.Usuario;
 import michaelsoftbinbows.exceptions.EdicionTareaException;
 import michaelsoftbinbows.exceptions.RegistroInvalidoException;
+import michaelsoftbinbows.exceptions.TareaCompletadaPrematuramenteException;
 import michaelsoftbinbows.services.TareaService;
 import michaelsoftbinbows.services.UsuarioService;
 import michaelsoftbinbows.services.UsuarioTareaService;
@@ -305,7 +306,7 @@ public class ApiController {
     }
     try {
       usuarioTareaService.completarTarea(idUsuario, idTarea);
-    } catch (EdicionTareaException e) {
+    } catch (EdicionTareaException | TareaCompletadaPrematuramenteException e) {
       return ResponseEntity.status(400).body(e.getMessage());
     }
     return ResponseEntity.ok().body("Tarea completada correctamente");

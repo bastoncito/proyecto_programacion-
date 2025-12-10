@@ -807,6 +807,18 @@ body {
   border: 1px solid #c82333;
 }
 
+.toast.warning {
+  background-color: #ff9800;
+  color: white;
+  border: 1px solid #e68900;
+}
+
+.toast.level-up {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: 1px solid #764ba2;
+}
+
 .toast-icon {
   font-size: 20px;
   margin-right: 12px;

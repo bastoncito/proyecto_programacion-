@@ -9,6 +9,7 @@ import michaelsoftbinbows.exceptions.EdicionTareaException;
 import michaelsoftbinbows.exceptions.EdicionUsuarioException;
 import michaelsoftbinbows.exceptions.PerfilActualizacionException;
 import michaelsoftbinbows.exceptions.RegistroInvalidoException;
+import michaelsoftbinbows.exceptions.TareaCompletadaPrematuramenteException;
 import michaelsoftbinbows.exceptions.TareaInvalidaException;
 import michaelsoftbinbows.exceptions.TareaPertenenciaException;
 import michaelsoftbinbows.exceptions.WeatherApiException;
@@ -108,6 +109,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   public String manejoTareaPertenenciaException(
       TareaPertenenciaException ex, RedirectAttributes redirectAttributes) {
     System.err.println("ERROR: Problema con pertenencia de tarea. Causa: " + ex.getMessage());
+    redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+    return "redirect:/home";
+  }
+
+  /**
+   * Maneja las excepciones de TareaCompletadaPrematuramenteException. Redirige al usuario a la
+   * página principal con un mensaje de error cuando intenta completar una tarea antes de que haya
+   * transcurrido la mitad de su tiempo de vida.
+   *
+   * @param ex La excepción capturada.
+   * @param redirectAttributes Para pasar el error tras la redirección.
+   * @return Una redirección a /home.
+   */
+  @ExceptionHandler(TareaCompletadaPrematuramenteException.class)
+  public String manejoTareaCompletadaPrematuramenteException(
+      TareaCompletadaPrematuramenteException ex, RedirectAttributes redirectAttributes) {
+    System.err.println(
+        "ERROR: Intento de completar tarea prematuramente. Causa: " + ex.getMessage());
     redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
     return "redirect:/home";
   }
@@ -231,23 +250,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       CambioContrasenaException ex, RedirectAttributes redirectAttributes) {
     System.err.println("ERROR: Fallo al cambiar contraseña. Causa: " + ex.getMessage());
     redirectAttributes.addFlashAttribute("errorPassword", ex.getMessage());
-    return "redirect:/perfil";
-  }
-
-  /**
-   * Captura EdicionUsuarioException que puede ocurrir en PerfilController.actualizarPerfil() y la
-   * traduce a PerfilActualizacionException para mantener consistencia. Este handler es un fallback
-   * en caso de que la traducción en el controller no ocurra.
-   *
-   * @param ex La excepción capturada.
-   * @param redirectAttributes Para pasar el error tras la redirección.
-   * @return Una redirección a /perfil.
-   */
-  @ExceptionHandler(EdicionUsuarioException.class)
-  public String handleEdicionUsuarioExceptionFromPerfil(
-      EdicionUsuarioException ex, RedirectAttributes redirectAttributes) {
-    System.err.println("ERROR: Fallo al editar usuario en perfil. Causa: " + ex.getMessage());
-    redirectAttributes.addFlashAttribute("errorInfo", ex.getMessage());
     return "redirect:/perfil";
   }
 }

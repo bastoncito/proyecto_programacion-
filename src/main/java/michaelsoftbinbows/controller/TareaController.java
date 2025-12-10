@@ -3,7 +3,9 @@ package michaelsoftbinbows.controller;
 import java.util.Optional;
 import michaelsoftbinbows.dto.TareaDto;
 import michaelsoftbinbows.entities.Tarea;
+import michaelsoftbinbows.entities.Usuario;
 import michaelsoftbinbows.exceptions.EdicionTareaException;
+import michaelsoftbinbows.exceptions.TareaCompletadaPrematuramenteException;
 import michaelsoftbinbows.exceptions.TareaInvalidaException;
 import michaelsoftbinbows.exceptions.TareaPertenenciaException;
 import michaelsoftbinbows.services.AuthService;
@@ -64,7 +66,10 @@ public class TareaController {
       Model model,
       @RequestParam("nombreTarea") String nombreTarea,
       RedirectAttributes redirectAttributes)
-      throws EdicionTareaException, TareaPertenenciaException, TareaInvalidaException {
+      throws EdicionTareaException,
+          TareaPertenenciaException,
+          TareaInvalidaException,
+          TareaCompletadaPrematuramenteException {
     Long idUsuario = authservice.getCurrentUser().getId();
 
     // Llamamos al método del TareaService para buscar la tarea PENDIENTE.
@@ -76,6 +81,15 @@ public class TareaController {
       // Si existe, obtenemos su ID y llamamos al servicio para completarla.
       Long idTarea = tareaPendienteOpt.get().getId();
       usuarioTareaService.completarTarea(idUsuario, idTarea);
+      // Actualizamos la racha y niveles para poder mostrar notificaciones en el home.
+      Usuario usuario = usuarioService.obtenerPorId(idUsuario).orElse(null);
+      if (usuario != null) {
+        boolean streakInc = usuarioService.actualizarRacha(usuario);
+        int nivelesGanados = usuarioService.verificarSubidaDeNivel(usuario);
+        usuarioService.guardarEnBd(usuario);
+        redirectAttributes.addFlashAttribute("streakIncremented", streakInc);
+        redirectAttributes.addFlashAttribute("nivelesGanados", nivelesGanados);
+      }
       redirectAttributes.addFlashAttribute(
           "successMessage", "¡Felicidades! Has completado la tarea '" + nombreTarea + "'.");
     } else {

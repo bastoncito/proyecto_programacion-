@@ -6,18 +6,31 @@ import java.time.ZoneId;
 import michaelsoftbinbows.entities.Tarea;
 import michaelsoftbinbows.entities.Usuario;
 import michaelsoftbinbows.exceptions.EdicionTareaException;
+import michaelsoftbinbows.exceptions.TareaCompletadaPrematuramenteException;
 import michaelsoftbinbows.exceptions.TareaPertenenciaException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/** Servicio para gestionar operaciones entre usuarios y tareas. */
 @Service
 public class UsuarioTareaService {
   @Autowired UsuarioService usuarioService;
   @Autowired TareaService tareaService;
   @Autowired GestorLogrosService gestorLogrosService;
 
+  /**
+   * Marca una tarea como completada por un usuario.
+   *
+   * @param usuarioId El ID del usuario propietario de la tarea.
+   * @param tareaId El ID de la tarea a completar.
+   * @throws EdicionTareaException Si la tarea ya fue completada.
+   * @throws TareaPertenenciaException Si la tarea no pertenece al usuario.
+   * @throws TareaCompletadaPrematuramenteException Si no ha transcurrido la mitad del tiempo de
+   *     vida de la tarea.
+   */
   @Transactional
-  public void completarTarea(Long usuarioId, Long tareaId) throws EdicionTareaException {
+  public void completarTarea(Long usuarioId, Long tareaId)
+      throws EdicionTareaException, TareaCompletadaPrematuramenteException {
     Usuario u = usuarioService.obtenerPorId(usuarioId).get();
     Tarea tarea = tareaService.obtenerPorId(tareaId).get();
 
@@ -27,6 +40,19 @@ public class UsuarioTareaService {
     }
     if (tarea.getFechaCompletada() != null) {
       throw new EdicionTareaException("La tarea ya ha sido completada", tarea.getId());
+    }
+
+    // --- VALIDACIÓN: Verificar si ha transcurrido la mitad de la vida de la tarea ---
+    LocalDateTime ahora = LocalDateTime.now(ZoneId.systemDefault());
+    LocalDateTime mitadVida = tarea.calcularMitadVida();
+
+    if (ahora.isBefore(mitadVida)) {
+      throw new TareaCompletadaPrematuramenteException(
+          "No puedes completar esta tarea aún. Debes esperar hasta "
+              + mitadVida
+              + " (mitad de su tiempo de vida).",
+          tarea.getNombre(),
+          tareaId);
     }
 
     // --- 1. APLICAR CAMBIOS INICIALES DE LA TAREA ---
@@ -75,7 +101,7 @@ public class UsuarioTareaService {
   /**
    * Verifica y elimina las tareas expiradas de un usuario.
    *
-   * @param usuario El usuario cuyas tareas se van a verificar.
+   * @param idUsuario El usuario cuyas tareas se van a verificar.
    */
   @Transactional
   public void verificarTareasExpiradas(Long idUsuario) {

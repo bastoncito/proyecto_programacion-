@@ -113,7 +113,6 @@ public class TareaService {
     return guardar(tarea);
   }
 
-  @Transactional
   /**
    * Actualiza una tarea existente en la lista de tareas pendientes. Busca la tarea por su nombre
    * original y reemplaza sus datos con los de la tarea actualizada.
@@ -125,6 +124,7 @@ public class TareaService {
    * @throws TareaInvalidaException Si los datos de la tarea actualizada son inválidos (lanzado por
    *     los setters).
    */
+  @Transactional
   public void actualizarTarea(Long usuarioId, String nombreOriginal, TareaDto tareaActualizada)
       throws EdicionTareaException, TareaInvalidaException {
     // Buscamos la tarea que queremos actualizar.
@@ -176,13 +176,13 @@ public class TareaService {
             + "' actualizada exitosamente");
   }
 
-  @Transactional
   /**
    * Guarda una entidad Tarea en la base de datos.
    *
    * @param tarea La tarea a guardar.
    * @return La tarea guardada.
    */
+  @Transactional
   public Tarea guardar(Tarea tarea) {
     return tareaRepository.save(tarea);
   }

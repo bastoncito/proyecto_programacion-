@@ -9,33 +9,60 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+/** Controlador para funcionalidades sociales (amigos, solicitudes, búsqueda). */
 @Controller
 @RequestMapping("/social")
 public class SocialController {
 
   @Autowired private UsuarioSocialService socialService;
 
-  // API JSON
+  /**
+   * Busca usuarios por nombre o correo.
+   *
+   * @param query Cadena de búsqueda.
+   * @return Lista de usuarios encontrados.
+   */
   @GetMapping("/buscar")
   @ResponseBody
   public List<UsuarioBusquedaDto> buscarUsuarios(@RequestParam String query) {
     return socialService.buscarUsuarios(query);
   }
 
+  /**
+   * Obtiene la lista de amigos del usuario actual.
+   *
+   * @return Lista de amigos.
+   */
   @GetMapping("/amigos")
   @ResponseBody
   public List<UsuarioBusquedaDto> misAmigos() {
     return socialService.obtenerMisAmigos();
   }
 
+  /**
+   * Obtiene las solicitudes de amistad pendientes.
+   *
+   * @return Lista de solicitudes pendientes.
+   */
   @GetMapping("/solicitudes")
   @ResponseBody
   public List<UsuarioBusquedaDto> misSolicitudes() {
     return socialService.obtenerSolicitudesPendientes();
   }
 
+  /**
+   * Envía una solicitud de amistad a otro usuario.
+   *
+   * @param receptorId ID del usuario receptor.
+   * @return Respuesta de éxito o error.
+   */
   @PostMapping("/solicitud/enviar")
   @ResponseBody
   public ResponseEntity<?> enviarSolicitud(@RequestParam Long receptorId) {
@@ -47,6 +74,13 @@ public class SocialController {
     }
   }
 
+  /**
+   * Responde a una solicitud de amistad (acepta o rechaza).
+   *
+   * @param solicitudId ID de la solicitud.
+   * @param aceptar True para aceptar, false para rechazar.
+   * @return Respuesta de éxito o error.
+   */
   @PostMapping("/solicitud/responder")
   @ResponseBody
   public ResponseEntity<?> responderSolicitud(
@@ -60,7 +94,12 @@ public class SocialController {
     }
   }
 
-  // --- ENDPOINT: ELIMINAR AMIGO ---
+  /**
+   * Elimina un amigo de la lista de amigos del usuario.
+   *
+   * @param amigoId ID del amigo a eliminar.
+   * @return Respuesta de éxito o error.
+   */
   @PostMapping("/amigo/eliminar")
   @ResponseBody
   public ResponseEntity<?> eliminarAmigo(@RequestParam Long amigoId) {
@@ -72,7 +111,13 @@ public class SocialController {
     }
   }
 
-  // VISTAS HTML
+  /**
+   * Muestra el perfil de un usuario específico.
+   *
+   * @param id ID del usuario.
+   * @param model Modelo para pasar datos a la vista.
+   * @return Vista del perfil del usuario.
+   */
   @GetMapping("/perfil/{id}")
   public String verPerfilUsuario(@PathVariable Long id, Model model) {
     try {
@@ -89,11 +134,25 @@ public class SocialController {
     }
   }
 
+  /**
+   * Calcula la liga correspondiente según los puntos.
+   *
+   * @param puntos Puntos del usuario.
+   * @return Nombre de la liga.
+   */
   private String calcularLigaPorPuntos(int puntos) {
-    if (puntos >= 5000) return "Diamante";
-    if (puntos >= 3000) return "Platino";
-    if (puntos >= 1500) return "Oro";
-    if (puntos >= 500) return "Plata";
+    if (puntos >= 5000) {
+      return "Diamante";
+    }
+    if (puntos >= 3000) {
+      return "Platino";
+    }
+    if (puntos >= 1500) {
+      return "Oro";
+    }
+    if (puntos >= 500) {
+      return "Plata";
+    }
     return "Bronce";
   }
 }

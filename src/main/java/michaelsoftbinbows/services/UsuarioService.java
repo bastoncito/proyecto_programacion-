@@ -59,7 +59,6 @@ public class UsuarioService {
     return usuarioRepository.findById(id);
   }
 
-  @Transactional
   /**
    * Guarda un nuevo usuario, validando todos sus campos.
    *
@@ -68,19 +67,20 @@ public class UsuarioService {
    * @throws EdicionUsuarioException Si el nombre de usuario es inválido.
    * @throws RegistroInvalidoException Si la contraseña, nombre o correo ya existen o son inválidos.
    */
+  @Transactional
   public Usuario guardarUsuario(Usuario usuario)
       throws EdicionUsuarioException, RegistroInvalidoException {
     validarUsuarioCompleto(usuario, true);
     return usuarioRepository.save(usuario);
   }
 
-  @Transactional
   /**
    * Elimina un usuario por su ID.
    *
    * @param id El ID del usuario a eliminar.
    * @throws IllegalArgumentException si el usuario no existe.
    */
+  @Transactional
   public void eliminarUsuario(Long id) {
     System.out.println("LOG: Servicio eliminar llamado con ID: " + id);
     if (id == null) {
@@ -150,7 +150,6 @@ public class UsuarioService {
     }
   }
 
-  @Transactional
   /**
    * Guarda un usuario sin validar la contraseña (útil para admin cuando la contraseña ya está
    * hasheada). Realiza validación completa excepto en la contraseña.
@@ -159,23 +158,29 @@ public class UsuarioService {
    * @return El usuario guardado.
    * @throws RegistroInvalidoException Si el nombre de usuario o correo son inválidos o ya existen.
    */
+  @Transactional
   public Usuario guardarSinValidarContrasena(Usuario usuario) throws RegistroInvalidoException {
     validarUsuarioCompleto(usuario, false);
     return usuarioRepository.save(usuario);
   }
 
   /**
-   * Comprueba si la experiencia total del usuario es suficiente para subir al siguiente nivel.
+   * Verifica si el usuario ha subido de nivel y actualiza su nivel de experiencia en consecuencia.
    * Utiliza un bucle por si se ganan múltiples niveles a la vez.
+   *
+   * @param usuario El usuario cuyo nivel se va a verificar.
+   * @return El número de niveles ganados (0 si no subió de nivel).
    */
-  public void verificarSubidaDeNivel(Usuario usuario) {
+  public int verificarSubidaDeNivel(Usuario usuario) {
     int nivelExperiencia = usuario.getNivelExperiencia();
     int experiencia = usuario.getExperiencia();
+    int nivelesGanados = 0;
     int expSiguienteNivel = SistemaNiveles.experienciaParaNivel(nivelExperiencia + 1);
 
     // El usuario subira de nivel hasta donde su experiencia le permita
     while (experiencia >= expSiguienteNivel) {
       nivelExperiencia++;
+      nivelesGanados++;
       usuario.setNivelExperiencia(nivelExperiencia);
       experiencia -= expSiguienteNivel;
       usuario.setExperiencia(experiencia);
@@ -183,9 +188,9 @@ public class UsuarioService {
       // Se calcula la experiencia necesaria para el proximo nivel
       expSiguienteNivel = SistemaNiveles.experienciaParaNivel(nivelExperiencia + 1);
     }
+    return nivelesGanados;
   }
 
-  @Transactional
   /**
    * Guarda una entidad Usuario directamente en la base de datos (BD). Solo se debe usar
    * internamente después de que validaciones ya han sido realizadas (ej: después de actualizar
@@ -193,11 +198,11 @@ public class UsuarioService {
    *
    * @param usuario El usuario a guardar.
    */
+  @Transactional
   public void guardarEnBd(Usuario usuario) {
     usuarioRepository.save(usuario);
   }
 
-  @Transactional
   /**
    * Actualiza los datos de un usuario (nombre, correo, rol) desde el panel de admin.
    *
@@ -207,6 +212,7 @@ public class UsuarioService {
    * @param nuevoRol El nuevo rol a asignar.
    * @throws EdicionUsuarioException Si los nuevos datos son inválidos.
    */
+  @Transactional
   public void actualizarUsuario(
       String correoOriginal,
       String nuevoNombre,
@@ -273,7 +279,6 @@ public class UsuarioService {
     usuarioRepository.save(usuario);
   }
 
-  @Transactional
   /**
    * Actualiza la contraseña de un usuario desde el panel de admin.
    *
@@ -281,6 +286,7 @@ public class UsuarioService {
    * @param nuevaContrasena La nueva contraseña (en texto plano, se hasheará aquí).
    * @throws EdicionUsuarioException Si la nueva contraseña no es válida.
    */
+  @Transactional
   public void actualizarContrasenaUsuario(String correo, String nuevaContrasena)
       throws EdicionUsuarioException {
     Usuario usuario = buscarPorCorreo(correo);
@@ -298,12 +304,12 @@ public class UsuarioService {
     usuarioRepository.save(usuario);
   }
 
-  @Transactional
   /**
    * Elimina un usuario usando su correo electrónico.
    *
    * @param correoAeliminar El correo del usuario a eliminar. // <-- ARREGLO: Renombrado
    */
+  @Transactional
   public void eliminarPorCorreo(String correoAeliminar) { // <-- ARREGLO: Renombrado
     Usuario usuario = buscarPorCorreo(correoAeliminar); // <-- ARREGLO: Renombrado
     if (usuario == null) {
@@ -472,14 +478,17 @@ public class UsuarioService {
    * tarea.
    *
    * @param usuario El usuario cuya racha se va a actualizar.
+   * @return true si la racha fue incrementada, false en caso contrario.
    */
-  public void actualizarRacha(Usuario usuario) {
+  public boolean actualizarRacha(Usuario usuario) {
     LocalDate hoy = LocalDate.now(ZoneId.systemDefault());
     LocalDate fechaUltimaRacha = usuario.getFechaRacha(); // Usamos el nombre de tu campo
 
     // CASO 1: Es la primera tarea que el usuario completa en su vida O la racha es 0.
     if (fechaUltimaRacha == null || usuario.getRacha() == 0) {
       usuario.setRacha(1);
+      usuario.setFechaRacha(hoy);
+      return false; // Primera racha, no es incremento
     } else {
       // Calculamos los días de diferencia entre la última vez y hoy.
       long diasDiferencia = ChronoUnit.DAYS.between(fechaUltimaRacha, hoy);
@@ -487,26 +496,30 @@ public class UsuarioService {
       if (diasDiferencia == 0) {
         // No se hace nada, la racha ya se contó para hoy.
         System.out.println("Racha diaria ya registrada. No se incrementa.");
-        return; // Salimos del método para no actualizar la fecha innecesariamente
+        return false; // Sin cambios
       } // CASO 3: La última tarea fue ayer. ¡La racha continúa!
       else if (diasDiferencia == 1) {
         System.out.println(
             "LOG: La racha del Usuario " + usuario.getNombreUsuario() + " ha aumentado.");
         usuario.setRacha(usuario.getRacha() + 1); // Incrementamos la racha existente
-      } // CASO 4: La racha se rompió (pasó más de 1 día). Se reinicia a 1.
+        usuario.setFechaRacha(hoy);
+        return true; // Racha incrementada
+      }
     }
     // Actualizamos la fecha de la racha a hoy.
     usuario.setFechaRacha(hoy);
+    return false; // Se rompió la racha, no es incremento
   }
 
-  @Transactional
   /**
    * Verifica si un usuario ha perdido su racha debido a inactividad y la reinicia si es necesario.
    * Utilizado específicamente en el Home.
    *
    * @param usuario Usuario para verificar la racha
+   * @return true si la racha fue perdida, false en caso contrario.
    */
-  public void verificarPerdidaRacha(Usuario usuario) {
+  @Transactional
+  public boolean verificarPerdidaRacha(Usuario usuario) {
     LocalDate hoy = LocalDate.now(ZoneId.systemDefault());
     LocalDate fechaUltimaRacha = usuario.getFechaRacha();
 
@@ -515,8 +528,10 @@ public class UsuarioService {
       if (diasDiferencia > 1) {
         System.out.println("LOG: " + usuario.getNombreUsuario() + " ha perdido su racha.");
         usuario.setRacha(0);
+        return true; // Racha perdida
       }
     }
+    return false; // Sin cambios
   }
 
   public void sumarExperienciaTarea(Usuario usuario, int expTarea) {
@@ -572,25 +587,61 @@ public class UsuarioService {
    * mantiene la sesión de BD abierta y previene LazyInitializationException.
    *
    * @param correo El correo del usuario que acaba de iniciar sesión.
+   * @return int[] con [streakIncremented (0/1), nivelesGanados (0+)].
    */
   @Transactional
-  public void manejarLogicaDeLogin(String correo) {
+  public int[] manejarLogicaDeLogin(String correo) {
+    int streakIncremented = 0;
+    int nivelesGanados = 0;
+
     // Volvemos a cargar el usuario DESDE DENTRO de la transacción.
     // Esto nos da un objeto "managed" (conectado) y previene el error.
     Usuario usuario = this.buscarPorCorreo(correo);
     if (usuario == null) {
       System.err.println(
           "Error en manejarLogicaDeLogin: No se encontró usuario con correo " + correo);
-      return;
+      return new int[] {0, 0};
     }
 
     // 2. Actualiza la racha
-    this.actualizarRacha(usuario);
+    if (this.actualizarRacha(usuario)) {
+      streakIncremented = 1;
+    }
 
     // 3. Dispara el gatillo de logros (ahora PUEDE acceder a usuario.getTareas)
     gestorLogrosService.actualizarLogrosParaUsuario(usuario);
-    this.verificarSubidaDeNivel(usuario);
+    nivelesGanados = this.verificarSubidaDeNivel(usuario);
     // 4. Guarda todos los cambios
     this.guardarEnBd(usuario);
+
+    return new int[] {streakIncremented, nivelesGanados};
+  }
+
+  /**
+   * Variante de la lógica de login que NO actualiza la racha. Usada cuando se entra al sistema (por
+   * ejemplo al mostrar /home) y no queremos que se ejecute la lógica de completar tarea.
+   *
+   * @param correo correo del usuario
+   * @return int[] con [streakIncremented (0), nivelesGanados]
+   */
+  @Transactional
+  public int[] manejarLogicaDeLoginSinActualizarRacha(String correo) {
+    int streakIncremented = 0;
+    int nivelesGanados = 0;
+
+    Usuario usuario = this.buscarPorCorreo(correo);
+    if (usuario == null) {
+      System.err.println(
+          "Error en manejarLogicaDeLoginSinActualizarRacha: No se encontró usuario con correo "
+              + correo);
+      return new int[] {0, 0};
+    }
+
+    // No actualizamos la racha aquí. Solo actualizamos logros y niveles.
+    gestorLogrosService.actualizarLogrosParaUsuario(usuario);
+    nivelesGanados = this.verificarSubidaDeNivel(usuario);
+    this.guardarEnBd(usuario);
+
+    return new int[] {streakIncremented, nivelesGanados};
   }
 }

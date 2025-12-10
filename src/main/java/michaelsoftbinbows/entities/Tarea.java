@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import michaelsoftbinbows.exceptions.TareaInvalidaException;
 import michaelsoftbinbows.util.Dificultad;
@@ -112,14 +113,32 @@ public class Tarea {
     this.climaCompatible = climaCompatible;
   }
 
+  /**
+   * Establece el nombre de la tarea.
+   *
+   * @param nombre El nuevo nombre.
+   * @throws TareaInvalidaException Si el nombre es inválido.
+   */
   public void setNombre(String nombre) throws TareaInvalidaException {
     this.nombre = nombre;
   }
 
+  /**
+   * Establece la descripción de la tarea.
+   *
+   * @param descripcion La nueva descripción.
+   * @throws TareaInvalidaException Si la descripción es inválida.
+   */
   public void setDescripcion(String descripcion) throws TareaInvalidaException {
     this.descripcion = descripcion;
   }
 
+  /**
+   * Establece la experiencia de la tarea.
+   *
+   * @param exp La nueva experiencia.
+   * @throws TareaInvalidaException Si la experiencia es inválida.
+   */
   public void setExp(int exp) throws TareaInvalidaException {
     this.exp = exp;
   }
@@ -183,6 +202,39 @@ public class Tarea {
 
   public boolean isCompletada() {
     return fechaCompletada != null;
+  }
+
+  /**
+   * Calcula la fecha y hora a mitad del tiempo de vida de la tarea (punto medio entre su creación e
+   * expiración).
+   *
+   * <p>La mitad del tiempo de vida se calcula como: fechaCreacion + (fechaExpiracion -
+   * fechaCreacion) / 2
+   *
+   * @return Un LocalDateTime representando el punto medio de la vida de la tarea.
+   */
+  public LocalDateTime calcularMitadVida() {
+    if (fechaExpiracion == null) {
+      return LocalDateTime.now(ZoneId.systemDefault());
+    }
+    // Estimamos la fecha de creación como: fechaExpiracion - días de dificultad
+    // Obtenemos el ID de dificultad basado en la experiencia
+    int diasVida =
+        switch (exp) {
+          case 10 -> 1; // Muy fácil: 1 día
+          case 25 -> 2; // Fácil: 2 días
+          case 50 -> 3; // Medio: 3 días
+          case 100 -> 4; // Difícil: 4 días
+          case 150 -> 5; // Muy difícil: 5 días
+          default -> 3; // Por defecto: 3 días (Medio)
+        };
+    // La fecha de creación es aproximadamente: fechaExpiracion - diasVida
+    LocalDateTime fechaCreacion = fechaExpiracion.minusDays(diasVida);
+    // Calculamos el punto medio
+    long segundosVida =
+        java.time.temporal.ChronoUnit.SECONDS.between(fechaCreacion, fechaExpiracion);
+    long segundosMedio = segundosVida / 2;
+    return fechaCreacion.plusSeconds(segundosMedio);
   }
 
   @Override

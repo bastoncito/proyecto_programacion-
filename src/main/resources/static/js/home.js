@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const modalDescription = document.getElementById('modalDescription');
   const modalExp = document.getElementById('modalExp');
   const modalExpire = document.getElementById('modalExpire');
+  const modalMitadVida = document.getElementById('modalMitadVida');
+  const completionStatusInfo = document.getElementById('completionStatusInfo');
   const closeModalBtn = document.getElementById('closeModal');
 
   const deleteButton = document.getElementById('deleteButton');
@@ -49,6 +51,28 @@ document.addEventListener('DOMContentLoaded', function () {
         modalDescription.textContent = btn.dataset.descripcion;
         modalExp.textContent = btn.dataset.experiencia + ' XP';
         modalExpire.textContent = btn.dataset.expira;
+        
+        // Display lifetime information
+        const mitadVida = btn.dataset.mitadVida;
+        modalMitadVida.textContent = mitadVida;
+        
+        // Calculate if task can be completed now
+        const now = new Date();
+        const mitadVidaDate = new Date(btn.dataset.mitadVida.replace(' ', 'T'));
+        
+        if (now >= mitadVidaDate) {
+          completionStatusInfo.innerHTML = '<span style="color: #4CAF50;">✅ Puedes completar esta tarea ahora</span>';
+          completeButton.disabled = false;
+          completeButton.style.opacity = '1';
+          completeButton.style.cursor = 'pointer';
+        } else {
+          const timeRemaining = Math.ceil((mitadVidaDate - now) / (1000 * 60));
+          completionStatusInfo.innerHTML = '<span style="color: #FF9800;">⏳ Falta ' + timeRemaining + ' minuto(s) para poder completar</span>';
+          completeButton.disabled = true;
+          completeButton.style.opacity = '0.5';
+          completeButton.style.cursor = 'not-allowed';
+        }
+        
         taskModal.style.display = 'flex';
       }
     });

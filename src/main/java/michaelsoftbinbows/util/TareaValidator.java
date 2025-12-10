@@ -1,12 +1,11 @@
 package michaelsoftbinbows.util;
 
-/** Maneja las validaciones para los atributos de Tarea (los que se deben ingresar) */
+/** Maneja las validaciones para los atributos de Tarea (los que se deben ingresar). */
 public class TareaValidator {
-  // RECORDAR REPONER EL CONTEXTO DE EXCEPCIONES
   /**
    * Valida el nombre de la tarea.
    *
-   * @param nombre El nombre a establecer.
+   * @param nombreTarea El nombre a establecer.
    * @return String con mensaje de error o null
    */
   public String nombreTareaValido(String nombreTarea) {

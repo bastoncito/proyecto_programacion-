@@ -72,10 +72,11 @@ public class HomeController {
     }
 
     // Verificar racha y tareas expiradas
-    usuarioService.verificarPerdidaRacha(usuarioActual);
+    boolean streakLost = usuarioService.verificarPerdidaRacha(usuarioActual);
     usuarioTareaService.verificarTareasExpiradas(usuarioActual.getId());
 
     model.addAttribute("usuario", usuarioActual);
+    model.addAttribute("streakLost", streakLost);
     model.addAttribute("tareas", usuarioActual.getTareasPendientes());
     model.addAttribute("historialTareas", usuarioActual.getTareasCompletadas());
 
@@ -84,6 +85,34 @@ public class HomeController {
 
     model.addAttribute("historialReciente", historialReciente); // La lista corta
     model.addAttribute("totalHistorial", historialCompleto.size()); // El número total
+
+    // Logros revisar
+    boolean streakIncremented = false;
+    int nivelesGanados = 0;
+
+    // Si vienen flash attributes (por ejemplo tras completar una tarea), respetamos esas
+    // notificaciones en lugar de volver a calcular/llamar la lógica de login que no debe
+    // modificar la racha.
+    if (model.containsAttribute("streakIncremented") || model.containsAttribute("nivelesGanados")) {
+      Object si = model.asMap().get("streakIncremented");
+      if (si instanceof Boolean) {
+        streakIncremented = (Boolean) si;
+      } else if (si instanceof Integer) {
+        streakIncremented = ((Integer) si) == 1;
+      }
+      Object ng = model.asMap().get("nivelesGanados");
+      if (ng instanceof Integer) {
+        nivelesGanados = (Integer) ng;
+      }
+    } else {
+      int[] notificationInfo =
+          usuarioService.manejarLogicaDeLoginSinActualizarRacha(
+              usuarioActual.getCorreoElectronico());
+      streakIncremented = notificationInfo[0] == 1;
+      nivelesGanados = notificationInfo[1];
+    }
+    model.addAttribute("streakIncremented", streakIncremented);
+    model.addAttribute("nivelesGanados", nivelesGanados);
 
     int expSiguienteNivel =
         SistemaNiveles.experienciaParaNivel(usuarioActual.getNivelExperiencia() + 1);
@@ -189,9 +218,6 @@ public class HomeController {
     model.addAttribute("tareaSemanal", tareaSemanal.orElse(null));
     boolean desafioCompletado = tareaSemanal.isPresent() && tareaSemanal.get().isCompletada();
     model.addAttribute("desafioCompletado", desafioCompletado);
-
-    // Logros revisar
-    usuarioService.manejarLogicaDeLogin(usuarioActual.getCorreoElectronico());
 
     return "home";
   }

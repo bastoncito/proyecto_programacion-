@@ -100,8 +100,12 @@ public class Logro {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || !(o instanceof Logro)) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || !(o instanceof Logro)) {
+      return false;
+    }
     Logro logro = (Logro) o;
     return Objects.equals(id, logro.id);
   }

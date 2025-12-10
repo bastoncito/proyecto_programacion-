@@ -1,5 +1,6 @@
 package michaelsoftbinbows.exceptions;
 
+/** Excepción lanzada cuando un logro no es válido. */
 public class LogroInvalidoException extends Exception {
 
   /**

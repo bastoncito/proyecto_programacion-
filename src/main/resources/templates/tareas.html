@@ -26,6 +26,15 @@
             th:text="${#temporals.format(tarea.fechaExpiracion, 'yyyy-MM-dd')}"
           ></span>
         </p>
+        
+        <!-- Lifetime info -->
+        <p>
+          Puedes completarla desde
+          <span
+            class="midpoint"
+            th:text="${#temporals.format(tarea.calcularMitadVida(), 'dd/MM/yyyy HH:mm')}"
+          ></span>
+        </p>
 
         <!-- Buttons -->
         <button
@@ -33,7 +42,8 @@
           th:attr="data-nombre=${tarea.nombre},
                             data-descripcion=${tarea.descripcion},
                             data-experiencia=${tarea.exp},
-                            data-expira=${#temporals.format(tarea.fechaExpiracion, 'yyyy-MM-dd')}"
+                            data-expira=${#temporals.format(tarea.fechaExpiracion, 'yyyy-MM-dd')},
+                            data-mitad-vida=${#temporals.format(tarea.calcularMitadVida(), 'dd/MM/yyyy HH:mm')}"
         >
           Ver
         </button>
@@ -66,6 +76,12 @@
         <p><strong>Descripcion:</strong> <span id="modalDescription"></span></p>
         <p><strong>Vale:</strong> <span id="modalExp"></span></p>
         <p><strong>Expira:</strong> <span id="modalExpire"></span></p>
+        
+        <!-- Lifetime info section -->
+        <div id="lifetimeInfo" style="border-top: 1px solid #ccc; padding-top: 10px; margin-top: 10px;">
+          <p><strong>Punto medio (para completar):</strong> <span id="modalMitadVida"></span></p>
+          <p id="completionStatusInfo"></p>
+        </div>
       </div>
     </div>
 

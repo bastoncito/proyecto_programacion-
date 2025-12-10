@@ -41,7 +41,12 @@
                 th:each="tarea, stat : ${tareas}"
                 th:if="${stat.index < 4}"
                 th:text="${tarea.nombre}"
-                th:attr="data-nombre=${tarea.nombre}, data-descripcion=${tarea.descripcion}, data-experiencia=${tarea.exp}, data-expira=${#temporals.format(tarea.fechaExpiracion, 'dd/MM/yyyy')}"
+                th:attr="data-nombre=${tarea.nombre}, 
+                         data-descripcion=${tarea.descripcion}, 
+                         data-experiencia=${tarea.exp}, 
+                         data-expira=${#temporals.format(tarea.fechaExpiracion, 'dd/MM/yyyy')},
+                         data-mitad-vida=${#temporals.format(tarea.calcularMitadVida(), 'dd/MM/yyyy HH:mm')},
+                         data-fecha-creacion=${#temporals.format(tarea.fechaExpiracion, 'yyyy-MM-dd')}"
               ></button>
               <p th:if="${#lists.isEmpty(tareas)}" class="placeholder-content">
                 No tienes tareas anotadas.
@@ -369,6 +374,12 @@
         <p><strong>Vale:</strong> <span id="modalExp"></span></p>
         <p><strong>Expira:</strong> <span id="modalExpire"></span></p>
         
+        <!-- Nueva sección para información de tiempo de vida -->
+        <div id="lifetimeInfo" style="border-top: 1px solid #ccc; padding-top: 10px; margin-top: 10px;">
+          <p><strong>Punto medio (para completar):</strong> <span id="modalMitadVida"></span></p>
+          <p id="completionStatusInfo"></p>
+        </div>
+        
         <!-- Botones y formularios para las acciones -->
         <button id="deleteButton">Eliminar Tarea</button>
         <form id="deleteForm" th:action="@{/eliminar-tarea}" method="post" style="display: none;">
@@ -456,6 +467,27 @@
       <div th:if="${errorMessage}" class="toast error global-toast" id="global-error-toast">
         <span class="toast-icon">❌</span>
         <span th:text="${errorMessage}"></span>
+        <button class="toast-close" onclick="this.parentElement.style.display='none'">×</button>
+      </div>
+
+      <!-- Toast de Racha Incrementada -->
+      <div th:if="${streakIncremented}" class="toast success global-toast" id="streak-increased-toast">
+        <span class="toast-icon">🔥</span>
+        <span>¡Felicidades! Tu racha ha aumentado a <span th:text="${usuario.racha}"></span> días</span>
+        <button class="toast-close" onclick="this.parentElement.style.display='none'">×</button>
+      </div>
+
+      <!-- Toast de Racha Perdida -->
+      <div th:if="${streakLost}" class="toast warning global-toast" id="streak-lost-toast">
+        <span class="toast-icon">⚠️</span>
+        <span>Has perdido tu racha. ¡Vuelve a comenzar!</span>
+        <button class="toast-close" onclick="this.parentElement.style.display='none'">×</button>
+      </div>
+
+      <!-- Toast de Subida de Nivel -->
+      <div th:if="${nivelesGanados > 0}" class="toast level-up global-toast" id="level-up-toast">
+        <span class="toast-icon">⭐</span>
+        <span>¡FELICIDADES! ¡Has subido <span th:text="${nivelesGanados}"></span> nivel(es)! Ahora eres nivel <span th:text="${usuario.nivelExperiencia}"></span></span>
         <button class="toast-close" onclick="this.parentElement.style.display='none'">×</button>
       </div>
     </div>

@@ -1,7 +1,10 @@
 package michaelsoftbinbows.controller;
 
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,9 +134,6 @@ public class AdminController {
 
     // Obtenemos el usuario gestionado desde el AuthService (asegura entidad gestionada)
     Usuario usuarioActual = authservice.getCurrentUser();
-
-    // Logros revisar
-    usuarioService.manejarLogicaDeLogin(usuarioActual.getCorreoElectronico());
 
     // Primera barrera de seguridad: si el usuario no tiene el rol adecuado, se le redirige.
     if (usuarioActual.getRol() != Rol.ADMIN && usuarioActual.getRol() != Rol.MODERADOR) {
@@ -712,8 +712,9 @@ public class AdminController {
    * @param id El ID del logro a guardar.
    * @param nombre El nuevo nombre para el logro.
    * @param descripcion La nueva descripción.
-   * @param imagenUrl La nueva URL de la imagen/icono.
    * @param experienciaRecompensa La nueva cantidad de XP.
+   * @param archivo El archivo de imagen a subir (opcional).
+   * @param eliminarImagen Bandera para eliminar la imagen actual.
    * @param redirectAttributes Para enviar mensajes de feedback.
    * @return Redirección a la vista de logros.
    */

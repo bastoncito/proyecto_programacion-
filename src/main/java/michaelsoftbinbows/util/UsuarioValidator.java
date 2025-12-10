@@ -68,11 +68,18 @@ public class UsuarioValidator {
 
     if (!tieneMayuscula || !tieneMinuscula || !tieneDigito || !tieneCaracterEspecial) {
       StringBuilder errores = new StringBuilder();
-      if (!tieneMayuscula) errores.append("- Debe contener al menos una mayúscula\n");
-      if (!tieneMinuscula) errores.append("- Debe contener al menos una minúscula\n");
-      if (!tieneDigito) errores.append("- Debe contener al menos un dígito\n");
-      if (!tieneCaracterEspecial)
+      if (!tieneMayuscula) {
+        errores.append("- Debe contener al menos una mayúscula\n");
+      }
+      if (!tieneMinuscula) {
+        errores.append("- Debe contener al menos una minúscula\n");
+      }
+      if (!tieneDigito) {
+        errores.append("- Debe contener al menos un dígito\n");
+      }
+      if (!tieneCaracterEspecial) {
         errores.append("- Debe contener al menos un carácter especial (!@#$%^&* etc.)\n");
+      }
       return "La contrasena es demasiado débil. Requisitos:\n" + errores.toString();
     }
     return null; // Contraseña válida
